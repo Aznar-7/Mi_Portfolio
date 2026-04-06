@@ -292,7 +292,7 @@ const TargetCursor = ({
       targetCornerPositionsRef.current = null;
       activeStrengthRef.current = 0;
     };
-  }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, isMobile, hoverDuration, parallaxOn]);
+  }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, hoverDuration, parallaxOn]);
 
   useEffect(() => {
     if (!cursorRef.current || !spinTl.current) return;
@@ -305,7 +305,7 @@ const TargetCursor = ({
   }, [spinDuration]);
 
   return (
-    <div ref={cursorRef} className="target-cursor-wrapper" style={{ display: 'block', visibility: 'visible' }}>
+    <div ref={cursorRef} className="target-cursor-wrapper" style={{ display: 'block', visibility: 'visible', zIndex: 9999999, pointerEvents: 'none' }}>
       <div ref={dotRef} className="target-cursor-dot" />
       <div className="target-cursor-corner corner-tl" />
       <div className="target-cursor-corner corner-tr" />
