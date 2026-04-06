@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ── Design Tokens ───────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-base:     #0a0a0f;
+  --bg-elevated: #111118;
+  --bg-surface:  #16161f;
+  --bg-hover:    #1c1c28;
+
+  /* Borders */
+  --border:        rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(124, 106, 247, 0.3);
+
+  /* Text */
+  --text-primary:   #e8e8f0;
+  --text-secondary: #8888aa;
+  --text-muted:     #555570;
+
+  /* Accent (violet) */
+  --accent:       #7c6af7;
+  --accent-hover: #9b8cff;
+  --accent-glow:  rgba(124, 106, 247, 0.15);
+
+  /* Status */
+  --color-success: #4ade80;
+
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Fonts */
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  color-scheme: dark;
+}
+
+/* ── shadcn/ui token mapping ─────────────────────────────────── */
+:root {
+  --background:             0 0% 4%;
+  --foreground:             240 10% 91%;
+  --card:                   240 10% 9%;
+  --card-foreground:        240 10% 91%;
+  --popover:                240 10% 7%;
+  --popover-foreground:     240 10% 91%;
+  --primary:                249 87% 67%;
+  --primary-foreground:     0 0% 100%;
+  --secondary:              240 10% 14%;
+  --secondary-foreground:   240 10% 91%;
+  --muted:                  240 10% 14%;
+  --muted-foreground:       240 7% 47%;
+  --accent:                 249 87% 67%;
+  --accent-foreground:      0 0% 100%;
+  --destructive:            0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border:                 240 10% 12%;
+  --input:                  240 10% 12%;
+  --ring:                   249 87% 67%;
+}
+
+/* ── Base Reset ──────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-base);
+  }
+
+  ::selection {
+    background: var(--accent-glow);
+    color: var(--accent-hover);
+  }
+}

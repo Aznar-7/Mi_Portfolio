@@ -1,0 +1,68 @@
+/* ── Glow pulse — DotGrid accent bloom ───────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.9; }
+}
+
+/* ── Scroll indicator bounce ─────────────────────────────────── */
+@keyframes bounce-y {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+/* ── Gradient shift — hero highlight words ───────────────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── Shimmer — button/badge highlight on hover ───────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+/* ── Status dot pulse ────────────────────────────────────────── */
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+  50%       { box-shadow: 0 0 0 4px rgba(74, 222, 128, 0); }
+}
+
+/* ── Float — subtle hover oscillation ───────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ── Clip reveal — used for word entrance ────────────────────── */
+@keyframes clip-up {
+  from { clip-path: inset(100% 0 0 0); transform: translateY(8px); opacity: 0; }
+  to   { clip-path: inset(0% 0 0 0);   transform: translateY(0);   opacity: 1; }
+}
+
+/* ── Reduced motion: collapse all animations ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scroll line — hero vertical scroll indicator ────────────── */
+@keyframes scroll-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+
+/* ── Gradient text utility ───────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #9b8cff 0%, #7c6af7 40%, #c084fc 80%, #9b8cff 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
