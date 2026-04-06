@@ -1,0 +1,127 @@
+export const translations = {
+  es: {
+    nav: {
+      project:    'Proyecto',
+      experience: 'Experiencia',
+      projects:   'Proyectos',
+      skills:     'Skills',
+      contact:    'Contacto',
+    },
+    hero: {
+      available: 'Disponible para nuevos proyectos',
+      tagline:   'Building systems that scale\nfrom prototype to production.',
+      description: 'Full Stack Developer especializado en React, Django e infraestructura cloud. Construyo sistemas end-to-end con foco en arquitectura escalable.',
+      cta_primary:   'Ver UTN Hub',
+      cta_secondary: 'Contacto',
+      stats: [
+        { value: '2+',  label: 'Años de exp' },
+        { value: '10+', label: 'Sistemas' },
+        { value: 'E2E', label: 'Front → Cloud' },
+      ],
+      scroll: 'scroll',
+    },
+    featured: {
+      label:      '01 — Proyecto principal',
+      active:     'En desarrollo activo',
+      view:       'Ver proyecto',
+      arch_label: 'Arquitectura del sistema',
+    },
+    experience: {
+      label:           '02 — Trayectoria',
+      title:           'Experiencia',
+      subtitle:        'Impacto real, no solo tareas.',
+      academic_divider:'Formación académica',
+    },
+    projects: {
+      label:    '03 — Proyectos',
+      title:    'Otros proyectos',
+      subtitle: 'Selección de trabajo personal y exploratorio.',
+      live:     'Ver en vivo',
+      code:     'Código',
+    },
+    skills: {
+      label:    '04 — Stack',
+      title:    'Habilidades técnicas',
+      subtitle: 'Stack completo — del componente al servidor.',
+      academic: 'Formación académica',
+    },
+    about: {
+      label:       '05 — Sobre mí',
+      title:       'Quién soy',
+      quick_facts: 'Quick facts',
+    },
+    contact: {
+      label:    '06 — Contacto',
+      title:    'Construyamos algo.',
+      subtitle: 'Disponible para proyectos freelance, roles full-stack y colaboraciones.',
+    },
+    status: {
+      'in-development': 'En desarrollo',
+      completed:        'Completado',
+    },
+    footer: { rights: 'Todos los derechos reservados.' },
+  },
+
+  en: {
+    nav: {
+      project:    'Project',
+      experience: 'Experience',
+      projects:   'Projects',
+      skills:     'Skills',
+      contact:    'Contact',
+    },
+    hero: {
+      available: 'Open to new opportunities',
+      tagline:   'Building systems that scale\nfrom prototype to production.',
+      description: 'Full Stack Developer specializing in React, Django, and cloud infrastructure. I build end-to-end systems focused on scalable architecture.',
+      cta_primary:   'View UTN Hub',
+      cta_secondary: 'Contact',
+      stats: [
+        { value: '2+',  label: 'Years exp' },
+        { value: '10+', label: 'Systems' },
+        { value: 'E2E', label: 'Front → Cloud' },
+      ],
+      scroll: 'scroll',
+    },
+    featured: {
+      label:      '01 — Featured project',
+      active:     'Actively in development',
+      view:       'View project',
+      arch_label: 'System architecture',
+    },
+    experience: {
+      label:           '02 — Career',
+      title:           'Experience',
+      subtitle:        'Real impact, not just tasks.',
+      academic_divider:'Academic background',
+    },
+    projects: {
+      label:    '03 — Projects',
+      title:    'Other projects',
+      subtitle: 'Personal and exploratory work.',
+      live:     'Live demo',
+      code:     'Source',
+    },
+    skills: {
+      label:    '04 — Stack',
+      title:    'Technical skills',
+      subtitle: 'Full stack — from component to server.',
+      academic: 'Academic background',
+    },
+    about: {
+      label:       '05 — About',
+      title:       'Who I am',
+      quick_facts: 'Quick facts',
+    },
+    contact: {
+      label:    '06 — Contact',
+      title:    "Let's build something.",
+      subtitle: 'Available for freelance projects, full-stack roles, and open source collaborations.',
+    },
+    status: {
+      'in-development': 'In development',
+      completed:        'Completed',
+    },
+    footer: { rights: 'All rights reserved.' },
+  },
+}

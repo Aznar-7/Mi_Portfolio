@@ -1,138 +1,93 @@
-import { Mail } from 'lucide-react'
+import { motion } from 'motion/react'
+import { Mail, ArrowRight } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
+import { useLang } from '@/contexts/LanguageContext'
+import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 export function Contact() {
+  const reduced = useReducedMotion()
+  const { lang } = useLang()
+  const T = translations[lang].contact
+
   return (
     <SectionWrapper id="contact">
-      <div style={{ textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
-        <p
-          style={{
-            fontSize: '12px',
-            color: 'var(--accent)',
-            fontFamily: 'var(--font-mono)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            margin: '0 0 16px',
-          }}
-        >
-          // 06 — Contacto
-        </p>
-        <h2
-          style={{
-            fontSize: 'clamp(32px, 6vw, 56px)',
-            fontWeight: 700,
-            letterSpacing: '-0.04em',
-            color: 'var(--text-primary)',
-            margin: '0 0 16px',
-            lineHeight: 1.1,
-          }}
-        >
-          Construyamos algo.
-        </h2>
-        <p
-          style={{
-            fontSize: '16px',
-            color: 'var(--text-secondary)',
-            lineHeight: 1.6,
-            margin: '0 0 40px',
-          }}
-        >
-          Disponible para proyectos freelance, roles full-stack y colaboraciones open source.
-        </p>
-
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[var(--bg-surface)] px-8 py-16 text-center shadow-2xl md:px-16 md:py-24">
+        {/* Radial glow */}
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <a
-            href={`mailto:${site.email}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '14px 32px',
-              borderRadius: '10px',
-              fontSize: '15px',
-              fontWeight: 500,
-              backgroundColor: 'var(--accent)',
-              color: '#fff',
-              textDecoration: 'none',
-              transition: 'background-color 0.2s, transform 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--accent-hover)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--accent)'
-              e.currentTarget.style.transform = 'translateY(0)'
-            }}
-          >
-            <Mail size={16} /> {site.email}
-          </a>
+          className="pointer-events-none absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse 55% 45% at 50% 100%, rgba(124,106,247,0.14) 0%, transparent 70%)' }}
+        />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/35 to-transparent" />
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="relative z-10">
+          <motion.p
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-4 font-mono text-[11px] tracking-[0.16em] text-[var(--accent)] uppercase"
+          >
+            {T.label}
+          </motion.p>
+
+          <motion.h2
+            initial={reduced ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="mb-5 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.04em] text-[var(--text-primary)]"
+          >
+            {T.title}
+          </motion.h2>
+
+          <motion.p
+            initial={reduced ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-[var(--text-secondary)]"
+          >
+            {T.subtitle}
+          </motion.p>
+
+          <motion.div
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col items-center gap-4"
+          >
             <a
-              href={site.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textDecoration: 'none',
-                border: '1px solid rgba(255,255,255,0.06)',
-                transition: 'color 0.2s, border-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text-primary)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--text-secondary)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
-              }}
+              href={`mailto:${site.email}`}
+              className="group inline-flex items-center gap-3 rounded-xl bg-[var(--accent)] px-8 py-4 text-[15px] font-semibold text-white transition-all hover:-translate-y-1 hover:bg-[var(--accent-hover)] hover:shadow-[0_14px_36px_rgba(124,106,247,0.38)]"
             >
-              <GitHubIcon size={15} /> GitHub
+              <Mail size={17} />
+              {site.email}
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </a>
-            <a
-              href={site.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                textDecoration: 'none',
-                border: '1px solid rgba(255,255,255,0.06)',
-                transition: 'color 0.2s, border-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text-primary)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--text-secondary)'
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
-              }}
-            >
-              <LinkedInIcon size={15} /> LinkedIn
-            </a>
-          </div>
+
+            <div className="flex gap-3">
+              <a
+                href={site.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-white/[0.08] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:border-white/20 hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
+              >
+                <GitHubIcon size={15} /> GitHub
+              </a>
+              <a
+                href={site.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-white/[0.08] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:border-white/20 hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
+              >
+                <LinkedInIcon size={15} /> LinkedIn
+              </a>
+            </div>
+          </motion.div>
         </div>
       </div>
     </SectionWrapper>

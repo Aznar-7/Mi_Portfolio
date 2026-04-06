@@ -1,113 +1,98 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 export function CustomCursor() {
-  const reduced = useReducedMotion()
-  const [visible, setVisible] = useState(false)
-  const [hovering, setHovering] = useState(false)
-  const mouseX = useMotionValue(-200)
-  const mouseY = useMotionValue(-200)
+  const mx = useMotionValue(-100)
+  const my = useMotionValue(-100)
 
-  // Dot: tight spring — follows almost instantly
-  const dotX = useSpring(mouseX, { stiffness: 800, damping: 40, mass: 0.2 })
-  const dotY = useSpring(mouseY, { stiffness: 800, damping: 40, mass: 0.2 })
+  // Ring lags with spring physics
+  const rx = useSpring(mx, { stiffness: 160, damping: 16, mass: 0.08 })
+  const ry = useSpring(my, { stiffness: 160, damping: 16, mass: 0.08 })
 
-  // Ring: loose spring — lags behind for the trail feel
-  const ringX = useSpring(mouseX, { stiffness: 120, damping: 16, mass: 0.5 })
-  const ringY = useSpring(mouseY, { stiffness: 120, damping: 16, mass: 0.5 })
+  const ringW  = useSpring(38, { stiffness: 260, damping: 22 })
+  const ringH  = useSpring(38, { stiffness: 260, damping: 22 })
+  const dotW   = useSpring(7,  { stiffness: 260, damping: 22 })
+  const dotH   = useSpring(7,  { stiffness: 260, damping: 22 })
+  const rAlpha = useSpring(1,  { stiffness: 260, damping: 22 })
 
   useEffect(() => {
-    // Hide on touch devices
-    if (window.matchMedia('(hover: none)').matches) return
-
-    const onMove = (e) => {
-      mouseX.set(e.clientX)
-      mouseY.set(e.clientY)
-      if (!visible) setVisible(true)
-    }
-
-    const onLeave = () => setVisible(false)
-    const onEnter = () => setVisible(true)
-
-    const onHoverStart = (e) => {
-      if (
-        e.target.closest('a, button, [role="button"], input, textarea, select, label')
-      ) {
-        setHovering(true)
-      }
-    }
-    const onHoverEnd = () => setHovering(false)
-
-    window.addEventListener('mousemove', onMove)
-    document.documentElement.addEventListener('mouseleave', onLeave)
-    document.documentElement.addEventListener('mouseenter', onEnter)
-    document.addEventListener('mouseover', onHoverStart)
-    document.addEventListener('mouseout', onHoverEnd)
-
-    // Hide native cursor
     document.body.style.cursor = 'none'
 
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      document.documentElement.removeEventListener('mouseleave', onLeave)
-      document.documentElement.removeEventListener('mouseenter', onEnter)
-      document.removeEventListener('mouseover', onHoverStart)
-      document.removeEventListener('mouseout', onHoverEnd)
-      document.body.style.cursor = ''
+    const move = (e) => {
+      mx.set(e.clientX)
+      my.set(e.clientY)
     }
-  }, [mouseX, mouseY, visible])
 
-  if (reduced) return null
+    const isInteractive = (el) =>
+      el.closest('a, button, [role="button"], input, textarea, select')
+
+    const over = (e) => {
+      if (isInteractive(e.target)) {
+        ringW.set(56); ringH.set(56)
+        dotW.set(0);  dotH.set(0)
+        rAlpha.set(0.45)
+      }
+    }
+
+    const out = (e) => {
+      if (isInteractive(e.target)) {
+        ringW.set(38); ringH.set(38)
+        dotW.set(7);  dotH.set(7)
+        rAlpha.set(1)
+      }
+    }
+
+    const down = () => { ringW.set(28); ringH.set(28) }
+    const up   = () => { ringW.set(38); ringH.set(38) }
+
+    window.addEventListener('mousemove', move)
+    document.addEventListener('mouseover', over)
+    document.addEventListener('mouseout',  out)
+    document.addEventListener('mousedown', down)
+    document.addEventListener('mouseup',   up)
+
+    return () => {
+      document.body.style.cursor = ''
+      window.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseover', over)
+      document.removeEventListener('mouseout',  out)
+      document.removeEventListener('mousedown', down)
+      document.removeEventListener('mouseup',   up)
+    }
+  }, [])
 
   return (
     <>
-      {/* Outer ring — trails behind */}
+      {/* Lagging ring */}
       <motion.div
+        aria-hidden="true"
         style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          x: ringX,
-          y: ringY,
-          translateX: '-50%',
-          translateY: '-50%',
-          width: hovering ? '44px' : '32px',
-          height: hovering ? '44px' : '32px',
+          top: 0, left: 0,
+          x: rx, y: ry,
+          width: ringW, height: ringH,
           borderRadius: '50%',
-          border: hovering
-            ? '1.5px solid rgba(124,106,247,0.6)'
-            : '1px solid rgba(124,106,247,0.35)',
-          backgroundColor: hovering ? 'rgba(124,106,247,0.06)' : 'transparent',
-          zIndex: 9999,
+          border: '1.5px solid rgba(124,106,247,0.75)',
+          opacity: rAlpha,
+          translateX: '-50%', translateY: '-50%',
           pointerEvents: 'none',
-          opacity: visible ? 1 : 0,
-          transition: 'width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, opacity 0.3s ease',
-          mixBlendMode: 'normal',
+          zIndex: 9997,
         }}
       />
-
-      {/* Inner dot — snappy */}
+      {/* Instant dot */}
       <motion.div
+        aria-hidden="true"
         style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          x: dotX,
-          y: dotY,
-          translateX: '-50%',
-          translateY: '-50%',
-          width: hovering ? '5px' : '5px',
-          height: hovering ? '5px' : '5px',
+          top: 0, left: 0,
+          x: mx, y: my,
+          width: dotW, height: dotH,
           borderRadius: '50%',
-          backgroundColor: hovering ? 'var(--accent-hover)' : 'var(--accent)',
-          zIndex: 10000,
+          backgroundColor: 'var(--accent)',
+          translateX: '-50%', translateY: '-50%',
           pointerEvents: 'none',
-          opacity: visible ? 1 : 0,
-          boxShadow: hovering
-            ? '0 0 8px rgba(124,106,247,0.8), 0 0 20px rgba(124,106,247,0.3)'
-            : '0 0 6px rgba(124,106,247,0.6)',
-          transition: 'background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease',
+          zIndex: 9998,
+          boxShadow: '0 0 8px rgba(124,106,247,0.6)',
         }}
       />
     </>

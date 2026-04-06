@@ -1,12 +1,13 @@
 import { lazy, Suspense } from 'react'
-import { DotGrid } from '@/components/background/DotGrid'
+import { LanguageProvider } from '@/contexts/LanguageContext'
+import SplashCursor from '@/components/background/SplashCursor'
 import { CustomCursor } from '@/components/background/CustomCursor'
+import Threads from '@/components/background/Threads'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { Hero } from '@/components/sections/Hero'
 
-// Lazy load below-fold sections
 const FeaturedProject = lazy(() =>
   import('@/components/sections/FeaturedProject').then((m) => ({ default: m.FeaturedProject }))
 )
@@ -28,12 +29,13 @@ const Contact = lazy(() =>
 
 export default function App() {
   return (
-    <>
+    <LanguageProvider>
       <CustomCursor />
+      <SplashCursor />
       <ScrollProgress />
-      <DotGrid />
+      <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />
       <Navbar />
-      <main>
+      <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />
         <Suspense fallback={null}>
           <FeaturedProject />
@@ -45,6 +47,6 @@ export default function App() {
         </Suspense>
       </main>
       <Footer />
-    </>
+    </LanguageProvider>
   )
 }

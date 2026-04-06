@@ -16,7 +16,7 @@ export function SectionWrapper({ id, children, className = '' }) {
       }}
       style={{
         position: 'relative',
-        zIndex: 1,
+        zIndex: 10,
         maxWidth: '1152px',
         margin: '0 auto',
         padding: '96px 24px',

@@ -2,124 +2,58 @@ import { motion } from 'motion/react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { experience, academic } from '@/data/experience'
+import { useLang } from '@/contexts/LanguageContext'
+import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+
+function l(value, lang) {
+  if (!value || typeof value === 'string') return value
+  return value[lang] ?? value.es ?? value.en ?? ''
+}
 
 function ExperienceCard({ item, type, index = 0 }) {
   const reduced = useReducedMotion()
+  const { lang } = useLang()
+  const points = l(item.impact ?? item.highlights, lang) ?? []
+
   return (
     <motion.div
       initial={reduced ? false : { opacity: 0, x: -24 }}
       whileInView={reduced ? {} : { opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.55, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
-      style={{ display: 'flex', gap: '24px', paddingBottom: '40px' }}
+      transition={{ duration: 0.55, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className="flex gap-6 pb-10"
     >
       {/* Timeline dot + line */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          flexShrink: 0,
-        }}
-      >
+      <div className="flex flex-col items-center flex-shrink-0">
         <div
+          className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full"
           style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
             backgroundColor: type === 'work' ? 'var(--accent)' : 'var(--text-muted)',
             border: '2px solid var(--bg-base)',
-            boxShadow: type === 'work' ? '0 0 0 3px rgba(124,106,247,0.2)' : 'none',
-            flexShrink: 0,
-            marginTop: '5px',
+            boxShadow: type === 'work' ? '0 0 0 4px rgba(124,106,247,0.15)' : 'none',
           }}
         />
-        <div
-          style={{
-            width: '1px',
-            flex: 1,
-            backgroundColor: 'rgba(255,255,255,0.06)',
-            marginTop: '8px',
-          }}
-        />
+        <div className="mt-2 w-px flex-1 bg-white/[0.05]" />
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, paddingBottom: '8px' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: '4px',
-            flexWrap: 'wrap',
-            gap: '4px',
-          }}
-        >
-          <h3
-            style={{
-              fontSize: '16px',
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              margin: 0,
-            }}
-          >
-            {item.role || item.degree}
+      <div className="flex-1 pb-2">
+        <div className="mb-1 flex flex-wrap items-start justify-between gap-2">
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">
+            {l(item.role ?? item.degree, lang)}
           </h3>
-          <span
-            style={{
-              fontSize: '12px',
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
-            {item.period}
+          <span className="font-mono text-[11px] text-[var(--text-muted)]">
+            {l(item.period, lang)}
           </span>
         </div>
-        <p
-          style={{
-            fontSize: '14px',
-            color: 'var(--accent)',
-            margin: '0 0 16px',
-            fontWeight: 500,
-          }}
-        >
-          {item.company || item.institution}
+        <p className="mb-4 text-sm font-medium text-[var(--accent)]">
+          {item.company ?? item.institution}
         </p>
-        <ul
-          style={{
-            margin: 0,
-            padding: 0,
-            listStyle: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-          }}
-        >
-          {(item.impact || item.highlights).map((point, i) => (
-            <li
-              key={i}
-              style={{
-                fontSize: '14px',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.6,
-                paddingLeft: '16px',
-                position: 'relative',
-              }}
-            >
-              <span
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '9px',
-                  width: '4px',
-                  height: '4px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--text-muted)',
-                  display: 'inline-block',
-                }}
-              />
+        <ul className="flex flex-col gap-2.5">
+          {points.map((point, i) => (
+            <li key={i} className="relative pl-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <span className="absolute left-0 top-[9px] h-1 w-1 rounded-full bg-[var(--text-muted)]" />
               {point}
             </li>
           ))}
@@ -130,42 +64,24 @@ function ExperienceCard({ item, type, index = 0 }) {
 }
 
 export function Experience() {
+  const { lang } = useLang()
+  const T = translations[lang].experience
+
   return (
     <SectionWrapper id="experience">
-      <SectionHeading
-        label="// 02 — Trayectoria"
-        title="Experiencia"
-        subtitle="Impacto real, no solo tareas."
-      />
+      <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
-      <div style={{ maxWidth: '720px' }}>
+      <div className="max-w-[700px]">
         {experience.map((item, i) => (
           <ExperienceCard key={i} item={item} type="work" index={i} />
         ))}
 
-        {/* Academic divider */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            margin: '16px 0 32px',
-          }}
-        >
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
-          <span
-            style={{
-              fontSize: '11px',
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Formación académica
+        <div className="my-6 flex items-center gap-4">
+          <div className="h-px flex-1 bg-white/[0.05]" />
+          <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase whitespace-nowrap">
+            {T.academic_divider}
           </span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          <div className="h-px flex-1 bg-white/[0.05]" />
         </div>
 
         {academic.map((item, i) => (

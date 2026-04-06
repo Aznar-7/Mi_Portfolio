@@ -1,43 +1,19 @@
 export function SectionHeading({ label, title, subtitle }) {
   return (
-    <div style={{ marginBottom: '48px' }}>
+    <div className="mb-14">
       {label && (
-        <p
-          style={{
-            fontSize: '12px',
-            fontWeight: 500,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--accent)',
-            margin: '0 0 12px',
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
-          {label}
-        </p>
+        <div className="mb-4 flex items-center gap-3">
+          <span className="h-px w-6 bg-[var(--accent)] opacity-70" />
+          <p className="font-mono text-[11px] font-medium tracking-[0.16em] text-[var(--accent)] uppercase">
+            {label.replace('//', '').trim()}
+          </p>
+        </div>
       )}
-      <h2
-        style={{
-          fontSize: 'clamp(28px, 5vw, 40px)',
-          fontWeight: 700,
-          letterSpacing: '-0.03em',
-          color: 'var(--text-primary)',
-          margin: '0 0 16px',
-          lineHeight: 1.15,
-        }}
-      >
+      <h2 className="mb-4 text-[clamp(28px,5vw,44px)] font-bold leading-[1.1] tracking-[-0.035em] text-[var(--text-primary)]">
         {title}
       </h2>
       {subtitle && (
-        <p
-          style={{
-            fontSize: '16px',
-            color: 'var(--text-secondary)',
-            maxWidth: '560px',
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
+        <p className="max-w-lg text-base leading-relaxed text-[var(--text-secondary)]">
           {subtitle}
         </p>
       )}

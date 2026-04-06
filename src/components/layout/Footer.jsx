@@ -1,39 +1,27 @@
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { site } from '@/data/site'
+import { useLang } from '@/contexts/LanguageContext'
+import { translations } from '@/i18n/translations'
 
 export function Footer() {
+  const { lang } = useLang()
+  const T = translations[lang].footer
+
   return (
     <footer
-      style={{
-        borderTop: '1px solid var(--border)',
-        padding: '32px 24px',
-        position: 'relative',
-        zIndex: 1,
-      }}
+      className="relative z-10 border-t border-white/[0.05] px-6 py-8"
     >
-      <div
-        style={{
-          maxWidth: '1152px',
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: 0 }}>
-          © {new Date().getFullYear()} {site.name}
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+        <p className="font-mono text-[12px] text-[var(--text-muted)]">
+          © {new Date().getFullYear()} {site.name} — {T.rights}
         </p>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div className="flex gap-5">
           <a
             href={site.github}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'var(--text-muted)', transition: 'color 0.2s', display: 'flex' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            className="text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label="GitHub"
           >
             <GitHubIcon size={18} />
@@ -42,9 +30,7 @@ export function Footer() {
             href={site.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'var(--text-muted)', transition: 'color 0.2s', display: 'flex' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            className="text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label="LinkedIn"
           >
             <LinkedInIcon size={18} />

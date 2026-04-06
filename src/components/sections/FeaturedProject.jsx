@@ -1,77 +1,54 @@
 import { motion } from 'motion/react'
-import { ExternalLink, Layers } from 'lucide-react'
+import { ExternalLink, Layers, ArrowRight } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { TechBadge } from '@/components/common/TechBadge'
 import { featuredProject } from '@/data/projects'
+import { useLang } from '@/contexts/LanguageContext'
+import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+
+// Resolves {es, en} or plain string
+function l(value, lang) {
+  if (!value || typeof value === 'string') return value
+  return value[lang] ?? value.es ?? value.en ?? ''
+}
 
 export function FeaturedProject() {
   const reduced = useReducedMotion()
+  const { lang } = useLang()
+  const T = translations[lang].featured
 
   return (
     <SectionWrapper id="featured">
       <SectionHeading
-        label="// 01 — Proyecto Principal"
+        label={T.label}
         title={featuredProject.title}
-        subtitle={featuredProject.tagline}
+        subtitle={l(featuredProject.tagline, lang)}
       />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '48px',
-          alignItems: 'start',
-        }}
-      >
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-surface)]/60 p-7 shadow-2xl backdrop-blur-xl md:p-10 lg:grid lg:grid-cols-[1fr_420px] lg:gap-14 lg:items-start">
+        {/* Background glow */}
+        <div className="pointer-events-none absolute -left-32 -top-32 h-[600px] w-[600px] rounded-full bg-[var(--accent)]/[0.07] blur-[100px]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent" />
+
         {/* Left: Description + links */}
-        <div>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '11px',
-              color: '#4ade80',
-              backgroundColor: 'rgba(74,222,128,0.1)',
-              border: '1px solid rgba(74,222,128,0.3)',
-              borderRadius: '4px',
-              padding: '3px 10px',
-              fontFamily: 'var(--font-mono)',
-              marginBottom: '20px',
-            }}
-          >
-            <span
-              style={{
-                width: '5px',
-                height: '5px',
-                borderRadius: '50%',
-                backgroundColor: '#4ade80',
-                display: 'inline-block',
-              }}
-            />
-            En desarrollo activo
+        <div className="relative z-10 mb-10 lg:mb-0">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-green-400/30 bg-green-400/[0.08] px-3 py-1 font-mono text-[10px] font-semibold tracking-[0.14em] text-green-400 uppercase">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400" />
+            {T.active}
           </div>
 
-          {featuredProject.description.split('. ').filter(Boolean).map((sentence, i) => (
-            <p
-              key={i}
-              style={{
-                color: 'var(--text-secondary)',
-                lineHeight: 1.7,
-                fontSize: '15px',
-                margin: '0 0 12px',
-              }}
-            >
-              {sentence.endsWith('.') ? sentence : `${sentence}.`}
-            </p>
-          ))}
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '24px 0' }}>
-            {featuredProject.tech.map((t) => (
-              <TechBadge key={t} label={t} accent />
+          <div className="mb-8 flex flex-col gap-4">
+            {l(featuredProject.description, lang).split('. ').filter(Boolean).map((s, i) => (
+              <p key={i} className="text-[15px] leading-[1.75] text-[var(--text-secondary)]">
+                {s.endsWith('.') ? s : `${s}.`}
+              </p>
             ))}
+          </div>
+
+          <div className="mb-8 flex flex-wrap gap-2">
+            {featuredProject.tech.map((t) => <TechBadge key={t} label={t} accent />)}
           </div>
 
           {featuredProject.liveUrl && (
@@ -79,83 +56,38 @@ export function FeaturedProject() {
               href={featuredProject.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: 500,
-                backgroundColor: 'var(--accent)',
-                color: '#fff',
-                textDecoration: 'none',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent)')}
+              className="group inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.35)]"
             >
-              <ExternalLink size={14} /> Ver proyecto
+              <ExternalLink size={14} />
+              {T.view}
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </a>
           )}
         </div>
 
-        {/* Right: Architecture layers */}
-        <div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '20px',
-              color: 'var(--text-muted)',
-              fontSize: '12px',
-              fontFamily: 'var(--font-mono)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-            }}
-          >
-            <Layers size={14} /> Arquitectura del sistema
+        {/* Right: Architecture */}
+        <div className="relative z-10">
+          <div className="mb-5 flex items-center gap-2 font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase">
+            <Layers size={13} className="text-[var(--accent)]" />
+            {T.arch_label}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="flex flex-col gap-3">
             {featuredProject.architecture.map((item, i) => (
               <motion.div
-                key={item.layer}
-                initial={reduced ? false : { opacity: 0, x: -12 }}
+                key={i}
+                initial={reduced ? false : { opacity: 0, x: -14 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1, ease: 'easeOut' }}
-                style={{
-                  padding: '16px',
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: '8px',
-                  borderLeft: '3px solid var(--accent)',
-                }}
+                transition={{ duration: 0.4, delay: i * 0.09, ease: 'easeOut' }}
+                className="group relative overflow-hidden rounded-xl border border-white/[0.05] bg-black/20 p-5 backdrop-blur-sm transition-all hover:border-white/[0.09] hover:bg-black/30"
               >
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--accent)',
-                    fontFamily: 'var(--font-mono)',
-                    margin: '0 0 6px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  {item.layer}
+                <div className="absolute inset-y-0 left-0 w-[3px] bg-gradient-to-b from-[var(--accent)] to-[var(--accent)]/30 transition-opacity group-hover:opacity-100 opacity-60" />
+                <p className="mb-1.5 font-mono text-[10px] font-semibold tracking-[0.14em] text-[var(--accent)] uppercase">
+                  {l(item.layer, lang)}
                 </p>
-                <p
-                  style={{
-                    fontSize: '14px',
-                    color: 'var(--text-secondary)',
-                    margin: 0,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {item.detail}
+                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                  {l(item.detail, lang)}
                 </p>
               </motion.div>
             ))}

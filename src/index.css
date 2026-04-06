@@ -82,4 +82,9 @@
     background: var(--accent-glow);
     color: var(--accent-hover);
   }
+
+  /* Custom cursor — hide native on interactive elements */
+  a, button, [role="button"], input, textarea, select, label {
+    cursor: none;
+  }
 }
