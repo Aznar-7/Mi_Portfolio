@@ -7,13 +7,10 @@ export function SectionWrapper({ id, children, className = '' }) {
   return (
     <motion.section
       id={id}
-      initial={reduced ? false : { opacity: 0, y: 40, filter: 'blur(6px)' }}
-      whileInView={reduced ? {} : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1],
-      }}
+      initial={reduced ? false : { opacity: 0, y: 28 }}
+      whileInView={reduced ? {} : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ type: 'spring', stiffness: 180, damping: 24 }}
       style={{
         position: 'relative',
         zIndex: 10,

@@ -2,18 +2,18 @@ export const experience = [
   {
     type: 'work',
     role: { es: 'Frontend Developer', en: 'Frontend Developer' },
-    company: 'COMPANY_NAME',
-    period: { es: '2023 — Presente', en: '2023 — Present' },
+    company: 'Porta Hnos',
+    period: { es: '2025 — Presente', en: '2025 — Present' },
     impact: {
       es: [
-        'Desarrollé múltiples sistemas corporativos desde cero, reduciendo el tiempo de gestión interna en un 40%.',
-        'Implementé arquitecturas de componentes reutilizables en React que aceleraron el desarrollo de nuevas features en un 30%.',
-        'Colaboré en equipos Agile (Scrum), participando en planning, daily standups y retrospectivas.',
+        'Arquitecturé 4+ sistemas corporativos end-to-end (React + Django + PostgreSQL), reduciendo el tiempo de gestión interna en un 40% mediante la digitalización de flujos manuales.',
+        'Diseñé un sistema de componentes reutilizables en React que aceleró el delivery de nuevas features en un 30%, adoptado como estándar de desarrollo por el equipo.',
+        'Lideré integraciones con APIs externas y migración de herramientas legacy a stack moderno en entorno Agile (Scrum), con ciclos de entrega quincenal.',
       ],
       en: [
-        'Built multiple corporate systems from scratch, reducing internal management time by 40%.',
-        'Implemented reusable React component architectures that accelerated new feature development by 30%.',
-        'Collaborated in Agile (Scrum) teams, participating in planning, daily standups, and retrospectives.',
+        'Architected 4+ corporate systems end-to-end (React + Django + PostgreSQL), reducing internal management time by 40% through digitization of manual workflows.',
+        'Designed a reusable React component system that accelerated feature delivery by 30%, adopted as the team\'s development standard.',
+        'Led external API integrations and legacy-to-modern stack migration in an Agile (Scrum) environment with biweekly delivery cycles.',
       ],
     },
   },
@@ -30,14 +30,14 @@ export const academic = [
     period: { es: '2021 — Presente', en: '2021 — Present' },
     highlights: {
       es: [
-        'Programación funcional en Haskell — manejo de tipos algebraicos, funciones de orden superior, monads.',
-        'Programación lógica en Prolog — resolución de problemas mediante unificación y backtracking.',
-        'SDLC completo: análisis de requerimientos, diseño de sistemas, implementación, testing y deploy.',
+        'Programación funcional en Haskell — tipos algebraicos, funciones de orden superior, monads, evaluación lazy.',
+        'Programación lógica en Prolog — resolución de problemas mediante unificación, backtracking y constraint solving.',
+        'SDLC completo: análisis de requerimientos, arquitectura de sistemas, implementación, testing y deploy en producción.',
       ],
       en: [
-        'Functional programming in Haskell — algebraic types, higher-order functions, monads.',
-        'Logic programming in Prolog — problem solving via unification and backtracking.',
-        'Full SDLC: requirements analysis, system design, implementation, testing, and deployment.',
+        'Functional programming in Haskell — algebraic types, higher-order functions, monads, lazy evaluation.',
+        'Logic programming in Prolog — problem solving via unification, backtracking, and constraint solving.',
+        'Full SDLC: requirements analysis, system architecture, implementation, testing, and production deployment.',
       ],
     },
   },

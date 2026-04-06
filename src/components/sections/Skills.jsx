@@ -1,94 +1,105 @@
-import { motion } from 'motion/react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
-import { skills } from '@/data/skills'
+import { skillsData, skillsCategories } from '@/data/skills'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
-const CATEGORY_LABELS = {
-  'Frontend':               { en: 'Frontend' },
-  'Backend':                { en: 'Backend' },
-  'Bases de datos':         { en: 'Databases' },
-  'Infraestructura':        { en: 'Infrastructure' },
-  'Metodología':            { en: 'Methodology' },
-  'Académico / Investigación': { en: 'Academic / Research' },
+const CATEGORY_EN = {
+  'Todos': 'All',
+  'Frontend': 'Frontend',
+  'Backend': 'Backend',
+  'Infraestructura': 'Infrastructure',
+  'Bases de datos': 'Databases',
+  'IoT & Hardware': 'IoT & Hardware',
+  'Otros': 'Other'
 }
 
 export function Skills() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].skills
+  const [activeCategory, setActiveCategory] = useState('Todos')
 
-  const entries = Object.entries(skills)
-  const main = entries.filter(([, d]) => !d.academic)
-  const academicSkills = entries.filter(([, d]) => d.academic).flatMap(([, d]) => d.items)
-
-  const getLabel = (key) =>
-    lang === 'en' ? (CATEGORY_LABELS[key]?.en ?? key) : key
+  const filteredSkills = activeCategory === 'Todos' 
+    ? skillsData 
+    : skillsData.filter(skill => skill.category === activeCategory)
 
   return (
     <SectionWrapper id="skills">
       <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {main.map(([category, data], i) => (
-          <motion.div
+      {/* Filters */}
+      <div className="flex flex-wrap justify-center gap-3 mb-12">
+        {skillsCategories.map((category) => (
+          <button
             key={category}
-            initial={reduced ? false : { opacity: 0, y: 20 }}
-            whileInView={reduced ? {} : { opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-30px' }}
-            transition={{ duration: 0.5, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
-            className="group relative overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--bg-surface)] p-5 transition-all hover:border-[var(--accent)]/25 hover:bg-[var(--bg-hover)]"
+            onClick={() => setActiveCategory(category)}
+            className={`cursor-target px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 border ${
+              activeCategory === category
+                ? 'bg-white/10 border-white/30 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                : 'bg-transparent border-white/5 text-white/50 hover:text-white/90 hover:border-white/20 hover:bg-white/[0.03]'
+            }`}
           >
-            <div className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              style={{ background: 'radial-gradient(350px circle at 50% 0%, rgba(124,106,247,0.07), transparent 70%)' }} />
-            <p className="mb-3 font-mono text-[10px] font-semibold tracking-[0.14em] text-[var(--accent)] uppercase">
-              {getLabel(category)}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {data.items.map((skill) => (
-                <span
-                  key={skill}
-                  className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
-                    data.accent
-                      ? 'bg-[rgba(124,106,247,0.12)] text-[var(--accent-hover)] ring-1 ring-[rgba(124,106,247,0.2)]'
-                      : 'bg-white/[0.04] text-[var(--text-secondary)] ring-1 ring-white/[0.06] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </motion.div>
+            {lang === 'en' ? CATEGORY_EN[category] : category}
+          </button>
         ))}
       </div>
 
-      {academicSkills.length > 0 && (
-        <>
-          <div className="my-10 flex items-center gap-4">
-            <div className="h-px flex-1 bg-white/[0.05]" />
-            <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase">
-              {T.academic}
-            </span>
-            <div className="h-px flex-1 bg-white/[0.05]" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {academicSkills.map((skill, i) => (
-              <motion.span
-                key={skill}
-                initial={reduced ? false : { opacity: 0, scale: 0.88 }}
-                whileInView={reduced ? {} : { opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.04 }}
-                className="rounded-full border border-white/[0.07] px-3 py-1 text-[12px] italic text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
+      {/* Grid */}
+      <motion.div 
+        layout
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl mx-auto min-h-[400px] items-start"
+      >
+        <AnimatePresence mode="popLayout">
+          {filteredSkills.map((skill, index) => (
+            <motion.div
+              layout
+              initial={reduced ? false : { opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
+              transition={{ duration: 0.4, delay: reduced ? 0 : index * 0.03, type: 'spring', bounce: 0.3 }}
+              key={skill.name}
+              className="cursor-target group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/[0.04] bg-[#0d0d0d]/40 backdrop-blur-sm overflow-hidden hover:border-white/20 transition-colors duration-500"
+              style={{ boxShadow: '0 4px 30px rgba(0,0,0,0.1)' }}
+            >
+              {/* Hover Glow Effect */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[24px] pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle at 50% 50%, ${skill.color}25 0%, transparent 80%)`
+                }}
+              />
+              
+              {/* Top gradient line on hover */}
+              <div 
+                className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${skill.color}, transparent)`
+                }}
+              />
+
+              <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 mb-4 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 drop-shadow-lg">
+                <img 
+                  src={skill.icon} 
+                  alt={skill.name} 
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                />
+              </div>
+
+              <span 
+                className="relative z-10 text-sm font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors duration-300" 
+                style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
               >
-                {skill}
-              </motion.span>
-            ))}
-          </div>
-        </>
-      )}
+                {skill.name}
+              </span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
     </SectionWrapper>
   )
 }

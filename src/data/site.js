@@ -4,8 +4,8 @@ export const site = {
   tagline: 'Building systems that scale from prototype to production.',
   description:
     'Full Stack Developer especializado en React, Django e infraestructura cloud. Desarrollo sistemas end-to-end con foco en arquitectura escalable y UX.',
-  email: 'your@email.com',
-  github: 'https://github.com/YOUR_GITHUB',
+  email: 'aznarvicente8@email.com',
+  github: 'https://github.com/Aznar-7',
   linkedin: 'https://www.linkedin.com/in/vicente-aznar-dev',
-  resumeUrl: '/resume.pdf',
+  resumeUrl: '/ResumeVicenteAznar.pdf',
 }

@@ -42,7 +42,7 @@ export const translations = {
     skills: {
       label:    '04 — Stack',
       title:    'Habilidades técnicas',
-      subtitle: 'Stack completo — del componente al servidor.',
+      subtitle: 'Stack completo — del componente al servidor y al circuito.',
       academic: 'Formación académica',
     },
     about: {
@@ -105,7 +105,7 @@ export const translations = {
     skills: {
       label:    '04 — Stack',
       title:    'Technical skills',
-      subtitle: 'Full stack — from component to server.',
+      subtitle: 'Full stack — from component to server to circuit.',
       academic: 'Academic background',
     },
     about: {

@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
-import SplashCursor from '@/components/background/SplashCursor'
-import { CustomCursor } from '@/components/background/CustomCursor'
+import TargetCursor from '@/components/common/TargetCursor'
 import Threads from '@/components/background/Threads'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -26,23 +25,59 @@ const About = lazy(() =>
 const Contact = lazy(() =>
   import('@/components/sections/Contact').then((m) => ({ default: m.Contact }))
 )
+const CubesSection = lazy(() =>
+  import('@/components/sections/CubesSection').then((m) => ({ default: m.CubesSection }))
+)
+
+function SectionSkeleton({ cols = 2, rows = 2 }) {
+  return (
+    <div className="mx-auto max-w-6xl animate-pulse px-6 py-24">
+      <div className="mb-3 h-2.5 w-16 rounded-full bg-white/[0.04]" />
+      <div className="mb-2 h-8 w-48 rounded-lg bg-white/[0.04]" />
+      <div className="mb-14 h-4 w-72 rounded bg-white/[0.03]" />
+      <div className="gap-4" style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+        {Array.from({ length: rows * cols }).map((_, i) => (
+          <div key={i} className="h-32 rounded-xl bg-white/[0.03]" />
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function App() {
   return (
     <LanguageProvider>
-      <CustomCursor />
-      <SplashCursor />
+      <TargetCursor 
+        spinDuration={2}
+        hideDefaultCursor={true}
+        parallaxOn={true}
+        hoverDuration={0.2}
+        targetSelector="a, button, .cursor-target, [role='button']"
+      />
       <ScrollProgress />
       <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />
       <Navbar />
       <main style={{ position: 'relative', zIndex: 10 }}>
         <Hero />
-        <Suspense fallback={null}>
+        <Suspense fallback={<SectionSkeleton cols={2} rows={2} />}>
           <FeaturedProject />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={1} rows={3} />}>
           <Experience />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={3} rows={2} />}>
           <Projects />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={4} rows={2} />}>
           <Skills />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={2} rows={1} />}>
           <About />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
+          <CubesSection />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
           <Contact />
         </Suspense>
       </main>

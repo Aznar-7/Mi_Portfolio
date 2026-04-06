@@ -2,33 +2,28 @@
 
 /* ── Design Tokens ───────────────────────────────────────────── */
 :root {
-  /* Backgrounds */
   --bg-base:     #0a0a0f;
   --bg-elevated: #111118;
   --bg-surface:  #16161f;
   --bg-hover:    #1c1c28;
 
-  /* Borders */
   --border:        rgba(255, 255, 255, 0.06);
   --border-accent: rgba(124, 106, 247, 0.3);
 
-  /* Text */
   --text-primary:   #e8e8f0;
   --text-secondary: #8888aa;
   --text-muted:     #555570;
 
-  /* Accent (violet) */
   --accent:       #7c6af7;
   --accent-hover: #9b8cff;
   --accent-glow:  rgba(124, 106, 247, 0.15);
 
-  /* Status */
   --color-success: #4ade80;
+  --color-lab:     #14b8a6;
+  --color-lab-glow:rgba(20, 184, 166, 0.12);
 
-  /* Radius */
   --radius: 0.5rem;
 
-  /* Fonts */
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
@@ -60,9 +55,7 @@
 
 /* ── Base Reset ──────────────────────────────────────────────── */
 @layer base {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
@@ -73,18 +66,29 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    margin: 0;
-    background-color: var(--bg-base);
+  body { margin: 0; background-color: var(--bg-base); }
+
+  ::selection { background: var(--accent-glow); color: var(--accent-hover); }
+
+  /* ── Noise grain overlay (pointer devices only) ───────── */
+  @media (pointer: fine) {
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      pointer-events: none;
+      opacity: 0.038;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
   }
 
-  ::selection {
-    background: var(--accent-glow);
-    color: var(--accent-hover);
-  }
-
-  /* Custom cursor — hide native on interactive elements */
-  a, button, [role="button"], input, textarea, select, label {
-    cursor: none;
+  /* ── Custom cursor — only on pointer/mouse devices ─────── */
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
   }
 }
