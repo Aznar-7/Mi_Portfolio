@@ -21,11 +21,11 @@ function ExperienceCard({ item, type, index = 0 }) {
     <motion.div
       initial={reduced ? false : { opacity: 0, x: -20 }}
       whileInView={reduced ? {} : { opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: '-30px' }}
+      viewport={{ once: true, margin: '-20px' }}
       transition={{ type: 'spring', stiffness: 180, damping: 24, delay: index * 0.08 }}
-      className="flex gap-8 pb-10"
+      className="flex gap-4 sm:gap-8 pb-10"
     >
-      {/* Timeline dot — the fill line is behind in the parent */}
+      {/* Timeline dot */}
       <div className="flex flex-col items-center flex-shrink-0 w-3">
         <div
           className="mt-1.5 h-3 w-3 flex-shrink-0 rounded-full"
@@ -40,21 +40,21 @@ function ExperienceCard({ item, type, index = 0 }) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 pb-2">
-        <div className="mb-1 flex flex-wrap items-start justify-between gap-2">
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">
+      <div className="flex-1 pb-2 min-w-0">
+        <div className="mb-1 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2">
+          <h3 className="text-[15px] sm:text-base font-semibold leading-tight text-[var(--text-primary)]">
             {l(item.role ?? item.degree, lang)}
           </h3>
-          <span className="font-mono text-[11px] text-[var(--text-muted)]">
+          <span className="font-mono text-[10px] sm:text-[11px] text-[var(--text-muted)] self-start sm:self-auto">
             {l(item.period, lang)}
           </span>
         </div>
-        <p className="mb-4 text-sm font-semibold text-[var(--accent)]">
+        <p className="mb-4 text-[13px] sm:text-sm font-semibold text-[var(--accent)]">
           {item.company ?? item.institution}
         </p>
         <ul className="flex flex-col gap-2.5">
           {points.map((point, i) => (
-            <li key={i} className="relative pl-4 text-[13px] leading-relaxed text-[var(--text-secondary)]">
+            <li key={i} className="relative pl-4 pr-2 text-[12px] sm:text-[13px] leading-relaxed text-[var(--text-secondary)]">
               <span className="absolute left-0 top-[9px] h-1 w-1 rounded-full bg-[var(--text-muted)]" />
               {point}
             </li>
@@ -101,35 +101,29 @@ export function Experience() {
               }}
             />
           )}
-          {/* Background track */}
-          <div style={{
-            position: 'absolute', left: '5px', top: '6px', bottom: '40px',
-            width: '1px', backgroundColor: 'rgba(255,255,255,0.05)',
-          }} />
+        {/* Background track */}
+        <div className="absolute left-[5px] sm:left-[5px] top-[6px] bottom-[40px] w-px bg-white/[0.05]" />
 
-          {experience.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="work" index={i} />
-          ))}
+        {experience.map((item, i) => (
+          <ExperienceCard key={i} item={item} type="work" index={i} />
+        ))}
         </div>
+      </div>
 
-        {/* Academic divider */}
-        <div className="my-6 flex items-center gap-4">
-          <div className="h-px flex-1 bg-white/[0.05]" />
-          <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase whitespace-nowrap">
-            {T.academic_divider}
-          </span>
-          <div className="h-px flex-1 bg-white/[0.05]" />
-        </div>
+      {/* Academic divider */}
+      <div className="my-6 flex items-center gap-4 max-w-[700px]">
+        <div className="h-px flex-1 bg-white/[0.05]" />
+        <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase whitespace-nowrap">
+          {T.academic_divider}
+        </span>
+        <div className="h-px flex-1 bg-white/[0.05]" />
+      </div>
 
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            position: 'absolute', left: '5px', top: '6px', bottom: '40px',
-            width: '1px', backgroundColor: 'rgba(255,255,255,0.05)',
-          }} />
-          {academic.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="academic" index={i} />
-          ))}
-        </div>
+      <div className="max-w-[700px] relative">
+        <div className="absolute left-[5px] sm:left-[5px] top-[6px] bottom-[40px] w-px bg-white/[0.05]" />
+        {academic.map((item, i) => (
+          <ExperienceCard key={i} item={item} type="academic" index={i} />
+        ))}
       </div>
     </SectionWrapper>
   )

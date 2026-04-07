@@ -29,7 +29,7 @@ function FeaturedBentoCard({ project, lang, T }) {
       whileInView={reduced ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-20px' }}
       transition={{ type: 'spring', stiffness: 180, damping: 24 }}
-      className="group relative col-span-2 overflow-hidden rounded-xl border border-[var(--accent)]/15 bg-[var(--bg-surface)] p-7"
+      className="group cursor-target relative col-span-1 sm:col-span-2 overflow-hidden rounded-xl border border-[var(--accent)]/15 bg-[var(--bg-surface)] p-5 sm:p-7"
     >
       {/* Glow */}
       <div
@@ -41,26 +41,26 @@ function FeaturedBentoCard({ project, lang, T }) {
       <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
         {/* Left */}
         <div className="flex-1">
-          <div className="mb-3 flex items-center gap-3">
+          <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
             <span
-              className="rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold tracking-wider uppercase"
+              className="rounded-full px-2.5 py-1 font-mono text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase"
               style={{ color: statusColor, backgroundColor: `${statusColor}15`, border: `1px solid ${statusColor}28` }}
             >
               {T.status?.[project.status] ?? project.status}
             </span>
-            <span className="font-mono text-[10px] tracking-wider text-[var(--accent)] uppercase">featured</span>
+            <span className="font-mono text-[9px] sm:text-[10px] tracking-wider text-[var(--accent)] uppercase">featured</span>
           </div>
 
-          <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)]">
+          <h3 className="mb-2 text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
             {project.title}
           </h3>
-          <p className="mb-4 text-[13px] leading-relaxed text-[var(--text-secondary)]">
+          <p className="mb-4 text-[12px] sm:text-[13px] leading-relaxed text-[var(--text-secondary)]">
             {l(project.description, lang)}
           </p>
 
           <div className="mb-5 flex flex-wrap gap-1.5">
             {project.tech.map((t) => (
-              <span key={t} className="rounded-md bg-[rgba(124,106,247,0.08)] px-2.5 py-1 text-[11px] text-[var(--accent-hover)] ring-1 ring-[rgba(124,106,247,0.15)]">
+              <span key={t} className="rounded-md bg-[rgba(124,106,247,0.08)] px-2.5 py-1 text-[10px] sm:text-[11px] text-[var(--accent-hover)] ring-1 ring-[rgba(124,106,247,0.15)]">
                 {t}
               </span>
             ))}
@@ -71,7 +71,7 @@ function FeaturedBentoCard({ project, lang, T }) {
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.3)]"
+              className="inline-flex cursor-target items-center gap-2 rounded-lg bg-[var(--accent)] px-4 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.3)]"
             >
               <ExternalLink size={13} /> {T.live ?? 'Live'}
             </a>
@@ -79,12 +79,12 @@ function FeaturedBentoCard({ project, lang, T }) {
         </div>
 
         {/* Right: architecture mini */}
-        <div className="flex-shrink-0 sm:w-48">
-          <p className="mb-2 font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase">Stack</p>
-          <div className="flex flex-col gap-1.5">
+        <div className="w-full sm:w-48 sm:flex-shrink-0 mt-4 sm:mt-0">
+          <p className="mb-2 font-mono text-[9px] sm:text-[10px] tracking-[0.14em] text-[var(--text-muted)] uppercase">Stack</p>
+          <div className="flex flex-row sm:flex-col flex-wrap gap-1.5">
             {(project.architecture ?? []).slice(0, 4).map((item, i) => (
-              <div key={i} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-1.5">
-                <p className="text-[10px] font-semibold text-[var(--accent)]">
+              <div key={i} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-2 sm:px-3 py-1 sm:py-1.5">
+                <p className="text-[9px] sm:text-[10px] font-semibold text-[var(--accent)]">
                   {l(item.layer, lang)}
                 </p>
               </div>

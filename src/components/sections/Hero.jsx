@@ -96,11 +96,14 @@ export function Hero() {
       ref={sectionRef}
       id="hero"
       style={{ y, opacity: fade }}
-      className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-20 pt-28 md:px-10"
+      className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 pb-20 pt-28 md:px-10"
     >
-      <div className="mx-auto w-full max-w-5xl">
+      {/* Background glow for premium effect */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[600px] bg-[var(--accent)]/10 blur-[120px] rounded-full mix-blend-screen" />
+
+      <div className="mx-auto flex w-full max-w-4xl flex-col items-center text-center">
         {/* Available badge */}
-        <motion.div {...fp(0.05)} className="mb-8 flex items-center gap-2">
+        <motion.div {...fp(0.05)} className="mb-8 flex flex-col sm:flex-row items-center gap-4">
           <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/[0.08] px-4 py-2 font-mono text-[11px] tracking-[0.1em] text-[var(--accent)]">
             <span
               className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]"
