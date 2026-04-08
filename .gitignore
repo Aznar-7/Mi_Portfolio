@@ -12,8 +12,9 @@ dist
 dist-ssr
 *.local
 
-
+docs
 .claude
+.worktrees
 CLAUDE.MD
 .playwright-mcp
 
