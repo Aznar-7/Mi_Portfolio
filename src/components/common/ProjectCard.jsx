@@ -3,22 +3,13 @@ import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/rea
 import { Globe, Cpu, Terminal, Zap } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-function l(value, lang) {
-  if (!value || typeof value === 'string') return value
-  return value[lang] ?? value.es ?? value.en ?? ''
-}
+import { l, STATUS_STYLES } from '@/lib/utils'
 
 const CATEGORY_ICONS = {
   web:     Globe,
   startup: Zap,
   iot:     Cpu,
   cli:     Terminal,
-}
-
-const STATUS_STYLES = {
-  'in-development': { color: '#4ade80' },
-  completed:        { color: '#9b8cff' },
 }
 
 function ImageArea({ project }) {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ExternalLink, Cpu, Globe, Terminal, Zap } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { ProjectCard } from '@/components/common/ProjectCard'
@@ -11,16 +11,7 @@ import { projects } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-function l(v, lang) {
-  if (!v || typeof v === 'string') return v
-  return v[lang] ?? v.es ?? v.en ?? ''
-}
-
-const STATUS_STYLES = {
-  'in-development': { color: '#4ade80' },
-  completed:        { color: '#9b8cff' },
-}
+import { l, STATUS_STYLES } from '@/lib/utils'
 
 function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
   const reduced = useReducedMotion()

@@ -5,16 +5,7 @@ import { X, ChevronLeft, ChevronRight, ExternalLink, Cpu, Terminal } from 'lucid
 import { GitHubIcon } from '@/components/common/SocialIcons'
 import { TechTag } from '@/components/common/TechTag'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-function l(value, lang) {
-  if (!value || typeof value === 'string') return value
-  return value[lang] ?? value.es ?? value.en ?? ''
-}
-
-const STATUS_STYLES = {
-  'in-development': { color: '#4ade80' },
-  completed:        { color: '#9b8cff' },
-}
+import { l, STATUS_STYLES } from '@/lib/utils'
 
 const PLACEHOLDER_ICON_MAP = { Cpu, Terminal }
 
@@ -175,9 +166,9 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                 </button>
 
                 <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-                  {images.map((_, i) => (
+                  {images.map((src, i) => (
                     <button
-                      key={i}
+                      key={src}
                       onClick={() => setActiveIndex(i)}
                       className={`h-1.5 rounded-full transition-all ${
                         i === activeIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/40'
@@ -250,7 +241,7 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                 </p>
                 <div className="flex flex-col gap-2 rounded-lg border border-white/[0.05] bg-white/[0.02] p-4">
                   {project.architecture.map((item, i) => (
-                    <div key={i} className="flex gap-3 text-[12px]">
+                    <div key={typeof item.layer === 'string' ? item.layer : i} className="flex gap-3 text-[12px]">
                       <span className="w-20 shrink-0 font-semibold text-[var(--accent)]">
                         {l(item.layer, lang)}
                       </span>
