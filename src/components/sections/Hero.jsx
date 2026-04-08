@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Mail } from 'lucide-react'
 import BlurText from '@/components/common/BlurText'
 import { MagneticButton } from '@/components/common/MagneticButton'
@@ -61,11 +61,13 @@ function useCounter(target, duration = 1200) {
 function Stat({ value, label }) {
   const [count, ref] = useCounter(value)
   return (
-    <div ref={ref} className="flex flex-col gap-1">
-      <span className="font-mono text-[clamp(1.3rem,2.8vw,1.8rem)] font-bold leading-none tracking-tight text-[var(--text-primary)]">
+    <div ref={ref} className="relative z-10 flex flex-col items-center justify-center gap-1.5 md:items-start md:justify-start">
+      <span className="font-mono text-[clamp(1.5rem,3.5vw,2.2rem)] font-extrabold leading-none tracking-tighter text-[var(--accent)] drop-shadow-[0_0_15px_rgba(124,106,247,0.3)] lg:text-5xl">
         {count}
       </span>
-      <span className="text-[11px] tracking-wide text-[var(--text-muted)]">{label}</span>
+      <span className="font-mono text-[10px] font-semibold tracking-[0.15em] text-[var(--text-muted)] uppercase sm:text-[11px] group-hover:text-[var(--text-secondary)] transition-colors">
+        {label}
+      </span>
     </div>
   )
 }
@@ -150,10 +152,12 @@ export function Hero() {
           </MagneticButton>
         </motion.div>
 
-        {/* Stats row */}
-        <motion.div {...fp(0.48)} className="mb-16 flex gap-8 border-t border-white/[0.06] pt-8 md:gap-14">
+        <motion.div {...fp(0.48)} className="mb-14 flex flex-wrap justify-center gap-6 border-t border-white/[0.04] pt-10 sm:gap-12 md:gap-16">
           {T.stats.map((stat, i) => (
-            <Stat key={i} value={stat.value} label={stat.label} />
+            <div key={i} className="group relative flex flex-col items-center justify-center p-3">
+              <div className="absolute inset-0 scale-50 rounded-2xl bg-[var(--accent)]/5 opacity-0 blur-xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-100" />
+              <Stat value={stat.value} label={stat.label} />
+            </div>
           ))}
         </motion.div>
 

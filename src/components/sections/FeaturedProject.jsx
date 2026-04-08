@@ -1,5 +1,5 @@
 import { ExternalLink, Layers, ArrowRight } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { TechBadge } from '@/components/common/TechBadge'
