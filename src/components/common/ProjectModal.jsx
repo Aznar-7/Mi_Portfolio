@@ -51,6 +51,11 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
       if (e.key === 'Tab') {
         const panel = panelRef.current
         if (!panel) return
+        if (!panel.contains(document.activeElement)) {
+          e.preventDefault()
+          closeButtonRef.current?.focus()
+          return
+        }
         const focusable = panel.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         )

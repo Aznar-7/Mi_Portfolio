@@ -12,6 +12,8 @@ const CATEGORY_ICONS = {
   cli:     Terminal,
 }
 
+const PLACEHOLDER_ICONS = { Cpu, Terminal }
+
 function ImageArea({ project }) {
   if (project.image) {
     return (
@@ -23,7 +25,7 @@ function ImageArea({ project }) {
       />
     )
   }
-  const Icon = project.placeholderIcon === 'Cpu' ? Cpu : Terminal
+  const Icon = PLACEHOLDER_ICONS[project.placeholderIcon] ?? Terminal
   return (
     <div
       className={`flex h-full w-full items-center justify-center bg-gradient-to-b ${project.placeholderGradient ?? 'from-[var(--bg-elevated)] to-transparent'}`}

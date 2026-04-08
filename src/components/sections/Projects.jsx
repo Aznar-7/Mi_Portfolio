@@ -95,7 +95,7 @@ function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
 
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
             <p className="mb-1.5 font-mono text-[8px] tracking-[0.14em] text-[var(--text-muted)] uppercase">
-              Stack
+              {T.stack ?? 'Stack'}
             </p>
             <div className="flex flex-col gap-1">
               {(project.architecture ?? []).slice(0, 4).map((item, i) => (
