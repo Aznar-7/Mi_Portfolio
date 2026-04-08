@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
-import { ExternalLink } from 'lucide-react'
-import { GitHubIcon } from '@/components/common/SocialIcons'
+import { Globe, Cpu, Terminal, Zap } from 'lucide-react'
+import { TechTag } from '@/components/common/TechTag'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 function l(value, lang) {
@@ -9,16 +9,43 @@ function l(value, lang) {
   return value[lang] ?? value.es ?? value.en ?? ''
 }
 
-const STATUS_LABELS = {
+const CATEGORY_ICONS = {
+  web:     Globe,
+  startup: Zap,
+  iot:     Cpu,
+  cli:     Terminal,
+}
+
+const STATUS_STYLES = {
   'in-development': { color: '#4ade80' },
   completed:        { color: '#9b8cff' },
 }
 
-export function ProjectCard({ project, lang = 'es', T = {} }) {
+function ImageArea({ project }) {
+  if (project.image) {
+    return (
+      <img
+        src={project.image}
+        alt={project.title}
+        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+        loading="lazy"
+      />
+    )
+  }
+  const Icon = project.placeholderIcon === 'Cpu' ? Cpu : Terminal
+  return (
+    <div
+      className={`flex h-full w-full items-center justify-center bg-gradient-to-b ${project.placeholderGradient ?? 'from-[var(--bg-elevated)] to-transparent'}`}
+    >
+      <Icon size={40} className="text-white/20" />
+    </div>
+  )
+}
+
+export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
   const reduced = useReducedMotion()
   const cardRef = useRef(null)
 
-  // Mouse tracking for 3D tilt + spotlight
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const rotateX = useSpring(useMotionValue(0), { stiffness: 200, damping: 25 })
@@ -41,85 +68,86 @@ export function ProjectCard({ project, lang = 'es', T = {} }) {
     rotateX.set(0); rotateY.set(0)
   }
 
-  const status = STATUS_LABELS[project.status]
-  const statusLabel = l({ es: project.status === 'in-development' ? 'En desarrollo' : 'Completado', en: project.status === 'in-development' ? 'In development' : 'Completed' }, lang)
+  const status = STATUS_STYLES[project.status]
+  const statusLabel = T.status?.[project.status] ?? project.status
+  const CategoryIcon = CATEGORY_ICONS[project.category]
 
   return (
     <motion.div
       ref={cardRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
+      onClick={onClick}
       style={{
         rotateX: reduced ? 0 : rotateX,
         rotateY: reduced ? 0 : rotateY,
         transformPerspective: 800,
         transformStyle: 'preserve-3d',
+        cursor: 'pointer',
       }}
       whileHover={reduced ? {} : { y: -6 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--bg-surface)]/90 shadow-lg backdrop-blur-md transition-[border-color] hover:border-[var(--accent)]/30"
+      className="group cursor-target relative flex h-full flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--bg-surface)]/90 shadow-lg backdrop-blur-md transition-[border-color] hover:border-[var(--accent)]/30"
     >
       {/* Mouse spotlight */}
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background: useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(124,106,247,0.1), transparent 70%)`,
+          background: useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(124,106,247,0.08), transparent 70%)`,
         }}
       />
 
-      <div className="relative z-10 flex h-full flex-col">
-        {/* Header */}
-        <div className="flex-1 p-5 pb-4">
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <h3 className="text-base font-semibold leading-tight tracking-tight text-[var(--text-primary)]">
-              {project.title}
-            </h3>
-            {status && (
-              <span
-                className="shrink-0 rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                style={{ color: status.color, backgroundColor: `${status.color}14`, border: `1px solid ${status.color}28` }}
-              >
-                {statusLabel}
-              </span>
-            )}
-          </div>
-          <p className="line-clamp-3 text-[13px] leading-relaxed text-[var(--text-secondary)]">
-            {l(project.description, lang)}
-          </p>
+      {/* Image area */}
+      <div className="relative h-[180px] overflow-hidden">
+        <ImageArea project={project} />
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-medium text-white backdrop-blur-sm">
+            {T.view_details ?? 'Ver detalles'} →
+          </span>
         </div>
 
-        {/* Footer */}
-        <div className="flex flex-col gap-4 border-t border-white/[0.05] p-5">
-          <div className="flex flex-wrap gap-1.5">
-            {project.tech.map((t) => (
-              <span key={t} className="rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] text-[var(--text-muted)] ring-1 ring-white/[0.06]">
-                {t}
-              </span>
-            ))}
-          </div>
+        {/* Category icon — bottom left */}
+        {CategoryIcon && (
+          <span className="absolute bottom-2.5 left-3 flex h-6 w-6 items-center justify-center rounded-md bg-black/50 backdrop-blur-sm">
+            <CategoryIcon size={12} className="text-white/70" />
+          </span>
+        )}
 
-          <div className="flex flex-wrap gap-2">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/8 px-3 py-1.5 text-[12px] font-medium text-[var(--accent-hover)] transition-all hover:bg-[var(--accent)]/20"
-              >
-                <ExternalLink size={12} /> {T.live ?? 'Live'}
-              </a>
-            )}
-            {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:border-white/10 hover:text-white"
-              >
-                <GitHubIcon size={12} /> {T.code ?? 'Code'}
-              </a>
-            )}
-          </div>
+        {/* Status badge — bottom right */}
+        {status && (
+          <span
+            className="absolute bottom-2.5 right-3 rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+            style={{
+              color: status.color,
+              backgroundColor: `${status.color}18`,
+              border: `1px solid ${status.color}30`,
+            }}
+          >
+            {statusLabel}
+          </span>
+        )}
+      </div>
+
+      {/* Card content */}
+      <div className="relative z-10 flex flex-1 flex-col p-5">
+        <h3 className="mb-1 text-base font-semibold leading-tight tracking-tight text-[var(--text-primary)]">
+          {project.title}
+        </h3>
+        <p className="mb-4 line-clamp-1 text-[12px] text-[var(--text-muted)]">
+          {l(project.tagline, lang)}
+        </p>
+
+        <div className="mt-auto flex flex-wrap gap-1.5 border-t border-white/[0.05] pt-4">
+          {project.tech.slice(0, 4).map((t) => (
+            <TechTag key={t} name={t} />
+          ))}
+          {project.tech.length > 4 && (
+            <span className="rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] text-[var(--text-muted)] ring-1 ring-white/[0.06]">
+              +{project.tech.length - 4}
+            </span>
+          )}
         </div>
       </div>
     </motion.div>
