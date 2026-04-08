@@ -79,9 +79,9 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
     <AnimatePresence>
       <motion.div
         key="modal-backdrop"
-        initial={{ opacity: 0 }}
+        initial={reduced ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        exit={reduced ? {} : { opacity: 0 }}
         transition={{ duration: 0.2 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
         style={{ backgroundColor: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(8px)' }}
