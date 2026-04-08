@@ -102,17 +102,16 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
   const statusLabel = T.status?.[project.status] ?? project.status
 
   return createPortal(
-    <AnimatePresence>
-      <motion.div
-        key="modal-backdrop"
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={reduced ? {} : { opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-        style={{ backgroundColor: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(8px)' }}
-        onClick={onClose}
-      >
+    <motion.div
+      key="modal-backdrop"
+      initial={reduced ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={reduced ? {} : { opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+      style={{ backgroundColor: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(8px)' }}
+      onClick={onClose}
+    >
         <motion.div
           key="modal-panel"
           initial={reduced ? false : { opacity: 0, scale: 0.95 }}
@@ -291,8 +290,7 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
             </div>
           </div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>,
+    </motion.div>,
     document.body,
   )
 }
