@@ -48,8 +48,12 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 200, damping: 25 })
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 200, damping: 25 })
+  const rawRotateX = useMotionValue(0)
+  const rawRotateY = useMotionValue(0)
+  const rotateX = useSpring(rawRotateX, { stiffness: 200, damping: 25 })
+  const rotateY = useSpring(rawRotateY, { stiffness: 200, damping: 25 })
+
+  const spotlightBg = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(124,106,247,0.08), transparent 70%)`
 
   function onMouseMove(e) {
     if (reduced) return
@@ -59,13 +63,13 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
     const cy = rect.top + rect.height / 2
     mouseX.set(e.clientX - rect.left)
     mouseY.set(e.clientY - rect.top)
-    rotateX.set(-(e.clientY - cy) / 14)
-    rotateY.set((e.clientX - cx) / 14)
+    rawRotateX.set(-(e.clientY - cy) / 14)
+    rawRotateY.set((e.clientX - cx) / 14)
   }
 
   function onMouseLeave() {
     mouseX.set(0); mouseY.set(0)
-    rotateX.set(0); rotateY.set(0)
+    rawRotateX.set(0); rawRotateY.set(0)
   }
 
   const status = STATUS_STYLES[project.status]
@@ -93,7 +97,7 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background: useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(124,106,247,0.08), transparent 70%)`,
+          background: spotlightBg,
         }}
       />
 
