@@ -45,6 +45,7 @@ export const translations = {
       prev:         'Anterior',
       next:         'Siguiente',
       slide:        'Imagen',
+      featured:     'Destacado',
       status: {
         'in-development': 'En desarrollo',
         completed:        'Completado',
@@ -119,6 +120,7 @@ export const translations = {
       prev:         'Previous',
       next:         'Next',
       slide:        'Image',
+      featured:     'Featured',
       status: {
         'in-development': 'In development',
         completed:        'Completed',

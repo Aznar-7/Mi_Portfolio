@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ChevronLeft, ChevronRight, ExternalLink, Cpu, Terminal } from 'lucide-react'
@@ -42,6 +42,8 @@ function CarouselSlide({ src, placeholderGradient, placeholderIcon, title }) {
 export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
   const reduced = useReducedMotion()
   const [activeIndex, setActiveIndex] = useState(0)
+  const closeButtonRef = useRef(null)
+  const panelRef = useRef(null)
 
   const images = project?.gallery?.length
     ? project.gallery
@@ -52,9 +54,29 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
 
   const handleKey = useCallback(
     (e) => {
-      if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowLeft')  setActiveIndex((i) => Math.max(0, i - 1))
-      if (e.key === 'ArrowRight') setActiveIndex((i) => Math.min(images.length - 1, i + 1))
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key === 'ArrowLeft')  { setActiveIndex((i) => Math.max(0, i - 1)); return }
+      if (e.key === 'ArrowRight') { setActiveIndex((i) => Math.min(images.length - 1, i + 1)); return }
+      if (e.key === 'Tab') {
+        const panel = panelRef.current
+        if (!panel) return
+        const focusable = panel.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault()
+            last?.focus()
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault()
+            first?.focus()
+          }
+        }
+      }
     },
     [onClose, images.length],
   )
@@ -69,6 +91,10 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
   }, [handleKey])
 
   useEffect(() => { setActiveIndex(0) }, [project?.id])
+
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [])
 
   if (!project) return null
 
@@ -95,12 +121,14 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/[0.08] bg-[var(--bg-elevated)] shadow-2xl"
           onClick={(e) => e.stopPropagation()}
+          ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-label={project.title}
+          aria-labelledby="modal-title"
         >
           {/* Close button */}
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             className="cursor-target absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.05] text-[var(--text-secondary)] transition-colors hover:bg-white/[0.1] hover:text-white"
             aria-label={T.close ?? 'Cerrar'}
@@ -181,7 +209,7 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
               )}
               {project.featured && (
                 <span className="rounded px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)] ring-1 ring-[var(--accent)]/30">
-                  Featured
+                  {T.featured ?? 'Featured'}
                 </span>
               )}
               {project.liveUrl && (
@@ -198,7 +226,7 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
               )}
             </div>
 
-            <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--text-primary)]">
+            <h2 id="modal-title" className="mb-3 text-xl font-bold tracking-tight text-[var(--text-primary)]">
               {project.title}
             </h2>
             <p className="mb-6 text-[13px] leading-relaxed text-[var(--text-secondary)]">
