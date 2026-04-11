@@ -48,10 +48,7 @@ function buildFS(lang) {
     ],
     'Home/Projects': projects.map(p => ({ name: p.id, type: 'folder', label: p.title })),
     'Home/Documents': [
-      {
-        name: 'resume.pdf', type: 'file',
-        content: `# ${site.name} — ${site.role}\n\nEmail: ${site.email}\nLinkedIn: ${site.linkedin}\nGitHub: ${site.github}\n\n## Experiencia\n${experience.map(e => `\n${l(e.role)} @ ${e.company}\n${l(e.period)}\n${(l(e.impact) || []).map(i => `- ${i}`).join('\n')}`).join('\n')}\n\n## Skills\n${skillsData.map(s => s.name).join(', ')}`,
-      },
+      { name: 'resume.pdf', type: 'file', label: 'Resume (PDF)', isPdf: true },
       {
         name: 'about.txt', type: 'file',
         content: `Full Stack Developer con experiencia real en sistemas corporativos.\n\nStack: React · Django · PostgreSQL · Oracle Cloud\nFormación: Ingeniería en Sistemas — UTN\nUbicación: Argentina`,
@@ -296,6 +293,8 @@ function FilesApp({ onOpenFile, lang }) {
     if (item.type === 'folder') {
       if (!fs[next]) fs[next] = [];
       setPath(next); setSelected(null);
+    } else if (item.isPdf || item.name.endsWith('.pdf')) {
+      window.open('/ResumeVicenteAznar.pdf', '_blank');
     } else if (item.content) {
       onOpenFile(item);
     }
@@ -360,7 +359,9 @@ function FilesApp({ onOpenFile, lang }) {
             >
               {f.type === 'folder'
                 ? <FolderOpen size={42} className="text-[#E95420]" strokeWidth={1} />
-                : <File size={42} className="text-[#519aba]" strokeWidth={1} />
+                : f.isPdf || f.name?.endsWith('.pdf')
+                  ? <File size={42} className="text-[#e25050]" strokeWidth={1} />
+                  : <File size={42} className="text-[#519aba]" strokeWidth={1} />
               }
               <span className="text-white/70 text-[11px] font-medium text-center leading-tight max-w-full truncate w-full text-center">
                 {f.label || f.name}
@@ -385,6 +386,7 @@ function BrowserApp({ lang }) {
   const TABS = [
     { id: 'projects',  label: 'Proyectos' },
     { id: 'skills',    label: 'Skills' },
+    { id: 'cv',        label: 'CV / Resume' },
     { id: 'contact',   label: 'Contacto' },
   ];
 
@@ -470,6 +472,24 @@ function BrowserApp({ lang }) {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {tab === 'cv' && (
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-100 border-b border-gray-200 flex-shrink-0">
+              <span className="text-xs text-gray-500 font-mono">ResumeVicenteAznar.pdf</span>
+              <a href="/ResumeVicenteAznar.pdf" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-800 font-medium"
+              >
+                <ExternalLink size={11} /> Abrir en nueva pestaña
+              </a>
+            </div>
+            <iframe
+              src="/ResumeVicenteAznar.pdf"
+              className="flex-1 w-full border-0"
+              title="Resume Vicente Aznar"
+            />
           </div>
         )}
 

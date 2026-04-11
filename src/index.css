@@ -64,9 +64,18 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124,106,247,0.18) transparent;
   }
 
   body { margin: 0; background-color: var(--bg-base); }
+
+  /* ── Custom scrollbar (WebKit) ──────────────────────────── */
+  ::-webkit-scrollbar               { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track         { background: transparent; }
+  ::-webkit-scrollbar-thumb         { background: rgba(124,106,247,0.18); border-radius: 100px; }
+  ::-webkit-scrollbar-thumb:hover   { background: rgba(124,106,247,0.38); }
+  ::-webkit-scrollbar-corner        { background: transparent; }
 
   ::selection { background: var(--accent-glow); color: var(--accent-hover); }
 

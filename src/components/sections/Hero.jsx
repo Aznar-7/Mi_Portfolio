@@ -29,20 +29,20 @@ function GitHubLive({ username }) {
 }
 
 function useCounter(target, duration = 1200) {
-  const [val, setVal] = useState(0)
+  const numeric = parseInt(target)
+  const isNum   = !isNaN(numeric)
+  const [val, setVal] = useState(isNum ? 0 : target)
   const [started, setStarted] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStarted(true) }, { threshold: 0.5 })
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStarted(true) }, { threshold: 0.3 })
     if (ref.current) obs.observe(ref.current)
     return () => obs.disconnect()
   }, [])
 
   useEffect(() => {
-    if (!started) return
-    const numeric = parseInt(target)
-    if (isNaN(numeric)) { setVal(target); return }
+    if (!started || !isNum) return
     const suffix = target.replace(String(numeric), '')
     let start = null
     const step = (ts) => {
@@ -53,7 +53,7 @@ function useCounter(target, duration = 1200) {
       if (t < 1) requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
-  }, [started, target, duration])
+  }, [started, target, duration, isNum, numeric])
 
   return [val, ref]
 }
@@ -61,11 +61,11 @@ function useCounter(target, duration = 1200) {
 function Stat({ value, label }) {
   const [count, ref] = useCounter(value)
   return (
-    <div ref={ref} className="relative z-10 flex flex-col items-center justify-center gap-1.5 md:items-start md:justify-start">
-      <span className="font-mono text-[clamp(1.5rem,3.5vw,2.2rem)] font-extrabold leading-none tracking-tighter text-[var(--accent)] drop-shadow-[0_0_15px_rgba(124,106,247,0.3)] lg:text-5xl">
+    <div ref={ref} className="flex flex-col items-center gap-1.5">
+      <span className="font-mono text-[2rem] sm:text-[2.25rem] font-extrabold leading-none tracking-tighter text-[var(--accent)] drop-shadow-[0_0_18px_rgba(124,106,247,0.35)]">
         {count}
       </span>
-      <span className="font-mono text-[10px] font-semibold tracking-[0.15em] text-[var(--text-muted)] uppercase sm:text-[11px] group-hover:text-[var(--text-secondary)] transition-colors">
+      <span className="font-mono text-[10px] font-semibold tracking-[0.16em] text-[var(--text-muted)] uppercase">
         {label}
       </span>
     </div>
@@ -165,29 +165,33 @@ export function Hero() {
           </MagneticButton>
         </motion.div>
 
-        <motion.div {...fp(0.48)} className="mb-14 flex flex-wrap justify-center gap-6 border-t border-white/[0.04] pt-10 sm:gap-12 md:gap-16">
-          {T.stats.map((stat, i) => (
-            <div key={i} className="group relative flex flex-col items-center justify-center p-3">
-              <div className="absolute inset-0 scale-50 rounded-2xl bg-[var(--accent)]/5 opacity-0 blur-xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-100" />
-              <Stat value={stat.value} label={stat.label} />
-            </div>
-          ))}
+        {/* Stats row */}
+        <motion.div {...fp(0.48)} className="mb-14 w-full max-w-xs sm:max-w-sm">
+          <div className="w-full h-px bg-white/[0.05] mb-8" />
+          <div className="flex items-center justify-center">
+            {T.stats.map((stat, i) => (
+              <div key={i} className="flex items-center">
+                {i > 0 && <div className="self-stretch w-px bg-white/[0.07] mx-6 sm:mx-9 my-1" />}
+                <Stat value={stat.value} label={stat.label} />
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator — mouse icon */}
         <motion.button
-          {...fp(0.56)}
+          {...fp(0.58)}
           onClick={() => scrollTo('featured')}
-          className="group flex items-center gap-3"
+          className="group flex flex-col items-center gap-2.5"
           style={{ background: 'none', border: 'none', padding: 0 }}
         >
-          <span className="font-mono text-[10px] tracking-[0.18em] text-[var(--text-muted)] uppercase transition-colors group-hover:text-[var(--accent)]">
+          <span className="font-mono text-[9px] tracking-[0.22em] text-[var(--text-muted)] uppercase transition-colors group-hover:text-[var(--accent)]">
             {T.scroll}
           </span>
-          <div className="relative h-8 w-px overflow-hidden bg-white/[0.08]">
+          <div className="relative w-[18px] h-[30px] rounded-[9px] border border-white/[0.18] group-hover:border-[var(--accent)]/50 transition-colors flex justify-center pt-[5px] overflow-hidden">
             <div
-              className="absolute inset-x-0 top-0 h-1/2 bg-[var(--accent)]"
-              style={{ opacity: 0.7, animation: reduced ? 'none' : 'scroll-line 1.8s ease-in-out infinite' }}
+              className="w-px h-[7px] rounded-full bg-[var(--accent)]"
+              style={{ animation: reduced ? 'none' : 'scroll-wheel 1.8s ease-in-out infinite' }}
             />
           </div>
         </motion.button>
