@@ -286,7 +286,7 @@ const TargetCursor = ({
       }
 
       spinTl.current?.kill();
-      document.body.style.cursor = originalCursor;
+      document.body.style.cursor = 'auto'; // Force 'auto' instead of '' just to be safe
 
       isActiveRef.current = false;
       targetCornerPositionsRef.current = null;

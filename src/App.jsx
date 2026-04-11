@@ -1,10 +1,13 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
+import { AnimatePresence } from 'motion/react'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import TargetCursor from '@/components/common/TargetCursor'
 import Threads from '@/components/background/Threads'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
+import { CommandPalette } from '@/components/layout/CommandPalette'
+import { UbuntuOS } from '@/components/layout/UbuntuOS'
 import { Hero } from '@/components/sections/Hero'
 
 const FeaturedProject = lazy(() =>
@@ -31,7 +34,7 @@ const CubesSection = lazy(() =>
 
 function SectionSkeleton({ cols = 2, rows = 2 }) {
   return (
-    <div className="mx-auto max-w-6xl animate-pulse px-6 py-24">
+    <div className="mx-auto max-w-6xl animate-pulse px-5 py-14 sm:px-6 sm:py-16 lg:py-24">
       <div className="mb-3 h-2.5 w-16 rounded-full bg-white/[0.04]" />
       <div className="mb-2 h-8 w-48 rounded-lg bg-white/[0.04]" />
       <div className="mb-14 h-4 w-72 rounded bg-white/[0.03]" />
@@ -45,15 +48,29 @@ function SectionSkeleton({ cols = 2, rows = 2 }) {
 }
 
 export default function App() {
+  const [ubuntuOpen, setUbuntuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenUbuntu = () => setUbuntuOpen(true);
+    document.addEventListener('open-ubuntu', handleOpenUbuntu);
+    return () => document.removeEventListener('open-ubuntu', handleOpenUbuntu);
+  }, []);
+
   return (
     <LanguageProvider>
-      <TargetCursor 
-        spinDuration={2}
-        hideDefaultCursor={true}
-        parallaxOn={true}
-        hoverDuration={0.2}
-        targetSelector="a, button, .cursor-target, [role='button']"
-      />
+      <AnimatePresence>
+        {ubuntuOpen && <UbuntuOS onClose={() => setUbuntuOpen(false)} />}
+      </AnimatePresence>
+      <CommandPalette />
+      {!ubuntuOpen && (
+        <TargetCursor 
+          spinDuration={2}
+          hideDefaultCursor={true}
+          parallaxOn={true}
+          hoverDuration={0.2}
+          targetSelector="a, button, .cursor-target, [role='button']"
+        />
+      )}
       <ScrollProgress />
       <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />
       <Navbar />

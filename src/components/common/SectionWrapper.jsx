@@ -16,9 +16,8 @@ export function SectionWrapper({ id, children, className = '' }) {
         zIndex: 10,
         maxWidth: '1152px',
         margin: '0 auto',
-        padding: '96px 24px',
       }}
-      className={className}
+      className={`px-5 py-14 sm:px-6 sm:py-16 lg:py-24 ${className}`}
     >
       {children}
     </motion.section>

@@ -14,7 +14,7 @@ export function Contact() {
 
   return (
     <SectionWrapper id="contact">
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[var(--bg-surface)] px-8 py-16 text-center shadow-2xl md:px-16 md:py-24">
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[var(--bg-surface)] px-5 py-12 text-center shadow-2xl sm:px-8 sm:py-16 md:px-16 md:py-24">
         {/* Radial glow */}
         <div
           className="pointer-events-none absolute inset-0"
@@ -58,18 +58,18 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col items-center gap-4"
+            className="flex flex-col items-center gap-4 w-full"
           >
             <a
               href={`mailto:${site.email}`}
-              className="group inline-flex items-center gap-3 rounded-xl bg-[var(--accent)] px-8 py-4 text-[15px] font-semibold text-white transition-all hover:-translate-y-1 hover:bg-[var(--accent-hover)] hover:shadow-[0_14px_36px_rgba(124,106,247,0.38)]"
+              className="group inline-flex items-center justify-center gap-3 rounded-xl bg-[var(--accent)] px-5 py-4 sm:px-8 text-[13px] sm:text-[15px] font-semibold text-white transition-all hover:-translate-y-1 hover:bg-[var(--accent-hover)] hover:shadow-[0_14px_36px_rgba(124,106,247,0.38)] max-w-full overflow-hidden"
             >
-              <Mail size={17} />
-              {site.email}
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              <Mail size={17} className="shrink-0" />
+              <span className="truncate">{site.email}</span>
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 shrink-0" />
             </a>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <a
                 href={site.github}
                 target="_blank"

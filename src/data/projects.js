@@ -44,6 +44,18 @@ export const projects = [
         },
       },
     ],
+    metrics: [
+      {
+        label: { es: 'Reducción de carga', en: 'Load time reduced' },
+        value: '40%',
+        icon: 'Zap'
+      },
+      {
+        label: { es: 'Usuarios activos', en: 'Active users' },
+        value: '+1.2K',
+        icon: 'Users'
+      }
+    ],
     image: '/images/projects/utnhub/cover.png',
     gallery: [
       '/images/projects/utnhub/screen-1.png',

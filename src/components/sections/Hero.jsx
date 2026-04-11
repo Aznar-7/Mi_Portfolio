@@ -130,7 +130,7 @@ export function Hero() {
         </motion.p>
 
         {/* CTA buttons */}
-        <motion.div {...fp(0.38)} className="mb-16 flex flex-wrap items-center gap-3">
+        <motion.div {...fp(0.38)} className="mb-16 flex flex-wrap justify-center items-center gap-3">
           <MagneticButton strength={0.28} radius={80}>
             <button
               onClick={() => scrollTo('featured')}
@@ -148,6 +148,19 @@ export function Hero() {
               className="flex items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.02] px-7 py-3.5 text-sm font-medium text-[var(--text-secondary)] backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
             >
               <Mail size={15} /> {T.cta_secondary}
+            </button>
+          </MagneticButton>
+          
+          <MagneticButton strength={0.25} radius={80}>
+            <button
+              onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
+              className="flex items-center gap-2 rounded-xl border border-[#E95420]/30 bg-[#E95420]/10 px-7 py-3.5 text-sm font-medium text-[#ff9066] backdrop-blur-sm transition-all hover:border-[#E95420]/60 hover:bg-[#E95420]/20 hover:text-white"
+              title="Boot Ubuntu OS Simulation"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12,0C5.37,0,0,5.37,0,12c0,6.63,5.37,12,12,12c6.63,0,12-5.37,12-12C24,5.37,18.63,0,12,0z M19.46,15.68 c-0.67,1.15-2.18,1.55-3.33,0.88c-1.92-1.11-4.32-1.11-6.25,0c-1.15,0.67-2.65,0.27-3.33-0.88c-0.67-1.15-0.27-2.65,0.88-3.33 c2.88-1.66,6.48-1.66,9.36,0C19.74,13.03,20.13,14.53,19.46,15.68z M12,3.31c4.8,0,8.69,3.89,8.69,8.69s-3.89,8.69-8.69,8.69 S3.31,16.8,3.31,12S7.2,3.31,12,3.31zM6.92,12c0-2.81,2.27-5.08,5.08-5.08s5.08,2.27,5.08,5.08s-2.27,5.08-5.08,5.08 S6.92,14.81,6.92,12z"/>
+              </svg>
+              Boot OS
             </button>
           </MagneticButton>
         </motion.div>

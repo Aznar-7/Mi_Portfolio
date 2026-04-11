@@ -71,27 +71,30 @@ export function Experience() {
       <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
       <div className="relative mt-16 max-w-5xl">
-        {/* Professional Experience */}
-        <div className="mb-20">
-          {experience.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="work" index={i} />
-          ))}
-        </div>
+        {/* Timeline Column */}
+        <div className="relative">
+          {/* Professional Experience */}
+          <div className="mb-20">
+            {experience.map((item, i) => (
+              <ExperienceCard key={i} item={item} type="work" index={i} />
+            ))}
+          </div>
 
-        {/* Academic section header */}
-        <div className="mb-12 flex items-center gap-6">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/[0.08] md:flex-none md:w-[180px] md:to-[var(--accent)]/50" />
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] mix-blend-screen">
-            {T.academic_divider}
-          </span>
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-white/[0.08] to-transparent md:from-[var(--accent)]/50" />
-        </div>
+          {/* Academic section header */}
+          <div className="mb-12 flex items-center gap-6">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/[0.08] md:flex-none md:w-[180px] md:to-[var(--accent)]/50" />
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] mix-blend-screen">
+              {T.academic_divider}
+            </span>
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-white/[0.08] to-transparent md:from-[var(--accent)]/50" />
+          </div>
 
-        {/* Academic Experience */}
-        <div>
-          {academic.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="academic" index={i} />
-          ))}
+          {/* Academic Experience */}
+          <div>
+            {academic.map((item, i) => (
+              <ExperienceCard key={i} item={item} type="academic" index={i} />
+            ))}
+          </div>
         </div>
       </div>
     </SectionWrapper>

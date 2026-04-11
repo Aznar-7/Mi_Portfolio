@@ -87,7 +87,9 @@
 
   /* ── Custom cursor — only on pointer/mouse devices ─────── */
   @media (pointer: fine) {
-    *, *::before, *::after {
+    body:not(.ubuntu-mode) *, 
+    body:not(.ubuntu-mode) *::before, 
+    body:not(.ubuntu-mode) *::after {
       cursor: none !important;
     }
   }

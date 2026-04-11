@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import './Cubes.css';
 
@@ -184,8 +184,23 @@ const Cubes = ({
     [rippleOnClick, gridSize, faceColor, rippleColor, rippleSpeed]
   );
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Performance optimization: Pause auto-animation when outside viewport
   useEffect(() => {
-    if (!autoAnimate || !sceneRef.current) return;
+    if (!sceneRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(sceneRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!autoAnimate || !sceneRef.current || !isVisible) return;
     simPosRef.current = {
       x: Math.random() * gridSize,
       y: Math.random() * gridSize
@@ -217,7 +232,7 @@ const Cubes = ({
         cancelAnimationFrame(simRAFRef.current);
       }
     };
-  }, [autoAnimate, gridSize, tiltAt]);
+  }, [autoAnimate, gridSize, tiltAt, isVisible]);
 
   useEffect(() => {
     const el = sceneRef.current;

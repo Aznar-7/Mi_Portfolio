@@ -3,17 +3,17 @@ import { SectionWrapper } from '../common/SectionWrapper';
 
 export const CubesSection = () => {
   return (
-    <SectionWrapper id="interact" className="py-20 overflow-hidden mt-12 mb-12">
-      <div className="flex flex-col items-center justify-center relative w-full h-full min-h-[500px] z-10 p-6">
-        <h2 className="text-3xl md:text-5xl font-bold mb-10 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+    <SectionWrapper id="interact" className="overflow-hidden">
+      <div className="flex flex-col items-center justify-center relative w-full h-full z-10">
+        <h2 className="text-3xl md:text-5xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
           Interactúa
         </h2>
-        <p className="text-white/60 mb-12 max-w-lg text-center text-lg">
+        <p className="text-white/60 mb-10 max-w-lg text-center text-base sm:text-lg px-2">
           Arrastra el cursor sobre los cubos o haz click para crear un efecto de ondulación interactivo.
         </p>
-        
-        <div style={{ width: '100%', maxWidth: '600px', height: '400px', display: 'flex', justifyItems: 'center', alignItems: 'center' }} className="mx-auto flex justify-center items-center">
-          <Cubes 
+
+        <div className="w-full mx-auto flex justify-center items-center" style={{ maxWidth: '600px', height: 'clamp(260px, 55vw, 400px)' }}>
+          <Cubes
             gridSize={8}
             maxAngle={45}
             radius={3}

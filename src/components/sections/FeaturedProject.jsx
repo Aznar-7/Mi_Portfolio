@@ -35,7 +35,7 @@ export function FeaturedProject() {
         <div className="absolute inset-x-0 top-0 h-[1px] w-full bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent opacity-50" />
         
         {/* Left: Visual/Image Content (New) */}
-        <div className="relative z-10 flex flex-col justify-between border-b border-white/[0.05] p-8 lg:border-b-0 lg:border-r md:p-12">
+        <div className="relative z-10 flex flex-col justify-between border-b border-white/[0.05] p-5 sm:p-8 lg:border-b-0 lg:border-r md:p-12">
           
           <div>
             <motion.div 
@@ -106,7 +106,7 @@ export function FeaturedProject() {
         </div>
 
         {/* Right: Architecture & Visuals */}
-        <div className="relative z-10 flex flex-col bg-black/40 p-8 md:p-12">
+        <div className="relative z-10 flex flex-col bg-black/40 p-5 sm:p-8 md:p-12">
           
           {/* Subtle Image Integration */}
           {featuredProject.image && (
