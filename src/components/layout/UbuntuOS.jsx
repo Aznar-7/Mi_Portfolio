@@ -7,7 +7,8 @@ import {
   ChevronLeft, Info, Palette, HardDrive, ExternalLink,
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
-  Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell
+  Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
+  Moon
 } from 'lucide-react';
 import React from 'react';
 import { useLang } from '@/contexts/LanguageContext';
@@ -1718,6 +1719,117 @@ function SettingsApp({ wallpaper, onWallpaper }) {
 }
 
 // ── Top Bar ───────────────────────────────────────────────────────
+// ── Power Menu (GNOME-style) ──────────────────────────────────────
+function PowerMenu({ onShutdown, onRestart, onSuspend, onCancel }) {
+  // Escape closes, Enter confirms focused button
+  useEffect(() => {
+    const handler = e => { if (e.key === 'Escape') onCancel() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onCancel])
+
+  const actions = [
+    { label: 'Suspender',  icon: Moon,      onClick: onSuspend,  color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.28)' },
+    { label: 'Reiniciar',  icon: RefreshCw, onClick: onRestart,  color: '#a3e635', bg: 'rgba(163,230,53,0.10)',  border: 'rgba(163,230,53,0.25)' },
+    { label: 'Apagar',     icon: Power,     onClick: onShutdown, color: '#E95420', bg: 'rgba(233,84,32,0.12)',   border: 'rgba(233,84,32,0.30)' },
+  ]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="absolute inset-0 z-[5000] flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(14px)' }}
+      onClick={onCancel}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.88, y: 20 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col items-center gap-8 rounded-3xl border border-white/[0.1] bg-[#1a1a2e]/90 px-10 py-10 shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Ubuntu logo mark */}
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-10 w-10 rounded-full border-2 border-[#E95420]/60 flex items-center justify-center">
+            <div className="h-5 w-5 rounded-full bg-[#E95420]/80" />
+          </div>
+          <p className="font-mono text-[11px] tracking-[0.22em] text-white/40 uppercase">Ubuntu 22.04 LTS</p>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-5">
+          {actions.map(({ label, icon: Icon, onClick, color, bg, border }) => (
+            <button
+              key={label}
+              onClick={onClick}
+              className="group flex flex-col items-center gap-3 rounded-2xl px-6 py-5 transition-all duration-200"
+              style={{ background: bg, border: `1px solid ${border}` }}
+            >
+              <div
+                className="flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-200 group-hover:scale-110"
+                style={{ background: `${color}22`, color }}
+              >
+                <Icon size={26} strokeWidth={1.6} />
+              </div>
+              <span className="font-mono text-[11px] font-semibold tracking-[0.12em] text-white/70 uppercase group-hover:text-white transition-colors">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Cancel */}
+        <button
+          onClick={onCancel}
+          className="font-mono text-[10px] tracking-[0.18em] text-white/30 uppercase hover:text-white/60 transition-colors"
+        >
+          Cancelar (Esc)
+        </button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// ── Suspend screen ────────────────────────────────────────────────
+function SuspendScreen({ onWake }) {
+  useEffect(() => {
+    const handler = () => onWake()
+    window.addEventListener('keydown',    handler)
+    window.addEventListener('pointerdown', handler)
+    return () => {
+      window.removeEventListener('keydown',    handler)
+      window.removeEventListener('pointerdown', handler)
+    }
+  }, [onWake])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6 }}
+      className="absolute inset-0 z-[5000] flex flex-col items-center justify-center bg-black"
+    >
+      {/* Breathing dot */}
+      <motion.div
+        className="mb-6 h-2 w-2 rounded-full bg-white/30"
+        animate={{ opacity: [0.15, 0.5, 0.15] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <p className="font-mono text-[11px] tracking-[0.35em] text-white/20 uppercase">
+        Suspendido
+      </p>
+      <p className="mt-3 font-mono text-[9px] tracking-[0.2em] text-white/10 uppercase">
+        Presione cualquier tecla para despertar
+      </p>
+    </motion.div>
+  )
+}
+
 function TopBar({ time, date, onPower }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
@@ -1761,6 +1873,8 @@ export function UbuntuOS({ onClose }) {
   const [zMap, setZMap] = useState({ terminal:13, files:12, browser:11, settings:10, editor:9, monitor:8, snake:7, mines:6, calc:5, tetris:4, notes:3, doom:2, paint:1 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
+  const [powerMenu,  setPowerMenu]  = useState(false);
+  const [suspended,  setSuspended]  = useState(false);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [notifs, setNotifs] = useState([]);
@@ -1799,6 +1913,15 @@ export function UbuntuOS({ onClose }) {
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
   const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
+
+  // Power actions
+  const handleRestart = () => {
+    setPowerMenu(false);
+    setScreen('boot');
+    setWins(p => Object.fromEntries(Object.keys(p).map(k => [k, { ...p[k], open: false, min: false, max: false }])));
+  };
+  const handleSuspend = () => { setPowerMenu(false); setSuspended(true); };
+  const handleWake    = () => setSuspended(false);
 
   const DOCK_APPS = [
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },
@@ -1852,7 +1975,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={onClose} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -1898,7 +2021,7 @@ export function UbuntuOS({ onClose }) {
           )}
 
           <div className="mt-auto mb-1">
-            <DockIcon icon={Power} label="Salir de Ubuntu" isOpen={false} isFocused={false} isMinimized={false} onClick={onClose} />
+            <DockIcon icon={Power} label="Menú de apagado" isOpen={false} isFocused={false} isMinimized={false} onClick={() => setPowerMenu(true)} />
           </div>
         </div>
 
@@ -1992,6 +2115,26 @@ export function UbuntuOS({ onClose }) {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Power menu overlay */}
+      <AnimatePresence>
+        {powerMenu && (
+          <PowerMenu
+            key="power-menu"
+            onShutdown={onClose}
+            onRestart={handleRestart}
+            onSuspend={handleSuspend}
+            onCancel={() => setPowerMenu(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Suspend screen overlay */}
+      <AnimatePresence>
+        {suspended && (
+          <SuspendScreen key="suspend" onWake={handleWake} />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

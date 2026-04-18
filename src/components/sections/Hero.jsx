@@ -223,16 +223,27 @@ export function Hero() {
         
       </div>
 
-      {/* Scroll indicator (absolute positioned to bottom) */}
+      {/* Developer Terminal Scroll Indicator */}
       <motion.button
         {...fp(0.6)}
         onClick={() => scrollTo('featured')}
-        className="absolute bottom-6 sm:bottom-10 flex flex-col items-center gap-2 group z-10"
+        className="absolute bottom-6 sm:bottom-10 flex flex-col items-center gap-3 group z-10 cursor-target"
       >
-        <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.2em] text-white/30 uppercase transition-colors group-hover:text-white/70">
-          {T.scroll}
-        </span>
-        <div className="w-[1px] h-12 bg-gradient-to-b from-white/20 to-transparent group-hover:from-white/50 transition-all origin-top group-hover:scale-y-110" />
+        {/* Terminal Prompt & Blinking Cursor */}
+        <div className="font-mono text-[9px] sm:text-[10px] tracking-[0.2em] text-white/40 uppercase flex items-center transition-colors group-hover:text-white/80">
+          <span className="text-accent/60 mr-2 font-bold">{'>'}</span>
+          <span>{T.scroll}</span>
+          <span 
+            className="inline-block w-1.5 h-3 bg-accent/80 ml-2 transition-colors group-hover:bg-accent animate-[blink_1s_step-end_infinite]"
+          />
+        </div>
+        
+        {/* Data Stream / Fiber Optic Line */}
+        <div className="relative h-12 w-[1px] bg-white/5 group-hover:bg-white/10 mt-1 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 w-full h-[50%] bg-gradient-to-b from-transparent via-accent to-transparent animate-[scroll-line_2s_ease-in-out_infinite]"
+          />
+        </div>
       </motion.button>
     </motion.section>
   )

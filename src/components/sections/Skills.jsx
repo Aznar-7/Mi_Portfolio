@@ -53,16 +53,20 @@ export function Skills() {
       {/* Grid */}
       <motion.div 
         layout
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl mx-auto min-h-[400px] items-start"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl mx-auto min-h-[400px] items-start relative box-border"
       >
         <AnimatePresence mode="popLayout">
-          {filteredSkills.map((skill, index) => (
+          {filteredSkills.map((skill) => (
             <motion.div
               layout
-              initial={reduced ? false : { opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
+              initial={reduced ? false : { opacity: 0, scale: 0.5, filter: 'blur(8px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
-              transition={{ duration: 0.4, delay: reduced ? 0 : index * 0.03, type: 'spring', bounce: 0.3 }}
+              exit={{ opacity: 0, scale: 0.5, filter: 'blur(8px)' }}
+              transition={{ 
+                duration: 0.4, 
+                type: 'spring', 
+                bounce: 0.2 
+              }}
               key={skill.name}
               onMouseEnter={playHover}
               className="cursor-target group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/[0.04] bg-[#0d0d0d]/40 backdrop-blur-sm overflow-hidden hover:border-white/20 transition-colors duration-500"

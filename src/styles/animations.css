@@ -57,6 +57,11 @@
   100% { transform: translateY(200%); opacity: 0; }
 }
 
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* ── Mouse scroll indicator ──────────────────────────────────── */
 @keyframes mouse-scroll-dot {
   0%   { transform: translateY(0);     opacity: 1; }

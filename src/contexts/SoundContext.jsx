@@ -93,25 +93,31 @@ export function SoundProvider({ children }) {
   )
   const ctx = useRef(null)
 
-  /* Init AudioContext on first user gesture */
+  /* Init AudioContext on first user gesture.
+     Chrome 74+ treats any pointer/input event as sufficient.
+     We include pointermove so hover sounds work from the very
+     first mouse movement — before any click. */
   const init = useCallback(() => {
     if (!ctx.current && typeof window !== 'undefined') {
       const Ctor = window.AudioContext || window.webkitAudioContext
-      ctx.current = new Ctor()
+      if (!Ctor) return
+      try { ctx.current = new Ctor() } catch { return }
     }
     if (ctx.current?.state === 'suspended') ctx.current.resume()
   }, [])
 
   useEffect(() => {
-    const opts = { once: true }
-    window.addEventListener('mousedown',  init, opts)
-    window.addEventListener('keydown',    init, opts)
-    window.addEventListener('touchstart', init, opts)
-    return () => {
-      window.removeEventListener('mousedown',  init)
-      window.removeEventListener('keydown',    init)
-      window.removeEventListener('touchstart', init)
-    }
+    const EVENTS = ['pointermove', 'pointerdown', 'keydown', 'touchstart']
+    // Each listener removes itself after firing once, then tears down the rest.
+    const handlers = EVENTS.map(evt => {
+      const h = () => {
+        init()
+        handlers.forEach(([e, fn]) => window.removeEventListener(e, fn))
+      }
+      window.addEventListener(evt, h, { once: true, passive: true })
+      return [evt, h]
+    })
+    return () => handlers.forEach(([e, fn]) => window.removeEventListener(e, fn))
   }, [init])
 
   useEffect(() => {
@@ -123,11 +129,16 @@ export function SoundProvider({ children }) {
     setIsMuted(m => !m)
   }, [init])
 
-  /* Guard — returns false if audio is blocked */
+  /* Guard — returns true only when audio is ready to play.
+     Tries an inline resume so sounds don't silently drop on
+     browsers that suspend the context between gestures. */
   const ok = useCallback(() => {
     if (isMuted || !ctx.current) return false
-    if (ctx.current.state === 'suspended') ctx.current.resume()
-    return true
+    if (ctx.current.state === 'suspended') {
+      ctx.current.resume() // async, but next invocation will see 'running'
+      return false
+    }
+    return ctx.current.state === 'running'
   }, [isMuted])
 
   /* ── Sounds ──────────────────────────────────────────────── */
