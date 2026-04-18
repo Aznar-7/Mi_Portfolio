@@ -17,7 +17,7 @@ export function Navbar() {
   const lastY = useRef(0)
   const activeId = useScrollSpy(NAV_IDS)
   const { lang, toggle } = useLang()
-  const { isMuted, toggleMute, playHover, playClick } = useSoundEffects()
+  const { isMuted, toggleMute, playHover, playClick, playNavigation, playToggle } = useSoundEffects()
   const T = translations[lang].nav
 
   const NAV_LINKS = [
@@ -102,6 +102,7 @@ export function Navbar() {
           <GooeyNav
             items={NAV_LINKS}
             activeId={activeId}
+            onItemClick={playNavigation}
             particleCount={8}
             particleDistances={[40, 6]}
             animationTime={400}
@@ -111,7 +112,7 @@ export function Navbar() {
 
         {/* Language toggle */}
         <button
-          onClick={toggle}
+          onClick={() => { playToggle(); toggle(); }}
           aria-label="Toggle language"
           style={{
             position: 'relative',
@@ -167,7 +168,7 @@ export function Navbar() {
         {/* Sound Toggle */}
         <button
           onClick={() => {
-            playClick()
+            playToggle()
             toggleMute()
           }}
           onMouseEnter={playHover}
@@ -230,7 +231,7 @@ export function Navbar() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.07 + i * 0.06 }}
-                  onClick={() => scrollTo(link.id)}
+                  onClick={() => { playNavigation(); scrollTo(link.id); }}
                   className={`px-8 py-4 text-2xl font-bold tracking-tight transition-colors ${
                     activeId === link.id
                       ? 'text-[var(--accent)]'

@@ -9,7 +9,7 @@ export function CommandPalette({ onOpenTerminal }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
-  const { playTyping, playClick, playHover } = useSoundEffects();
+  const { playTyping, playClick, playHover, playModalOpen, playModalClose, playSuccess, playNavigation } = useSoundEffects();
   const inputRef = useRef(null);
   const { lang } = useLang();
 
@@ -17,9 +17,13 @@ export function CommandPalette({ onOpenTerminal }) {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
+        setIsOpen((prev) => {
+          if (!prev) playModalOpen(); else playModalClose();
+          return !prev;
+        });
       }
       if (e.key === 'Escape') {
+        playModalClose();
         setIsOpen(false);
       }
     };
@@ -70,7 +74,7 @@ export function CommandPalette({ onOpenTerminal }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh] px-4 bg-black/60 backdrop-blur-sm"
-          onClick={() => setIsOpen(false)}
+          onClick={() => { playModalClose(); setIsOpen(false); }}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -107,7 +111,9 @@ export function CommandPalette({ onOpenTerminal }) {
                   <button
                     key={action.id || idx}
                     onClick={(e) => {
-                      playClick();
+                      // copy-email gets success sound, nav actions get navigation sound
+                      if (action.id === 'copy-email') playSuccess()
+                      else playNavigation()
                       action.action(e);
                     }}
                     onMouseEnter={playHover}

@@ -1591,7 +1591,7 @@ function BrowserApp({ lang }) {
         {tab === 'youtube' && (
           <div className="h-full flex flex-col bg-black">
             <iframe 
-              src="https://youtu.be/1Sihccfgs90" 
+              src="https://www.youtube.com/embed/1Sihccfgs90?list=RD1Sihccfgs90" 
               className="flex-1 w-full border-0" 
               title="YouTube"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1735,7 +1735,7 @@ function TopBar({ time, date, onPower }) {
 
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
-  const { playOpenApp, playClick } = useSoundEffects();
+  const { playOpenApp, playClick, playCloseApp } = useSoundEffects();
   const [screen,   setScreen]   = useState('boot');
   const [wallpaper, setWallpaper] = useState(0);
   const { lang } = useLang();
@@ -1795,7 +1795,7 @@ export function UbuntuOS({ onClose }) {
 
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
-  const closeApp = (id) => setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } }));
+  const closeApp = (id) => { playCloseApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
   const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };

@@ -4,6 +4,7 @@ import { X, Wifi, Battery, Signal, Copy, Check, ExternalLink, ArrowLeft, Chevron
 import { about } from '@/data/about'
 import { site } from '@/data/site'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 /* ── helpers ── */
 function useClock() {
@@ -475,11 +476,12 @@ function AppDrawer({ appId, lang, onBack }) {
 export function AndroidOS({ onClose }) {
   const time       = useClock()
   const { lang }   = useLang()
+  const { playUnlock, playOpenApp, playSwipe } = useSoundEffects()
   const [screen, setScreen] = useState('lock') // 'lock' | 'home' | appId
 
-  const handleUnlock = useCallback(() => setScreen('home'), [])
-  const handleOpenApp = useCallback((id) => setScreen(id), [])
-  const handleBack    = useCallback(() => setScreen('home'), [])
+  const handleUnlock  = useCallback(() => { playUnlock();  setScreen('home') }, [playUnlock])
+  const handleOpenApp = useCallback((id) => { playOpenApp(); setScreen(id) },  [playOpenApp])
+  const handleBack    = useCallback(() => { playSwipe();   setScreen('home') }, [playSwipe])
 
   // Close on Escape
   useEffect(() => {

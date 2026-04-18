@@ -7,6 +7,7 @@ import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -23,12 +24,18 @@ export function Contact() {
   const { lang } = useLang()
   const T        = translations[lang].contact
   const [copied, setCopied] = useState(false)
+  const { playSuccess } = useSoundEffects()
 
   const githubUser  = site.github.split('github.com/')[1]  ?? 'GitHub'
   const linkedinSlug = site.linkedin.split('/in/')[1]?.replace(/\/$/, '') ?? 'LinkedIn'
 
   const copyEmail = async () => {
-    try { await navigator.clipboard.writeText(site.email); setCopied(true); setTimeout(() => setCopied(false), 2200) } catch {}
+    try {
+      await navigator.clipboard.writeText(site.email)
+      playSuccess()
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2200)
+    } catch {}
   }
 
   return (

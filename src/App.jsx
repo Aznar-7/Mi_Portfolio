@@ -57,12 +57,22 @@ export default function App() {
   useEffect(() => {
     const handleOpenUbuntu  = () => setUbuntuOpen(true);
     // const handleOpenAndroid = () => setAndroidOpen(true);
+
+    const handleKeydown = (e) => {
+      // Global shortcut: Ctrl + Alt + T to open Terminal
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        setUbuntuOpen(o => !o);
+      }
+    };
     
     document.addEventListener('open-ubuntu',  handleOpenUbuntu);
+    document.addEventListener('keydown', handleKeydown);
     // document.addEventListener('open-android', handleOpenAndroid);
     
     return () => {
       document.removeEventListener('open-ubuntu',  handleOpenUbuntu);
+      document.removeEventListener('keydown', handleKeydown);
       // document.removeEventListener('open-android', handleOpenAndroid);
     };
   }, []);

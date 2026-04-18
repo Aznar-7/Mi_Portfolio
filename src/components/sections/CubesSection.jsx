@@ -9,6 +9,7 @@ import { SectionHeading } from '../common/SectionHeading'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 /* ── Cube presets ─────────────────────────────────────────── */
 const PRESETS = {
@@ -49,6 +50,7 @@ export const CubesSection = () => {
   const reduced  = useReducedMotion()
   const { lang } = useLang()
   const T        = translations[lang].interact
+  const { playSwipe, playClick } = useSoundEffects()
   const [view,   setView]   = useState('cubes')
   const [preset, setPreset] = useState('calm')
 
@@ -69,7 +71,7 @@ export const CubesSection = () => {
             return (
               <button
                 key={v.key}
-                onClick={() => setView(v.key)}
+                onClick={() => { if (view !== v.key) { playSwipe(); setView(v.key) } }}
                 className="flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 font-mono text-[10px] font-semibold tracking-widest uppercase transition-all duration-250"
                 style={{
                   color:      isActive ? '#fff' : 'var(--text-muted)',
@@ -106,7 +108,7 @@ export const CubesSection = () => {
                   return (
                     <button
                       key={key}
-                      onClick={() => setPreset(key)}
+                      onClick={() => { if (preset !== key) { playClick(); setPreset(key) } }}
                       className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-[10px] font-semibold tracking-widest uppercase transition-all duration-200"
                       style={{
                         color:      isActive ? '#fff' : 'var(--text-muted)',
