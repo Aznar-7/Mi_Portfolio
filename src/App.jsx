@@ -1,15 +1,17 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { SoundProvider } from '@/contexts/SoundContext'
 import TargetCursor from '@/components/common/TargetCursor'
 import Threads from '@/components/background/Threads'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
-import { CommandPalette } from '@/components/layout/CommandPalette'
-import { UbuntuOS } from '@/components/layout/UbuntuOS'
-// import { AndroidOS } from '@/components/layout/AndroidOS'
 import { Hero } from '@/components/sections/Hero'
+
+const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
+const CommandPalette = lazy(() => import('@/components/layout/CommandPalette').then((m) => ({ default: m.CommandPalette })))
 
 const FeaturedProject = lazy(() =>
   import('@/components/sections/FeaturedProject').then((m) => ({ default: m.FeaturedProject }))
@@ -66,12 +68,23 @@ export default function App() {
   }, []);
 
   return (
-    <LanguageProvider>
-      <AnimatePresence>
-        {ubuntuOpen  && <UbuntuOS  key="ubuntu"  onClose={() => setUbuntuOpen(false)} />}
-        {/* {androidOpen && <AndroidOS key="android" onClose={() => setAndroidOpen(false)} />} */}
-      </AnimatePresence>
-      <CommandPalette />
+    <SoundProvider>
+      <LanguageProvider>
+        <ErrorBoundary fallback={<div className="h-screen w-screen bg-black text-white flex items-center justify-center">Error al cargar el sistema operativo. Recarga la página.</div>}>
+          <AnimatePresence>
+            {ubuntuOpen  && (
+              <Suspense fallback={<div className="h-screen w-screen bg-black" />}>
+                <UbuntuOS  key="ubuntu"  onClose={() => setUbuntuOpen(false)} />
+              </Suspense>
+            )}
+            {/* {androidOpen && <AndroidOS key="android" onClose={() => setAndroidOpen(false)} />} */}
+          </AnimatePresence>
+        </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Suspense fallback={null}>
+          <CommandPalette />
+        </Suspense>
+      </ErrorBoundary>
       {!ubuntuOpen && (
         <TargetCursor 
           spinDuration={2}
@@ -113,6 +126,7 @@ export default function App() {
           <Footer />
         </>
       )}
-    </LanguageProvider>
+      </LanguageProvider>
+    </SoundProvider>
   )
 }

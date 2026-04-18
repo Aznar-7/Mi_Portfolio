@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Volume2, VolumeX } from 'lucide-react'
 import { useScrollSpy } from '@/hooks/useScrollSpy'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 import GooeyNav from '@/components/layout/GooeyNav'
@@ -16,6 +17,7 @@ export function Navbar() {
   const lastY = useRef(0)
   const activeId = useScrollSpy(NAV_IDS)
   const { lang, toggle } = useLang()
+  const { isMuted, toggleMute, playHover, playClick } = useSoundEffects()
   const T = translations[lang].nav
 
   const NAV_LINKS = [
@@ -162,10 +164,39 @@ export function Navbar() {
           })}
         </button>
 
+        {/* Sound Toggle */}
+        <button
+          onClick={() => {
+            playClick()
+            toggleMute()
+          }}
+          onMouseEnter={playHover}
+          aria-label="Toggle sound"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '100px',
+            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.03)',
+            padding: '5px 8px',
+            flexShrink: 0,
+            marginLeft: '8px',
+            color: isMuted ? 'var(--text-muted)' : 'var(--accent)',
+            transition: 'all 0.25s',
+          }}
+          className="hover:text-white hover:border-white/[0.15]"
+        >
+          {isMuted ? <VolumeX size={14} strokeWidth={2.5} /> : <Volume2 size={14} strokeWidth={2.5} />}
+        </button>
+
         {/* Hamburger — visible only on small screens */}
         <button
-          className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full border border-white/[0.08] bg-white/[0.03] text-[var(--text-secondary)] transition-colors hover:text-white"
-          onClick={() => setMobileOpen((v) => !v)}
+          className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full border border-white/[0.08] bg-white/[0.03] text-[var(--text-secondary)] transition-colors hover:text-white ml-2"
+          onClick={() => {
+            playClick()
+            setMobileOpen((v) => !v)
+          }}
           aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
           style={{ marginLeft: '2px', flexShrink: 0 }}
         >

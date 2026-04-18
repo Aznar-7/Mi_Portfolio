@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Terminal, Home, Briefcase, Code, User, Mail, Copy, Check } from 'lucide-react';
 import { site } from '@/data/site';
 import { useLang } from '@/contexts/LanguageContext';
+import { useSoundEffects } from '@/contexts/SoundContext';
 
 export function CommandPalette({ onOpenTerminal }) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
+  const { playTyping, playClick, playHover } = useSoundEffects();
   const inputRef = useRef(null);
   const { lang } = useLang();
 
@@ -83,7 +85,10 @@ export function CommandPalette({ onOpenTerminal }) {
               <input
                 ref={inputRef}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  playTyping();
+                  setQuery(e.target.value);
+                }}
                 placeholder={lang === 'es' ? "Escribe un comando o busca..." : "Type a command or search..."}
                 className="flex-1 bg-transparent border-none outline-none py-4 text-white placeholder-white/40 text-sm"
               />
@@ -101,7 +106,11 @@ export function CommandPalette({ onOpenTerminal }) {
                 filteredActions.map((action, idx) => (
                   <button
                     key={action.id || idx}
-                    onClick={action.action}
+                    onClick={(e) => {
+                      playClick();
+                      action.action(e);
+                    }}
+                    onMouseEnter={playHover}
                     className="w-full flex items-center px-4 py-3 text-left text-sm text-white/80 hover:bg-white/5 hover:text-white rounded-lg transition-colors group"
                   >
                     <action.icon className="w-4 h-4 mr-3 text-white/40 group-hover:text-white/80 transition-colors" />

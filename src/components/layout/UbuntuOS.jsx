@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { useLang } from '@/contexts/LanguageContext';
+import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
 import { projects } from '@/data/projects';
 import { skillsData } from '@/data/skills';
@@ -1590,7 +1591,7 @@ function BrowserApp({ lang }) {
         {tab === 'youtube' && (
           <div className="h-full flex flex-col bg-black">
             <iframe 
-              src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=0" 
+              src="https://youtu.be/1Sihccfgs90" 
               className="flex-1 w-full border-0" 
               title="YouTube"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1734,6 +1735,7 @@ function TopBar({ time, date, onPower }) {
 
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
+  const { playOpenApp, playClick } = useSoundEffects();
   const [screen,   setScreen]   = useState('boot');
   const [wallpaper, setWallpaper] = useState(0);
   const { lang } = useLang();
@@ -1792,11 +1794,11 @@ export function UbuntuOS({ onClose }) {
   }, []);
 
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
-  const openApp  = (id, fileData = null) => { setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
+  const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
   const closeApp = (id) => setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } }));
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
-  const restoreApp = (id) => { setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
+  const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
 
   const DOCK_APPS = [
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { site } from '@/data/site'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 const PROMPT = 'aznar@portfolio:~$'
 
@@ -17,6 +18,7 @@ const COMMANDS = {
     '  cat cv.txt        Resume summary',
     '  contact           Contact information',
     '  neofetch          System info (dev edition)',
+    '  fetch repos       Fetch latest public repos from GitHub',
     '  uname -a          OS information',
     '  ps aux            Running processes',
     '  uptime            Session uptime',
@@ -176,7 +178,7 @@ const APP_MAP = {
   doom: 'doom', paint: 'paint', pinta: 'paint',
 };
 
-function processCommand(raw, setLines, onClose) {
+async function processCommand(raw, setLines, onClose) {
   const cmd = raw.trim().toLowerCase()
   if (!cmd) return []
   if (cmd === 'clear') {
@@ -203,10 +205,53 @@ function processCommand(raw, setLines, onClose) {
     return [`  open: aplicación no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
   }
 
-  return [`  command not found: ${cmd}  (type 'help' for available commands)`, '']
+  if (cmd === 'sudo') {
+    return [
+      '  usage: sudo <command>',
+      '  example: sudo hire'
+    ]
+  }
+
+  if (cmd === 'sudo rm -rf /') {
+    return [
+      '  [ERROR] Kernel panic',
+      '  Just kidding. I need this server.',
+      ''
+    ]
+  }
+
+  if (cmd === 'fetch repos') {
+    try {
+      setLines(prev => [...prev, `  Fetching public repositories for aznar-dev...`])
+      const res = await fetch('https://api.github.com/users/Aznar-7/repos?sort=updated&per_page=5')
+      if (!res.ok) throw new Error('API Rate limit or network error')
+      const data = await res.json()
+      
+      const repoLines = data.map(r => {
+        const starStr = r.stargazers_count > 0 ? `  ★ ${r.stargazers_count}` : ''
+        const langStr = r.language ? `  [${r.language}]` : ''
+        return `  ❯ ${r.name.padEnd(20)} ${langStr.padEnd(15)} ${starStr}`
+      })
+      
+      return [
+        '',
+        '  Recent GitHub Repositories:',
+        '  --------------------------',
+        ...repoLines,
+        '',
+        `  View more at ${site.github}`,
+        ''
+      ]
+    } catch (err) {
+      return ['  [ERROR] No se pudieron obtener los repositorios. Revisa tu conexión =(', '']
+    }
+  }
+
+  return [`  command not found: ${cmd}  (type 'help' para comandos disponibles)`, '']
 }
 
 export function Terminal({ onClose, isEmbedded = false }) {
+  const { playTyping, playClick, playOpenApp } = useSoundEffects()
   const [lines,   setLines]   = useState([
     '  Welcome to aznar-dev terminal  v1.0.0',
     `  Type ${'help'} for available commands.`,
@@ -226,20 +271,34 @@ export function Terminal({ onClose, isEmbedded = false }) {
     inputRef.current?.focus()
   }, [])
 
-  const submit = useCallback(() => {
+  const submit = useCallback(async () => {
     if (!input.trim()) return
     const cmd   = input.trim()
-    const out   = processCommand(cmd, setLines, onClose)
-    if (out !== null) {
-      setLines(prev => [...prev, `${PROMPT} ${cmd}`, ...out])
-    }
     setHistory(h => [cmd, ...h])
     setHistIdx(-1)
     setInput('')
-  }, [input, onClose])
+    
+    // Muestra comanda de inmediato
+    setLines(prev => [...prev, `${PROMPT} ${cmd}`])
+    
+    // check if it's an open command
+    if (cmd.startsWith('open ')) {
+      playOpenApp()
+    } else {
+      playClick()
+    }
+
+    const out = await processCommand(cmd, setLines, onClose)
+    if (out !== null) {
+      setLines(prev => [...prev, ...out])
+    }
+  }, [input, onClose, playClick, playOpenApp])
 
   const handleKey = (e) => {
-    if (e.key === 'Enter') { submit(); return }
+    if (e.key === 'Enter') { 
+      submit(); 
+      return 
+    }
     if (e.key === 'ArrowUp') {
       e.preventDefault()
       setHistIdx(i => {
@@ -258,7 +317,10 @@ export function Terminal({ onClose, isEmbedded = false }) {
       })
       return
     }
-    if (e.key === 'Escape') { onClose(); return }
+    if (e.key === 'Escape') { 
+      if (onClose) onClose(); 
+      return 
+    }
     if (e.key === 'l' && e.ctrlKey) {
       e.preventDefault()
       setLines([])
@@ -355,7 +417,10 @@ export function Terminal({ onClose, isEmbedded = false }) {
             <input
               ref={inputRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                playTyping()
+                setInput(e.target.value)
+              }}
               onKeyDown={handleKey}
               style={{
                 flex: 1,

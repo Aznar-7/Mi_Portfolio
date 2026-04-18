@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'motion/react'
-import { Terminal } from '@/components/layout/Terminal'
-import { UbuntuOS } from '@/components/layout/UbuntuOS'
+import { ErrorBoundary } from 'react-error-boundary'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { MagneticButton } from '@/components/common/MagneticButton'
 import { site } from '@/data/site'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
+
+const Terminal = lazy(() => import('@/components/layout/Terminal').then(m => ({ default: m.Terminal })))
+const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then(m => ({ default: m.UbuntuOS })))
 
 export function Footer() {
   const [terminalOpen, setTerminalOpen] = useState(false)
@@ -16,10 +18,20 @@ export function Footer() {
 
   return (
     <>
-      <AnimatePresence>
-        {terminalOpen && <Terminal onClose={() => setTerminalOpen(false)} />}
-        {ubuntuOpen && <UbuntuOS onClose={() => setUbuntuOpen(false)} />}
-      </AnimatePresence>
+      <ErrorBoundary fallback={null}>
+        <AnimatePresence>
+          {terminalOpen && (
+            <Suspense fallback={null}>
+              <Terminal onClose={() => setTerminalOpen(false)} />
+            </Suspense>
+          )}
+          {ubuntuOpen && (
+            <Suspense fallback={<div className="h-screen w-screen bg-black" />}>
+              <UbuntuOS onClose={() => setUbuntuOpen(false)} />
+            </Suspense>
+          )}
+        </AnimatePresence>
+      </ErrorBoundary>
 
       <footer className="relative z-10 border-t border-white/[0.05] px-5 py-8 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">

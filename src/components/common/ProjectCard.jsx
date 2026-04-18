@@ -3,6 +3,7 @@ import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/rea
 import { Globe, Cpu, Terminal, Zap } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { l, STATUS_STYLES } from '@/lib/utils'
 
 const CATEGORY_ICONS = {
@@ -17,12 +18,22 @@ const PLACEHOLDER_ICONS = { Cpu, Terminal }
 function ImageArea({ project }) {
   if (project.image) {
     return (
-      <img
-        src={project.image}
-        alt={project.title}
-        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-        loading="lazy"
-      />
+      <div className="relative h-full w-full bg-white/5 overflow-hidden">
+        {/* Skeleton Shimmer Overlay */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer" />
+        <img
+          src={project.image}
+          alt={project.title}
+          className="relative z-10 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+          onLoad={(e) => {
+            if (e.target.parentElement?.firstChild) {
+              e.target.parentElement.firstChild.style.display = 'none';
+            }
+          }}
+        />
+      </div>
     )
   }
   const Icon = PLACEHOLDER_ICONS[project.placeholderIcon] ?? Terminal
@@ -37,6 +48,7 @@ function ImageArea({ project }) {
 
 export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
   const reduced = useReducedMotion()
+  const { playHover, playClick } = useSoundEffects()
   const cardRef = useRef(null)
 
   const mouseX = useMotionValue(0)
@@ -74,7 +86,11 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
       ref={cardRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      onClick={onClick}
+      onMouseEnter={playHover}
+      onClick={(e) => {
+        playClick()
+        if (onClick) onClick(e)
+      }}
       style={{
         rotateX: reduced ? 0 : rotateX,
         rotateY: reduced ? 0 : rotateY,

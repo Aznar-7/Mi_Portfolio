@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Download } from 'lucide-react'
 import BlurText from '@/components/common/BlurText'
 import { MagneticButton } from '@/components/common/MagneticButton'
 import { useLang } from '@/contexts/LanguageContext'
@@ -173,11 +173,25 @@ export function Hero() {
           <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
             <button
               onClick={() => scrollTo('featured')}
-              className="group relative flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-black transition-all hover:scale-105 active:scale-95"
+              className="group relative flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-black transition-all hover:scale-105 active:scale-95 shadow-md shadow-white/5"
             >
               {T.cta_primary}
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
+          </MagneticButton>
+
+          {/* Download CV */}
+          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
+            <a
+              href="/ResumeVicenteAznar.pdf"
+              download="Vicente_Aznar_CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95"
+            >
+              <Download size={16} className="text-gray-300 group-hover:text-white transition-colors" />
+              {lang === 'es' ? 'Descargar CV' : 'Download CV'}
+            </a>
           </MagneticButton>
 
           {/* Ubuntu Simulation - available on all devices */}

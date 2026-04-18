@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 /**
  * Wraps any element with a magnetic attraction effect.
@@ -8,8 +9,9 @@ import { motion, useMotionValue, useSpring } from 'motion/react'
  * @param {number} strength  How far the element moves (0–1). Default 0.35.
  * @param {number} radius    Detection radius in px. Default 70.
  */
-export function MagneticButton({ children, strength = 0.35, radius = 70, className = '', style = {} }) {
+export function MagneticButton({ children, strength = 0.35, radius = 70, className = '', style = {}, onClick }) {
   const ref = useRef(null)
+  const { playHover, playClick } = useSoundEffects()
 
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
@@ -38,7 +40,18 @@ export function MagneticButton({ children, strength = 0.35, radius = 70, classNa
   // No magnetic effect on touch devices
   const isTouch = typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches
   if (isTouch) {
-    return <div className={`inline-flex ${className}`} style={style}>{children}</div>
+    return (
+      <div 
+        className={`inline-flex ${className}`} 
+        style={style} 
+        onClick={(e) => {
+          playClick()
+          if (onClick) onClick(e)
+        }}
+      >
+        {children}
+      </div>
+    )
   }
 
   return (
@@ -48,6 +61,11 @@ export function MagneticButton({ children, strength = 0.35, radius = 70, classNa
       className={`inline-flex ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={playHover}
+      onClick={(e) => {
+        playClick()
+        if (onClick) onClick(e)
+      }}
     >
       {children}
     </motion.div>
