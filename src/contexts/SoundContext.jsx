@@ -256,6 +256,25 @@ export function SoundProvider({ children }) {
     note(ctx.current, 1050, 'sine', 0.06, 0.002, 0.022, null, 0.04)
   }, [ok])
 
+  /**
+   * Select — choosing an option from a set (filter, preset, tab)
+   * Brighter than click, shorter than open. Clean "pop" + harmonic.
+   */
+  const playSelect = useCallback(() => {
+    if (!ok()) return
+    note(ctx.current, 580,  'sine', 0.072, 0.002, 0.045)
+    note(ctx.current, 1160, 'sine', 0.032, 0.002, 0.035)
+  }, [ok])
+
+  /**
+   * Carousel — stepping through slides (prev/next)
+   * Directional sweep: forward is upward, but kept neutral here.
+   */
+  const playCarousel = useCallback(() => {
+    if (!ok()) return
+    note(ctx.current, 360, 'sine', 0.055, 0.002, 0.060, 480)
+  }, [ok])
+
   const value = {
     isMuted,
     toggleMute,
@@ -269,6 +288,8 @@ export function SoundProvider({ children }) {
     // Actions
     playSuccess,
     playNavigation,
+    playSelect,
+    playCarousel,
     // UI interactions
     playUnlock,
     playSwipe,
@@ -288,7 +309,7 @@ const FALLBACK = {
   isMuted: true, toggleMute: NOOP,
   playHover: NOOP, playClick: NOOP, playTyping: NOOP,
   playOpenApp: NOOP, playCloseApp: NOOP,
-  playSuccess: NOOP, playNavigation: NOOP,
+  playSuccess: NOOP, playNavigation: NOOP, playSelect: NOOP, playCarousel: NOOP,
   playUnlock: NOOP, playSwipe: NOOP,
   playModalOpen: NOOP, playModalClose: NOOP, playToggle: NOOP,
 }

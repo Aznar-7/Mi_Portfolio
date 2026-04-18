@@ -6,6 +6,7 @@ import { GitHubIcon } from '@/components/common/SocialIcons'
 import { TechTag } from '@/components/common/TechTag'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { l, STATUS_STYLES } from '@/lib/utils'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 const PLACEHOLDER_ICON_MAP = { Cpu, Terminal }
 
@@ -32,6 +33,7 @@ function CarouselSlide({ src, placeholderGradient, placeholderIcon, title }) {
 
 export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
   const reduced = useReducedMotion()
+  const { playCarousel, playHover, playNavigation } = useSoundEffects()
   const [activeIndex, setActiveIndex] = useState(0)
   const closeButtonRef = useRef(null)
   const panelRef = useRef(null)
@@ -46,8 +48,8 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
   const handleKey = useCallback(
     (e) => {
       if (e.key === 'Escape') { onClose(); return }
-      if (e.key === 'ArrowLeft')  { setActiveIndex((i) => Math.max(0, i - 1)); return }
-      if (e.key === 'ArrowRight') { setActiveIndex((i) => Math.min(images.length - 1, i + 1)); return }
+      if (e.key === 'ArrowLeft')  { playCarousel(); setActiveIndex((i) => Math.max(0, i - 1)); return }
+      if (e.key === 'ArrowRight') { playCarousel(); setActiveIndex((i) => Math.min(images.length - 1, i + 1)); return }
       if (e.key === 'Tab') {
         const panel = panelRef.current
         if (!panel) return
@@ -154,7 +156,8 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
             {hasMultiple && (
               <>
                 <button
-                  onClick={() => setActiveIndex((i) => Math.max(0, i - 1))}
+                  onClick={() => { playCarousel(); setActiveIndex((i) => Math.max(0, i - 1)) }}
+                  onMouseEnter={playHover}
                   disabled={activeIndex === 0}
                   className="cursor-target absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.1] bg-black/40 text-white/80 backdrop-blur-sm transition-all hover:bg-black/60 disabled:opacity-30"
                   aria-label={T.prev ?? 'Anterior'}
@@ -162,7 +165,8 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                   <ChevronLeft size={16} />
                 </button>
                 <button
-                  onClick={() => setActiveIndex((i) => Math.min(images.length - 1, i + 1))}
+                  onClick={() => { playCarousel(); setActiveIndex((i) => Math.min(images.length - 1, i + 1)) }}
+                  onMouseEnter={playHover}
                   disabled={activeIndex === images.length - 1}
                   className="cursor-target absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.1] bg-black/40 text-white/80 backdrop-blur-sm transition-all hover:bg-black/60 disabled:opacity-30"
                   aria-label={T.next ?? 'Siguiente'}
@@ -266,8 +270,9 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onMouseEnter={playHover}
+                  onClick={(e) => { e.stopPropagation(); playNavigation() }}
                   className="cursor-target inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.3)]"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink size={13} /> {T.live ?? 'Ver en vivo'}
                 </a>
@@ -277,8 +282,9 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onMouseEnter={playHover}
+                  onClick={(e) => { e.stopPropagation(); playNavigation() }}
                   className="cursor-target inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-5 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] transition-all hover:border-white/[0.12] hover:text-white"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <GitHubIcon size={13} /> {T.code ?? 'Ver código'}
                 </a>

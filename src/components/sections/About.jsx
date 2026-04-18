@@ -7,6 +7,7 @@ import { about } from '@/data/about'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 function l(value, lang) {
   if (!value || typeof value === 'string') return value
@@ -16,6 +17,7 @@ function l(value, lang) {
 export function About() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
+  const { playHover, playNavigation } = useSoundEffects()
   const T = translations[lang].about
   const bio = l(about.bio, lang)
 
@@ -54,9 +56,11 @@ export function About() {
             className="mt-10 flex flex-wrap items-center gap-4"
           >
             <a 
-              href="/ResumeVicenteAznar.pdf" 
-              target="_blank" 
+              href="/ResumeVicenteAznar.pdf"
+              target="_blank"
               rel="noopener noreferrer"
+              onMouseEnter={playHover}
+              onClick={playNavigation}
               className="group relative flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-6 py-2.5 text-sm font-medium text-[var(--accent)] transition-all hover:bg-[var(--accent)] hover:text-white"
             >
               <span>{lang === 'es' ? 'Descargar CV' : 'Download Resume'}</span>

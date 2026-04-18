@@ -6,6 +6,7 @@ import { skillsData, skillsCategories } from '@/data/skills'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 const CATEGORY_EN = {
   'Todos': 'All',
@@ -21,6 +22,7 @@ export function Skills() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].skills
+  const { playSelect, playHover } = useSoundEffects()
   const [activeCategory, setActiveCategory] = useState('Todos')
 
   const filteredSkills = activeCategory === 'Todos' 
@@ -36,7 +38,7 @@ export function Skills() {
         {skillsCategories.map((category) => (
           <button
             key={category}
-            onClick={() => setActiveCategory(category)}
+            onClick={() => { if (activeCategory !== category) { playSelect(); setActiveCategory(category) } }}
             className={`cursor-target px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 border ${
               activeCategory === category
                 ? 'bg-white/10 border-white/30 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
@@ -62,6 +64,7 @@ export function Skills() {
               exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
               transition={{ duration: 0.4, delay: reduced ? 0 : index * 0.03, type: 'spring', bounce: 0.3 }}
               key={skill.name}
+              onMouseEnter={playHover}
               className="cursor-target group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/[0.04] bg-[#0d0d0d]/40 backdrop-blur-sm overflow-hidden hover:border-white/20 transition-colors duration-500"
               style={{ boxShadow: '0 4px 30px rgba(0,0,0,0.1)' }}
             >

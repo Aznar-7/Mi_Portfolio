@@ -12,9 +12,11 @@ import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { l, STATUS_STYLES } from '@/lib/utils'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
   const reduced = useReducedMotion()
+  const { playHover, playClick, playNavigation } = useSoundEffects()
   const status = STATUS_STYLES[project.status]
   const statusLabel = T.status?.[project.status] ?? project.status
 
@@ -24,6 +26,7 @@ function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
       whileInView={reduced ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-20px' }}
       transition={{ type: 'spring', stiffness: 180, damping: 24 }}
+      onMouseEnter={playHover}
       className="group cursor-target relative col-span-1 sm:col-span-2 overflow-hidden rounded-xl border border-[var(--accent)]/15 bg-[var(--bg-surface)] transition-[border-color] hover:border-[var(--accent)]/30"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent" />
@@ -66,13 +69,16 @@ function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onMouseEnter={playHover}
+                onClick={playNavigation}
                 className="cursor-target inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.3)]"
               >
                 <ExternalLink size={13} /> {T.live ?? 'Live'}
               </a>
             )}
             <button
-              onClick={onOpenModal}
+              onMouseEnter={playHover}
+              onClick={() => { playClick(); onOpenModal(); }}
               className="cursor-target inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-[var(--text-secondary)] transition-all hover:border-white/[0.12] hover:text-white"
             >
               {T.view_details ?? 'Ver detalles'} →
@@ -115,7 +121,11 @@ export function Projects() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].projects
+  const { playModalOpen, playModalClose } = useSoundEffects()
   const [selectedProject, setSelectedProject] = useState(null)
+
+  const openModal  = (p) => { playModalOpen();  setSelectedProject(p) }
+  const closeModal = ()  => { playModalClose(); setSelectedProject(null) }
 
   const featured    = projects.filter((p) => p.featured)
   const nonFeatured = projects.filter((p) => !p.featured)
@@ -133,7 +143,7 @@ export function Projects() {
               project={p}
               lang={lang}
               T={T}
-              onOpenModal={() => setSelectedProject(p)}
+              onOpenModal={() => openModal(p)}
             />
           ))}
 
@@ -149,7 +159,7 @@ export function Projects() {
                 project={project}
                 lang={lang}
                 T={T}
-                onClick={() => setSelectedProject(project)}
+                onClick={() => openModal(project)}
               />
             </motion.div>
           ))}
@@ -163,7 +173,7 @@ export function Projects() {
             project={selectedProject}
             lang={lang}
             T={T}
-            onClose={() => setSelectedProject(null)}
+            onClose={closeModal}
           />
         )}
       </AnimatePresence>

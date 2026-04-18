@@ -50,7 +50,7 @@ export const CubesSection = () => {
   const reduced  = useReducedMotion()
   const { lang } = useLang()
   const T        = translations[lang].interact
-  const { playSwipe, playClick } = useSoundEffects()
+  const { playSwipe, playSelect } = useSoundEffects()
   const [view,   setView]   = useState('cubes')
   const [preset, setPreset] = useState('calm')
 
@@ -108,7 +108,7 @@ export const CubesSection = () => {
                   return (
                     <button
                       key={key}
-                      onClick={() => { if (preset !== key) { playClick(); setPreset(key) } }}
+                      onClick={() => { if (preset !== key) { playSelect(); setPreset(key) } }}
                       className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-[10px] font-semibold tracking-widest uppercase transition-all duration-200"
                       style={{
                         color:      isActive ? '#fff' : 'var(--text-muted)',

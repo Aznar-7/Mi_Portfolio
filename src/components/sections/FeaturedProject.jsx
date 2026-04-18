@@ -7,6 +7,7 @@ import { featuredProject } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 function l(value, lang) {
   if (!value || typeof value === 'string') return value
@@ -43,6 +44,7 @@ export function FeaturedProject() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].featured
+  const { playHover, playNavigation } = useSoundEffects()
 
   const fp = (delay = 0) =>
     reduced ? {} : {
@@ -141,6 +143,8 @@ export function FeaturedProject() {
                   href={featuredProject.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onMouseEnter={playHover}
+                  onClick={playNavigation}
                   className="group inline-flex items-center gap-2.5 rounded-xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-6 py-3 text-[14px] font-semibold text-[var(--accent)] transition-all duration-300 hover:bg-[var(--accent)] hover:text-white hover:border-transparent hover:shadow-[0_10px_28px_-8px_rgba(124,106,247,0.55)]"
                 >
                   <ExternalLink size={15} />
@@ -174,7 +178,8 @@ export function FeaturedProject() {
                   <motion.div
                     key={i}
                     {...fp(0.15 + i * 0.08)}
-                    className="group relative flex gap-5 pb-7 last:pb-0"
+                    onMouseEnter={playHover}
+                  className="group relative flex gap-5 pb-7 last:pb-0"
                   >
                     {/* Number node */}
                     <div
