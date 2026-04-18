@@ -8,7 +8,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { UbuntuOS } from '@/components/layout/UbuntuOS'
-import { AndroidOS } from '@/components/layout/AndroidOS'
+// import { AndroidOS } from '@/components/layout/AndroidOS'
 import { Hero } from '@/components/sections/Hero'
 
 const FeaturedProject = lazy(() =>
@@ -50,16 +50,18 @@ function SectionSkeleton({ cols = 2, rows = 2 }) {
 
 export default function App() {
   const [ubuntuOpen,  setUbuntuOpen]  = useState(false);
-  const [androidOpen, setAndroidOpen] = useState(false);
+  // const [androidOpen, setAndroidOpen] = useState(false);
 
   useEffect(() => {
     const handleOpenUbuntu  = () => setUbuntuOpen(true);
-    const handleOpenAndroid = () => setAndroidOpen(true);
+    // const handleOpenAndroid = () => setAndroidOpen(true);
+    
     document.addEventListener('open-ubuntu',  handleOpenUbuntu);
-    document.addEventListener('open-android', handleOpenAndroid);
+    // document.addEventListener('open-android', handleOpenAndroid);
+    
     return () => {
       document.removeEventListener('open-ubuntu',  handleOpenUbuntu);
-      document.removeEventListener('open-android', handleOpenAndroid);
+      // document.removeEventListener('open-android', handleOpenAndroid);
     };
   }, []);
 
@@ -67,10 +69,10 @@ export default function App() {
     <LanguageProvider>
       <AnimatePresence>
         {ubuntuOpen  && <UbuntuOS  key="ubuntu"  onClose={() => setUbuntuOpen(false)} />}
-        {androidOpen && <AndroidOS key="android" onClose={() => setAndroidOpen(false)} />}
+        {/* {androidOpen && <AndroidOS key="android" onClose={() => setAndroidOpen(false)} />} */}
       </AnimatePresence>
       <CommandPalette />
-      {!ubuntuOpen && !androidOpen && (
+      {!ubuntuOpen && (
         <TargetCursor 
           spinDuration={2}
           hideDefaultCursor={false}
@@ -79,7 +81,7 @@ export default function App() {
           targetSelector="a, button, .cursor-target, [role='button']"
         />
       )}
-      {!ubuntuOpen && !androidOpen && (
+      {!ubuntuOpen && (
         <>
           <ScrollProgress />
           <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />

@@ -156,7 +156,7 @@ export function Hero() {
         </motion.div>
 
         {/* Main Name Heading */}
-        <h1 className="mb-6 w-full text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-sm">
+        <h1 className="mb-6 w-full text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.15] md:leading-[1.05] tracking-tight text-white drop-shadow-sm">
           <AnimatedTitle text={site.name} />
         </h1>
 
@@ -180,22 +180,8 @@ export function Hero() {
             </button>
           </MagneticButton>
 
-          {/* Android — mobile only */}
-          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto md:hidden">
-            <button
-              onClick={() => document.dispatchEvent(new CustomEvent('open-android'))}
-              className="group relative flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-full border border-[#3ddc84]/20 bg-[#3ddc84]/[0.07] px-8 py-3.5 text-sm font-medium text-[#5df5a0] backdrop-blur-md transition-all hover:bg-[#3ddc84]/[0.14] hover:border-[#3ddc84]/40 hover:scale-105 active:scale-95"
-              title="Open Android Simulation"
-            >
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                <path d="M17.523 15.341a.5.5 0 1 1-.001 1 .5.5 0 0 1 .001-1m-11.046 0a.5.5 0 1 1-.001 1 .5.5 0 0 1 .001-1M17.7 9H6.3A.3.3 0 0 0 6 9.3v6.4a.3.3 0 0 0 .3.3h11.4a.3.3 0 0 0 .3-.3V9.3A.3.3 0 0 0 17.7 9M4.5 9.5h-1a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5m16 0h-1a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5M15.157 3.5l1.065-1.896a.25.25 0 1 0-.434-.25L14.69 3.27A6.994 6.994 0 0 0 12 2.75c-.94 0-1.84.19-2.69.52L8.212 1.354a.25.25 0 1 0-.434.25L8.843 3.5A7.248 7.248 0 0 0 4.75 9h14.5A7.248 7.248 0 0 0 15.157 3.5"/>
-              </svg>
-              Android
-            </button>
-          </MagneticButton>
-
-          {/* Ubuntu — desktop only */}
-          <MagneticButton strength={0.3} radius={80} className="hidden md:block">
+          {/* Ubuntu Simulation - available on all devices */}
+          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
             <button
               onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
               className="group relative w-full sm:w-auto flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95"
