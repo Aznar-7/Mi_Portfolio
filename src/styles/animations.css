@@ -57,12 +57,18 @@
   100% { transform: translateY(200%); opacity: 0; }
 }
 
-/* ── Scroll wheel — mouse icon indicator ────────────────────── */
-@keyframes scroll-wheel {
-  0%        { transform: translateY(0);   opacity: 0; }
-  15%       { opacity: 1; }
-  65%       { transform: translateY(9px); opacity: 0; }
-  100%      { transform: translateY(0);   opacity: 0; }
+/* ── Mouse scroll indicator ──────────────────────────────────── */
+@keyframes mouse-scroll-dot {
+  0%   { transform: translateY(0);     opacity: 1; }
+  52%  { transform: translateY(12px);  opacity: 0; }
+  53%  { transform: translateY(0);     opacity: 0; }
+  78%  { transform: translateY(0);     opacity: 0; }
+  100% { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes mouse-glow-breathe {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(124, 106, 247, 0.22)); }
+  50%       { filter: drop-shadow(0 0 11px rgba(124, 106, 247, 0.6)); }
 }
 
 /* ── Gradient text utility ───────────────────────────────────── */

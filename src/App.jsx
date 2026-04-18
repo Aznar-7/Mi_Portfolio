@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { UbuntuOS } from '@/components/layout/UbuntuOS'
+import { AndroidOS } from '@/components/layout/AndroidOS'
 import { Hero } from '@/components/sections/Hero'
 
 const FeaturedProject = lazy(() =>
@@ -48,57 +49,68 @@ function SectionSkeleton({ cols = 2, rows = 2 }) {
 }
 
 export default function App() {
-  const [ubuntuOpen, setUbuntuOpen] = useState(false);
+  const [ubuntuOpen,  setUbuntuOpen]  = useState(false);
+  const [androidOpen, setAndroidOpen] = useState(false);
 
   useEffect(() => {
-    const handleOpenUbuntu = () => setUbuntuOpen(true);
-    document.addEventListener('open-ubuntu', handleOpenUbuntu);
-    return () => document.removeEventListener('open-ubuntu', handleOpenUbuntu);
+    const handleOpenUbuntu  = () => setUbuntuOpen(true);
+    const handleOpenAndroid = () => setAndroidOpen(true);
+    document.addEventListener('open-ubuntu',  handleOpenUbuntu);
+    document.addEventListener('open-android', handleOpenAndroid);
+    return () => {
+      document.removeEventListener('open-ubuntu',  handleOpenUbuntu);
+      document.removeEventListener('open-android', handleOpenAndroid);
+    };
   }, []);
 
   return (
     <LanguageProvider>
       <AnimatePresence>
-        {ubuntuOpen && <UbuntuOS onClose={() => setUbuntuOpen(false)} />}
+        {ubuntuOpen  && <UbuntuOS  key="ubuntu"  onClose={() => setUbuntuOpen(false)} />}
+        {androidOpen && <AndroidOS key="android" onClose={() => setAndroidOpen(false)} />}
       </AnimatePresence>
       <CommandPalette />
-      {!ubuntuOpen && (
+      {!ubuntuOpen && !androidOpen && (
         <TargetCursor 
           spinDuration={2}
-          hideDefaultCursor={true}
+          hideDefaultCursor={false}
           parallaxOn={true}
           hoverDuration={0.2}
           targetSelector="a, button, .cursor-target, [role='button']"
         />
       )}
-      <ScrollProgress />
-      <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />
-      <Navbar />
-      <main style={{ position: 'relative', zIndex: 10 }}>
-        <Hero />
-        <Suspense fallback={<SectionSkeleton cols={2} rows={2} />}>
-          <FeaturedProject />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={1} rows={3} />}>
-          <Experience />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={3} rows={2} />}>
-          <Projects />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={4} rows={2} />}>
-          <Skills />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={2} rows={1} />}>
-          <About />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
-          <CubesSection />
-        </Suspense>
-        <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
-          <Contact />
-        </Suspense>
-      </main>
-      <Footer />
+      {!ubuntuOpen && !androidOpen && (
+        <>
+          <ScrollProgress />
+          <Threads color={[0.486, 0.416, 0.969]} amplitude={1.2} distance={0.3} />
+          <Navbar />
+          <main style={{ position: 'relative', zIndex: 10 }}>
+            <Hero />
+            <Suspense fallback={<SectionSkeleton cols={2} rows={2} />}>
+              <FeaturedProject />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={1} rows={3} />}>
+              <Experience />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={3} rows={2} />}>
+              <Projects />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={4} rows={2} />}>
+              <Skills />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={2} rows={1} />}>
+              <About />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
+              <CubesSection />
+            </Suspense>
+            <Suspense fallback={<SectionSkeleton cols={1} rows={1} />}>
+              <Contact />
+            </Suspense>
+          </main>
+          <Footer />
+        </>
+      )}
     </LanguageProvider>
   )
 }

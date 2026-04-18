@@ -46,14 +46,14 @@ export const projects = [
     ],
     metrics: [
       {
-        label: { es: 'Reducción de carga', en: 'Load time reduced' },
-        value: '40%',
-        icon: 'Zap'
+        label: { es: 'Capas de arquitectura', en: 'Architecture layers' },
+        value: '4',
+        icon: 'Layers'
       },
       {
-        label: { es: 'Usuarios activos', en: 'Active users' },
-        value: '+1.2K',
-        icon: 'Users'
+        label: { es: 'Tecnologías integradas', en: 'Integrated technologies' },
+        value: '6',
+        icon: 'Zap'
       }
     ],
     image: '/images/projects/utnhub/cover.png',

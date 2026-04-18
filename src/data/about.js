@@ -1,14 +1,14 @@
 export const about = {
   bio: {
     es: [
-      'Soy un desarrollador full-stack con experiencia real en construcción de sistemas corporativos desde cero. Mi enfoque combina sólidas bases técnicas en frontend (React, Tailwind) y backend (Django), con capacidad de deployar y mantener infraestructura en la nube.',
-      'Actualmente curso Ingeniería en Sistemas en UTN, donde profundizo en paradigmas como programación funcional (Haskell) y lógica (Prolog), lo que refuerza mi capacidad de pensar en términos de arquitectura y diseño de sistemas.',
-      'Busco roles donde pueda construir productos completos — desde el diseño de la API hasta el deploy en producción — trabajando en equipos que valoren la calidad técnica y el impacto real.',
+      'Construyo sistemas reales desde cero — React en el frontend, Django en el backend, Oracle Cloud en producción. No solo escribo código: diseño la arquitectura, conecto las piezas y lo dejo corriendo.',
+      'Estudio Ingeniería en Sistemas en la UTN. Los paradigmas que veo ahí — funcional en Haskell, lógico en Prolog — me cambiaron la forma de pensar los problemas. Me interesa entender cómo funcionan las cosas, no solo usarlas.',
+      'Me gustan los proyectos con peso real: flujos complejos, sistemas que aguantan carga, integraciones que no deberían funcionar pero funcionan. Si tenés algo así, hablemos.',
     ],
     en: [
-      "I'm a full-stack developer with real experience building corporate systems from the ground up. My approach combines strong technical foundations in frontend (React, Tailwind) and backend (Django), with the ability to deploy and maintain cloud infrastructure.",
-      'I\'m currently studying Systems Engineering at UTN, where I deepen my knowledge in paradigms like functional programming (Haskell) and logic programming (Prolog), reinforcing my ability to think in terms of architecture and system design.',
-      'I\'m looking for roles where I can build complete products — from API design to production deployment — working in teams that value technical quality and real impact.',
+      "I build real systems from scratch — React on the frontend, Django on the backend, Oracle Cloud in production. I don't just write code: I design the architecture, connect the parts, and keep it running.",
+      "I study Systems Engineering at UTN. The paradigms I encounter there — functional with Haskell, logic with Prolog — changed how I think about problems. I care about understanding how things work, not just using them.",
+      "I'm drawn to projects with real weight: complex flows, systems that hold under load, integrations that shouldn't work but do. If you have something like that, let's talk.",
     ],
   },
   quickFacts: [

@@ -27,7 +27,7 @@ export const academic = [
       en: 'Information Systems Engineering',
     },
     institution: 'UTN — Universidad Tecnológica Nacional',
-    period: { es: '2021 — Presente', en: '2021 — Present' },
+    period: { es: '2024 — Presente', en: '2024 — Present' },
     highlights: {
       es: [
         'Programación funcional en Haskell — tipos algebraicos, funciones de orden superior, monads, evaluación lazy.',

@@ -9,9 +9,9 @@ export const translations = {
     },
     hero: {
       available: 'Disponible para nuevos proyectos',
-      tagline:   'Building systems that scale\nfrom prototype to production.',
-      description: 'Full Stack Developer especializado en React, Django e infraestructura cloud. Construyo sistemas end-to-end con foco en arquitectura escalable.',
-      cta_primary:   'Ver UTN Hub',
+      tagline:   'Del pixel a la nube.\nSin puntos ciegos.',
+      description: 'Especializado en crear ecosistemas web robustos. Desde animaciones a bajo nivel en React hasta arquitecturas escalables en la nube. Resolviendo problemas completos, sin parches temporales.',
+      cta_primary:   'Ver trabajo',
       cta_secondary: 'Contacto',
       stats: [
         { value: '2+',  label: 'Años de exp' },
@@ -71,6 +71,17 @@ export const translations = {
       'in-development': 'En desarrollo',
       completed:        'Completado',
     },
+    interact: {
+      title:    'Interactúa',
+      subtitle: 'Arrastrá el cursor sobre los cubos o hacé click para crear ondas.',
+      available_now: 'Disponible ahora',
+      mode_label: 'Modo',
+      modes: {
+        calm:  'Suave',
+        chaos: 'Caos',
+        neon:  'Neon',
+      },
+    },
     footer: { rights: 'Todos los derechos reservados.' },
   },
 
@@ -84,9 +95,9 @@ export const translations = {
     },
     hero: {
       available: 'Open to new opportunities',
-      tagline:   'Building systems that scale\nfrom prototype to production.',
-      description: 'Full Stack Developer specializing in React, Django, and cloud infrastructure. I build end-to-end systems focused on scalable architecture.',
-      cta_primary:   'View UTN Hub',
+      tagline:   'From pixel to cloud.\nNo blind spots.',
+      description: 'Specialized in building robust web ecosystems. From low-level React animations to scalable cloud architectures. Solving complete problems, without temporary patches.',
+      cta_primary:   'See my work',
       cta_secondary: 'Contact',
       stats: [
         { value: '2+',  label: 'Years exp' },
@@ -145,6 +156,17 @@ export const translations = {
     status: {
       'in-development': 'In development',
       completed:        'Completed',
+    },
+    interact: {
+      title:    'Interact',
+      subtitle: 'Move the cursor over the cubes or click to create ripple waves.',
+      available_now: 'Available now',
+      mode_label: 'Mode',
+      modes: {
+        calm:  'Calm',
+        chaos: 'Chaos',
+        neon:  'Neon',
+      },
     },
     footer: { rights: 'All rights reserved.' },
   },

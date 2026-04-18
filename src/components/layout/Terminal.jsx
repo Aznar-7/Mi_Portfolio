@@ -21,9 +21,20 @@ const COMMANDS = {
     '  ps aux            Running processes',
     '  uptime            Session uptime',
     '  date              Current date & time',
+    '  open <app>        Open an OS application',
+    '  apps              List available apps',
     '  sudo hire         Send a hire request',
     '  clear / Ctrl+L    Clear terminal',
     '  exit / Esc        Close terminal',
+    '',
+  ],
+  apps: () => [
+    '',
+    '  Aplicaciones disponibles — uso: open <nombre>',
+    '  ──────────────────────────────────────────────',
+    '  terminal   files     browser   notes     paint',
+    '  monitor    calc      settings  editor',
+    '  snake      mines     tetris    doom',
     '',
   ],
   whoami: () => [
@@ -155,6 +166,16 @@ const COMMANDS = {
   clear: () => [],
 }
 
+const APP_MAP = {
+  terminal: 'terminal', files: 'files', archivos: 'files',
+  browser: 'browser', firefox: 'browser',
+  settings: 'settings', configuracion: 'settings',
+  monitor: 'monitor', calculator: 'calc', calculadora: 'calc', calc: 'calc',
+  notes: 'notes', notas: 'notes', editor: 'editor',
+  snake: 'snake', mines: 'mines', minesweeper: 'mines', tetris: 'tetris',
+  doom: 'doom', paint: 'paint', pinta: 'paint',
+};
+
 function processCommand(raw, setLines, onClose) {
   const cmd = raw.trim().toLowerCase()
   if (!cmd) return []
@@ -167,6 +188,21 @@ function processCommand(raw, setLines, onClose) {
     return null
   }
   if (COMMANDS[cmd]) return COMMANDS[cmd]()
+
+  // Prefix commands
+  const parts = cmd.split(/\s+/)
+  const base = parts[0]
+  const arg  = parts.slice(1).join(' ')
+
+  if (base === 'open') {
+    const appId = APP_MAP[arg]
+    if (appId) {
+      window.dispatchEvent(new CustomEvent('ubuntu-open-app', { detail: { app: appId } }))
+      return [`  ✓ Abriendo ${arg}...`, '']
+    }
+    return [`  open: aplicación no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
+  }
+
   return [`  command not found: ${cmd}  (type 'help' for available commands)`, '']
 }
 

@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Mail, ArrowRight } from 'lucide-react'
+import { Copy, Check, ArrowUpRight } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { useLang } from '@/contexts/LanguageContext'
@@ -7,89 +8,140 @@ import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
+const ease = [0.16, 1, 0.3, 1]
+
+const fp = (delay = 0, reduced) =>
+  reduced ? {} : {
+    initial:    { opacity: 0, y: 18 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport:   { once: true },
+    transition: { duration: 0.6, delay, ease },
+  }
+
 export function Contact() {
-  const reduced = useReducedMotion()
+  const reduced  = useReducedMotion()
   const { lang } = useLang()
-  const T = translations[lang].contact
+  const T        = translations[lang].contact
+  const [copied, setCopied] = useState(false)
+
+  const githubUser  = site.github.split('github.com/')[1]  ?? 'GitHub'
+  const linkedinSlug = site.linkedin.split('/in/')[1]?.replace(/\/$/, '') ?? 'LinkedIn'
+
+  const copyEmail = async () => {
+    try { await navigator.clipboard.writeText(site.email); setCopied(true); setTimeout(() => setCopied(false), 2200) } catch {}
+  }
 
   return (
     <SectionWrapper id="contact">
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[var(--bg-surface)] px-5 py-12 text-center shadow-2xl sm:px-8 sm:py-16 md:px-16 md:py-24">
-        {/* Radial glow */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse 55% 45% at 50% 100%, rgba(124,106,247,0.14) 0%, transparent 70%)' }}
-        />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/35 to-transparent" />
 
-        <div className="relative z-10">
-          <motion.p
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-4 font-mono text-[11px] tracking-[0.16em] text-[var(--accent)] uppercase"
-          >
+      {/* Ghost number — large decorative watermark */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 select-none overflow-hidden font-black leading-none tracking-[-0.06em] text-white/[0.022]"
+        style={{ fontSize: 'clamp(9rem, 24vw, 20rem)' }}
+      >
+        06
+      </div>
+
+      {/* Top rule */}
+      <div className="mb-12 h-px w-full bg-gradient-to-r from-[var(--accent)]/35 via-white/[0.07] to-transparent" />
+
+      {/* Header row: title left / availability right */}
+      <div className="mb-12 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+        <div>
+          <motion.p {...fp(0, reduced)} className="mb-5 font-mono text-[10px] tracking-[0.2em] text-[var(--accent)] uppercase">
             {T.label}
           </motion.p>
-
           <motion.h2
-            initial={reduced ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, delay: 0.1 }}
-            className="mb-5 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.04em] text-[var(--text-primary)]"
+            {...fp(0.06, reduced)}
+            className="text-[clamp(2.8rem,9vw,6.5rem)] font-bold leading-[1.01] tracking-[-0.05em] text-[var(--text-primary)]"
           >
             {T.title}
           </motion.h2>
-
-          <motion.p
-            initial={reduced ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mx-auto mb-10 max-w-sm text-base leading-relaxed text-[var(--text-secondary)]"
-          >
-            {T.subtitle}
-          </motion.p>
-
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col items-center gap-4 w-full"
-          >
-            <a
-              href={`mailto:${site.email}`}
-              className="group inline-flex items-center justify-center gap-3 rounded-xl bg-[var(--accent)] px-5 py-4 sm:px-8 text-[13px] sm:text-[15px] font-semibold text-white transition-all hover:-translate-y-1 hover:bg-[var(--accent-hover)] hover:shadow-[0_14px_36px_rgba(124,106,247,0.38)] max-w-full overflow-hidden"
-            >
-              <Mail size={17} className="shrink-0" />
-              <span className="truncate">{site.email}</span>
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 shrink-0" />
-            </a>
-
-            <div className="flex flex-wrap justify-center gap-3">
-              <a
-                href={site.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg border border-white/[0.08] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:border-white/20 hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
-              >
-                <GitHubIcon size={15} /> GitHub
-              </a>
-              <a
-                href={site.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg border border-white/[0.08] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:border-white/20 hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
-              >
-                <LinkedInIcon size={15} /> LinkedIn
-              </a>
-            </div>
-          </motion.div>
         </div>
+
+        <motion.div {...fp(0.12, reduced)} className="flex flex-col items-start md:items-end gap-2 pb-1">
+          <div className="flex items-center gap-2.5">
+            <div className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-70" />
+              <span className="relative block h-2 w-2 rounded-full bg-green-500" />
+            </div>
+            <span className="font-mono text-[11px] font-semibold tracking-[0.14em] text-green-400/85 uppercase">
+              {lang === 'es' ? 'Disponible' : 'Available'}
+            </span>
+          </div>
+          <span className="font-mono text-[10px] text-[var(--text-muted)] tracking-wide">
+            {lang === 'es' ? 'Freelance · Roles · Colabs' : 'Freelance · Roles · Collabs'}
+          </span>
+        </motion.div>
       </div>
+
+      {/* Divider */}
+      <motion.div {...fp(0.18, reduced)} className="mb-14 h-px w-full bg-white/[0.06]" />
+
+      {/* Email — main focal point */}
+      <motion.div {...fp(0.24, reduced)} className="mb-3 flex flex-wrap items-center gap-4">
+        <a
+          href={`mailto:${site.email}`}
+          className="group relative font-mono text-[clamp(1rem,3.2vw,1.85rem)] font-semibold tracking-tight text-[var(--text-secondary)] transition-colors duration-200 hover:text-[var(--text-primary)]"
+        >
+          {/* Animated underline */}
+          <span className="absolute inset-x-0 -bottom-0.5 block h-[1.5px] scale-x-0 origin-left bg-[var(--accent)]/60 transition-transform duration-300 group-hover:scale-x-100" />
+          {site.email}
+        </a>
+
+        <button
+          onClick={copyEmail}
+          title={copied ? (lang === 'es' ? 'Copiado' : 'Copied') : (lang === 'es' ? 'Copiar email' : 'Copy email')}
+          className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] px-3 py-1.5 font-mono text-[10px] font-semibold tracking-widest uppercase text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--accent)]/35 hover:bg-[var(--accent)]/[0.07] hover:text-[var(--accent)]"
+        >
+          {copied
+            ? <><Check size={11} />{lang === 'es' ? 'Copiado' : 'Copied'}</>
+            : <><Copy size={11} />{lang === 'es' ? 'Copiar' : 'Copy'}</>
+          }
+        </button>
+      </motion.div>
+
+      {/* Subtitle */}
+      <motion.p {...fp(0.3, reduced)} className="mb-14 max-w-sm text-[14.5px] leading-[1.72] text-[var(--text-muted)]">
+        {T.subtitle}
+      </motion.p>
+
+      {/* Social links — plain text, no cards */}
+      <motion.div {...fp(0.36, reduced)} className="flex items-center gap-6 sm:gap-10">
+        <a
+          href={site.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2 font-mono text-[12px] font-bold tracking-[0.18em] text-[var(--text-muted)] uppercase transition-colors duration-200 hover:text-[var(--text-primary)]"
+        >
+          <GitHubIcon size={14} />
+          GitHub
+          <ArrowUpRight
+            size={11}
+            className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        </a>
+
+        <div className="h-4 w-px bg-white/[0.1]" />
+
+        <a
+          href={site.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2 font-mono text-[12px] font-bold tracking-[0.18em] text-[var(--text-muted)] uppercase transition-colors duration-200 hover:text-[#4ea7d8]"
+        >
+          <LinkedInIcon size={14} />
+          LinkedIn
+          <ArrowUpRight
+            size={11}
+            className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        </a>
+      </motion.div>
+
+      {/* Bottom rule */}
+      <motion.div {...fp(0.42, reduced)} className="mt-16 h-px w-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
     </SectionWrapper>
   )
 }

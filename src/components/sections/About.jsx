@@ -21,99 +21,107 @@ export function About() {
     <SectionWrapper id="about">
       <SectionHeading label={T.label} title={T.title} />
 
-      <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-20 lg:items-center">
-        {/* Bio */}
-        <div className="flex flex-col gap-6 relative">
-          <div className="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-[var(--accent)]/[0.04] blur-3xl" />
+      <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-14 lg:items-stretch">
+        
+        {/* Left Column: Bio with refined typography */}
+        <div className="flex flex-col justify-center relative">
+          {/* Subtle accent glow behind bio */}
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-gradient-to-r from-[var(--accent)]/10 to-indigo-500/10 blur-[80px] pointer-events-none" />
           
-          {bio.map((para, i) => (
-            <motion.p
-              key={i}
-              initial={reduced ? false : { opacity: 0, y: 16 }}
-              whileInView={reduced ? {} : { opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-30px' }}
-              transition={{ duration: 0.6, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[16px] leading-[1.85] text-[var(--text-secondary)] md:text-[17px] relative z-10"
+          <div className="space-y-6 relative z-10">
+            {bio.map((para, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={reduced ? { duration: 0 } : { duration: 0.7, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                className={`text-[16px] md:text-[17px] leading-[1.8] tracking-wide ${i === 0 ? 'text-white/90 font-medium' : 'text-white/60 font-light'}`}
+              >
+                {para}
+              </motion.p>
+            ))}
+          </div>
+
+          {/* Connect/Social Line */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="mt-10 flex flex-wrap items-center gap-4"
+          >
+            <a 
+              href="/ResumeVicenteAznar.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-6 py-2.5 text-sm font-medium text-[var(--accent)] transition-all hover:bg-[var(--accent)] hover:text-white"
             >
-              {para}
-            </motion.p>
-          ))}
+              <span>{lang === 'es' ? 'Descargar CV' : 'Download Resume'}</span>
+              <svg 
+                className="w-4 h-4 transition-transform group-hover:translate-x-1" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+            <div className="h-px w-12 bg-white/20 ml-2" />
+            <span className="font-mono text-xs text-white/40 tracking-[0.2em] font-medium uppercase">
+               {lang === 'es' ? 'Construyendo el futuro' : 'Building the future'}
+            </span>
+          </motion.div>
         </div>
 
-        {/* Quick facts card */}
-        <motion.div
-          initial={reduced ? false : { opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-          whileInView={reduced ? {} : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative group"
-        >
-          {/* Card Glow */}
-          <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-b from-[var(--accent)]/30 to-transparent opacity-0 blur-lg transition duration-700 group-hover:opacity-50" />
+        {/* Right Column: Bento Box Style Facts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-min">
           
-          <div className="relative overflow-hidden rounded-3xl border border-white/[0.05] bg-gradient-to-b from-[var(--bg-surface)] to-[var(--bg-base)] p-8 shadow-2xl transition-transform duration-500 hover:-translate-y-2 md:p-10">
-            {/* Top glass reflection */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)]/10 text-[var(--accent)]">
-                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-              </div>
-              <h3 className="font-mono text-[12px] font-bold tracking-[0.2em] text-[var(--text-primary)] uppercase">
-                {T.quick_facts}
-              </h3>
-            </div>
+          {/* Main Status Bento Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={reduced ? { duration: 0 } : { duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="col-span-1 sm:col-span-2 group relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-md hover:bg-white/[0.04] transition-colors"
+          >
+             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+             <div className="absolute right-0 top-0 -mr-16 -mt-16 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+             
+             <dt className="mb-3 font-mono text-[10px] font-semibold tracking-[0.16em] text-white/40 uppercase">
+                {lang === 'es' ? 'Ahora mismo' : 'Right now'}
+             </dt>
+             <dd className="flex items-center gap-4">
+               <div className="relative flex h-3 w-3 shrink-0">
+                 <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-70" />
+                 <span className="relative block h-3 w-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
+               </div>
+               <span className="text-[16px] leading-[1.6] text-white/90 font-medium">
+                 {lang === 'es'
+                   ? 'UTN Hub en desarrollo · Ing. en Sistemas cursando'
+                   : 'UTN Hub in development · Systems Engineering ongoing'}
+               </span>
+             </dd>
+          </motion.div>
 
-            <dl className="flex flex-col gap-6">
-              {about.quickFacts.map((fact) => (
-                <div key={l(fact.label, lang)} className="group/fact flex items-start gap-4">
-                  <div className="mt-1 h-1.5 w-1.5 rounded-full bg-[var(--text-muted)] transition-colors duration-300 group-hover/fact:bg-[var(--accent)]" />
-                  <div>
-                    <dt className="mb-1 font-mono text-[10px] sm:text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase opacity-70">
-                      {l(fact.label, lang)}
-                    </dt>
-                    <dd className="text-[15px] font-medium text-[var(--text-primary)] transition-colors duration-300 group-hover/fact:text-[var(--accent)]">
-                      {l(fact.value, lang)}
-                    </dd>
-                  </div>
-                </div>
-              ))}
-              
-              {/* Live Status Mock */}
-              <div className="my-2 border-t border-white/5 pt-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </div>
-                  <span className="font-mono text-[10px] sm:text-[11px] font-semibold tracking-widest text-[var(--text-muted)] uppercase">Live Status</span>
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#1DB954]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.24 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15.001 10.62 18.66 12.9c.42.24.6.84.3 1.26zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.54-1.02.72-1.56.42z"/>
-                    </svg>
-                    <div>
-                      <p className="text-xs font-semibold text-white">Coding Music</p>
-                      <p className="text-[10px] text-white/50">Synthwave · Lofi</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                    </svg>
-                    <div>
-                      <p className="text-xs font-semibold text-white">VS Code</p>
-                      <p className="text-[10px] text-white/50">Working on React Components</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </dl>
-          </div>
-        </motion.div>
+          {/* Quick Facts Mini Bentos */}
+          {about.quickFacts.map((fact, index) => (
+             <motion.div
+                key={l(fact.label, lang)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={reduced ? { duration: 0 } : { duration: 0.6, delay: 0.3 + (index * 0.1), ease: [0.16, 1, 0.3, 1] }}
+                className="group relative overflow-hidden rounded-3xl border border-white/[0.05] bg-white/[0.01] p-6 backdrop-blur-sm transition-all hover:bg-white/[0.03] hover:-translate-y-1 hover:border-white/[0.1] shadow-xl"
+             >
+                <div className="absolute bottom-0 right-0 -mr-8 -mb-8 h-24 w-24 rounded-full bg-[var(--accent)]/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <dt className="mb-2 font-mono text-[10px] font-semibold tracking-[0.16em] text-white/40 uppercase">
+                  {l(fact.label, lang)}
+                </dt>
+                <dd className="text-[15px] font-semibold leading-snug text-white/80 group-hover:text-[var(--accent)] transition-colors">
+                  {l(fact.value, lang)}
+                </dd>
+             </motion.div>
+          ))}
+        </div>
       </div>
     </SectionWrapper>
   )

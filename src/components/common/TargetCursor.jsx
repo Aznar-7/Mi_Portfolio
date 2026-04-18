@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { gsap } from 'gsap';
 import './TargetCursor.css';
 
@@ -9,6 +9,7 @@ const TargetCursor = ({
   hoverDuration = 0.2,
   parallaxOn = true
 }) => {
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const cursorRef = useRef(null);
   const cornersRef = useRef(null);
   const spinTl = useRef(null);
@@ -40,7 +41,12 @@ const TargetCursor = ({
   }, []);
 
   useEffect(() => {
-    if (!cursorRef.current) return;
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    setIsTouchDevice(isTouch);
+  }, []);
+
+  useEffect(() => {
+    if (isTouchDevice || !cursorRef.current) return;
 
     const originalCursor = document.body.style.cursor;
     if (hideDefaultCursor) {
@@ -292,17 +298,19 @@ const TargetCursor = ({
       targetCornerPositionsRef.current = null;
       activeStrengthRef.current = 0;
     };
-  }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, hoverDuration, parallaxOn]);
+  }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, hoverDuration, parallaxOn, isTouchDevice]);
 
   useEffect(() => {
-    if (!cursorRef.current || !spinTl.current) return;
+    if (isTouchDevice || !cursorRef.current || !spinTl.current) return;
     if (spinTl.current.isActive()) {
       spinTl.current.kill();
       spinTl.current = gsap
         .timeline({ repeat: -1 })
         .to(cursorRef.current, { rotation: '+=360', duration: spinDuration, ease: 'none' });
     }
-  }, [spinDuration]);
+  }, [spinDuration, isTouchDevice]);
+
+  if (isTouchDevice) return null;
 
   return (
     <div ref={cursorRef} className="target-cursor-wrapper" style={{ display: 'block', visibility: 'visible', zIndex: 9999999, pointerEvents: 'none' }}>

@@ -38,14 +38,14 @@ export function MagneticButton({ children, strength = 0.35, radius = 70, classNa
   // No magnetic effect on touch devices
   const isTouch = typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches
   if (isTouch) {
-    return <div className={className} style={style}>{children}</div>
+    return <div className={`inline-flex ${className}`} style={style}>{children}</div>
   }
 
   return (
     <motion.div
       ref={ref}
-      style={{ x, y, display: 'inline-flex', ...style }}
-      className={className}
+      style={{ x, y, ...style }}
+      className={`inline-flex ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
