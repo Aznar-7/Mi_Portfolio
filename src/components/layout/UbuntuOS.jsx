@@ -1454,7 +1454,8 @@ function BrowserApp({ lang }) {
     { id: 'skills',   label: 'Habilidades', icon: <Code size={14} className="text-blue-500" /> },
     { id: 'cv',       label: 'Experiencia', icon: <Briefcase size={14} className="text-green-500" /> },
     { id: 'contact',  label: 'Contacto', icon: <Mail size={14} className="text-red-500" /> },
-    { id: 'github',   label: 'GitHub (aznar-dev)', icon: <Globe size={14} className="text-gray-300" /> },
+    { id: 'github',   label: 'GitHub', icon: <Globe size={14} className="text-gray-300" /> },
+    { id: 'youtube',  label: 'YouTube', icon: <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" className="text-red-600"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> },
   ];
 
   return (
@@ -1570,82 +1571,31 @@ function BrowserApp({ lang }) {
           </div>
         )}
         {tab === 'github' && (
-          <div className="flex-1 flex flex-col h-full bg-[#0d1117] text-[#c9d1d9] overflow-hidden rounded-b-xl border-t border-[#30363d]">
-            {/* GitHub Navbar Mock */}
-            <div className="h-14 bg-[#161b22] border-b border-[#30363d] flex items-center px-4 gap-4 flex-shrink-0">
-              <div className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center font-bold">GH</div>
-              <div className="hidden sm:flex gap-4 text-sm font-semibold">
-                <span className="cursor-pointer hover:text-white transition-colors">Overview</span>
-                <span className="cursor-pointer hover:text-white transition-colors border-b-2 border-[#f78166] pb-4 mt-4">Repositories</span>
-                <span className="cursor-pointer hover:text-white transition-colors">Projects</span>
-                <span className="cursor-pointer hover:text-white transition-colors">Packages</span>
-              </div>
-              <a href={site.github} target="_blank" rel="noopener noreferrer" className="ml-auto bg-[#238636] text-white px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-[#2ea043] transition-colors flex items-center gap-1.5">
-                <ExternalLink size={12}/> Abrir Repo Original
-              </a>
+          <div className="h-full flex flex-col bg-[#0d1117] text-white">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d] flex-shrink-0">
+              <span className="text-xs text-[#8b949e] font-mono">{site.github}</span>
+              <a href={site.github} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-[#c9d1d9] hover:text-white font-medium"
+              ><ExternalLink size={11}/>Abrir original</a>
             </div>
-
-            {/* GitHub Profile Content Mock */}
-            <div className="flex-1 overflow-auto flex flex-col md:flex-row gap-8 p-6 lg:p-8 max-w-7xl mx-auto w-full">
-              {/* Sidebar */}
-              <div className="w-full md:w-1/4 flex flex-col gap-4">
-                <div className="w-full aspect-square rounded-full border border-[#30363d] overflow-hidden bg-[#21262d] flex items-center justify-center">
-                  <div className="text-4xl font-bold text-white/50">VA</div>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-[#c9d1d9]">{site.name}</h1>
-                  <h2 className="text-xl text-[#8b949e] font-light">aznar-dev</h2>
-                </div>
-                <button className="w-full bg-[#21262d] border border-[#363b42] text-[#c9d1d9] rounded-md py-1.5 text-sm font-semibold hover:bg-[#30363d] hover:border-[#8b949e] transition-colors">
-                  Follow
-                </button>
-                <div className="text-sm text-[#8b949e] leading-snug">{site.role} | Desarrollador de Software especializado en crear experiencias web únicas con impacto.</div>
-                <div className="flex flex-col gap-1.5 text-sm text-[#c9d1d9] mt-2">
-                  <div className="flex items-center gap-2"><Globe size={14} className="text-[#8b949e]" /> <a href="https://aznar-dev.com" className="hover:text-[#58a6ff] hover:underline transition-colors">aznar-dev.com</a></div>
-                  <div className="flex items-center gap-2"><Mail size={14} className="text-[#8b949e]" /> <a href={`mailto:${site.email}`} className="hover:text-[#58a6ff] hover:underline transition-colors">{site.email}</a></div>
-                </div>
-              </div>
-
-              {/* Main Content (Pinned Repos) */}
-              <div className="w-full md:w-3/4 flex flex-col gap-4">
-                <h3 className="text-[#c9d1d9] text-base mb-1">Pinned</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {projects.slice(0, 4).map(p => (
-                    <div key={p.id} className="border border-[#30363d] rounded-md p-4 bg-[#0d1117] flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <a href={site.github} target="_blank" rel="noopener noreferrer" className="text-[#58a6ff] hover:underline font-semibold flex items-center gap-2 text-[15px]">
-                          <FolderOpen size={14} className="text-[#8b949e]" />
-                          {p.title.toLowerCase().replace(/ /g, '-')}
-                        </a>
-                        <span className="text-xs border border-[#30363d] text-[#8b949e] px-2 py-0.5 rounded-full font-medium">Public</span>
-                      </div>
-                      <p className="text-xs text-[#8b949e] line-clamp-2">{l(p.tagline)}</p>
-                      <div className="flex items-center gap-3 mt-auto pt-2 text-xs text-[#8b949e]">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#f1e05a]"></div>
-                          {p.tech[0] || 'JavaScript'}
-                        </div>
-                        <div className="flex items-center gap-1 hover:text-[#58a6ff] cursor-pointer transition-colors"><Star size={14} /> {Math.floor(Math.random() * 50) + 12}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Contribution graph sketch */}
-                <h3 className="text-[#c9d1d9] text-base mt-4 mb-2">917 contributions in the last year</h3>
-                <div className="border border-[#30363d] rounded-md p-4 bg-[#0d1117] flex justify-center">
-                  <div className="flex gap-1 overflow-hidden opacity-80" style={{ transform: 'scale(0.8)' }}>
-                    {Array.from({ length: 30 }).map((_, col) => (
-                      <div key={col} className="flex flex-col gap-1">
-                        {Array.from({ length: 7 }).map((_, row) => (
-                          <div key={`${col}-${row}`} className="w-[10px] h-[10px] rounded-sm" style={{ backgroundColor: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'][Math.floor(Math.random() * 5)] }}></div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {/* Como GitHub bloquea (X-Frame-Options: deny), abrimos nuestro repo desde un iframe wrapper como github1s.com 
+                o mostramos la URL pura con disclaimer de que GitHub bloquea iframes, o podemos usar el servicio "1s" */}
+            <div className="flex-1 w-full bg-[#0d1117] text-white flex flex-col items-center justify-center gap-4">
+               <Globe className="w-12 h-12 text-[#58a6ff] opacity-50" />
+               <p className="text-center px-4 max-w-md text-gray-400">GitHub impide renderizar su web original dentro de otra aplicación web (política de seguridad).</p>
+               <a href={site.github} target="_blank" rel="noopener noreferrer" className="bg-[#238636] hover:bg-[#2ea043] px-5 py-2.5 rounded-md font-semibold text-sm transition-colors text-white mt-2">Visitar Perfil Oficial en nueva pestaña</a>
             </div>
+          </div>
+        )}
+        {tab === 'youtube' && (
+          <div className="h-full flex flex-col bg-black">
+            <iframe 
+              src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=0" 
+              className="flex-1 w-full border-0" 
+              title="YouTube"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         )}
       </div>
@@ -1955,7 +1905,7 @@ export function UbuntuOS({ onClose }) {
           {/* Main Apps */}
           <DesktopIcon icon={FolderOpen}     label="Proyectos" top={20}  left={20} constraintsRef={desktopRef} onClick={() => openApp('files')} />
           <DesktopIcon icon={TerminalSquare} label="Terminal"  top={110} left={20} constraintsRef={desktopRef} onClick={() => openApp('terminal')} />
-          <DesktopIcon icon={Globe}          label="Navegador" top={200} left={20} constraintsRef={desktopRef} onClick={() => openApp('browser')} />
+          <DesktopIcon icon={Globe}          label="Firefox" top={200} left={20} constraintsRef={desktopRef} onClick={() => openApp('browser')} />
           <DesktopIcon icon={StickyNote}     label="Notas"     top={290} left={20} constraintsRef={desktopRef} onClick={() => openApp('notes')} />
           
           {/* Extras / Tools */}
