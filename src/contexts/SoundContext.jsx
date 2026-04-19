@@ -150,6 +150,13 @@ export function SoundProvider({ children }) {
     localStorage.setItem('site_muted', isMuted)
   }, [isMuted])
 
+  const startBgmExplicitly = useCallback(() => {
+    init()
+    if (bgmRef.current && !isMuted && bgmAllowed) {
+      bgmRef.current.play().catch(e => console.warn('BGM falló en iniciar', e))
+    }
+  }, [init, isMuted, bgmAllowed])
+
   const toggleMute = useCallback(() => {
     init()
     setIsMuted(m => !m)
@@ -317,6 +324,7 @@ export function SoundProvider({ children }) {
     toggleMute,
     bgmAllowed,
     setBgmAllowed,
+    startBgmExplicitly,
     // Core
     playHover,
     playClick,
@@ -345,7 +353,7 @@ export function SoundProvider({ children }) {
 ───────────────────────────────────────────────────────────── */
 const NOOP = () => {}
 const FALLBACK = {
-  isMuted: true, toggleMute: NOOP, bgmAllowed: false, setBgmAllowed: NOOP,
+  isMuted: true, toggleMute: NOOP, bgmAllowed: false, setBgmAllowed: NOOP, startBgmExplicitly: NOOP,
   playHover: NOOP, playClick: NOOP, playTyping: NOOP,
   playOpenApp: NOOP, playCloseApp: NOOP,
   playSuccess: NOOP, playNavigation: NOOP, playSelect: NOOP, playCarousel: NOOP,

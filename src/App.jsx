@@ -50,8 +50,11 @@ function SectionSkeleton({ cols = 2, rows = 2 }) {
   )
 }
 
+import { useSoundEffects } from '@/contexts/SoundContext'
+
 function BootSequence({ onComplete }) {
   const [clicked, setClicked] = useState(false)
+  const { startBgmExplicitly } = useSoundEffects()
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -65,13 +68,19 @@ function BootSequence({ onComplete }) {
       const timer = setTimeout(() => {
         document.body.style.overflow = ''
         onComplete()
-      }, 800)
+      }, 3500) // Animación de línea que se expande dura ~3.5s
       return () => clearTimeout(timer)
     }
   }, [clicked, onComplete])
 
   useEffect(() => {
-    const handleStart = () => setClicked(true)
+    const handleStart = () => {
+      if (!clicked) {
+        setClicked(true)
+        startBgmExplicitly()
+      }
+    }
+    
     if (!clicked) {
       window.addEventListener('keydown', handleStart)
       window.addEventListener('click', handleStart)
@@ -80,45 +89,60 @@ function BootSequence({ onComplete }) {
         window.removeEventListener('click', handleStart)
       }
     }
-  }, [clicked])
+  }, [clicked, startBgmExplicitly])
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-[#050505]"
+      className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-[#050508] cursor-pointer"
       initial={{ opacity: 1 }}
-      animate={{ opacity: clicked ? 0 : 1 }}
+      animate={{ opacity: clicked ? [1, 1, 0] : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
+      transition={{ duration: 3.5, times: [0, 0.8, 1], ease: 'easeInOut' }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2, ease: 'easeOut' }}
-        className="flex flex-col items-center justify-center gap-12"
-      >
-        <div className="relative flex flex-col items-center">
-          <div 
-            className="text-white/80 text-4xl md:text-5xl font-light tracking-[0.4em] font-mono select-none"
-            style={{ textShadow: '0 0 40px rgba(255,255,255,0.4)' }}
-          >
-            VA<span className="text-[#E95420] ml-[-0.2em]">_</span>
-          </div>
-          <motion.div 
-            className="absolute -inset-10 bg-white/5 blur-3xl rounded-full pointer-events-none"
-            animate={{ opacity: [0.2, 0.5, 0.2] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
+      {/* Estado inactivo: Esperando Interacción */}
+      {!clicked ? (
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: clicked ? 0 : [0, 1, 0] }}
-          transition={{ delay: 1.5, duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="text-white/30 text-[10px] md:text-xs font-mono tracking-widest uppercase cursor-pointer"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className="text-white/40 text-xs md:text-sm tracking-[0.4em] font-light uppercase select-none"
         >
-          {clicked ? 'LOADING...' : 'PRESS ANY KEY OR CLICK TO START'}
+          Press any button to start
         </motion.div>
-      </motion.div>
+      ) : (
+        /* Estado Activo: Animación de PS4 Boot (Línea central) */
+        <div className="relative w-full h-[2px] flex justify-center items-center">
+          {/* Línea Principal (Se expande) */}
+          <motion.div
+            className="absolute bg-white rounded-full"
+            initial={{ width: 0, opacity: 0, height: '2px', boxShadow: '0 0 0px #4169E1' }}
+            animate={{ 
+              width: ['0%', '15%', '100%'],
+              opacity: [0, 1, 0.2],
+              height: ['2px', '4px', '1px'],
+              boxShadow: [
+                '0 0 0px #4169E1', 
+                '0 0 20px 4px #4169E1, 0 0 40px 10px #7C6AEA', 
+                '0 0 80px 15px #7C6AEA, 0 0 120px 30px #ffffff'
+              ] 
+            }}
+            transition={{ duration: 2.8, times: [0, 0.4, 1], ease: 'easeInOut' }}
+          />
+
+          {/* Flash Blanco en el centro (Sparkle) */}
+          <motion.div
+            className="absolute bg-white rounded-full"
+            initial={{ width: 0, height: 0, opacity: 0 }}
+            animate={{
+              width: ['0px', '250px', '0px'],
+              height: ['0px', '15px', '0px'],
+              opacity: [0, 1, 0],
+              boxShadow: ['0 0 0px white', '0 0 100px 30px white', '0 0 0px white']
+            }}
+            transition={{ duration: 1.8, ease: 'easeInOut', delay: 0.2 }}
+          />
+        </div>
+      )}
     </motion.div>
   )
 }
