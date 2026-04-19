@@ -26,7 +26,7 @@ export const about = {
     },
     {
       label: { es: 'Idiomas', en: 'Languages' },
-      value: { es: 'Español (nativo), Inglés (profesional)', en: 'Spanish (native), English (professional)' },
+      value: { es: 'Español (nativo), Inglés (C1), Portugués (Basico)', en: 'Spanish (native), English (C1), Portuguese (Basic)' },
     },
   ],
 }

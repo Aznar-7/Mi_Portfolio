@@ -1,28 +1,30 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Music, Shuffle, Repeat } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Shuffle, Repeat } from 'lucide-react';
 
 const PLAYLIST = [
-  { id: 1, title: 'Lo-Fi Study Beats',   artist: 'Chillhop',        duration: 214, cover: '#7c6af7' },
-  { id: 2, title: 'Tokyo Dreaming',       artist: 'Nujabes',         duration: 187, cover: '#E95420' },
-  { id: 3, title: 'Coffee & Code',        artist: 'Lofi Hip Hop',    duration: 203, cover: '#4ade80' },
-  { id: 4, title: 'Midnight Compile',     artist: 'Synthwave Dev',   duration: 241, cover: '#22d3ee' },
-  { id: 5, title: 'Late Night Deploy',    artist: 'Chill Beats',     duration: 198, cover: '#a78bfa' },
-  { id: 6, title: 'git commit -m "flow"', artist: 'Developer Mix',   duration: 176, cover: '#fb923c' },
+  { id: 1, title: 'Lofi Study',          artist: 'FASSounds',       duration: 146, cover: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=300&q=80', url: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3' },
+  { id: 2, title: 'Good Night',          artist: 'FASSounds',       duration: 147, cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a4af4048?auto=format&fit=crop&w=300&q=80', url: 'https://cdn.pixabay.com/audio/2022/03/15/audio_248559ebbf.mp3' },
+  { id: 3, title: 'Chill Abstract (Intention)', artist: 'Coma-Media', duration: 111, cover: 'https://images.unsplash.com/photo-1478737270239-2feae9e9d722?auto=format&fit=crop&w=300&q=80', url: 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3' },
+  { id: 4, title: 'Lofi Chill (The Boy)',artist: 'Guz-beats',       duration: 151, cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80', url: 'https://cdn.pixabay.com/audio/2024/09/24/audio_33a011d8fb.mp3' },
+  { id: 5, title: 'Nightfall Beats',     artist: 'Lofi-Chill',      duration: 122, cover: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=300&q=80', url: 'https://cdn.pixabay.com/audio/2022/11/22/audio_11cfcfb6ab.mp3' }
 ];
 
 function fmt(s) {
-  const m = Math.floor(s / 60), ss = s % 60;
+  if (isNaN(s) || !s) return '0:00';
+  const m = Math.floor(s / 60), ss = Math.floor(s % 60);
   return `${m}:${String(ss).padStart(2, '0')}`;
 }
 
 export function MusicPlayer({ onNowPlaying }) {
-  const [idx,     setIdx]     = useState(0);
+  const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [volume,  setVolume]  = useState(75);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(75);
   const [shuffle, setShuffle] = useState(false);
-  const [repeat,  setRepeat]  = useState(false);
-  const intervalRef           = useRef(null);
+  const [repeat, setRepeat] = useState(false);
+
+  const audioRef = useRef(null);
 
   const song = PLAYLIST[idx];
 
@@ -31,146 +33,213 @@ export function MusicPlayer({ onNowPlaying }) {
       ? Math.floor(Math.random() * PLAYLIST.length)
       : (idx + 1) % PLAYLIST.length;
     setIdx(nextIdx);
-    setElapsed(0);
+    setPlaying(true);
   }, [idx, shuffle]);
 
-  // Auto-advance on song end
+  // Initialize audio element
   useEffect(() => {
-    if (!playing) return;
-    intervalRef.current = setInterval(() => {
-      setElapsed(e => {
-        if (e >= song.duration) {
-          if (repeat) return 0;
-          next();
-          return 0;
-        }
-        return e + 1;
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    const audio = audioRef.current;
+
+    const handleTimeUpdate = () => setElapsed(audio.currentTime);
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleEnded = () => {
+      if (repeat) {
+        audio.currentTime = 0;
+        audio.play();
+      } else {
+        next();
+      }
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [repeat, shuffle, idx, next]);
+
+  // Handle src change
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    
+    if (audio.src !== song.url) {
+        audio.src = song.url;
+        audio.load();
+    }
+    
+    if (playing) {
+      audio.play().catch(e => console.error("Audio playback failed", e));
+    }
+  }, [idx, song.url, playing]);
+
+  // Handle play/pause
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    
+    if (playing) {
+      audio.play().catch(e => {
+        console.error("Audio playback failed", e);
+        setPlaying(false);
       });
-    }, 1000);
-    return () => clearInterval(intervalRef.current);
-  }, [playing, song.duration, next, repeat]);
+    } else {
+      audio.pause();
+    }
+  }, [playing]);
+
+  // Handle volume
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume / 100;
+  }, [volume]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+    };
+  }, []);
+
+  const prev = () => {
+    if (!audioRef.current) return;
+    if (audioRef.current.currentTime > 3) {
+      audioRef.current.currentTime = 0;
+      return;
+    }
+    setIdx((idx - 1 + PLAYLIST.length) % PLAYLIST.length);
+    setPlaying(true);
+  };
 
   // Notify parent of now-playing
   useEffect(() => {
     onNowPlaying?.(playing ? song : null);
   }, [playing, song, onNowPlaying]);
 
-  const progress = (elapsed / song.duration) * 100;
-
-  const prev = () => {
-    if (elapsed > 3) { setElapsed(0); return; }
-    setIdx(i => (i - 1 + PLAYLIST.length) % PLAYLIST.length);
-    setElapsed(0);
-  };
+  const progress = duration > 0 ? (elapsed / duration) * 100 : 0;
 
   return (
-    <div className="h-full bg-[#1a1a2e] flex flex-col overflow-hidden select-none">
-      {/* Now playing panel */}
-      <div className="flex flex-col items-center justify-center gap-6 p-8 flex-shrink-0"
-        style={{ background: `linear-gradient(160deg, ${song.cover}18 0%, transparent 70%)` }}
-      >
-        {/* Album art */}
-        <div className="w-40 h-40 rounded-2xl shadow-2xl flex items-center justify-center relative overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${song.cover}aa, ${song.cover}44)` }}
-        >
-          {playing && (
-            <div className="absolute inset-0 rounded-2xl animate-pulse"
-              style={{ boxShadow: `0 0 40px ${song.cover}55` }}
-            />
-          )}
-          <Music size={56} className="text-white/60" strokeWidth={1} />
-        </div>
-
-        {/* Title */}
-        <div className="text-center">
-          <div className="text-white font-semibold text-lg leading-snug">{song.title}</div>
-          <div className="text-white/45 text-sm mt-0.5">{song.artist}</div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full px-2 flex flex-col gap-1.5">
-          <div
-            className="w-full h-1 bg-white/10 rounded-full cursor-pointer group relative"
-            onClick={e => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const ratio = (e.clientX - rect.left) / rect.width;
-              setElapsed(Math.floor(ratio * song.duration));
-            }}
-          >
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${progress}%`, background: song.cover }}
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1/2"
-              style={{ left: `${progress}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-white/30 font-mono">
-            <span>{fmt(elapsed)}</span>
-            <span>{fmt(song.duration)}</span>
+    <div className="h-full bg-[#121212] flex flex-col font-sans select-none text-white">
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar/Playlist */}
+        <div className="w-1/3 min-w-[200px] border-r border-[#282828] flex flex-col bg-[#000000]">
+          <div className="p-4 text-xl font-bold tracking-tight">Tu Biblioteca</div>
+          <div className="flex-1 overflow-y-auto px-2 pb-2" style={{ scrollbarWidth: 'none' }}>
+            {PLAYLIST.map((s, i) => (
+              <button key={s.id} onClick={() => { setIdx(i); setPlaying(true); }}
+                className={`w-full flex items-center gap-3 p-2 rounded-md transition-colors ${i === idx ? 'bg-[#2a2a2a]' : 'hover:bg-[#1a1a1a]'}`}
+              >
+                <img src={s.cover} alt={s.title} className="w-10 h-10 rounded shadow object-cover" />
+                <div className="flex-1 min-w-0 text-left">
+                  <div className={`text-[13px] truncate font-semibold ${i === idx ? 'text-[#1db954]' : 'text-white'}`}>{s.title}</div>
+                  <div className="text-[11px] text-white/60 truncate">{s.artist}</div>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-5">
-          <button onClick={() => setShuffle(v => !v)}
-            className={`transition-colors ${shuffle ? 'text-[#7c6af7]' : 'text-white/30 hover:text-white/60'}`}
-          >
-            <Shuffle size={15} />
-          </button>
-          <button onClick={prev} className="text-white/60 hover:text-white transition-colors">
-            <SkipBack size={20} fill="currentColor" />
-          </button>
-          <button
-            onClick={() => setPlaying(v => !v)}
-            className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-transform active:scale-95"
-            style={{ background: song.cover }}
-          >
-            {playing ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" className="ml-0.5" />}
-          </button>
-          <button onClick={next} className="text-white/60 hover:text-white transition-colors">
-            <SkipForward size={20} fill="currentColor" />
-          </button>
-          <button onClick={() => setRepeat(v => !v)}
-            className={`transition-colors ${repeat ? 'text-[#7c6af7]' : 'text-white/30 hover:text-white/60'}`}
-          >
-            <Repeat size={15} />
-          </button>
-        </div>
+        {/* Currently Playing View */}
+        <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-b from-[#333] to-[#121212]">
+          {/* Background overlay */}
+          <div className="absolute inset-0 bg-cover bg-center blur-[80px] opacity-30 pointer-events-none" style={{ backgroundImage: `url(${song.cover})` }} />
+          
+          <div className="z-10 flex flex-col items-center justify-center p-8 w-full max-w-md mt-6">
+              <img src={song.cover} alt={song.title} 
+                className="w-48 h-48 sm:w-[260px] sm:h-[260px] object-cover shadow-[0_15px_30px_rgba(0,0,0,0.6)] mb-8" 
+                style={{ borderRadius: '8px' }}
+              />
 
-        {/* Volume */}
-        <div className="flex items-center gap-3 w-full px-2">
-          <Volume2 size={13} className="text-white/30 flex-shrink-0" />
-          <input type="range" min="0" max="100" value={volume} onChange={e => setVolume(+e.target.value)}
-            className="flex-1 accent-[#E95420] h-1 cursor-pointer"
-          />
-          <span className="text-[10px] text-white/25 font-mono w-6 text-right">{volume}</span>
+              <div className="w-full">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1 truncate text-center">{song.title}</h2>
+                <p className="text-sm sm:text-base text-white/70 mb-6 truncate text-center">{song.artist}</p>
+              </div>
+          </div>
         </div>
       </div>
 
-      {/* Playlist */}
-      <div className="flex-1 overflow-y-auto border-t border-white/[0.06]">
-        <div className="px-3 py-2 text-[10px] font-bold text-white/25 uppercase tracking-widest">Playlist</div>
-        {PLAYLIST.map((s, i) => (
-          <button key={s.id} onClick={() => { setIdx(i); setElapsed(0); setPlaying(true); }}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/5 ${i === idx ? 'bg-white/[0.07]' : ''}`}
-          >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: `${s.cover}30` }}
+      {/* Spotify-style Bottom Player Bar */}
+      <div className="h-[90px] bg-[#181818] border-t border-[#282828] flex items-center px-4 justify-between flex-shrink-0 gap-4">
+        
+        {/* Left: Track Info */}
+        <div className="flex items-center gap-3 w-[30%] min-w-[100px]">
+          <img src={song.cover} alt={song.title} className="w-14 h-14 rounded object-cover shadow-sm" />
+          <div className="min-w-0 flex-1 hidden sm:block">
+            <div className="text-[14px] text-white font-medium hover:underline cursor-pointer truncate">{song.title}</div>
+            <div className="text-[11px] text-white/70 hover:underline cursor-pointer truncate">{song.artist}</div>
+          </div>
+        </div>
+
+        {/* Center: Controls & Progress */}
+        <div className="flex flex-col items-center flex-1 max-w-[600px] mt-1">
+          <div className="flex items-center gap-5 sm:gap-6 mb-2">
+            <button onClick={() => setShuffle(!shuffle)} className={`transition-colors ${shuffle ? 'text-[#1db954]' : 'text-white/50 hover:text-white'}`}>
+              <Shuffle size={18} />
+            </button>
+            <button onClick={prev} className="text-white/70 hover:text-white transition-colors">
+              <SkipBack size={24} fill="currentColor" />
+            </button>
+            <button onClick={() => setPlaying(!playing)}
+              className="w-9 h-9 flex items-center justify-center bg-white text-black rounded-full hover:scale-105 transition-transform"
             >
-              {i === idx && playing
-                ? <Pause size={12} style={{ color: s.cover }} fill="currentColor" />
-                : <Play  size={12} style={{ color: s.cover }} fill="currentColor" className="ml-0.5" />
-              }
+              {playing ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+            </button>
+            <button onClick={next} className="text-white/70 hover:text-white transition-colors">
+              <SkipForward size={24} fill="currentColor" />
+            </button>
+            <button onClick={() => setRepeat(!repeat)} className={`transition-colors ${repeat ? 'text-[#1db954]' : 'text-white/50 hover:text-white'}`}>
+              <Repeat size={18} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 w-full max-w-[500px]">
+            <span className="text-[11px] text-white/50 font-mono w-10 text-right">{fmt(elapsed)}</span>
+            <div className="flex-1 h-1.5 bg-[#4d4d4d] rounded-full flex items-center group cursor-pointer relative"
+              onClick={e => {
+                if (!audioRef.current || !duration) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                audioRef.current.currentTime = ratio * duration;
+                setElapsed(ratio * duration);
+              }}
+            >
+              <div className="h-full bg-white group-hover:bg-[#1db954] rounded-full transition-colors relative" style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[11px] h-[11px] bg-white rounded-full opacity-0 group-hover:opacity-100 shadow -mr-[5.5px]" />
+              </div>
             </div>
-            <div className="flex-1 min-w-0 text-left">
-              <div className={`text-[12px] truncate font-medium ${i === idx ? 'text-white' : 'text-white/60'}`}>{s.title}</div>
-              <div className="text-[10px] text-white/30 truncate">{s.artist}</div>
-            </div>
-            <span className="text-[10px] text-white/25 font-mono flex-shrink-0">{fmt(s.duration)}</span>
+            <span className="text-[11px] text-white/50 font-mono w-10">{fmt(duration || song.duration)}</span>
+          </div>
+        </div>
+
+        {/* Right: Volume */}
+        <div className="flex items-center gap-2 w-[30%] justify-end min-w-[70px] hidden sm:flex">
+          <button onClick={() => setVolume(v => v > 0 ? 0 : 75)} className="text-white/50 hover:text-white transition-colors">
+             <Volume2 size={18} />
           </button>
-        ))}
+          <div className="w-24 h-1.5 bg-[#4d4d4d] rounded-full flex items-center group cursor-pointer"
+            onClick={e => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              setVolume(ratio * 100);
+            }}
+          >
+            <div className="h-full bg-white group-hover:bg-[#1db954] rounded-full relative" style={{ width: `${volume}%` }}>
+               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[11px] h-[11px] bg-white rounded-full opacity-0 group-hover:opacity-100 shadow -mr-[5.5px]" />
+            </div>
+          </div>
+        </div>
+        
       </div>
     </div>
   );

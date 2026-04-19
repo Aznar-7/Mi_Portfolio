@@ -8,12 +8,13 @@ import {
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search, Music, Camera
+  Moon, Search, Music, Camera, Cloud
 } from 'lucide-react';
 import React from 'react';
 import html2canvas from 'html2canvas';
 import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
 import { MusicPlayer } from '@/components/layout/ubuntu/MusicPlayer';
+import { WeatherApp } from '@/components/layout/ubuntu/WeatherApp';
 import { Screensaver } from '@/components/layout/ubuntu/Screensaver';
 import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
@@ -160,9 +161,9 @@ function PanicScreen({ onDone }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={
-              l.includes('Kernel panic') || l.includes('BUG:')
+              l && (l.includes('Kernel panic') || l.includes('BUG:'))
                 ? 'text-red-400 font-bold'
-                : l.includes('Rebooting')
+                : l && l.includes('Rebooting')
                   ? 'text-yellow-400'
                   : 'text-white/70'
             }
@@ -242,16 +243,18 @@ function BootScreen({ onDone }) {
             transition={{ duration: 0.12 }}
             className="flex items-start gap-2"
           >
-            <span
-              className="flex-shrink-0 font-bold text-[11px] px-1 rounded"
-              style={{
-                color:      l.tag === 'OK' ? '#4ade80' : '#facc15',
-                background: l.tag === 'OK' ? 'rgba(74,222,128,0.08)' : 'rgba(250,204,21,0.08)',
-              }}
-            >
-              [{l.tag.padEnd(8)}]
-            </span>
-            <span className="text-white/55">{l.text}</span>
+            {l && l.tag && (
+              <span
+                className="flex-shrink-0 font-bold text-[11px] px-1 rounded"
+                style={{
+                  color:      l.tag === 'OK' ? '#4ade80' : '#facc15',
+                  background: l.tag === 'OK' ? 'rgba(74,222,128,0.08)' : 'rgba(250,204,21,0.08)',
+                }}
+              >
+                [{l.tag.padEnd(8)}]
+              </span>
+            )}
+            <span className="text-white/55">{l ? l.text : ''}</span>
           </motion.div>
         ))}
       </div>
@@ -344,7 +347,7 @@ function Window({ title, children, zIndex, isFocused, isMaximized, isMobile, def
       }}
       exit={{ scale: 0.88, opacity: 0, transition: { duration: 0.15 } }}
       transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-      className={`absolute flex flex-col overflow-hidden ${isMaximized || isMobile ? 'inset-0 rounded-none' : 'rounded-lg'}`}
+      className={`absolute flex flex-col overflow-hidden pointer-events-auto ${isMaximized || isMobile ? 'inset-0 rounded-none' : 'rounded-lg'}`}
       style={{
         zIndex,
         width:  isMaximized || isMobile ? '100%' : `min(${defaultW}px, 92vw)`,
@@ -2276,7 +2279,7 @@ function useWeather() {
   return weather;
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -2315,7 +2318,7 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
 
       <div className="flex items-center gap-3">
         {weather && (
-          <span className="text-white/55 text-[11px] flex items-center gap-1 select-none">
+          <span className="text-white/55 text-[11px] flex items-center gap-1 select-none cursor-pointer hover:text-white" onClick={onWeatherClick} title="Ver clima">
             <span>{weather.icon}</span>
             <span>{weather.temp}°C</span>
           </span>
@@ -2364,11 +2367,12 @@ export function UbuntuOS({ onClose }) {
     doom:     { open: false, min: false, max: false },
     paint:    { open: false, min: false, max: false },
     music:    { open: false, min: false, max: false },
+    weather:  { open: false, min: false, max: false },
     pdf:      { open: false, min: false, max: false },
   });
   const [focused, setFocused] = useState('terminal');
   const zRef = useRef(100);
-  const [zMap, setZMap] = useState({ terminal:14, files:13, browser:12, settings:11, editor:10, monitor:9, snake:8, mines:7, calc:6, tetris:5, notes:4, doom:3, paint:2, music:1, pdf:0 });
+  const [zMap, setZMap] = useState({ terminal:15, files:14, browser:13, settings:12, editor:11, monitor:10, snake:9, mines:8, calc:7, tetris:6, notes:5, doom:4, paint:3, music:2, weather:1, pdf:0 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
@@ -2512,6 +2516,7 @@ export function UbuntuOS({ onClose }) {
     { id: 'calc',     label: 'Calculadora',      icon: CalcIcon },
     { id: 'settings', label: 'Configuración',    icon: SettingsIcon },
     { id: 'music',    label: 'Rhythmbox',         icon: Music },
+    { id: 'weather',  label: 'Clima',             icon: Cloud },
   ];
   const GAME_DOCK = [
     { id: 'snake',  label: 'Snake',       icon: Bug },
@@ -2537,6 +2542,7 @@ export function UbuntuOS({ onClose }) {
     doom:     { title: 'DOOM Shareware 1993',                w: 780, h: 560, top: 20,  left: 100 },
     paint:    { title: 'Pinta',                             w: 720, h: 520, top: 30,  left: 80  },
     music:    { title: 'Rhythmbox — Music Player',          w: 440, h: 620, top: 35,  left: 150 },
+    weather:  { title: 'Clima',                             w: 360, h: 480, top: 40,  left: 170 },
     pdf:      { title: 'ResumeVicenteAznar.pdf',            w: 720, h: 560, top: 30,  left: 90  },
   };
 
@@ -2567,7 +2573,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -2683,7 +2689,7 @@ export function UbuntuOS({ onClose }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
           >
             <AnimatePresence>
               {Object.entries(wins).map(([id, win]) => {
@@ -2711,6 +2717,7 @@ export function UbuntuOS({ onClose }) {
                     {id === 'doom'     && <DoomApp />}
                     {id === 'paint'    && <PaintApp />}
                     {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
+                    {id === 'weather'  && <WeatherApp />}
                   </Window>
                 );
               })}
