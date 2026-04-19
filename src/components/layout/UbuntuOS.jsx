@@ -8,9 +8,13 @@ import {
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search
+  Moon, Search, Music, Camera
 } from 'lucide-react';
 import React from 'react';
+import html2canvas from 'html2canvas';
+import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
+import { MusicPlayer } from '@/components/layout/ubuntu/MusicPlayer';
+import { Screensaver } from '@/components/layout/ubuntu/Screensaver';
 import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
@@ -100,33 +104,156 @@ function buildFS(lang) {
   };
 }
 
-// ── Boot Screen ───────────────────────────────────────────────────
-function BootScreen({ onDone }) {
-  const [progress, setProgress] = useState(0);
+// ── Kernel Panic ──────────────────────────────────────────────────
+const PANIC_LINES = [
+  'BUG: unable to handle kernel NULL pointer dereference',
+  'IP: [<ffffffffc0dead00>] rm_recursive+0x00/0xff [rm]',
+  'PGD 0 P4D 0',
+  'Oops: 0002 [#1] SMP NOPTI',
+  'CPU: 0 PID: 1337 Comm: rm Tainted: G  X',
+  'RIP: 0010:[<ffffffffc0dead00>] rm_recursive+0x00/0xff',
+  'RSP: 0018:ffff88003d8abcd8 EFLAGS: 00010246',
+  'Call Trace:',
+  ' [<ffffffff8120ef45>] do_unlinkat+0x1b5/0x280',
+  ' [<ffffffff812107a0>] sys_unlinkat+0x20/0x40',
+  '---[ end trace deadc0dedeadbeef ]---',
+  'Kernel panic - not syncing: Fatal exception',
+  'Rebooting in 3 seconds...',
+];
+
+function PanicScreen({ onDone }) {
+  const [lines,   setLines]   = useState([]);
+  const [counter, setCounter] = useState(null);
+
   useEffect(() => {
-    const ts = [
-      setTimeout(() => setProgress(25), 200),
-      setTimeout(() => setProgress(55), 700),
-      setTimeout(() => setProgress(80), 1300),
-      setTimeout(() => setProgress(100), 1800),
-      setTimeout(onDone, 2100),
-    ];
-    return () => ts.forEach(clearTimeout);
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i < PANIC_LINES.length) {
+        setLines(prev => [...prev, PANIC_LINES[i]]);
+        i++;
+        if (i === PANIC_LINES.length) setCounter(3);
+      } else {
+        clearInterval(iv);
+      }
+    }, 90);
+    return () => clearInterval(iv);
+  }, []);
+
+  useEffect(() => {
+    if (counter === null) return;
+    if (counter === 0) { onDone(); return; }
+    const t = setTimeout(() => setCounter(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [counter, onDone]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+      className="fixed inset-0 z-[10001] bg-black font-mono text-[12px] p-4 overflow-hidden flex flex-col"
+    >
+      <div className="flex flex-col gap-0.5">
+        {lines.map((l, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={
+              l.includes('Kernel panic') || l.includes('BUG:')
+                ? 'text-red-400 font-bold'
+                : l.includes('Rebooting')
+                  ? 'text-yellow-400'
+                  : 'text-white/70'
+            }
+          >
+            {l}
+          </motion.div>
+        ))}
+        {counter !== null && counter > 0 && (
+          <div className="text-yellow-400 font-bold mt-2">Rebooting in {counter} seconds...</div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Boot Screen ───────────────────────────────────────────────────
+const SYSTEMD_LINES = [
+  { tag: 'OK',       text: 'Started Load Kernel Modules.' },
+  { tag: 'OK',       text: 'Reached target Local File Systems (Pre).' },
+  { tag: 'STARTING', text: 'Starting udev Kernel Device Manager...' },
+  { tag: 'OK',       text: 'Started udev Kernel Device Manager.' },
+  { tag: 'OK',       text: 'Reached target Local File Systems.' },
+  { tag: 'STARTING', text: 'Starting Network Service...' },
+  { tag: 'OK',       text: 'Started Network Service.' },
+  { tag: 'STARTING', text: 'Starting Accounts Service...' },
+  { tag: 'OK',       text: 'Started Accounts Service.' },
+  { tag: 'STARTING', text: 'Starting GNOME Display Manager...' },
+  { tag: 'OK',       text: 'Started GNOME Display Manager.' },
+  { tag: 'OK',       text: 'Reached target Graphical Interface.' },
+];
+
+function BootScreen({ onDone }) {
+  const [lines, setLines]   = useState([]);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    let i = 0;
+    let timeoutId;
+    const iv = setInterval(() => {
+      if (i < SYSTEMD_LINES.length) {
+        setLines(prev => [...prev, SYSTEMD_LINES[i]]);
+        i++;
+      } else {
+        clearInterval(iv);
+        setFading(true);
+        timeoutId = setTimeout(onDone, 600);
+      }
+    }, 120);
+    return () => {
+      clearInterval(iv);
+      clearTimeout(timeoutId);
+    };
   }, [onDone]);
 
   return (
-    <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}
-      className="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center gap-12"
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: fading ? 0 : 1 }}
+      transition={{ duration: 0.5 }}
+      className="fixed inset-0 z-[10000] bg-black flex flex-col justify-end p-6 pb-12 gap-0.5 font-mono text-[12px]"
     >
-      <svg width="72" height="72" viewBox="0 0 24 24" fill="#E95420">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-4.24 9.76a6.96 6.96 0 01-.54-7.9l1.37 1.37A5.02 5.02 0 007.5 12c0 .97.27 1.87.74 2.63l-1.37 1.37-.01-.24zm4.24 3.24c-.97 0-1.87-.27-2.63-.74L8 18.63a7 7 0 007.9.54l-1.37-1.37c-.76.47-1.66.74-2.63.74zm4.24-1.24l-1.37-1.37A5.02 5.02 0 0016.5 12c0-.97-.27-1.87-.74-2.63l1.37-1.37a6.96 6.96 0 01-.54 7.9l-.11-.14z"/>
-      </svg>
-      <div className="flex flex-col items-center gap-2 w-44">
-        <div className="w-full h-0.5 bg-white/10 rounded-full overflow-hidden">
-          <motion.div className="h-full bg-[#E95420] rounded-full" initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
-        </div>
-        <span className="text-white/25 text-[11px] font-mono tracking-widest">UBUNTU 24.04 LTS</span>
+      {/* Ubuntu logo centered top */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-5 pointer-events-none">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="#E95420" opacity="0.85">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-4.24 9.76a6.96 6.96 0 01-.54-7.9l1.37 1.37A5.02 5.02 0 007.5 12c0 .97.27 1.87.74 2.63l-1.37 1.37-.01-.24zm4.24 3.24c-.97 0-1.87-.27-2.63-.74L8 18.63a7 7 0 007.9.54l-1.37-1.37c-.76.47-1.66.74-2.63.74zm4.24-1.24l-1.37-1.37A5.02 5.02 0 0016.5 12c0-.97-.27-1.87-.74-2.63l1.37-1.37a6.96 6.96 0 01-.54 7.9l-.11-.14z"/>
+        </svg>
+        <span className="text-white/20 text-[11px] tracking-[0.25em] uppercase">Ubuntu 24.04 LTS</span>
+      </div>
+
+      {/* systemd lines */}
+      <div className="flex flex-col gap-0.5">
+        {lines.map((l, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.12 }}
+            className="flex items-start gap-2"
+          >
+            <span
+              className="flex-shrink-0 font-bold text-[11px] px-1 rounded"
+              style={{
+                color:      l.tag === 'OK' ? '#4ade80' : '#facc15',
+                background: l.tag === 'OK' ? 'rgba(74,222,128,0.08)' : 'rgba(250,204,21,0.08)',
+              }}
+            >
+              [{l.tag.padEnd(8)}]
+            </span>
+            <span className="text-white/55">{l.text}</span>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );
@@ -946,7 +1073,7 @@ function NotifToast({ id, title, body, onDismiss }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 4200);
     return () => clearTimeout(t);
-  }, [onDismiss]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <motion.div
       initial={{ opacity: 0, x: 64, scale: 0.92 }} animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -1381,7 +1508,7 @@ function FilesApp({ onOpenFile, lang }) {
   const open = (item) => {
     const next = `${path}/${item.name}`;
     if (item.type === 'folder') { if (!fs[next]) fs[next] = []; setPath(next); setSelected(null); }
-    else if (item.isPdf || item.name.endsWith('.pdf')) window.open('/ResumeVicenteAznar.pdf', '_blank');
+    else if (item.isPdf || item.name.endsWith('.pdf')) onOpenFile({ ...item, isPdf: true });
     else if (item.content) onOpenFile(item);
   };
   const navTo = (idx) => { setPath(parts.slice(0, idx + 1).join('/')); setSelected(null); };
@@ -1878,6 +2005,48 @@ function EditorApp({ file }) {
   );
 }
 
+// ── PDF Viewer App ────────────────────────────────────────────────
+function PdfViewerApp({ src = '/ResumeVicenteAznar.pdf' }) {
+  const [zoom, setZoom] = useState(100);
+
+  return (
+    <div className="h-full flex flex-col bg-[#1a1a1a]">
+      {/* Toolbar */}
+      <div className="h-9 bg-[#252526] border-b border-black/40 flex items-center px-3 gap-3 flex-shrink-0">
+        <span className="text-white/50 text-[11px] font-medium flex-1 truncate">ResumeVicenteAznar.pdf</span>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setZoom(z => Math.max(50, z - 25))}
+            className="w-6 h-6 rounded bg-white/5 hover:bg-white/10 text-white/60 text-sm flex items-center justify-center transition-colors"
+          >−</button>
+          <span className="text-white/40 text-[11px] font-mono w-10 text-center">{zoom}%</span>
+          <button
+            onClick={() => setZoom(z => Math.min(200, z + 25))}
+            className="w-6 h-6 rounded bg-white/5 hover:bg-white/10 text-white/60 text-sm flex items-center justify-center transition-colors"
+          >+</button>
+        </div>
+        <a
+          href={src}
+          download
+          className="flex items-center gap-1.5 text-[11px] text-white/40 hover:text-white/70 transition-colors ml-1"
+        >
+          <ExternalLink size={12} /> Descargar
+        </a>
+      </div>
+
+      {/* Iframe viewer */}
+      <div className="flex-1 overflow-auto bg-[#404040] flex justify-center py-4">
+        <iframe
+          src={`${src}#zoom=${zoom}`}
+          className="shadow-2xl border-0 h-full"
+          style={{ width: `${Math.min(zoom, 100)}%`, minHeight: 600 }}
+          title="Resume PDF"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ── Settings App ──────────────────────────────────────────────────
 function SettingsApp({ wallpaper, onWallpaper }) {
   const [section, setSection] = useState('appearance');
@@ -2001,7 +2170,7 @@ function PowerMenu({ onShutdown, onRestart, onSuspend, onCancel }) {
           <div className="h-10 w-10 rounded-full border-2 border-[#E95420]/60 flex items-center justify-center">
             <div className="h-5 w-5 rounded-full bg-[#E95420]/80" />
           </div>
-          <p className="font-mono text-[11px] tracking-[0.22em] text-white/40 uppercase">Ubuntu 22.04 LTS</p>
+          <p className="font-mono text-[11px] tracking-[0.22em] text-white/40 uppercase">Ubuntu 24.04 LTS</p>
         </div>
 
         {/* Action buttons */}
@@ -2074,15 +2243,90 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower }) {
+// ── Weather Hook ──────────────────────────────────────────────────
+function useWeather() {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    const fetchWeather = async (lat, lon) => {
+      try {
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const code = data.current_weather?.weathercode ?? 0;
+        const temp = Math.round(data.current_weather?.temperature ?? 0);
+        const icon = code === 0 ? '☀️' : code <= 3 ? '⛅' : code <= 67 ? '🌧️' : code <= 77 ? '🌨️' : '⛈️';
+        setWeather({ temp, icon });
+      } catch { /* silent fail */ }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        ()  => fetchWeather(-34.6037, -58.3816),
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeather(-34.6037, -58.3816);
+    }
+  }, []);
+
+  return weather;
+}
+
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
-      <span className="hover:text-white transition-colors cursor-default">Activities</span>
-      <span className="tabular-nums hover:text-white transition-colors cursor-default">{date && time ? `${date}  ${time}` : '...'}</span>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onActivities}
+          className="hover:text-white transition-colors cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded"
+        >
+          Activities
+        </button>
+        {/* Workspace dots */}
+        <div className="flex gap-1">
+          {[0, 1, 2, 3].map(i => (
+            <button
+              key={i}
+              onClick={() => onWorkspaceChange(i)}
+              className={`w-4 h-2 rounded-sm transition-all ${i === workspace ? 'bg-white/70' : 'bg-white/20 hover:bg-white/40'}`}
+              title={`Escritorio ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Center: now playing or clock */}
+      {nowPlaying ? (
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-[11px] text-white/60">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E95420] animate-pulse" />
+          <span className="max-w-[180px] truncate">{nowPlaying.title}</span>
+          <span className="text-white/30">—</span>
+          <span className="text-white/35 truncate max-w-[100px]">{nowPlaying.artist}</span>
+        </div>
+      ) : (
+        <span className="absolute left-1/2 -translate-x-1/2 tabular-nums hover:text-white transition-colors cursor-default">
+          {date && time ? `${date}  ${time}` : '...'}
+        </span>
+      )}
+
       <div className="flex items-center gap-3">
+        {weather && (
+          <span className="text-white/55 text-[11px] flex items-center gap-1 select-none">
+            <span>{weather.icon}</span>
+            <span>{weather.temp}°C</span>
+          </span>
+        )}
         <Volume2 size={13} className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"/>
         <Wifi size={13} className="opacity-60"/>
         <BatteryFull size={13} className="opacity-60"/>
+        {nowPlaying && <span className="tabular-nums text-white/50 text-[11px]">{time}</span>}
+        <button onClick={onScreenshot} className="opacity-60 hover:opacity-100 transition-opacity" title="Captura de pantalla (PrintScreen)">
+          <Camera size={13} />
+        </button>
         <button onClick={onPower} className="hover:text-[#E95420] transition-colors ml-1" title="Salir de Ubuntu Mode"><Power size={13}/></button>
       </div>
     </div>
@@ -2092,10 +2336,12 @@ function TopBar({ time, date, onPower }) {
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
   const { playOpenApp, playClick, playCloseApp, setBgmAllowed } = useSoundEffects();
+  const { lang } = useLang();
+  const weather = useWeather();
   const [screen,   setScreen]   = useState('boot');
   const [wallpaper, setWallpaper] = useState(0);
-  const { lang } = useLang();
   const desktopRef = useRef(null);
+  const osRootRef = useRef(null);
 
   useEffect(() => {
     // Apagamos la música de fondo de 'modo normal' en Ubuntu
@@ -2117,22 +2363,51 @@ export function UbuntuOS({ onClose }) {
     notes:    { open: false, min: false, max: false },
     doom:     { open: false, min: false, max: false },
     paint:    { open: false, min: false, max: false },
+    music:    { open: false, min: false, max: false },
+    pdf:      { open: false, min: false, max: false },
   });
   const [focused, setFocused] = useState('terminal');
   const zRef = useRef(100);
-  const [zMap, setZMap] = useState({ terminal:13, files:12, browser:11, settings:10, editor:9, monitor:8, snake:7, mines:6, calc:5, tetris:4, notes:3, doom:2, paint:1 });
+  const [zMap, setZMap] = useState({ terminal:14, files:13, browser:12, settings:11, editor:10, monitor:9, snake:8, mines:7, calc:6, tetris:5, notes:4, doom:3, paint:2, music:1, pdf:0 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
+  const [appDrawer,  setAppDrawer]  = useState(false);
   const [suspended,  setSuspended]  = useState(false);
+  const [screensaver, setScreensaver] = useState(false);
+  const inactivityRef = useRef(null);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [notifs, setNotifs] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState(null);
+  const [workspace,    setWorkspace]    = useState(0);
+  const [winWorkspace, setWinWorkspace] = useState({});
   const addNotif = useCallback((title, body) => {
     const id = Date.now();
     setNotifs(ns => [...ns, { id, title, body }]);
   }, []);
   const removeNotif = useCallback((id) => setNotifs(ns => ns.filter(n => n.id !== id)), []);
+
+  const takeScreenshot = useCallback(async () => {
+    if (!osRootRef.current) return;
+    try {
+      addNotif('Captura de pantalla', 'Capturando escritorio…');
+      const canvas = await html2canvas(osRootRef.current, {
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: null,
+        scale: window.devicePixelRatio || 1,
+      });
+      const url  = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href     = url;
+      link.download = `screenshot-${Date.now()}.png`;
+      link.click();
+      addNotif('Captura guardada', 'Imagen descargada como PNG');
+    } catch {
+      addNotif('Error', 'No se pudo capturar la pantalla');
+    }
+  }, [addNotif]);
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
@@ -2146,6 +2421,21 @@ export function UbuntuOS({ onClose }) {
     update(); const id = setInterval(update, 1000); return () => clearInterval(id);
   }, [lang]);
 
+  // Listen for kernel panic event
+  useEffect(() => {
+    const handler = () => setScreen('panic');
+    window.addEventListener('ubuntu-kernel-panic', handler);
+    return () => window.removeEventListener('ubuntu-kernel-panic', handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'PrintScreen') { e.preventDefault(); takeScreenshot(); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [takeScreenshot]);
+
   // Listen for terminal "open <app>" commands
   const openAppRef = useRef(null);
   useEffect(() => {
@@ -2157,9 +2447,31 @@ export function UbuntuOS({ onClose }) {
     return () => window.removeEventListener('ubuntu-open-app', handler);
   }, []);
 
+  useEffect(() => {
+    if (screen !== 'desktop') return;
+    const handler = (e) => {
+      if (e.key === 'Meta' || e.key === 'Super') {
+        e.preventDefault();
+        setAppDrawer(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [screen]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.ctrlKey || !e.altKey) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); setWorkspace(w => (w + 1) % 4); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); setWorkspace(w => (w + 3) % 4); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
-  const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
-  const closeApp = (id) => { playCloseApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
+  const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
+  const closeApp = (id) => { playCloseApp(); if (id === 'music') setNowPlaying(null); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
   const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
@@ -2173,6 +2485,23 @@ export function UbuntuOS({ onClose }) {
   const handleSuspend = () => { setPowerMenu(false); setSuspended(true); };
   const handleWake    = () => setSuspended(false);
 
+  useEffect(() => {
+    if (screen !== 'desktop' || suspended) return;
+    const INACTIVITY_MS = 45_000;
+    const reset = () => {
+      if (screensaver) return;
+      clearTimeout(inactivityRef.current);
+      inactivityRef.current = setTimeout(() => setScreensaver(true), INACTIVITY_MS);
+    };
+    const events = ['mousemove', 'keydown', 'pointerdown', 'scroll'];
+    events.forEach(ev => window.addEventListener(ev, reset, { passive: true }));
+    reset();
+    return () => {
+      events.forEach(ev => window.removeEventListener(ev, reset));
+      clearTimeout(inactivityRef.current);
+    };
+  }, [screen, suspended, screensaver]);
+
   const DOCK_APPS = [
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },
     { id: 'files',    label: 'Archivos',         icon: FolderOpen },
@@ -2182,6 +2511,7 @@ export function UbuntuOS({ onClose }) {
     { id: 'monitor',  label: 'Monitor del sist.',icon: Activity },
     { id: 'calc',     label: 'Calculadora',      icon: CalcIcon },
     { id: 'settings', label: 'Configuración',    icon: SettingsIcon },
+    { id: 'music',    label: 'Rhythmbox',         icon: Music },
   ];
   const GAME_DOCK = [
     { id: 'snake',  label: 'Snake',       icon: Bug },
@@ -2189,6 +2519,8 @@ export function UbuntuOS({ onClose }) {
     { id: 'tetris', label: 'Tetris',      icon: Blocks },
     { id: 'doom',   label: 'DOOM',        icon: Shell },
   ];
+
+  const ALL_APPS = [...DOCK_APPS, ...GAME_DOCK];
 
   const WIN_CFG = {
     terminal: { title: 'aznar@dev: ~',                     w: 750, h: 490, top: 40,  left: 60  },
@@ -2204,6 +2536,8 @@ export function UbuntuOS({ onClose }) {
     notes:    { title: 'Notas',                             w: 620, h: 460, top: 40,  left: 100 },
     doom:     { title: 'DOOM Shareware 1993',                w: 780, h: 560, top: 20,  left: 100 },
     paint:    { title: 'Pinta',                             w: 720, h: 520, top: 30,  left: 80  },
+    music:    { title: 'Rhythmbox — Music Player',          w: 440, h: 620, top: 35,  left: 150 },
+    pdf:      { title: 'ResumeVicenteAznar.pdf',            w: 720, h: 560, top: 30,  left: 90  },
   };
 
   const handleDockClick = (id) => {
@@ -2215,17 +2549,25 @@ export function UbuntuOS({ onClose }) {
 
   const wallpaperBg = WALLPAPERS[wallpaper].bg;
 
+  if (screen === 'panic') return (
+    <AnimatePresence mode="wait">
+      <PanicScreen key="panic" onDone={() => {
+        setScreen('boot');
+        setWins(p => Object.fromEntries(Object.keys(p).map(k => [k, { ...p[k], open: false }])));
+      }} />
+    </AnimatePresence>
+  );
   if (screen === 'boot')  return <AnimatePresence mode="wait"><BootScreen  key="boot"  onDone={() => setScreen('login')} /></AnimatePresence>;
   if (screen === 'login') return <AnimatePresence mode="wait"><LoginScreen key="login" onLogin={() => { setScreen('desktop'); setTimeout(() => { addNotif('Bienvenido', `Sesión iniciada como ${site.name}`); }, 600); setTimeout(() => addNotif('Terminal listo', "Escribe 'help' para ver comandos disponibles"), 2200); }} wallpaperBg={wallpaperBg} /></AnimatePresence>;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
+    <motion.div ref={osRootRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
       className="fixed inset-0 z-[9999] flex flex-col overflow-hidden select-none"
       style={{ background: wallpaperBg }}
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -2336,32 +2678,54 @@ export function UbuntuOS({ onClose }) {
             )}
           </AnimatePresence>
 
+          <motion.div
+            key={workspace}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0"
+          >
+            <AnimatePresence>
+              {Object.entries(wins).map(([id, win]) => {
+                if (!win.open || win.min) return null;
+                if ((winWorkspace[id] ?? 0) !== workspace) return null;
+                const cfg = WIN_CFG[id];
+                return (
+                  <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
+                    zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
+                    defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
+                    onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
+                  >
+                    {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
+                    {id === 'files'    && <FilesApp onOpenFile={(f) => { if (f.isPdf) openApp('pdf'); else openApp('editor', f); }} lang={lang} />}
+                    {id === 'browser'  && <BrowserApp lang={lang} />}
+                    {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
+                    {id === 'editor'   && <EditorApp file={win.fileData} />}
+                    {id === 'pdf'      && <PdfViewerApp />}
+                    {id === 'monitor'  && <SystemMonitor />}
+                    {id === 'snake'    && <SnakeGame />}
+                    {id === 'mines'    && <MinesweeperGame />}
+                    {id === 'calc'     && <Calculator />}
+                    {id === 'tetris'   && <TetrisGame />}
+                    {id === 'notes'    && <NotesApp />}
+                    {id === 'doom'     && <DoomApp />}
+                    {id === 'paint'    && <PaintApp />}
+                    {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
+                  </Window>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
+
           <AnimatePresence>
-            {Object.entries(wins).map(([id, win]) => {
-              if (!win.open || win.min) return null;
-              const cfg = WIN_CFG[id];
-              return (
-                <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
-                  zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
-                  defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
-                  onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
-                >
-                  {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
-                  {id === 'files'    && <FilesApp onOpenFile={(f) => openApp('editor', f)} lang={lang} />}
-                  {id === 'browser'  && <BrowserApp lang={lang} />}
-                  {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
-                  {id === 'editor'   && <EditorApp file={win.fileData} />}
-                  {id === 'monitor'  && <SystemMonitor />}
-                  {id === 'snake'    && <SnakeGame />}
-                  {id === 'mines'    && <MinesweeperGame />}
-                  {id === 'calc'     && <Calculator />}
-                  {id === 'tetris'   && <TetrisGame />}
-                  {id === 'notes'    && <NotesApp />}
-                  {id === 'doom'     && <DoomApp />}
-                  {id === 'paint'    && <PaintApp />}
-                </Window>
-              );
-            })}
+            {appDrawer && (
+              <AppDrawer
+                key="app-drawer"
+                apps={ALL_APPS}
+                onOpen={(id) => openApp(id)}
+                onClose={() => setAppDrawer(false)}
+              />
+            )}
           </AnimatePresence>
         </div>
       </div>
@@ -2383,6 +2747,13 @@ export function UbuntuOS({ onClose }) {
       <AnimatePresence>
         {suspended && (
           <SuspendScreen key="suspend" onWake={handleWake} />
+        )}
+      </AnimatePresence>
+
+      {/* Screensaver */}
+      <AnimatePresence>
+        {screensaver && !suspended && (
+          <Screensaver key="screensaver" onWake={() => setScreensaver(false)} />
         )}
       </AnimatePresence>
     </motion.div>

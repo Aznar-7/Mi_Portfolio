@@ -213,11 +213,19 @@ async function processCommand(raw, setLines, onClose) {
   }
 
   if (cmd === 'sudo rm -rf /') {
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('ubuntu-kernel-panic'));
+    }, 1200);
     return [
-      '  [ERROR] Kernel panic',
-      '  Just kidding. I need this server.',
-      ''
-    ]
+      '  [sudo] contraseña para aznar: ****',
+      '  rm: it is dangerous to operate recursively on "/"',
+      '  rm: use --no-preserve-root to override this failsafe',
+      '  ...',
+      '  Eliminando sistema de archivos...',
+      '  ██████████████████░░░░ 87%',
+      '  !! KERNEL PANIC !!',
+      '',
+    ];
   }
 
   if (cmd === 'fetch repos') {
@@ -260,8 +268,9 @@ export function Terminal({ onClose, isEmbedded = false }) {
   const [input,   setInput]   = useState('')
   const [history, setHistory] = useState([])
   const [histIdx, setHistIdx] = useState(-1)
-  const bottomRef = useRef(null)
-  const inputRef  = useRef(null)
+  const bottomRef  = useRef(null)
+  const inputRef   = useRef(null)
+  const savedInput = useRef('')
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -274,8 +283,9 @@ export function Terminal({ onClose, isEmbedded = false }) {
   const submit = useCallback(async () => {
     if (!input.trim()) return
     const cmd   = input.trim()
-    setHistory(h => [cmd, ...h])
+    setHistory(h => [cmd, ...h].slice(0, 100))
     setHistIdx(-1)
+    savedInput.current = ''
     setInput('')
     
     // Muestra comanda de inmediato
@@ -294,38 +304,57 @@ export function Terminal({ onClose, isEmbedded = false }) {
     }
   }, [input, onClose, playClick, playOpenApp])
 
-  const handleKey = (e) => {
-    if (e.key === 'Enter') { 
-      submit(); 
-      return 
+  const handleKey = useCallback((e) => {
+    if (e.key === 'Enter') {
+      submit();
+      return
     }
     if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setHistIdx(i => {
-        const next = Math.min(i + 1, history.length - 1)
-        setInput(history[next] ?? '')
-        return next
-      })
+      if (history.length === 0) return
+      const next = histIdx === -1 ? 0 : Math.min(histIdx + 1, history.length - 1)
+      if (histIdx === -1) savedInput.current = input
+      setHistIdx(next)
+      setInput(history[next])
       return
     }
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setHistIdx(i => {
-        const next = Math.max(i - 1, -1)
-        setInput(next === -1 ? '' : history[next] ?? '')
-        return next
-      })
+      if (histIdx === -1) return
+      const next = histIdx - 1
+      if (next < 0) {
+        setHistIdx(-1)
+        setInput(savedInput.current)
+      } else {
+        setHistIdx(next)
+        setInput(history[next])
+      }
       return
     }
-    if (e.key === 'Escape') { 
-      if (onClose) onClose(); 
-      return 
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const val = input.toLowerCase().trim()
+      if (!val) return
+      const ALL_CMDS = [
+        ...Object.keys(COMMANDS),
+        'open terminal', 'open files', 'open browser', 'open notes',
+        'open paint', 'open monitor', 'open calc', 'open settings',
+        'open snake', 'open mines', 'open tetris', 'open doom',
+        'fetch repos', 'sudo hire', 'sudo rm -rf /',
+      ]
+      const match = ALL_CMDS.find(c => c.startsWith(val))
+      if (match) setInput(match)
+      return
+    }
+    if (e.key === 'Escape') {
+      if (onClose) onClose();
+      return
     }
     if (e.key === 'l' && e.ctrlKey) {
       e.preventDefault()
       setLines([])
     }
-  }
+  }, [history, histIdx, input, onClose, submit])
 
   const handleClear = () => setLines([])
 
