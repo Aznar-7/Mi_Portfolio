@@ -8,9 +8,10 @@ import {
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search, Music
+  Moon, Search, Music, Camera
 } from 'lucide-react';
 import React from 'react';
+import html2canvas from 'html2canvas';
 import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
 import { MusicPlayer } from '@/components/layout/ubuntu/MusicPlayer';
 import { Screensaver } from '@/components/layout/ubuntu/Screensaver';
@@ -2242,7 +2243,7 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -2284,6 +2285,9 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
         <Wifi size={13} className="opacity-60"/>
         <BatteryFull size={13} className="opacity-60"/>
         {nowPlaying && <span className="tabular-nums text-white/50 text-[11px]">{time}</span>}
+        <button onClick={onScreenshot} className="opacity-60 hover:opacity-100 transition-opacity" title="Captura de pantalla (PrintScreen)">
+          <Camera size={13} />
+        </button>
         <button onClick={onPower} className="hover:text-[#E95420] transition-colors ml-1" title="Salir de Ubuntu Mode"><Power size={13}/></button>
       </div>
     </div>
@@ -2297,6 +2301,7 @@ export function UbuntuOS({ onClose }) {
   const [wallpaper, setWallpaper] = useState(0);
   const { lang } = useLang();
   const desktopRef = useRef(null);
+  const osRootRef = useRef(null);
 
   useEffect(() => {
     // Apagamos la música de fondo de 'modo normal' en Ubuntu
@@ -2343,6 +2348,27 @@ export function UbuntuOS({ onClose }) {
   }, []);
   const removeNotif = useCallback((id) => setNotifs(ns => ns.filter(n => n.id !== id)), []);
 
+  const takeScreenshot = useCallback(async () => {
+    if (!osRootRef.current) return;
+    try {
+      addNotif('Captura de pantalla', 'Capturando escritorio…');
+      const canvas = await html2canvas(osRootRef.current, {
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: null,
+        scale: window.devicePixelRatio || 1,
+      });
+      const url  = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href     = url;
+      link.download = `screenshot-${Date.now()}.png`;
+      link.click();
+      addNotif('Captura guardada', 'Imagen descargada como PNG');
+    } catch {
+      addNotif('Error', 'No se pudo capturar la pantalla');
+    }
+  }, [addNotif]);
+
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
   useEffect(() => { document.body.classList.add('ubuntu-mode'); return () => document.body.classList.remove('ubuntu-mode'); }, []);
@@ -2361,6 +2387,14 @@ export function UbuntuOS({ onClose }) {
     window.addEventListener('ubuntu-kernel-panic', handler);
     return () => window.removeEventListener('ubuntu-kernel-panic', handler);
   }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'PrintScreen') { e.preventDefault(); takeScreenshot(); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [takeScreenshot]);
 
   // Listen for terminal "open <app>" commands
   const openAppRef = useRef(null);
@@ -2487,13 +2521,13 @@ export function UbuntuOS({ onClose }) {
   if (screen === 'login') return <AnimatePresence mode="wait"><LoginScreen key="login" onLogin={() => { setScreen('desktop'); setTimeout(() => { addNotif('Bienvenido', `Sesión iniciada como ${site.name}`); }, 600); setTimeout(() => addNotif('Terminal listo', "Escribe 'help' para ver comandos disponibles"), 2200); }} wallpaperBg={wallpaperBg} /></AnimatePresence>;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
+    <motion.div ref={osRootRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
       className="fixed inset-0 z-[9999] flex flex-col overflow-hidden select-none"
       style={{ background: wallpaperBg }}
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
