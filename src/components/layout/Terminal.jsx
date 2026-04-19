@@ -296,10 +296,10 @@ export function Terminal({ onClose, isEmbedded = false }) {
     }
   }, [input, onClose, playClick, playOpenApp])
 
-  const handleKey = (e) => {
-    if (e.key === 'Enter') { 
-      submit(); 
-      return 
+  const handleKey = useCallback((e) => {
+    if (e.key === 'Enter') {
+      submit();
+      return
     }
     if (e.key === 'ArrowUp') {
       e.preventDefault()
@@ -338,15 +338,15 @@ export function Terminal({ onClose, isEmbedded = false }) {
       if (match) setInput(match)
       return
     }
-    if (e.key === 'Escape') { 
-      if (onClose) onClose(); 
-      return 
+    if (e.key === 'Escape') {
+      if (onClose) onClose();
+      return
     }
     if (e.key === 'l' && e.ctrlKey) {
       e.preventDefault()
       setLines([])
     }
-  }
+  }, [history, histIdx, input, onClose, submit])
 
   const handleClear = () => setLines([])
 
