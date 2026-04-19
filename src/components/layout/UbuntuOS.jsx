@@ -1073,7 +1073,7 @@ function NotifToast({ id, title, body, onDismiss }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 4200);
     return () => clearTimeout(t);
-  }, [onDismiss]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <motion.div
       initial={{ opacity: 0, x: 64, scale: 0.92 }} animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -2170,7 +2170,7 @@ function PowerMenu({ onShutdown, onRestart, onSuspend, onCancel }) {
           <div className="h-10 w-10 rounded-full border-2 border-[#E95420]/60 flex items-center justify-center">
             <div className="h-5 w-5 rounded-full bg-[#E95420]/80" />
           </div>
-          <p className="font-mono text-[11px] tracking-[0.22em] text-white/40 uppercase">Ubuntu 22.04 LTS</p>
+          <p className="font-mono text-[11px] tracking-[0.22em] text-white/40 uppercase">Ubuntu 24.04 LTS</p>
         </div>
 
         {/* Action buttons */}
@@ -2471,7 +2471,7 @@ export function UbuntuOS({ onClose }) {
 
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
-  const closeApp = (id) => { playCloseApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
+  const closeApp = (id) => { playCloseApp(); if (id === 'music') setNowPlaying(null); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
   const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
