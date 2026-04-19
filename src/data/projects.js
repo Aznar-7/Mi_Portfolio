@@ -7,8 +7,8 @@ export const projects = [
       en: 'University platform for academic management.',
     },
     description: {
-      es: 'Sistema web complejo para la comunidad universitaria UTN. Arquitectura full-stack con frontend en React+Vite, API REST en Django, base de datos PostgreSQL y deploy en Oracle Cloud con dominio propio.',
-      en: 'Complex web system for the UTN university community. Full-stack architecture with React+Vite frontend, Django REST API, PostgreSQL database, and deployment on Oracle Cloud with a custom domain.',
+      es: 'Plataforma académica para estudiantes de la UTN: centralización de información institucional, calendario de eventos y parciales, repositorio colaborativo de documentos, gestor de notas con cálculo automático de promedios, y sistema de notificaciones. Backend robusto con Django REST y PostgreSQL, frontend dinámico con React y Tailwind, y autenticación segura con JWT. Hosteado y configurado por nosotros desde 0 (BACKEND) en servidor propio oracle cloud, con ubuntu. Frontend en Vercel.',
+      en: 'Academic platform for UTN students: centralization of institutional information, calendar of events and exams, collaborative document repository, grade manager with automatic average calculation, and notification system. Robust backend with Django REST and PostgreSQL, dynamic frontend with React and Tailwind, and secure authentication with JWT. Hosted and configured by us from scratch (BACKEND) on our own Oracle Cloud server with Ubuntu. Frontend on Vercel.',
     },
     category: 'web',
     featured: true,
@@ -56,10 +56,16 @@ export const projects = [
         icon: 'Zap'
       }
     ],
-    image: '/images/projects/utnhub/cover.png',
+    image: '/images/projects/utnhub/utnhub-presentation.png',
     gallery: [
-      '/images/projects/utnhub/screen-1.png',
       '/images/projects/utnhub/screen-2.png',
+      '/images/projects/utnhub/screen-1.png',
+      '/images/projects/utnhub/screen-3.png',
+      '/images/projects/utnhub/screen-4.png',
+      '/images/projects/utnhub/screen-5.png',
+      '/images/projects/utnhub/screen-6.png',
+      '/images/projects/utnhub/screen-7.png',
+      
     ],
     placeholderGradient: null,
     placeholderIcon: null,
@@ -93,6 +99,59 @@ export const projects = [
     githubUrl: null,
   },
   {
+    id: 'camisetas-agv',
+    title: 'Camisetas AGV',
+    tagline: {
+      es: 'front-end demo de plataforma e-commerce para camisetas de fútbol.',
+      en: 'Front-end demo of an e-commerce platform for football jerseys.',
+    },
+    description: {
+      es: '[Front-End Demo] | Plataforma e-commerce completa para camisetas de fútbol: catálogo dinámico con filtros avanzados, carrito interactivo con persistencia local, simulación de checkout, gestión de talles y stock. Foco en performance y UX mobile-first.',
+      en: '[Front-End Demo] | Complete e-commerce platform for football jerseys: dynamic catalog with advanced filters, interactive cart with local persistence, checkout simulation, size and stock management. Focus on performance and mobile-first UX.',
+    },
+    category: 'frontend',
+    featured: false,
+    status: 'completed',
+    tech: ['React', 'Motion', 'Vite'],
+    architecture: [],
+    image: '/images/projects/camisetas-agv/Camisetas2.png',
+    gallery: [
+      '/images/projects/camisetas-agv/screen-1.png',
+      '/images/projects/camisetas-agv/screen-2.png',
+      '/images/projects/camisetas-agv/screen-3.png',
+    ],
+    placeholderGradient: null,
+    placeholderIcon: null,
+    liveUrl: 'https://camisetas-app.vercel.app/',
+    githubUrl: 'https://github.com/Aznar-7/Camisetas-app',
+  },
+  {
+    id: 'autofull',
+    title: 'AutoFull',
+    tagline: {
+      es: 'Arduino & Esp32: auto p2wd con multiples sensores y pantalla OLED',
+      en: 'Arduino & Esp32: self-driving car with multiple sensors and OLED display',
+    },
+    description: {
+      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
+      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
+    },
+    category: 'IOT & Hardware',
+    featured: false,
+    status: 'completed',
+    tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
+    architecture: [],
+    image: '',
+    gallery: [
+      
+    ],
+    placeholderGradient: null,
+    placeholderIcon: null,
+    liveUrl: '',
+    githubUrl: 'https://github.com/Aznar-7/AutoFull',
+  },
+
+  /*{
     id: 'esp32-monitor',
     title: 'ESP32 Climate Monitor',
     tagline: {
@@ -137,7 +196,7 @@ export const projects = [
     placeholderIcon: 'Terminal',
     liveUrl: null,
     githubUrl: null,
-  },
+  },*/
 ]
 
 export const featuredProject = projects.find((p) => p.featured)

@@ -23,11 +23,13 @@ export function Skills() {
   const { lang } = useLang()
   const T = translations[lang].skills
   const { playSelect, playHover } = useSoundEffects()
-  const [activeCategory, setActiveCategory] = useState('Todos')
+  const [activeCategory, setActiveCategory] = useState('Frontend')
 
-  const filteredSkills = activeCategory === 'Todos' 
-    ? skillsData 
-    : skillsData.filter(skill => skill.category === activeCategory)
+  // const filteredSkills = activeCategory === 'Todos' 
+  //   ? skillsData 
+  //   : skillsData.filter(skill => skill.category === activeCategory)
+
+  const filteredSkills = skillsData.filter(skill => skill.category === activeCategory)
 
   return (
     <SectionWrapper id="skills">

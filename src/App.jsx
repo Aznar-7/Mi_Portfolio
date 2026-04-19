@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from 'react'
-import { AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import { SoundProvider } from '@/contexts/SoundContext'
@@ -50,7 +50,81 @@ function SectionSkeleton({ cols = 2, rows = 2 }) {
   )
 }
 
+function BootSequence({ onComplete }) {
+  const [clicked, setClicked] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  useEffect(() => {
+    if (clicked) {
+      const timer = setTimeout(() => {
+        document.body.style.overflow = ''
+        onComplete()
+      }, 800)
+      return () => clearTimeout(timer)
+    }
+  }, [clicked, onComplete])
+
+  useEffect(() => {
+    const handleStart = () => setClicked(true)
+    if (!clicked) {
+      window.addEventListener('keydown', handleStart)
+      window.addEventListener('click', handleStart)
+      return () => {
+        window.removeEventListener('keydown', handleStart)
+        window.removeEventListener('click', handleStart)
+      }
+    }
+  }, [clicked])
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-[#050505]"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: clicked ? 0 : 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: 'easeOut' }}
+        className="flex flex-col items-center justify-center gap-12"
+      >
+        <div className="relative flex flex-col items-center">
+          <div 
+            className="text-white/80 text-4xl md:text-5xl font-light tracking-[0.4em] font-mono select-none"
+            style={{ textShadow: '0 0 40px rgba(255,255,255,0.4)' }}
+          >
+            VA<span className="text-[#E95420] ml-[-0.2em]">_</span>
+          </div>
+          <motion.div 
+            className="absolute -inset-10 bg-white/5 blur-3xl rounded-full pointer-events-none"
+            animate={{ opacity: [0.2, 0.5, 0.2] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: clicked ? 0 : [0, 1, 0] }}
+          transition={{ delay: 1.5, duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="text-white/30 text-[10px] md:text-xs font-mono tracking-widest uppercase cursor-pointer"
+        >
+          {clicked ? 'LOADING...' : 'PRESS ANY KEY OR CLICK TO START'}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 export default function App() {
+  const [isBooting, setIsBooting] = useState(true);
   const [ubuntuOpen,  setUbuntuOpen]  = useState(false);
   // const [androidOpen, setAndroidOpen] = useState(false);
 
@@ -80,6 +154,11 @@ export default function App() {
   return (
     <SoundProvider>
       <LanguageProvider>
+
+        <AnimatePresence>
+          {isBooting && <BootSequence key="boot" onComplete={() => setIsBooting(false)} />}
+        </AnimatePresence>
+
         <ErrorBoundary fallback={<div className="h-screen w-screen bg-black text-white flex items-center justify-center">Error al cargar el sistema operativo. Recarga la página.</div>}>
           <AnimatePresence>
             {ubuntuOpen  && (
@@ -92,10 +171,10 @@ export default function App() {
         </ErrorBoundary>
       <ErrorBoundary fallback={null}>
         <Suspense fallback={null}>
-          <CommandPalette />
+          {!isBooting && <CommandPalette />}
         </Suspense>
       </ErrorBoundary>
-      {!ubuntuOpen && (
+      {!isBooting && !ubuntuOpen && (
         <TargetCursor 
           spinDuration={2}
           hideDefaultCursor={false}

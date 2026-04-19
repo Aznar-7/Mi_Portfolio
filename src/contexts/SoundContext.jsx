@@ -92,6 +92,11 @@ export function SoundProvider({ children }) {
     () => typeof window !== 'undefined' && localStorage.getItem('site_muted') === 'true'
   )
   const ctx = useRef(null)
+  
+  // BGM references
+  const bgmRef = useRef(null)
+  const [bgmAllowed, setBgmAllowed] = useState(true)
+  const [bgmReady, setBgmReady] = useState(false)
 
   /* Init AudioContext on first user gesture.
      Chrome 74+ treats any pointer/input event as sufficient.
@@ -104,7 +109,28 @@ export function SoundProvider({ children }) {
       try { ctx.current = new Ctor() } catch { return }
     }
     if (ctx.current?.state === 'suspended') ctx.current.resume()
+
+    // Init background music
+    if (!bgmRef.current && typeof window !== 'undefined') {
+      bgmRef.current = new Audio('/audio/ps4-theme.mp3')
+      bgmRef.current.loop = true
+      bgmRef.current.volume = 0.15 // Subido un poco para que se note
+      setBgmReady(true)
+    }
   }, [])
+
+  // BGM Playback Control logic
+  useEffect(() => {
+    if (!bgmReady || !bgmRef.current) return
+
+    if (!isMuted && bgmAllowed) {
+      bgmRef.current.play().catch(() => {
+        // Autoplay policy might block it until heavy interaction
+      })
+    } else {
+      bgmRef.current.pause()
+    }
+  }, [isMuted, bgmAllowed, bgmReady])
 
   useEffect(() => {
     const EVENTS = ['pointermove', 'pointerdown', 'keydown', 'touchstart']
@@ -289,6 +315,8 @@ export function SoundProvider({ children }) {
   const value = {
     isMuted,
     toggleMute,
+    bgmAllowed,
+    setBgmAllowed,
     // Core
     playHover,
     playClick,
@@ -317,7 +345,7 @@ export function SoundProvider({ children }) {
 ───────────────────────────────────────────────────────────── */
 const NOOP = () => {}
 const FALLBACK = {
-  isMuted: true, toggleMute: NOOP,
+  isMuted: true, toggleMute: NOOP, bgmAllowed: false, setBgmAllowed: NOOP,
   playHover: NOOP, playClick: NOOP, playTyping: NOOP,
   playOpenApp: NOOP, playCloseApp: NOOP,
   playSuccess: NOOP, playNavigation: NOOP, playSelect: NOOP, playCarousel: NOOP,
