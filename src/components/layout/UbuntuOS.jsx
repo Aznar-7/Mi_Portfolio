@@ -11,6 +11,7 @@ import {
   Moon, Search
 } from 'lucide-react';
 import React from 'react';
+import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
 import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
@@ -2123,10 +2124,15 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower }) {
+function TopBar({ time, date, onPower, onActivities }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
-      <span className="hover:text-white transition-colors cursor-default">Activities</span>
+      <button
+        onClick={onActivities}
+        className="hover:text-white transition-colors cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded"
+      >
+        Activities
+      </button>
       <span className="tabular-nums hover:text-white transition-colors cursor-default">{date && time ? `${date}  ${time}` : '...'}</span>
       <div className="flex items-center gap-3">
         <Volume2 size={13} className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"/>
@@ -2173,6 +2179,7 @@ export function UbuntuOS({ onClose }) {
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
+  const [appDrawer,  setAppDrawer]  = useState(false);
   const [suspended,  setSuspended]  = useState(false);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
@@ -2206,6 +2213,18 @@ export function UbuntuOS({ onClose }) {
     return () => window.removeEventListener('ubuntu-open-app', handler);
   }, []);
 
+  useEffect(() => {
+    if (screen !== 'desktop') return;
+    const handler = (e) => {
+      if (e.key === 'Meta' || e.key === 'Super') {
+        e.preventDefault();
+        setAppDrawer(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [screen]);
+
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
   const closeApp = (id) => { playCloseApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
@@ -2238,6 +2257,8 @@ export function UbuntuOS({ onClose }) {
     { id: 'tetris', label: 'Tetris',      icon: Blocks },
     { id: 'doom',   label: 'DOOM',        icon: Shell },
   ];
+
+  const ALL_APPS = [...DOCK_APPS, ...GAME_DOCK];
 
   const WIN_CFG = {
     terminal: { title: 'aznar@dev: ~',                     w: 750, h: 490, top: 40,  left: 60  },
@@ -2274,7 +2295,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -2411,6 +2432,17 @@ export function UbuntuOS({ onClose }) {
                 </Window>
               );
             })}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {appDrawer && (
+              <AppDrawer
+                key="app-drawer"
+                apps={ALL_APPS}
+                onOpen={(id) => openApp(id)}
+                onClose={() => setAppDrawer(false)}
+              />
+            )}
           </AnimatePresence>
         </div>
       </div>
