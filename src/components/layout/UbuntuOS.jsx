@@ -8,10 +8,11 @@ import {
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search
+  Moon, Search, Music
 } from 'lucide-react';
 import React from 'react';
 import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
+import { MusicPlayer } from '@/components/layout/ubuntu/MusicPlayer';
 import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
@@ -2124,7 +2125,7 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower, onActivities }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <button
@@ -2133,11 +2134,26 @@ function TopBar({ time, date, onPower, onActivities }) {
       >
         Activities
       </button>
-      <span className="tabular-nums hover:text-white transition-colors cursor-default">{date && time ? `${date}  ${time}` : '...'}</span>
+
+      {/* Center: now playing or clock */}
+      {nowPlaying ? (
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-[11px] text-white/60">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E95420] animate-pulse" />
+          <span className="max-w-[180px] truncate">{nowPlaying.title}</span>
+          <span className="text-white/30">—</span>
+          <span className="text-white/35 truncate max-w-[100px]">{nowPlaying.artist}</span>
+        </div>
+      ) : (
+        <span className="absolute left-1/2 -translate-x-1/2 tabular-nums hover:text-white transition-colors cursor-default">
+          {date && time ? `${date}  ${time}` : '...'}
+        </span>
+      )}
+
       <div className="flex items-center gap-3">
         <Volume2 size={13} className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"/>
         <Wifi size={13} className="opacity-60"/>
         <BatteryFull size={13} className="opacity-60"/>
+        {nowPlaying && <span className="tabular-nums text-white/50 text-[11px]">{time}</span>}
         <button onClick={onPower} className="hover:text-[#E95420] transition-colors ml-1" title="Salir de Ubuntu Mode"><Power size={13}/></button>
       </div>
     </div>
@@ -2172,10 +2188,11 @@ export function UbuntuOS({ onClose }) {
     notes:    { open: false, min: false, max: false },
     doom:     { open: false, min: false, max: false },
     paint:    { open: false, min: false, max: false },
+    music:    { open: false, min: false, max: false },
   });
   const [focused, setFocused] = useState('terminal');
   const zRef = useRef(100);
-  const [zMap, setZMap] = useState({ terminal:13, files:12, browser:11, settings:10, editor:9, monitor:8, snake:7, mines:6, calc:5, tetris:4, notes:3, doom:2, paint:1 });
+  const [zMap, setZMap] = useState({ terminal:13, files:12, browser:11, settings:10, editor:9, monitor:8, snake:7, mines:6, calc:5, tetris:4, notes:3, doom:2, paint:1, music:0 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
@@ -2184,6 +2201,7 @@ export function UbuntuOS({ onClose }) {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [notifs, setNotifs] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState(null);
   const addNotif = useCallback((title, body) => {
     const id = Date.now();
     setNotifs(ns => [...ns, { id, title, body }]);
@@ -2250,6 +2268,7 @@ export function UbuntuOS({ onClose }) {
     { id: 'monitor',  label: 'Monitor del sist.',icon: Activity },
     { id: 'calc',     label: 'Calculadora',      icon: CalcIcon },
     { id: 'settings', label: 'Configuración',    icon: SettingsIcon },
+    { id: 'music',    label: 'Rhythmbox',         icon: Music },
   ];
   const GAME_DOCK = [
     { id: 'snake',  label: 'Snake',       icon: Bug },
@@ -2274,6 +2293,7 @@ export function UbuntuOS({ onClose }) {
     notes:    { title: 'Notas',                             w: 620, h: 460, top: 40,  left: 100 },
     doom:     { title: 'DOOM Shareware 1993',                w: 780, h: 560, top: 20,  left: 100 },
     paint:    { title: 'Pinta',                             w: 720, h: 520, top: 30,  left: 80  },
+    music:    { title: 'Rhythmbox — Music Player',          w: 440, h: 620, top: 35,  left: 150 },
   };
 
   const handleDockClick = (id) => {
@@ -2295,7 +2315,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -2429,6 +2449,7 @@ export function UbuntuOS({ onClose }) {
                   {id === 'notes'    && <NotesApp />}
                   {id === 'doom'     && <DoomApp />}
                   {id === 'paint'    && <PaintApp />}
+                  {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
                 </Window>
               );
             })}
