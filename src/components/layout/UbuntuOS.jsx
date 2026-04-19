@@ -2243,7 +2243,40 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot }) {
+// ── Weather Hook ──────────────────────────────────────────────────
+function useWeather() {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    const fetchWeather = async (lat, lon) => {
+      try {
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const code = data.current_weather?.weathercode ?? 0;
+        const temp = Math.round(data.current_weather?.temperature ?? 0);
+        const icon = code === 0 ? '☀️' : code <= 3 ? '⛅' : code <= 67 ? '🌧️' : code <= 77 ? '🌨️' : '⛈️';
+        setWeather({ temp, icon });
+      } catch { /* silent fail */ }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        ()  => fetchWeather(-34.6037, -58.3816),
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeather(-34.6037, -58.3816);
+    }
+  }, []);
+
+  return weather;
+}
+
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -2281,6 +2314,12 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
       )}
 
       <div className="flex items-center gap-3">
+        {weather && (
+          <span className="text-white/55 text-[11px] flex items-center gap-1 select-none">
+            <span>{weather.icon}</span>
+            <span>{weather.temp}°C</span>
+          </span>
+        )}
         <Volume2 size={13} className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"/>
         <Wifi size={13} className="opacity-60"/>
         <BatteryFull size={13} className="opacity-60"/>
@@ -2297,9 +2336,10 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
   const { playOpenApp, playClick, playCloseApp, setBgmAllowed } = useSoundEffects();
+  const { lang } = useLang();
+  const weather = useWeather();
   const [screen,   setScreen]   = useState('boot');
   const [wallpaper, setWallpaper] = useState(0);
-  const { lang } = useLang();
   const desktopRef = useRef(null);
   const osRootRef = useRef(null);
 
@@ -2527,7 +2567,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
