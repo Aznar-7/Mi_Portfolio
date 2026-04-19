@@ -213,11 +213,19 @@ async function processCommand(raw, setLines, onClose) {
   }
 
   if (cmd === 'sudo rm -rf /') {
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('ubuntu-kernel-panic'));
+    }, 1200);
     return [
-      '  [ERROR] Kernel panic',
-      '  Just kidding. I need this server.',
-      ''
-    ]
+      '  [sudo] contraseña para aznar: ****',
+      '  rm: it is dangerous to operate recursively on "/"',
+      '  rm: use --no-preserve-root to override this failsafe',
+      '  ...',
+      '  Eliminando sistema de archivos...',
+      '  ██████████████████░░░░ 87%',
+      '  !! KERNEL PANIC !!',
+      '',
+    ];
   }
 
   if (cmd === 'fetch repos') {
