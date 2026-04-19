@@ -2200,15 +2200,28 @@ function SuspendScreen({ onWake }) {
   )
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
-      <button
-        onClick={onActivities}
-        className="hover:text-white transition-colors cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded"
-      >
-        Activities
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onActivities}
+          className="hover:text-white transition-colors cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded"
+        >
+          Activities
+        </button>
+        {/* Workspace dots */}
+        <div className="flex gap-1">
+          {[0, 1, 2, 3].map(i => (
+            <button
+              key={i}
+              onClick={() => onWorkspaceChange(i)}
+              className={`w-4 h-2 rounded-sm transition-all ${i === workspace ? 'bg-white/70' : 'bg-white/20 hover:bg-white/40'}`}
+              title={`Escritorio ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* Center: now playing or clock */}
       {nowPlaying ? (
@@ -2279,6 +2292,8 @@ export function UbuntuOS({ onClose }) {
   const [date, setDate] = useState('');
   const [notifs, setNotifs] = useState([]);
   const [nowPlaying, setNowPlaying] = useState(null);
+  const [workspace,    setWorkspace]    = useState(0);
+  const [winWorkspace, setWinWorkspace] = useState({});
   const addNotif = useCallback((title, body) => {
     const id = Date.now();
     setNotifs(ns => [...ns, { id, title, body }]);
@@ -2327,8 +2342,18 @@ export function UbuntuOS({ onClose }) {
     return () => window.removeEventListener('keydown', handler);
   }, [screen]);
 
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.ctrlKey || !e.altKey) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); setWorkspace(w => (w + 1) % 4); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); setWorkspace(w => (w + 3) % 4); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
-  const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); focusWin(id); };
+  const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
   const closeApp = (id) => { playCloseApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
   const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
   const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
@@ -2424,7 +2449,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => setCtxMenu(null)}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} />
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
@@ -2535,34 +2560,43 @@ export function UbuntuOS({ onClose }) {
             )}
           </AnimatePresence>
 
-          <AnimatePresence>
-            {Object.entries(wins).map(([id, win]) => {
-              if (!win.open || win.min) return null;
-              const cfg = WIN_CFG[id];
-              return (
-                <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
-                  zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
-                  defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
-                  onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
-                >
-                  {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
-                  {id === 'files'    && <FilesApp onOpenFile={(f) => openApp('editor', f)} lang={lang} />}
-                  {id === 'browser'  && <BrowserApp lang={lang} />}
-                  {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
-                  {id === 'editor'   && <EditorApp file={win.fileData} />}
-                  {id === 'monitor'  && <SystemMonitor />}
-                  {id === 'snake'    && <SnakeGame />}
-                  {id === 'mines'    && <MinesweeperGame />}
-                  {id === 'calc'     && <Calculator />}
-                  {id === 'tetris'   && <TetrisGame />}
-                  {id === 'notes'    && <NotesApp />}
-                  {id === 'doom'     && <DoomApp />}
-                  {id === 'paint'    && <PaintApp />}
-                  {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
-                </Window>
-              );
-            })}
-          </AnimatePresence>
+          <motion.div
+            key={workspace}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0"
+          >
+            <AnimatePresence>
+              {Object.entries(wins).map(([id, win]) => {
+                if (!win.open || win.min) return null;
+                if ((winWorkspace[id] ?? 0) !== workspace) return null;
+                const cfg = WIN_CFG[id];
+                return (
+                  <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
+                    zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
+                    defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
+                    onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
+                  >
+                    {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
+                    {id === 'files'    && <FilesApp onOpenFile={(f) => openApp('editor', f)} lang={lang} />}
+                    {id === 'browser'  && <BrowserApp lang={lang} />}
+                    {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
+                    {id === 'editor'   && <EditorApp file={win.fileData} />}
+                    {id === 'monitor'  && <SystemMonitor />}
+                    {id === 'snake'    && <SnakeGame />}
+                    {id === 'mines'    && <MinesweeperGame />}
+                    {id === 'calc'     && <Calculator />}
+                    {id === 'tetris'   && <TetrisGame />}
+                    {id === 'notes'    && <NotesApp />}
+                    {id === 'doom'     && <DoomApp />}
+                    {id === 'paint'    && <PaintApp />}
+                    {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
+                  </Window>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
 
           <AnimatePresence>
             {appDrawer && (
