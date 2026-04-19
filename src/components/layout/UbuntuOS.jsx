@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import { AppDrawer } from '@/components/layout/ubuntu/AppDrawer';
 import { MusicPlayer } from '@/components/layout/ubuntu/MusicPlayer';
+import { Screensaver } from '@/components/layout/ubuntu/Screensaver';
 import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
@@ -2198,6 +2199,8 @@ export function UbuntuOS({ onClose }) {
   const [powerMenu,  setPowerMenu]  = useState(false);
   const [appDrawer,  setAppDrawer]  = useState(false);
   const [suspended,  setSuspended]  = useState(false);
+  const [screensaver, setScreensaver] = useState(false);
+  const inactivityRef = useRef(null);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [notifs, setNotifs] = useState([]);
@@ -2258,6 +2261,23 @@ export function UbuntuOS({ onClose }) {
   };
   const handleSuspend = () => { setPowerMenu(false); setSuspended(true); };
   const handleWake    = () => setSuspended(false);
+
+  useEffect(() => {
+    if (screen !== 'desktop' || suspended) return;
+    const INACTIVITY_MS = 45_000;
+    const reset = () => {
+      if (screensaver) return;
+      clearTimeout(inactivityRef.current);
+      inactivityRef.current = setTimeout(() => setScreensaver(true), INACTIVITY_MS);
+    };
+    const events = ['mousemove', 'keydown', 'pointerdown', 'scroll'];
+    events.forEach(ev => window.addEventListener(ev, reset, { passive: true }));
+    reset();
+    return () => {
+      events.forEach(ev => window.removeEventListener(ev, reset));
+      clearTimeout(inactivityRef.current);
+    };
+  }, [screen, suspended, screensaver]);
 
   const DOCK_APPS = [
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },
@@ -2485,6 +2505,13 @@ export function UbuntuOS({ onClose }) {
       <AnimatePresence>
         {suspended && (
           <SuspendScreen key="suspend" onWake={handleWake} />
+        )}
+      </AnimatePresence>
+
+      {/* Screensaver */}
+      <AnimatePresence>
+        {screensaver && !suspended && (
+          <Screensaver key="screensaver" onWake={() => setScreensaver(false)} />
         )}
       </AnimatePresence>
     </motion.div>
