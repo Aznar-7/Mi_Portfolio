@@ -1507,7 +1507,7 @@ function FilesApp({ onOpenFile, lang }) {
   const open = (item) => {
     const next = `${path}/${item.name}`;
     if (item.type === 'folder') { if (!fs[next]) fs[next] = []; setPath(next); setSelected(null); }
-    else if (item.isPdf || item.name.endsWith('.pdf')) window.open('/ResumeVicenteAznar.pdf', '_blank');
+    else if (item.isPdf || item.name.endsWith('.pdf')) onOpenFile({ ...item, isPdf: true });
     else if (item.content) onOpenFile(item);
   };
   const navTo = (idx) => { setPath(parts.slice(0, idx + 1).join('/')); setSelected(null); };
@@ -2004,6 +2004,48 @@ function EditorApp({ file }) {
   );
 }
 
+// ── PDF Viewer App ────────────────────────────────────────────────
+function PdfViewerApp({ src = '/ResumeVicenteAznar.pdf' }) {
+  const [zoom, setZoom] = useState(100);
+
+  return (
+    <div className="h-full flex flex-col bg-[#1a1a1a]">
+      {/* Toolbar */}
+      <div className="h-9 bg-[#252526] border-b border-black/40 flex items-center px-3 gap-3 flex-shrink-0">
+        <span className="text-white/50 text-[11px] font-medium flex-1 truncate">ResumeVicenteAznar.pdf</span>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setZoom(z => Math.max(50, z - 25))}
+            className="w-6 h-6 rounded bg-white/5 hover:bg-white/10 text-white/60 text-sm flex items-center justify-center transition-colors"
+          >−</button>
+          <span className="text-white/40 text-[11px] font-mono w-10 text-center">{zoom}%</span>
+          <button
+            onClick={() => setZoom(z => Math.min(200, z + 25))}
+            className="w-6 h-6 rounded bg-white/5 hover:bg-white/10 text-white/60 text-sm flex items-center justify-center transition-colors"
+          >+</button>
+        </div>
+        <a
+          href={src}
+          download
+          className="flex items-center gap-1.5 text-[11px] text-white/40 hover:text-white/70 transition-colors ml-1"
+        >
+          <ExternalLink size={12} /> Descargar
+        </a>
+      </div>
+
+      {/* Iframe viewer */}
+      <div className="flex-1 overflow-auto bg-[#404040] flex justify-center py-4">
+        <iframe
+          src={`${src}#zoom=${zoom}`}
+          className="shadow-2xl border-0 h-full"
+          style={{ width: `${Math.min(zoom, 100)}%`, minHeight: 600 }}
+          title="Resume PDF"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ── Settings App ──────────────────────────────────────────────────
 function SettingsApp({ wallpaper, onWallpaper }) {
   const [section, setSection] = useState('appearance');
@@ -2277,10 +2319,11 @@ export function UbuntuOS({ onClose }) {
     doom:     { open: false, min: false, max: false },
     paint:    { open: false, min: false, max: false },
     music:    { open: false, min: false, max: false },
+    pdf:      { open: false, min: false, max: false },
   });
   const [focused, setFocused] = useState('terminal');
   const zRef = useRef(100);
-  const [zMap, setZMap] = useState({ terminal:13, files:12, browser:11, settings:10, editor:9, monitor:8, snake:7, mines:6, calc:5, tetris:4, notes:3, doom:2, paint:1, music:0 });
+  const [zMap, setZMap] = useState({ terminal:14, files:13, browser:12, settings:11, editor:10, monitor:9, snake:8, mines:7, calc:6, tetris:5, notes:4, doom:3, paint:2, music:1, pdf:0 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
@@ -2420,6 +2463,7 @@ export function UbuntuOS({ onClose }) {
     doom:     { title: 'DOOM Shareware 1993',                w: 780, h: 560, top: 20,  left: 100 },
     paint:    { title: 'Pinta',                             w: 720, h: 520, top: 30,  left: 80  },
     music:    { title: 'Rhythmbox — Music Player',          w: 440, h: 620, top: 35,  left: 150 },
+    pdf:      { title: 'ResumeVicenteAznar.pdf',            w: 720, h: 560, top: 30,  left: 90  },
   };
 
   const handleDockClick = (id) => {
@@ -2579,10 +2623,11 @@ export function UbuntuOS({ onClose }) {
                     onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
                   >
                     {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
-                    {id === 'files'    && <FilesApp onOpenFile={(f) => openApp('editor', f)} lang={lang} />}
+                    {id === 'files'    && <FilesApp onOpenFile={(f) => { if (f.isPdf) openApp('pdf'); else openApp('editor', f); }} lang={lang} />}
                     {id === 'browser'  && <BrowserApp lang={lang} />}
                     {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
                     {id === 'editor'   && <EditorApp file={win.fileData} />}
+                    {id === 'pdf'      && <PdfViewerApp />}
                     {id === 'monitor'  && <SystemMonitor />}
                     {id === 'snake'    && <SnakeGame />}
                     {id === 'mines'    && <MinesweeperGame />}
