@@ -122,6 +122,7 @@ function BootScreen({ onDone }) {
 
   useEffect(() => {
     let i = 0;
+    let timeoutId;
     const iv = setInterval(() => {
       if (i < SYSTEMD_LINES.length) {
         setLines(prev => [...prev, SYSTEMD_LINES[i]]);
@@ -129,10 +130,13 @@ function BootScreen({ onDone }) {
       } else {
         clearInterval(iv);
         setFading(true);
-        setTimeout(onDone, 600);
+        timeoutId = setTimeout(onDone, 600);
       }
     }, 120);
-    return () => clearInterval(iv);
+    return () => {
+      clearInterval(iv);
+      clearTimeout(timeoutId);
+    };
   }, [onDone]);
 
   return (
