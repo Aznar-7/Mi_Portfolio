@@ -6,9 +6,9 @@ import {
   Power, Wifi, BatteryFull, Volume2, VolumeX, File, Code2,
   ChevronLeft, Info, Palette, HardDrive, ExternalLink,
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
-  Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
+  Grid3x3, StickyNote as StickyNoteIcon, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search, Music, Camera, Cloud, Bluetooth, Lock
+  Moon, Search, Music, Camera, Cloud, Bluetooth, Lock, Bell
 } from 'lucide-react';
 import React from 'react';
 import html2canvas from 'html2canvas';
@@ -377,9 +377,9 @@ function Window({ title, children, zIndex, isFocused, isMaximized, isMobile, def
 }
 
 // ── Dock & Desktop ────────────────────────────────────────────────
-function DockIcon({ icon: Icon, label, isOpen, isFocused, isMinimized, onClick }) {
+function DockIcon({ icon: Icon, label, isOpen, isFocused, isMinimized, onClick, onRightClick }) {
   return (
-    <div className="relative group/dock cursor-pointer" onClick={onClick}>
+    <div className="relative group/dock cursor-pointer" onClick={onClick} onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onRightClick?.(e); }}>
       {isOpen && <div className={`absolute -left-1 top-1/2 -translate-y-1/2 w-1 rounded-full ${isFocused ? 'h-4 bg-white' : 'h-2 bg-white/40'}`} />}
       <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-150 ${isOpen ? 'bg-white/12' : ''} ${isFocused ? 'scale-110' : 'hover:scale-110 hover:bg-white/10'} ${isMinimized ? 'opacity-50' : ''}`}>
         <Icon size={22} color="white" strokeWidth={1.5} />
@@ -411,11 +411,12 @@ function DesktopIcon({ icon: Icon, label, onClick, top, left, constraintsRef }) 
   );
 }
 
-function ContextMenu({ x, y, onClose, onNewTerminal, onSettings }) {
+function ContextMenu({ x, y, onClose, onNewTerminal, onSettings, showClock, onToggleClock }) {
   const items = [
-    { label: 'Nueva Terminal',   action: onNewTerminal },
-    { label: 'Cambiar fondo',    action: onSettings },
-    { label: 'Actualizar',       action: onClose },
+    { label: 'Nueva Terminal',                         action: onNewTerminal },
+    { label: 'Cambiar fondo',                          action: onSettings },
+    { label: showClock ? 'Ocultar reloj' : 'Mostrar reloj', action: onToggleClock },
+    { label: 'Actualizar',                             action: onClose },
   ];
   return (
     <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.92 }}
@@ -477,7 +478,7 @@ function QTile({ icon: Icon, label, sub, active, onClick }) {
   );
 }
 
-function QuickPanel({ wifiOn, onWifi, btOn, onBt, isMuted, toggleMute, onLock, onClose }) {
+function QuickPanel({ wifiOn, onWifi, btOn, onBt, isMuted, toggleMute, onLock, onClose, volume, onVolume, dnd, onDnd }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -8, scale: 0.95 }}
@@ -489,11 +490,295 @@ function QuickPanel({ wifiOn, onWifi, btOn, onBt, isMuted, toggleMute, onLock, o
     >
       <div className="text-[9px] font-bold text-white/30 uppercase tracking-widest mb-2 px-1">Acceso rápido</div>
       <div className="grid grid-cols-2 gap-2">
-        <QTile icon={Wifi}                         label="Wi-Fi"      sub={wifiOn ? 'Conectado' : 'Apagado'}   active={wifiOn}   onClick={onWifi} />
-        <QTile icon={Bluetooth}                    label="Bluetooth"  sub={btOn   ? 'Activo'    : 'Apagado'}   active={btOn}     onClick={onBt} />
-        <QTile icon={isMuted ? VolumeX : Volume2}  label="Sonido"     sub={isMuted ? 'Silenciado' : 'Activo'}  active={!isMuted} onClick={toggleMute} />
-        <QTile icon={Lock}                         label="Bloquear"   sub="Super+L"                            active={false}    onClick={() => { onLock(); onClose(); }} />
+        <QTile icon={Wifi}                         label="Wi-Fi"      sub={wifiOn ? 'Conectado' : 'Apagado'}      active={wifiOn}   onClick={onWifi} />
+        <QTile icon={Bluetooth}                    label="Bluetooth"  sub={btOn   ? 'Activo'    : 'Apagado'}      active={btOn}     onClick={onBt} />
+        <QTile icon={isMuted ? VolumeX : Volume2}  label="Sonido"     sub={isMuted ? 'Silenciado' : 'Activo'}     active={!isMuted} onClick={toggleMute} />
+        <QTile icon={Lock}                         label="Bloquear"   sub="Super+L"                               active={false}    onClick={() => { onLock(); onClose(); }} />
+        <QTile icon={Moon}                         label="No molestar" sub={dnd ? 'Sin alertas' : 'Desactivado'}  active={dnd}      onClick={onDnd} />
       </div>
+      <div className="mt-2.5 pt-2.5 border-t border-white/10 flex items-center gap-2 px-0.5">
+        <VolumeX size={11} className="text-white/30 flex-shrink-0" />
+        <input
+          type="range" min={0} max={100} value={volume}
+          onChange={e => onVolume(Number(e.target.value))}
+          className="flex-1 h-1 cursor-pointer rounded-full appearance-none bg-white/15"
+          style={{ accentColor: '#60a5fa' }}
+        />
+        <Volume2 size={11} className="text-white/30 flex-shrink-0" />
+        <span className="text-[10px] text-white/40 font-mono w-6 text-right tabular-nums">{volume}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Desktop Clock Widget ─────────────────────────────────────────
+function DesktopClock({ constraintsRef }) {
+  const [time, setTime] = useState('');
+  const [date, setDate] = useState('');
+  useEffect(() => {
+    const update = () => {
+      const n = new Date();
+      setTime(n.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setDate(n.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <motion.div
+      drag dragMomentum={false} dragElastic={0} dragConstraints={constraintsRef}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.85 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+      className="absolute bottom-8 right-6 z-[100] text-right select-none cursor-grab active:cursor-grabbing"
+      onPointerDown={e => e.stopPropagation()}
+    >
+      <div className="font-extralight tabular-nums text-white/75" style={{ fontSize: 'clamp(2rem,5vw,3.2rem)', textShadow: '0 2px 20px rgba(0,0,0,0.7)' }}>{time}</div>
+      <div className="text-white/35 text-sm font-medium capitalize mt-0.5" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}>{date}</div>
+    </motion.div>
+  );
+}
+
+// ── Screenshot Preview Toast ─────────────────────────────────────
+function ScreenshotPreviewToast({ url, onDismiss }) {
+  useEffect(() => { const t = setTimeout(onDismiss, 7000); return () => clearTimeout(t); }, [onDismiss]);
+  const download = () => {
+    const a = document.createElement('a');
+    a.href = url; a.download = `screenshot-${Date.now()}.png`; a.click();
+    onDismiss();
+  };
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+      className="flex gap-3 bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl w-72 pointer-events-auto"
+    >
+      <img src={url} alt="screenshot" className="w-20 h-14 object-cover rounded-lg flex-shrink-0 border border-white/10 bg-black" />
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="text-white/80 text-[12px] font-semibold mb-0.5">Captura de pantalla</div>
+        <div className="text-white/30 text-[10px] mb-2">Lista para guardar</div>
+        <div className="flex gap-1.5">
+          <button onClick={download} className="flex-1 text-[10px] py-1 bg-[#E95420]/80 hover:bg-[#E95420] rounded-lg text-white font-medium transition-colors">Descargar</button>
+          <button onClick={onDismiss} className="flex-1 text-[10px] py-1 bg-white/10 hover:bg-white/20 rounded-lg text-white/50 transition-colors">Cerrar</button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Calendar Popup ───────────────────────────────────────────────
+function CalendarPopup() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const monthName = now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  const [, tick] = useState(0);
+  useEffect(() => { const id = setInterval(() => tick(v => v + 1), 1000); return () => clearInterval(id); }, []);
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  const CLOCKS = [
+    { city: 'Nueva York', tz: 'America/New_York' },
+    { city: 'Londres',    tz: 'Europe/London' },
+    { city: 'Tokio',      tz: 'Asia/Tokyo' },
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.95 }} transition={{ duration: 0.12 }}
+      className="absolute top-7 left-1/2 -translate-x-1/2 z-[3000] w-64 bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="text-center mb-3 text-sm font-semibold text-white capitalize">{monthName}</div>
+      <div className="grid grid-cols-7 gap-0.5 text-center">
+        {['Do','Lu','Ma','Mi','Ju','Vi','Sa'].map(d => (
+          <div key={d} className="text-[10px] font-bold text-white/30 py-1">{d}</div>
+        ))}
+        {cells.map((d, i) => (
+          <div key={i} className={`text-[11px] py-1.5 rounded-lg ${d === now.getDate() ? 'bg-[#E95420] text-white font-bold' : d ? 'text-white/55 hover:bg-white/10 cursor-pointer' : ''}`}>
+            {d ?? ''}
+          </div>
+        ))}
+      </div>
+      <div className="border-t border-white/10 mt-3 pt-3 flex flex-col gap-2">
+        {CLOCKS.map(({ city, tz }) => (
+          <div key={city} className="flex items-center justify-between text-[11px]">
+            <span className="text-white/40">{city}</span>
+            <span className="text-white/80 font-mono tabular-nums">{new Date().toLocaleTimeString('es-ES', { timeZone: tz, hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Run Dialog ────────────────────────────────────────────────────
+function RunDialog({ apps, onOpen, onClose }) {
+  const [val, setVal] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => { inputRef.current?.focus(); }, []);
+  const matched = val.trim() ? apps.filter(a => a.label.toLowerCase().includes(val.toLowerCase()) || a.id.toLowerCase().includes(val.toLowerCase())) : [];
+  const submit = () => { if (matched.length > 0) { onOpen(matched[0].id); } onClose(); };
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="absolute inset-0 z-[5500] flex items-start justify-center pt-[18vh] bg-black/30 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: -16, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: -16, scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className="w-80 bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10">
+          <Search size={14} className="text-white/40 flex-shrink-0" />
+          <input ref={inputRef} value={val} onChange={e => setVal(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') onClose(); }}
+            placeholder="Ejecutar una orden..." className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-white/25"
+          />
+        </div>
+        {matched.length > 0 && (
+          <div className="py-1 max-h-52 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+            {matched.slice(0, 6).map(a => (
+              <button key={a.id} onClick={() => { onOpen(a.id); onClose(); }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/10 transition-colors text-left"
+              >
+                <a.icon size={14} className="text-white/40 flex-shrink-0" />
+                <span className="text-sm text-white/80">{a.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="px-4 py-2 border-t border-white/5">
+          <span className="text-[10px] text-white/20 font-mono">Alt+F2 · Escape para cerrar</span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Dock Context Menu ─────────────────────────────────────────────
+function DockContextMenu({ appLabel, isOpen, isMin, x, y, onOpen, onMinimize, onCloseApp, onDismiss }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.1 }}
+      className="fixed z-[600] py-1 bg-[#303030] border border-white/10 rounded-xl shadow-2xl w-44"
+      style={{ left: x + 10, top: Math.min(y, window.innerHeight - 160) }}
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="px-3 py-1.5 text-[11px] text-white/35 font-semibold border-b border-white/10 mb-1 truncate">{appLabel}</div>
+      {!isOpen && <button onClick={() => { onOpen(); onDismiss(); }} className="w-full text-left px-3 py-2 text-sm text-white/75 hover:bg-white/10 transition-colors">Abrir nueva ventana</button>}
+      {isOpen && !isMin && <button onClick={() => { onMinimize(); onDismiss(); }} className="w-full text-left px-3 py-2 text-sm text-white/75 hover:bg-white/10 transition-colors">Minimizar</button>}
+      {isOpen && <button onClick={() => { onCloseApp(); onDismiss(); }} className="w-full text-left px-3 py-2 text-sm text-red-400/70 hover:bg-white/10 hover:text-red-400 transition-colors">Cerrar</button>}
+    </motion.div>
+  );
+}
+
+// ── Notification Center ───────────────────────────────────────────
+function NotifCenter({ history, onClear }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }}
+      transition={{ duration: 0.15 }}
+      className="absolute top-7 right-2 z-[3000] w-72 bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+        <span className="text-sm font-semibold text-white">Notificaciones</span>
+        {history.length > 0 && <button onClick={onClear} className="text-[11px] text-white/35 hover:text-white/70 transition-colors">Limpiar todo</button>}
+      </div>
+      {history.length === 0
+        ? <div className="px-4 py-8 text-center text-white/25 text-sm">Sin notificaciones</div>
+        : <div className="max-h-72 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+            {[...history].reverse().map(n => (
+              <div key={n.id} className="px-4 py-3 border-b border-white/5 last:border-0">
+                <div className="text-[13px] font-medium text-white/80">{n.title}</div>
+                {n.body && <div className="text-xs text-white/35 mt-0.5 leading-relaxed">{n.body}</div>}
+              </div>
+            ))}
+          </div>
+      }
+    </motion.div>
+  );
+}
+
+// ── Shortcuts Help ────────────────────────────────────────────────
+function ShortcutsHelp({ onClose }) {
+  const SHORTCUTS = [
+    ['Super',         'Abrir/cerrar App Drawer'],
+    ['Super+L',       'Bloquear pantalla'],
+    ['Alt+Tab',       'Cambiar ventana activa'],
+    ['Alt+F2',        'Ejecutar una orden'],
+    ['Ctrl+Alt+→/←',  'Cambiar escritorio'],
+    ['PrintScreen',   'Captura de pantalla'],
+    ['Ctrl+?',        'Esta ayuda'],
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="absolute inset-0 z-[5500] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.92 }} animate={{ scale: 1 }} exit={{ scale: 0.92 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+        className="bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl w-80"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="text-sm font-bold text-white mb-5">Atajos de teclado</div>
+        <div className="flex flex-col gap-3">
+          {SHORTCUTS.map(([k, d]) => (
+            <div key={k} className="flex items-center justify-between gap-4">
+              <kbd className="px-2 py-1 bg-white/10 rounded-md text-[10px] font-mono text-white/65 border border-white/15 whitespace-nowrap flex-shrink-0">{k}</kbd>
+              <span className="text-[12px] text-white/45 text-right">{d}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 text-center text-[10px] text-white/20 font-mono">Escape o clic para cerrar</div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Desktop Sticky Notes ──────────────────────────────────────────
+const NOTE_COLORS = ['#fef08a', '#86efac', '#93c5fd', '#f9a8d4', '#fda4af'];
+function StickyNote({ note, onChange, onDelete, constraintsRef }) {
+  const { id, x, y, text, color } = note;
+  return (
+    <motion.div
+      drag dragMomentum={false} dragElastic={0} dragConstraints={constraintsRef}
+      initial={{ scale: 0.3, opacity: 0, rotate: -6 }}
+      animate={{ scale: 1, opacity: 1, rotate: 0 }}
+      exit={{ scale: 0.3, opacity: 0, transition: { duration: 0.15 } }}
+      transition={{ type: 'spring', stiffness: 380, damping: 22 }}
+      className="absolute z-[150] flex flex-col shadow-xl rounded-lg overflow-hidden"
+      style={{ top: y, left: x, width: 170, minHeight: 140, background: color }}
+      onPointerDown={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-2 py-1.5 bg-black/[0.08] cursor-grab active:cursor-grabbing flex-shrink-0">
+        <div className="flex gap-1.5">
+          {NOTE_COLORS.map(c => (
+            <button key={c} onClick={() => onChange(id, text, c)}
+              className={`w-3 h-3 rounded-full border transition-transform hover:scale-125 ${c === color ? 'border-black/50 scale-110' : 'border-transparent'}`}
+              style={{ background: c }}
+            />
+          ))}
+        </div>
+        <button onClick={() => onDelete(id)} className="text-black/35 hover:text-black/70 text-sm font-bold leading-none transition-colors">×</button>
+      </div>
+      <textarea
+        value={text} onChange={e => onChange(id, e.target.value, color)}
+        className="flex-1 resize-none outline-none p-2.5 text-[12px] leading-relaxed text-black/75 bg-transparent placeholder:text-black/30 font-medium"
+        placeholder="Nota rápida..."
+        onClick={e => e.stopPropagation()}
+        onPointerDown={e => e.stopPropagation()}
+        style={{ minHeight: 100 }}
+      />
     </motion.div>
   );
 }
@@ -1125,7 +1410,7 @@ function NotesApp() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-3 text-white/20">
-            <StickyNote size={32} strokeWidth={1} />
+            <StickyNoteIcon size={32} strokeWidth={1} />
             <span className="text-sm">Crea una nota</span>
             <button onClick={addNote} className="text-[var(--accent)] text-xs hover:underline">+ Nueva nota</button>
           </div>
@@ -1429,6 +1714,9 @@ function SystemMonitor() {
     { name: 'python3',     cpu: '1.4',  mem: '2.9',  pid: 425 },
     { name: 'code',        cpu: '4.7',  mem: '12.1', pid: 426 },
   ];
+  const [killed, setKilled] = useState(new Set());
+  const killProc = (pid) => setKilled(s => new Set([...s, pid]));
+  const visibleProcs = PROCS.filter(p => !killed.has(p.pid));
 
   const Card = ({ label, value, color, children }) => (
     <div className="bg-[#252526] rounded-xl p-4 border border-white/[0.05]">
@@ -1464,15 +1752,26 @@ function SystemMonitor() {
       <div className="w-56 border-l border-[#333] flex flex-col flex-shrink-0">
         <div className="px-3 py-2.5 border-b border-[#333] text-[10px] font-bold text-white/30 uppercase tracking-widest">Procesos</div>
         <div className="flex-1 overflow-y-auto">
-          {PROCS.map(p => (
-            <div key={p.pid} className="flex items-center px-3 py-1.5 border-b border-white/[0.04] hover:bg-white/5">
-              <span className="flex-1 text-[12px] text-white/60 font-mono truncate">{p.name}</span>
-              <span className="text-[11px] font-mono text-[var(--accent)] w-12 text-right">{p.cpu}%</span>
-              <span className="text-[11px] font-mono text-green-400/70 w-12 text-right">{p.mem}%</span>
-            </div>
-          ))}
+          <AnimatePresence initial={false}>
+            {visibleProcs.map(p => (
+              <motion.div key={p.pid}
+                initial={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center px-3 py-1.5 border-b border-white/[0.04] hover:bg-white/5 group"
+              >
+                <span className="flex-1 text-[12px] text-white/60 font-mono truncate">{p.name}</span>
+                <span className="text-[11px] font-mono text-[var(--accent)] w-12 text-right">{p.cpu}%</span>
+                <span className="text-[11px] font-mono text-green-400/70 w-10 text-right">{p.mem}%</span>
+                <button onClick={() => killProc(p.pid)}
+                  className="ml-2 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500/20 text-red-400/60 hover:text-red-400 transition-all text-xs font-bold flex-shrink-0"
+                  title={`kill -9 ${p.pid}`}
+                >×</button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-        <div className="px-3 py-2 border-t border-[#333] text-[10px] text-white/20 font-mono">{PROCS.length} procesos</div>
+        <div className="px-3 py-2 border-t border-[#333] text-[10px] text-white/20 font-mono">{visibleProcs.length} procesos</div>
       </div>
     </div>
   );
@@ -1568,9 +1867,11 @@ function Calculator() {
 function FilesApp({ onOpenFile, lang }) {
   const [path, setPath] = useState('Home/Projects');
   const [selected, setSelected] = useState(null);
+  const [query, setQuery] = useState('');
   const fs = buildFS(lang);
   const parts = path.split('/');
-  const files = fs[path] || [];
+  const allFiles = fs[path] || [];
+  const files = query.trim() ? allFiles.filter(f => (f.label || f.name).toLowerCase().includes(query.toLowerCase())) : allFiles;
 
   const open = (item) => {
     const next = `${path}/${item.name}`;
@@ -1583,19 +1884,26 @@ function FilesApp({ onOpenFile, lang }) {
 
   return (
     <div className="h-full flex flex-col bg-[#1e1e1e]">
-      <div className="h-11 bg-[#2d2d2d] flex items-center gap-3 px-3 border-b border-black/40 flex-shrink-0">
-        <button onClick={() => parts.length > 1 && navTo(parts.length - 2)} disabled={parts.length === 1}
-          className="p-1.5 rounded hover:bg-white/10 disabled:opacity-30 text-white/60 transition-colors"
+      <div className="h-11 bg-[#2d2d2d] flex items-center gap-2 px-3 border-b border-black/40 flex-shrink-0">
+        <button onClick={() => { parts.length > 1 && navTo(parts.length - 2); setQuery(''); }} disabled={parts.length === 1}
+          className="p-1.5 rounded hover:bg-white/10 disabled:opacity-30 text-white/60 transition-colors flex-shrink-0"
         >
           <ChevronLeft size={16} />
         </button>
-        <div className="flex items-center gap-1 text-[12px] bg-black/20 rounded px-2 py-1 flex-1 overflow-hidden">
+        <div className="flex items-center gap-1 text-[12px] bg-black/20 rounded px-2 py-1 flex-1 overflow-hidden min-w-0">
           {parts.map((part, i) => (
             <React.Fragment key={i}>
-              <button onClick={() => navTo(i)} className="text-white/60 hover:text-white transition-colors whitespace-nowrap">{part}</button>
+              <button onClick={() => { navTo(i); setQuery(''); }} className="text-white/60 hover:text-white transition-colors whitespace-nowrap">{part}</button>
               {i < parts.length - 1 && <span className="text-white/20">/</span>}
             </React.Fragment>
           ))}
+        </div>
+        <div className="flex items-center gap-1.5 bg-black/20 rounded px-2 py-1 flex-shrink-0">
+          <Search size={11} className="text-white/30 flex-shrink-0" />
+          <input value={query} onChange={e => setQuery(e.target.value)}
+            placeholder="Buscar..." className="bg-transparent text-white/80 text-[11px] outline-none placeholder:text-white/25 w-20"
+          />
+          {query && <button onClick={() => setQuery('')} className="text-white/30 hover:text-white/60 text-xs leading-none">×</button>}
         </div>
       </div>
       <div className="flex-1 flex min-h-0">
@@ -1613,7 +1921,7 @@ function FilesApp({ onOpenFile, lang }) {
           })}
         </div>
         <div className="flex-1 p-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 content-start gap-3 overflow-y-auto">
-          {files.length === 0 && <div className="col-span-full text-white/25 text-sm text-center mt-12">Carpeta vacía</div>}
+          {files.length === 0 && <div className="col-span-full text-white/25 text-sm text-center mt-12">{query ? 'Sin resultados' : 'Carpeta vacía'}</div>}
           {files.map((f) => (
             <div key={f.name} onClick={() => setSelected(f.name)} onDoubleClick={() => open(f)}
               className={`flex flex-col items-center gap-1.5 p-2 rounded-lg cursor-pointer transition-colors ${selected === f.name ? 'bg-[#E95420]/20 ring-1 ring-[#E95420]/40' : 'hover:bg-white/[0.07]'}`}
@@ -2343,7 +2651,7 @@ function useWeather() {
   return weather;
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick, onTrayClick }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick, onTrayClick, onCalendarClick, onBellClick, unread }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -2375,9 +2683,9 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
           <span className="text-white/35 truncate max-w-[100px]">{nowPlaying.artist}</span>
         </div>
       ) : (
-        <span className="absolute left-1/2 -translate-x-1/2 tabular-nums hover:text-white transition-colors cursor-default">
+        <button onClick={e => { e.stopPropagation(); onCalendarClick?.(); }} className="absolute left-1/2 -translate-x-1/2 tabular-nums hover:text-white transition-colors hover:bg-white/10 px-2 py-0.5 rounded">
           {date && time ? `${date}  ${time}` : '...'}
-        </span>
+        </button>
       )}
 
       <div className="flex items-center gap-3">
@@ -2387,6 +2695,10 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
             <span>{weather.temp}°C</span>
           </span>
         )}
+        <button onClick={e => { e.stopPropagation(); onBellClick?.(); }} className="relative opacity-60 hover:opacity-100 transition-opacity" title="Notificaciones">
+          <Bell size={13} />
+          {unread > 0 && <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-[#E95420] rounded-full text-[8px] font-bold flex items-center justify-center text-white leading-none">{unread > 9 ? '9+' : unread}</span>}
+        </button>
         <div
           className="flex items-center gap-2 px-1.5 py-0.5 rounded hover:bg-white/10 cursor-pointer transition-colors"
           onClick={e => { e.stopPropagation(); onTrayClick?.(); }}
@@ -2459,31 +2771,41 @@ export function UbuntuOS({ onClose }) {
   const [quickPanel, setQuickPanel] = useState(false);
   const [wifiOn,     setWifiOn]     = useState(true);
   const [btOn,       setBtOn]       = useState(false);
+  const [volume,     setVolume]     = useState(80);
   const [altTabOpen, setAltTabOpen] = useState(false);
   const [altTabIdx,  setAltTabIdx]  = useState(0);
   const altTabCtxRef = useRef(null);
+  const [calOpen,           setCalOpen]           = useState(false);
+  const [runOpen,           setRunOpen]           = useState(false);
+  const [notifCenter,       setNotifCenter]       = useState(false);
+  const [unread,            setUnread]            = useState(0);
+  const [notifHistory,      setNotifHistory]      = useState([]);
+  const [dockCtx,           setDockCtx]           = useState(null);
+  const [shortcutsOpen,     setShortcutsOpen]     = useState(false);
+  const [stickyNotes,       setStickyNotes]       = useState([]);
+  const [dnd,               setDnd]               = useState(false);
+  const dndRef = useRef(false);
+  const [showClock,         setShowClock]         = useState(false);
+  const [screenshotPreview, setScreenshotPreview] = useState(null);
   const addNotif = useCallback((title, body) => {
     const id = Date.now();
-    setNotifs(ns => [...ns, { id, title, body }]);
+    if (!dndRef.current) setNotifs(ns => [...ns, { id, title, body }]);
+    setNotifHistory(hs => [...hs, { id, title, body }]);
+    setUnread(c => c + 1);
   }, []);
   const removeNotif = useCallback((id) => setNotifs(ns => ns.filter(n => n.id !== id)), []);
 
   const takeScreenshot = useCallback(async () => {
     if (!osRootRef.current) return;
     try {
-      addNotif('Captura de pantalla', 'Capturando escritorio…');
       const canvas = await html2canvas(osRootRef.current, {
         useCORS: true,
         allowTaint: false,
         backgroundColor: null,
         scale: window.devicePixelRatio || 1,
       });
-      const url  = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href     = url;
-      link.download = `screenshot-${Date.now()}.png`;
-      link.click();
-      addNotif('Captura guardada', 'Imagen descargada como PNG');
+      const url = canvas.toDataURL('image/png');
+      setScreenshotPreview(url);
     } catch {
       addNotif('Error', 'No se pudo capturar la pantalla');
     }
@@ -2559,6 +2881,9 @@ export function UbuntuOS({ onClose }) {
     altTabCtxRef.current = { wins, focused, focusWin, restoreApp, ALL_APPS: [...DOCK_APPS, ...GAME_DOCK] };
   });
 
+  // Sync DND state to ref for use in callbacks
+  useEffect(() => { dndRef.current = dnd; }, [dnd]);
+
   // Alt+Tab window switcher
   useEffect(() => {
     if (screen !== 'desktop') return;
@@ -2597,6 +2922,31 @@ export function UbuntuOS({ onClose }) {
     return () => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp); };
   }, [screen]);
 
+  // Alt+F2 run dialog
+  useEffect(() => {
+    if (screen !== 'desktop') return;
+    const handler = (e) => { if (e.altKey && e.key === 'F2') { e.preventDefault(); setRunOpen(v => !v); } };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [screen]);
+
+  // Ctrl+? keyboard shortcuts help
+  useEffect(() => {
+    const handler = (e) => { if (e.ctrlKey && e.key === '?') { e.preventDefault(); setShortcutsOpen(v => !v); } };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  const addStickyNote = useCallback((x, y) => {
+    setStickyNotes(ns => [...ns, { id: Date.now(), x, y, text: '', color: NOTE_COLORS[ns.length % NOTE_COLORS.length] }]);
+  }, []);
+  const updateStickyNote = useCallback((id, text, color) => {
+    setStickyNotes(ns => ns.map(n => n.id === id ? { ...n, text, color } : n));
+  }, []);
+  const deleteStickyNote = useCallback((id) => {
+    setStickyNotes(ns => ns.filter(n => n.id !== id));
+  }, []);
+
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
   const closeApp = (id) => { playCloseApp(); if (id === 'music') setNowPlaying(null); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
@@ -2634,7 +2984,7 @@ export function UbuntuOS({ onClose }) {
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },
     { id: 'files',    label: 'Archivos',         icon: FolderOpen },
     { id: 'browser',  label: 'Firefox',          icon: Globe },
-    { id: 'notes',    label: 'Notas',            icon: StickyNote },
+    { id: 'notes',    label: 'Notas',            icon: StickyNoteIcon },
     { id: 'paint',    label: 'Pinta',            icon: Palette },
     { id: 'monitor',  label: 'Monitor del sist.',icon: Activity },
     { id: 'calc',     label: 'Calculadora',      icon: CalcIcon },
@@ -2694,10 +3044,10 @@ export function UbuntuOS({ onClose }) {
     <motion.div ref={osRootRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
       className="fixed inset-0 z-[9999] flex flex-col overflow-hidden select-none"
       style={{ background: wallpaperBg }}
-      onClick={() => { setCtxMenu(null); setQuickPanel(false); }}
+      onClick={() => { setCtxMenu(null); setQuickPanel(false); setCalOpen(false); setNotifCenter(false); setDockCtx(null); }}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} onTrayClick={() => setQuickPanel(v => !v)} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} onTrayClick={() => setQuickPanel(v => !v)} onCalendarClick={() => { setCalOpen(v => !v); setNotifCenter(false); }} onBellClick={() => { setNotifCenter(v => !v); setCalOpen(false); setUnread(0); }} unread={unread} />
 
       {/* Quick settings panel */}
       <AnimatePresence>
@@ -2709,6 +3059,8 @@ export function UbuntuOS({ onClose }) {
             isMuted={isMuted} toggleMute={toggleMute}
             onLock={() => setScreen('login')}
             onClose={() => setQuickPanel(false)}
+            volume={volume} onVolume={setVolume}
+            dnd={dnd} onDnd={() => setDnd(v => !v)}
           />
         )}
       </AnimatePresence>
@@ -2723,6 +3075,47 @@ export function UbuntuOS({ onClose }) {
         })()}
       </AnimatePresence>
 
+      {/* Calendar popup */}
+      <AnimatePresence>
+        {calOpen && <CalendarPopup key="cal" />}
+      </AnimatePresence>
+
+      {/* Notification center */}
+      <AnimatePresence>
+        {notifCenter && (
+          <NotifCenter key="notif-center" history={notifHistory} onClear={() => setNotifHistory([])} />
+        )}
+      </AnimatePresence>
+
+      {/* Run dialog */}
+      <AnimatePresence>
+        {runOpen && (
+          <RunDialog key="run" apps={[...DOCK_APPS, ...GAME_DOCK]} onOpen={id => openApp(id)} onClose={() => setRunOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Shortcuts help */}
+      <AnimatePresence>
+        {shortcutsOpen && <ShortcutsHelp key="shortcuts" onClose={() => setShortcutsOpen(false)} />}
+      </AnimatePresence>
+
+      {/* Dock context menu */}
+      <AnimatePresence>
+        {dockCtx && (
+          <DockContextMenu
+            key="dock-ctx"
+            appLabel={dockCtx.label}
+            isOpen={wins[dockCtx.id]?.open}
+            isMin={wins[dockCtx.id]?.min}
+            x={dockCtx.x} y={dockCtx.y}
+            onOpen={() => openApp(dockCtx.id)}
+            onMinimize={() => minApp(dockCtx.id)}
+            onCloseApp={() => closeApp(dockCtx.id)}
+            onDismiss={() => setDockCtx(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
         <AnimatePresence>
@@ -2734,6 +3127,15 @@ export function UbuntuOS({ onClose }) {
         </AnimatePresence>
       </div>
 
+      {/* Screenshot preview toast */}
+      <AnimatePresence>
+        {screenshotPreview && (
+          <div className="absolute top-9 right-3 z-[2100]">
+            <ScreenshotPreviewToast url={screenshotPreview} onDismiss={() => setScreenshotPreview(null)} />
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="flex-1 flex overflow-hidden">
         {/* Dock */}
         <div className={`${isMobile ? 'w-12' : 'w-14'} bg-black/55 flex flex-col items-center py-2 gap-1 z-40 backdrop-blur-sm flex-shrink-0 overflow-y-auto`}
@@ -2743,6 +3145,7 @@ export function UbuntuOS({ onClose }) {
             <DockIcon key={app.id} icon={app.icon} label={app.label}
               isOpen={wins[app.id].open} isFocused={focused===app.id} isMinimized={wins[app.id].min}
               onClick={() => handleDockClick(app.id)}
+              onRightClick={e => setDockCtx({ id: app.id, label: app.label, x: e.clientX, y: e.clientY })}
             />
           ))}
 
@@ -2753,6 +3156,7 @@ export function UbuntuOS({ onClose }) {
             <DockIcon key={app.id} icon={app.icon} label={app.label}
               isOpen={wins[app.id].open} isFocused={focused===app.id} isMinimized={wins[app.id].min}
               onClick={() => handleDockClick(app.id)}
+              onRightClick={e => setDockCtx({ id: app.id, label: app.label, x: e.clientX, y: e.clientY })}
             />
           ))}
 
@@ -2772,12 +3176,31 @@ export function UbuntuOS({ onClose }) {
         </div>
 
         {/* Desktop */}
-        <div ref={desktopRef} className="flex-1 relative overflow-hidden" onClick={() => { setCtxMenu(null); setGamePicker(false); }}>
+        <div ref={desktopRef} className="flex-1 relative overflow-hidden"
+          onClick={() => { setCtxMenu(null); setGamePicker(false); setQuickPanel(false); setDockCtx(null); }}
+          onDoubleClick={e => {
+            if (e.target !== desktopRef.current) return;
+            const rect = desktopRef.current.getBoundingClientRect();
+            addStickyNote(e.clientX - rect.left - 85, e.clientY - rect.top - 70);
+          }}
+        >
+          {/* Sticky notes */}
+          <AnimatePresence>
+            {stickyNotes.map(note => (
+              <StickyNote key={note.id} note={note} onChange={updateStickyNote} onDelete={deleteStickyNote} constraintsRef={desktopRef} />
+            ))}
+          </AnimatePresence>
+
+          {/* Desktop clock widget */}
+          <AnimatePresence>
+            {showClock && <DesktopClock key="desk-clock" constraintsRef={desktopRef} />}
+          </AnimatePresence>
+
           {/* Main Apps */}
           <DesktopIcon icon={FolderOpen}     label="Proyectos" top={20}  left={20} constraintsRef={desktopRef} onClick={() => openApp('files')} />
           <DesktopIcon icon={TerminalSquare} label="Terminal"  top={110} left={20} constraintsRef={desktopRef} onClick={() => openApp('terminal')} />
           <DesktopIcon icon={Globe}          label="Firefox" top={200} left={20} constraintsRef={desktopRef} onClick={() => openApp('browser')} />
-          <DesktopIcon icon={StickyNote}     label="Notas"     top={290} left={20} constraintsRef={desktopRef} onClick={() => openApp('notes')} />
+          <DesktopIcon icon={StickyNoteIcon}  label="Notas"     top={290} left={20} constraintsRef={desktopRef} onClick={() => openApp('notes')} />
           
           {/* Extras / Tools */}
           <DesktopIcon icon={Shell}          label="DOOM"      top={20}  left={110} constraintsRef={desktopRef} onClick={() => openApp('doom')} />
@@ -2831,6 +3254,8 @@ export function UbuntuOS({ onClose }) {
                 onClose={() => setCtxMenu(null)}
                 onNewTerminal={() => openApp('terminal')}
                 onSettings={() => openApp('settings')}
+                showClock={showClock}
+                onToggleClock={() => setShowClock(v => !v)}
               />
             )}
           </AnimatePresence>
