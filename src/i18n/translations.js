@@ -10,7 +10,7 @@ export const translations = {
     hero: {
       available: 'Disponible para nuevos proyectos',
       tagline:   'Del pixel a la nube.\nSin puntos ciegos.',
-      description: 'Especializado en crear ecosistemas web robustos. Desde animaciones a bajo nivel en React hasta arquitecturas escalables en la nube. Resolviendo problemas completos, sin parches temporales.',
+      description: 'Especializado en orquestar sistemas desde la raíz. De la lógica de negocio profunda a despliegues escalables en la nube y frontends de alto rendimiento. Resolviendo la complejidad con ingeniería real, sin soluciones de corto plazo.',
       cta_primary:   'Ver trabajo',
       cta_secondary: 'Contacto',
       stats: [
@@ -96,7 +96,7 @@ export const translations = {
     hero: {
       available: 'Open to new opportunities',
       tagline:   'From pixel to cloud.\nNo blind spots.',
-      description: 'Specialized in building robust web ecosystems. From low-level React animations to scalable cloud architectures. Solving complete problems, without temporary patches.',
+      description: 'Specialized in orchestrating systems from the ground up. From deep business logic to scalable cloud deployments and high-performance frontends. Solving complexity with real engineering, not quick fixes.',
       cta_primary:   'See my work',
       cta_secondary: 'Contact',
       stats: [

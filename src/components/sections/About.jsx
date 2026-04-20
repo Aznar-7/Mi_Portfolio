@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { GitHubCalendar } from 'react-github-calendar'
+import { X } from 'lucide-react'
 
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
@@ -15,6 +17,7 @@ function l(value, lang) {
 }
 
 export function About() {
+  const [isImageOpen, setIsImageOpen] = useState(false)
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const { playHover, playNavigation } = useSoundEffects()
@@ -32,7 +35,18 @@ export function About() {
           {/* Subtle accent glow behind bio */}
           <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-gradient-to-r from-[var(--accent)]/10 to-indigo-500/10 blur-[80px] pointer-events-none" />
           
-          <div className="space-y-6 relative z-10">
+          <div className="space-y-6 relative z-10 text-white/80">
+            {/* Inline float photo */}
+            <motion.img 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              src="/port.jpg"
+              alt="Vicente Aznar"
+              onClick={() => setIsImageOpen(true)}
+              className="float-left mr-5 mb-2 h-20 w-20 md:h-24 md:w-24 rounded-full object-cover outline outline-2 outline-white/10 shadow-xl cursor-pointer hover:scale-[1.05] hover:outline-white/30 transition-all"
+            />
             {bio.map((para, i) => (
               <motion.p
                 key={i}
@@ -40,7 +54,7 @@ export function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={reduced ? { duration: 0 } : { duration: 0.7, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className={`text-[16px] md:text-[17px] leading-[1.8] tracking-wide ${i === 0 ? 'text-white/90 font-medium' : 'text-white/60 font-light'}`}
+                className={`text-[16px] md:text-[17px] leading-[1.8] tracking-wide ${i === 0 ? 'text-white/90 font-medium' : 'text-white/60 font-light'} clear-none`}
               >
                 {para}
               </motion.p>
@@ -160,6 +174,36 @@ export function About() {
           />
         </div>
       </motion.div>
+
+      {/* Image Lightbox Modal */}
+      <AnimatePresence>
+        {isImageOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsImageOpen(false)}
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-10 bg-black/80 backdrop-blur-sm"
+          >
+             <button
+                className="absolute top-6 right-6 text-white/60 hover:text-white transition-colors"
+                onClick={() => setIsImageOpen(false)}
+             >
+                <X size={32} />
+             </button>
+             <motion.img
+                initial={{ scale: 0.8, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                src="/port.jpg"
+                alt="Vicente Aznar"
+                className="w-full max-w-[500px] rounded-2xl shadow-2xl object-cover ring-1 ring-white/10"
+                onClick={(e) => e.stopPropagation()}
+             />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </SectionWrapper>
   )
 }

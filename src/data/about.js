@@ -1,14 +1,14 @@
 export const about = {
   bio: {
     es: [
-      'Construyo sistemas reales desde cero — React en el frontend, Django en el backend, Oracle Cloud en producción. No solo escribo código: diseño la arquitectura, conecto las piezas y lo dejo corriendo.',
-      'Estudio Ingeniería en Sistemas en la UTN. Los paradigmas que veo ahí — funcional en Haskell, lógico en Prolog — me cambiaron la forma de pensar los problemas. Me interesa entender cómo funcionan las cosas, no solo usarlas.',
-      'Me gustan los proyectos con peso real: flujos complejos, sistemas que aguantan carga, integraciones que no deberían funcionar pero funcionan. Si tenés algo así, hablemos.',
+      'Estudiante de Ingeniería en Sistemas y Desarrollador Full-Stack enfocado en diseñar soluciones de software escalables con una mentalidad técnica rigurosa.',
+      'Me especializo en traducir lógicas de negocio complejas en sistemas robustos y listos para producción, priorizando siempre la estabilidad y el alto rendimiento. Me interesa entender cómo funcionan las cosas, no solo usarlas.',
+      'Con certificación de inglés C1 y experiencia en entornos corporativos, entrego software alineado con los más altos estándares internacionales de calidad y confiabilidad.',
     ],
     en: [
-      "I build real systems from scratch — React on the frontend, Django on the backend, Oracle Cloud in production. I don't just write code: I design the architecture, connect the parts, and keep it running.",
-      "I study Systems Engineering at UTN. The paradigms I encounter there — functional with Haskell, logic with Prolog — changed how I think about problems. I care about understanding how things work, not just using them.",
-      "I'm drawn to projects with real weight: complex flows, systems that hold under load, integrations that shouldn't work but do. If you have something like that, let's talk.",
+      "Systems Engineering student and Full-Stack Developer focused on designing scalable software solutions with a rigorous technical mindset.",
+      "I specialize in translating complex business logic into robust, production-ready systems, prioritizing stability and high performance. I am driven by understanding how things work at their core, not just how to use them.",
+      "With a C1 English certification and corporate experience, I deliver software aligned with the highest international standards of quality and reliability.",
     ],
   },
   quickFacts: [
