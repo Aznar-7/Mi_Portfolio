@@ -3,12 +3,12 @@ import { motion, AnimatePresence, useDragControls, Reorder } from 'motion/react'
 import { Terminal as TerminalWindow } from '@/components/layout/Terminal';
 import {
   TerminalSquare, FolderOpen, Globe, Settings as SettingsIcon,
-  Power, Wifi, BatteryFull, Volume2, File, Code2,
+  Power, Wifi, BatteryFull, Volume2, VolumeX, File, Code2,
   ChevronLeft, Info, Palette, HardDrive, ExternalLink,
   Gamepad2, Activity, Calculator as CalcIcon, RefreshCw,
   Grid3x3, StickyNote, Plus, Trash2, Bomb, Bug, Blocks, Grip,
   Rocket, Code, Briefcase, Mail, X, ChevronRight, RotateCw, Star, Menu, Shell,
-  Moon, Search, Music, Camera, Cloud
+  Moon, Search, Music, Camera, Cloud, Bluetooth, Lock
 } from 'lucide-react';
 import React from 'react';
 import html2canvas from 'html2canvas';
@@ -431,6 +431,69 @@ function ContextMenu({ x, y, onClose, onNewTerminal, onSettings }) {
           {item.label}
         </button>
       ))}
+    </motion.div>
+  );
+}
+
+// ── Alt+Tab Switcher ─────────────────────────────────────────────
+function AltTabSwitcher({ apps, selectedIdx }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.1 }}
+      className="absolute inset-0 z-[5000] flex flex-col items-center justify-center gap-3 pointer-events-none"
+    >
+      <div className="bg-black/75 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex gap-2 shadow-2xl max-w-[90vw] flex-wrap justify-center">
+        {apps.map((app, i) => (
+          <div
+            key={app.id}
+            className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-100 ${i === selectedIdx ? 'bg-white/20 ring-2 ring-white/50' : 'bg-white/5'}`}
+          >
+            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+              <app.icon size={22} color="white" strokeWidth={1.5} />
+            </div>
+            <span className="text-white text-[11px] font-medium w-[72px] truncate text-center">{app.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="text-white/30 text-[11px] font-mono">Alt+Tab · Suelta Alt para seleccionar</div>
+    </motion.div>
+  );
+}
+
+// ── Quick Settings Panel ─────────────────────────────────────────
+function QTile({ icon: Icon, label, sub, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col gap-1.5 p-3 rounded-xl border text-left transition-all w-full ${active ? 'bg-blue-500/20 border-blue-500/30 text-blue-200' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white/70'}`}
+    >
+      <Icon size={15} />
+      <span className="text-[11px] font-semibold leading-none">{label}</span>
+      <span className="text-[10px] opacity-60 leading-none">{sub}</span>
+    </button>
+  );
+}
+
+function QuickPanel({ wifiOn, onWifi, btOn, onBt, isMuted, toggleMute, onLock, onClose }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+      transition={{ duration: 0.12 }}
+      className="absolute top-7 right-2 z-[3000] w-60 bg-[#1e1e1e]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="text-[9px] font-bold text-white/30 uppercase tracking-widest mb-2 px-1">Acceso rápido</div>
+      <div className="grid grid-cols-2 gap-2">
+        <QTile icon={Wifi}                         label="Wi-Fi"      sub={wifiOn ? 'Conectado' : 'Apagado'}   active={wifiOn}   onClick={onWifi} />
+        <QTile icon={Bluetooth}                    label="Bluetooth"  sub={btOn   ? 'Activo'    : 'Apagado'}   active={btOn}     onClick={onBt} />
+        <QTile icon={isMuted ? VolumeX : Volume2}  label="Sonido"     sub={isMuted ? 'Silenciado' : 'Activo'}  active={!isMuted} onClick={toggleMute} />
+        <QTile icon={Lock}                         label="Bloquear"   sub="Super+L"                            active={false}    onClick={() => { onLock(); onClose(); }} />
+      </div>
     </motion.div>
   );
 }
@@ -2280,7 +2343,7 @@ function useWeather() {
   return weather;
 }
 
-function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick }) {
+function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick, onTrayClick }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -2324,9 +2387,15 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
             <span>{weather.temp}°C</span>
           </span>
         )}
-        <Volume2 size={13} className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"/>
-        <Wifi size={13} className="opacity-60"/>
-        <BatteryFull size={13} className="opacity-60"/>
+        <div
+          className="flex items-center gap-2 px-1.5 py-0.5 rounded hover:bg-white/10 cursor-pointer transition-colors"
+          onClick={e => { e.stopPropagation(); onTrayClick?.(); }}
+          title="Configuración rápida"
+        >
+          <Volume2 size={13} className="opacity-60"/>
+          <Wifi size={13} className="opacity-60"/>
+          <BatteryFull size={13} className="opacity-60"/>
+        </div>
         {nowPlaying && <span className="tabular-nums text-white/50 text-[11px]">{time}</span>}
         <button onClick={onScreenshot} className="opacity-60 hover:opacity-100 transition-opacity" title="Captura de pantalla (PrintScreen)">
           <Camera size={13} />
@@ -2339,7 +2408,7 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
 
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
-  const { playOpenApp, playClick, playCloseApp, setBgmAllowed } = useSoundEffects();
+  const { playOpenApp, playClick, playCloseApp, setBgmAllowed, isMuted, toggleMute } = useSoundEffects();
   const { lang } = useLang();
   const weather = useWeather();
   const [screen,   setScreen]   = useState('boot');
@@ -2387,6 +2456,12 @@ export function UbuntuOS({ onClose }) {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [workspace,    setWorkspace]    = useState(0);
   const [winWorkspace, setWinWorkspace] = useState({});
+  const [quickPanel, setQuickPanel] = useState(false);
+  const [wifiOn,     setWifiOn]     = useState(true);
+  const [btOn,       setBtOn]       = useState(false);
+  const [altTabOpen, setAltTabOpen] = useState(false);
+  const [altTabIdx,  setAltTabIdx]  = useState(0);
+  const altTabCtxRef = useRef(null);
   const addNotif = useCallback((title, body) => {
     const id = Date.now();
     setNotifs(ns => [...ns, { id, title, body }]);
@@ -2455,6 +2530,11 @@ export function UbuntuOS({ onClose }) {
   useEffect(() => {
     if (screen !== 'desktop') return;
     const handler = (e) => {
+      if (e.metaKey && e.key === 'l') {
+        e.preventDefault();
+        setScreen('login');
+        return;
+      }
       if (e.key === 'Meta' || e.key === 'Super') {
         e.preventDefault();
         setAppDrawer(v => !v);
@@ -2473,6 +2553,49 @@ export function UbuntuOS({ onClose }) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  // Keep alt-tab context ref fresh every render
+  useEffect(() => {
+    altTabCtxRef.current = { wins, focused, focusWin, restoreApp, ALL_APPS: [...DOCK_APPS, ...GAME_DOCK] };
+  });
+
+  // Alt+Tab window switcher
+  useEffect(() => {
+    if (screen !== 'desktop') return;
+    const st = { open: false, idx: 0 };
+    const onKeyDown = (e) => {
+      if (e.altKey && e.key === 'Tab') {
+        e.preventDefault();
+        const { wins, focused, ALL_APPS } = altTabCtxRef.current;
+        const open = ALL_APPS.filter(a => wins[a.id]?.open);
+        if (open.length < 1) return;
+        if (!st.open) {
+          const fi = open.findIndex(a => a.id === focused);
+          const ni = open.length > 1 ? (fi + 1) % open.length : fi;
+          st.open = true; st.idx = ni;
+          setAltTabOpen(true); setAltTabIdx(ni);
+        } else {
+          const ni = (st.idx + 1) % open.length;
+          st.idx = ni; setAltTabIdx(ni);
+        }
+      }
+      if (e.key === 'Escape' && st.open) {
+        st.open = false; setAltTabOpen(false);
+      }
+    };
+    const onKeyUp = (e) => {
+      if (e.key === 'Alt' && st.open) {
+        const { wins, ALL_APPS, focusWin, restoreApp } = altTabCtxRef.current;
+        const open = ALL_APPS.filter(a => wins[a.id]?.open);
+        const sel = open[st.idx];
+        if (sel) { if (wins[sel.id]?.min) restoreApp(sel.id); else focusWin(sel.id); }
+        st.open = false; setAltTabOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    return () => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp); };
+  }, [screen]);
 
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
@@ -2571,10 +2694,34 @@ export function UbuntuOS({ onClose }) {
     <motion.div ref={osRootRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
       className="fixed inset-0 z-[9999] flex flex-col overflow-hidden select-none"
       style={{ background: wallpaperBg }}
-      onClick={() => setCtxMenu(null)}
+      onClick={() => { setCtxMenu(null); setQuickPanel(false); }}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} />
+      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} onTrayClick={() => setQuickPanel(v => !v)} />
+
+      {/* Quick settings panel */}
+      <AnimatePresence>
+        {quickPanel && (
+          <QuickPanel
+            key="quick-panel"
+            wifiOn={wifiOn} onWifi={() => setWifiOn(v => !v)}
+            btOn={btOn}     onBt={() => setBtOn(v => !v)}
+            isMuted={isMuted} toggleMute={toggleMute}
+            onLock={() => setScreen('login')}
+            onClose={() => setQuickPanel(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Alt+Tab switcher */}
+      <AnimatePresence>
+        {altTabOpen && (() => {
+          const openApps = [...DOCK_APPS, ...GAME_DOCK].filter(a => wins[a.id]?.open);
+          return openApps.length > 0 ? (
+            <AltTabSwitcher key="alt-tab" apps={openApps} selectedIdx={altTabIdx} />
+          ) : null;
+        })()}
+      </AnimatePresence>
 
       {/* Notification toasts */}
       <div className="absolute top-9 right-3 z-[2000] flex flex-col gap-2 pointer-events-none">
