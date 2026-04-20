@@ -1,101 +1,152 @@
-import { useState, useEffect } from 'react';
-import { Cloud, Droplets, Wind, Sun, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Cloud, Sun, CloudRain, CloudLightning, Wind, Activity } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function WeatherApp() {
   const [weatherData, setWeatherData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Intentamos obtener la ubicación
   useEffect(() => {
-    const fetchWeather = async (lat, lon) => {
-      try {
-        setLoading(true);
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`);
-        const data = await res.json();
-        setWeatherData(data);
-        setError(null);
-      } catch (err) {
-        setError('No se pudo obtener el clima.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if ('geolocation' in navigator) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => fetchWeather(-34.6037, -58.3816) // Default BsAs
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.warn("Geolocation denied, using default (Buenos Aires):", error);
+          // Default to Buenos Aires
+          fetchWeather(-34.6037, -58.3816);
+        }
       );
     } else {
       fetchWeather(-34.6037, -58.3816);
     }
   }, []);
 
-  if (loading) return <div className="h-full bg-[#111] text-white flex items-center justify-center p-8 animate-pulse"><Sun className="animate-spin text-yellow-400" size={40} /></div>;
-  if (error || !weatherData) return <div className="h-full bg-[#111] text-red-400 flex items-center justify-center p-8"><AlertCircle className="mr-2" /> {error}</div>;
+  const fetchWeather = async (lat, lon) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const cityResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`);
+      const cityData = await cityResponse.json();
+      const city = cityData.city || cityData.locality || "Desconocido";
 
-  const curr = weatherData.current_weather;
-  const temp = Math.round(curr.temperature);
-  const isNight = curr.is_day === 0;
-
-  // Simple weather code map
-  const getIcon = (code) => {
-    if (code <= 1) return <Sun className="text-yellow-400" size={64} style={{ fill: 'currentColor' }} />;
-    if (code <= 3) return <Cloud className="text-gray-300" size={64} style={{ fill: 'currentColor' }} />;
-    return <Droplets className="text-blue-400" size={64} style={{ fill: 'currentColor' }} />;
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`
+      );
+      if (!weatherResponse.ok) throw new Error("Error obtaining weather");
+      const wData = await weatherResponse.json();
+      
+      setWeatherData({
+        city,
+        current: wData.current_weather,
+        daily: wData.daily
+      });
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo cargar el clima.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getDesc = (code) => {
-    if (code <= 1) return isNight ? 'Despejado' : 'Soleado';
-    if (code <= 3) return 'Nublado';
-    if (code <= 49) return 'Niebla';
-    if (code <= 69) return 'Lluvia ligera';
-    if (code <= 79) return 'Nieve';
-    if (code <= 99) return 'Tormenta';
-    return 'Desconocido';
+  const getWeatherIcon = (code, size = 64) => {
+    if (code <= 3) return <Sun size={size} className="text-yellow-400 drop-shadow-lg animate-pulse" />;
+    if (code <= 48) return <Cloud size={size} className="text-gray-300 drop-shadow-md" />;
+    if (code <= 69) return <CloudRain size={size} className="text-blue-400 drop-shadow-md" />;
+    if (code <= 99) return <CloudLightning size={size} className="text-purple-400 drop-shadow-md" />;
+    return <Sun size={size} className="text-yellow-400" />;
   };
 
-  const daily = weatherData.daily;
+  const getWeatherStatus = (code) => {
+    if (code <= 3) return "Despejado";
+    if (code <= 48) return "Nublado";
+    if (code <= 69) return "Lloviendo";
+    if (code <= 99) return "Tormenta";
+    return "Despejado";
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 rounded-lg">
+        <Activity className="animate-spin text-white opacity-70" size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full bg-slate-900 text-white rounded-lg p-6 text-center">
+        <h3 className="text-xl font-bold text-red-400 mb-2">Error</h3>
+        <p className="text-gray-400">{error}</p>
+        <button 
+          onClick={() => fetchWeather(-34.6037, -58.3816)} 
+          className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
+  const { city, current, daily } = weatherData;
+  const isDay = current.is_day === 1;
+  const bgGradient = isDay 
+    ? "from-sky-400 via-blue-500 to-blue-700" 
+    : "from-slate-800 via-indigo-900 to-slate-900";
 
   return (
-    <div className="h-full bg-gradient-to-br from-[#1e1e2f] to-[#111] text-white flex flex-col font-sans select-none">
-      <div className="flex flex-col items-center justify-center flex-1 p-8">
-        <div className="mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-            {getIcon(curr.weathercode)}
+    <div className={`w-full h-full flex flex-col bg-gradient-to-br ${bgGradient} text-white rounded-lg shadow-2xl overflow-hidden font-sans`}>
+      <div className="p-8 flex flex-col items-center text-center relative z-10">
+        <h2 className="text-3xl font-light tracking-wide mb-1 drop-shadow-md">{city}</h2>
+        <p className="text-sm font-medium text-white/70 tracking-widest uppercase shadow-black/10 text-shadow-sm mb-6">
+          {getWeatherStatus(current.weathercode)}
+        </p>
+
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 12 }}
+          className="mb-6 relative"
+        >
+          {getWeatherIcon(current.weathercode, 96)}
+        </motion.div>
+
+        <div className="flex items-start justify-center drop-shadow-xl">
+          <span className="text-7xl font-light tracking-tighter">{Math.round(current.temperature)}</span>
+          <span className="text-3xl font-light mt-2 ml-1">°</span>
         </div>
-        <div className="text-6xl font-light tracking-tighter mb-2">{temp}°C</div>
-        <div className="text-lg text-white/70 font-medium mb-1 drop-shadow-md">
-          {getDesc(curr.weathercode)}
-        </div>
-        <div className="flex items-center gap-4 text-sm text-white/50 mt-4 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-            <span className="flex items-center gap-1.5"><Wind size={14}/> {curr.windspeed} km/h</span>
-            <div className="w-px h-3 bg-white/20"></div>
-            <span className="flex items-center gap-1.5 min-w-[70px]"> Dir: {curr.winddirection}°</span>
+        
+        <div className="flex items-center justify-center gap-6 mt-6 px-6 py-3 bg-black/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-inner w-full max-w-xs">
+          <div className="flex items-center gap-2">
+            <Wind size={18} className="text-blue-200" />
+            <span className="text-sm font-medium">{current.windspeed} km/h</span>
+          </div>
         </div>
       </div>
 
-      {daily && daily.time && (
-      <div className="bg-white/5 border-t border-white/10 p-4">
-        <div className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-3 px-1">Próximos días</div>
-        <div className="flex justify-between gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-           {daily.time.slice(1, 6).map((dateStr, i) => {
-              const dayIndex = i + 1;
-              const date = new Date(dateStr + 'T00:00:00');
-              const dayName = date.toLocaleDateString('es-ES', { weekday: 'short' });
-              return (
-                  <div key={dateStr} className="flex flex-col items-center gap-2 bg-white/5 border border-white/5 rounded-xl p-3 flex-1 min-w-[70px]">
-                      <span className="text-[11px] capitalize text-white/50 font-medium">{dayName}</span>
-                      <div className="scale-75 origin-center">
-                          {getIcon(daily.weathercode[dayIndex])}
-                      </div>
-                      <span className="text-[13px] font-semibold">{Math.round(daily.temperature_2m_max[dayIndex])}°</span>
-                      <span className="text-[11px] text-white/30">{Math.round(daily.temperature_2m_min[dayIndex])}°</span>
-                  </div>
-              );
-           })}
+      <div className="flex-1 min-h-0 bg-black/30 backdrop-blur-xl border-t border-white/10 flex flex-col rounded-b-lg p-6 mt-auto flex overflow-x-auto gap-4">
+        <div className="flex w-full justify-between items-center gap-4 px-2 h-full">
+          {daily.time.slice(0, 5).map((dateStr, idx) => {
+            const date = new Date(dateStr + "T12:00:00"); 
+            const dayName = idx === 0 ? "Hoy" : date.toLocaleDateString("es-ES", { weekday: "short" });
+            
+            return (
+              <div key={idx} className="flex flex-col items-center justify-center gap-3 w-16 h-full p-2 hover:bg-white/10 transition-colors rounded-xl flex-shrink-0">
+                <span className="text-xs font-semibold uppercase text-white/70">{dayName}</span>
+                {getWeatherIcon(daily.weathercode[idx], 24)}
+                <div className="flex flex-col items-center justify-center text-xs">
+                  <span className="font-bold">{Math.round(daily.temperature_2m_max[idx])}°</span>
+                  <span className="text-white/50">{Math.round(daily.temperature_2m_min[idx])}°</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-      )}
     </div>
   );
 }

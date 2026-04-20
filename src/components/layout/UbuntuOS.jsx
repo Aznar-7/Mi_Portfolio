@@ -2637,6 +2637,9 @@ export function UbuntuOS({ onClose }) {
           <DesktopIcon icon={Palette}        label="Pinta"     top={200} left={110} constraintsRef={desktopRef} onClick={() => openApp('paint')} />
           <DesktopIcon icon={SettingsIcon}   label="Config."   top={290} left={110} constraintsRef={desktopRef} onClick={() => openApp('settings')} />
 
+          <DesktopIcon icon={Music}          label="Música"    top={20}  left={200} constraintsRef={desktopRef} onClick={() => openApp('music')} />
+          <DesktopIcon icon={Cloud}          label="Clima"     top={110} left={200} constraintsRef={desktopRef} onClick={() => openApp('weather')} />
+
           {/* Game Picker overlay */}
           <AnimatePresence>
             {gamePicker && (
