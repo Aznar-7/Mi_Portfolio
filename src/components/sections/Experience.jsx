@@ -76,7 +76,7 @@ function ExperienceCard({ item, type, index = 0 }) {
       />
 
       {/* Content */}
-      <div className="relative z-10 md:pl-8">
+      <div className="relative z-10 pl-4 border-l border-white/[0.07] md:pl-8 md:border-0">
         {/* Header */}
         <div className="mb-4">
           <h3 className="text-[1.2rem] font-bold tracking-tight text-[var(--text-primary)] transition-colors duration-300 group-hover:text-[var(--accent)]">

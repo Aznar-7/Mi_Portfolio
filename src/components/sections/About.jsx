@@ -45,7 +45,7 @@ export function About() {
               src="/port.jpg"
               alt="Vicente Aznar"
               onClick={() => setIsImageOpen(true)}
-              className="float-left mr-5 mb-2 h-20 w-20 md:h-24 md:w-24 rounded-full object-cover outline outline-2 outline-white/10 shadow-xl cursor-pointer hover:scale-[1.05] hover:outline-white/30 transition-all"
+              className="float-left mr-5 mb-2 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full object-cover outline outline-2 outline-white/10 shadow-xl cursor-pointer hover:scale-[1.05] hover:outline-white/30 transition-all"
             />
             {bio.map((para, i) => (
               <motion.p
@@ -161,8 +161,8 @@ export function About() {
             {lang === 'es' ? 'GitHub Contributions' : 'GitHub Contributions'}
           </span>
         </h4>
-        <div className="w-full flex justify-center text-sm md:scale-100 scale-90 origin-left sm:origin-center">
-          <GitHubCalendar 
+        <div className="w-full flex justify-start sm:justify-center text-sm overflow-x-auto">
+          <GitHubCalendar
             username="Aznar-7" 
             colorScheme="dark"
             theme={{

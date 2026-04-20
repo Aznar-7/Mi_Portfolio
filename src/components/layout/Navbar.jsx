@@ -193,15 +193,15 @@ export function Navbar() {
 
         {/* Hamburger — visible only on small screens */}
         <button
-          className="sm:hidden flex items-center justify-center h-8 w-8 rounded-full border border-white/[0.08] bg-white/[0.03] text-[var(--text-secondary)] transition-colors hover:text-white ml-2"
+          className="sm:hidden flex items-center justify-center h-10 w-10 rounded-full border border-white/[0.08] bg-white/[0.03] text-[var(--text-secondary)] transition-colors hover:text-white"
           onClick={() => {
             playClick()
             setMobileOpen((v) => !v)
           }}
           aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
-          style={{ marginLeft: '2px', flexShrink: 0 }}
+          style={{ marginLeft: '4px', flexShrink: 0 }}
         >
-          {mobileOpen ? <X size={14} /> : <Menu size={14} />}
+          {mobileOpen ? <X size={16} /> : <Menu size={16} />}
         </button>
       </motion.header>
 

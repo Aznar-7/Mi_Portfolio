@@ -25,7 +25,7 @@ function MetricCard({ value, label, iconName, index, reduced }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.1 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5"
+      className="flex flex-col gap-1.5 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5 sm:p-5"
     >
       <div className="flex items-center gap-2 text-[var(--accent)]/70">
         <Icon size={13} />
@@ -33,7 +33,7 @@ function MetricCard({ value, label, iconName, index, reduced }) {
           {label}
         </span>
       </div>
-      <span className="font-mono text-[2.2rem] font-black leading-none tracking-tighter text-[var(--text-primary)]">
+      <span className="font-mono text-[1.6rem] sm:text-[2.2rem] font-black leading-none tracking-tighter text-[var(--text-primary)]">
         {value}
       </span>
     </motion.div>
@@ -81,7 +81,7 @@ export function FeaturedProject() {
 
             {/* Metrics */}
             {featuredProject.metrics?.length > 0 && (
-              <div className="flex flex-wrap gap-3">
+              <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
                 {featuredProject.metrics.map((m, i) => (
                   <MetricCard
                     key={i}

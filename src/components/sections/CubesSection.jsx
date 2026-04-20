@@ -131,8 +131,8 @@ export const CubesSection = () => {
 
       {/* ── Canvas area ── */}
       <div
-        className="relative mx-auto"
-        style={{ maxWidth: '680px', height: 'clamp(260px, 55vw, 420px)' }}
+        className="relative mx-auto overflow-hidden rounded-3xl"
+        style={{ maxWidth: '680px', height: 'clamp(280px, 65vw, 420px)' }}
       >
         {/* Dynamic glow */}
         <div

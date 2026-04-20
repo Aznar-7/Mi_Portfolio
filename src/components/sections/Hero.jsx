@@ -127,9 +127,9 @@ export function Hero() {
     >
       {/* Background Orbs & Effects */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-r from-[var(--accent)]/10 to-indigo-500/10 blur-[120px] rounded-[100%] opacity-50" />
-        <div className="absolute left-[30%] top-[30%] w-[300px] h-[300px] bg-blue-500/10 blur-[100px] rounded-full" />
-        <div className="absolute right-[30%] bottom-[30%] w-[400px] h-[400px] bg-purple-500/10 blur-[100px] rounded-full" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,140vw)] h-[min(500px,80vw)] bg-gradient-to-r from-[var(--accent)]/10 to-indigo-500/10 blur-[120px] rounded-[100%] opacity-50" />
+        <div className="absolute left-[30%] top-[30%] w-[min(300px,70vw)] h-[min(300px,70vw)] bg-blue-500/10 blur-[100px] rounded-full" />
+        <div className="absolute right-[30%] bottom-[30%] w-[min(400px,80vw)] h-[min(400px,80vw)] bg-purple-500/10 blur-[100px] rounded-full" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center text-center">

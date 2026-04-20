@@ -71,7 +71,7 @@ export function Skills() {
               }}
               key={skill.name}
               onMouseEnter={playHover}
-              className="cursor-target group relative flex flex-col items-center justify-center p-6 rounded-2xl border border-white/[0.04] bg-[#0d0d0d]/40 backdrop-blur-sm overflow-hidden hover:border-white/20 transition-colors duration-500"
+              className="cursor-target group relative flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl border border-white/[0.04] bg-[#0d0d0d]/40 backdrop-blur-sm overflow-hidden hover:border-white/20 transition-colors duration-500"
               style={{ boxShadow: '0 4px 30px rgba(0,0,0,0.1)' }}
             >
               {/* Hover Glow Effect */}
@@ -90,7 +90,7 @@ export function Skills() {
                 }}
               />
 
-              <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 mb-4 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 drop-shadow-lg">
+              <div className="relative z-10 w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-3 sm:mb-4 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 drop-shadow-lg">
                 <img 
                   src={skill.icon} 
                   alt={skill.name} 
@@ -99,8 +99,8 @@ export function Skills() {
                 />
               </div>
 
-              <span 
-                className="relative z-10 text-sm font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors duration-300" 
+              <span
+                className="relative z-10 text-[11px] sm:text-sm font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors duration-300"
                 style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
               >
                 {skill.name}

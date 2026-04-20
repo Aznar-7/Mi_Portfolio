@@ -331,7 +331,7 @@ function WinBtn({ bg, hover, onClick, children }) {
   );
 }
 
-function Window({ title, children, zIndex, isFocused, isMaximized, isMobile, defaultTop, defaultLeft, defaultW = 780, defaultH = 500, onFocus, onClose, onMinimize, onMaximize }) {
+function Window({ title, children, zIndex, isFocused, isMaximized, isMobile, defaultTop, defaultLeft, defaultW = 780, defaultH = 500, onFocus, onClose, onMinimize, onMaximize, isHidden = false }) {
   const dragControls = useDragControls();
   const canDrag = !isMaximized && !isMobile;
   return (
@@ -355,6 +355,7 @@ function Window({ title, children, zIndex, isFocused, isMaximized, isMobile, def
         top:    isMaximized || isMobile ? 0 : defaultTop,
         left:   isMaximized || isMobile ? 0 : defaultLeft,
         boxShadow: isFocused ? '0 32px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.08)' : '0 16px 40px rgba(0,0,0,0.5)',
+      ...(isHidden ? { display: 'none', pointerEvents: 'none' } : {}),
       }}
     >
       {/* Title bar — only this can initiate a drag */}
@@ -2696,14 +2697,18 @@ export function UbuntuOS({ onClose }) {
           >
             <AnimatePresence>
               {Object.entries(wins).map(([id, win]) => {
-                if (!win.open || win.min) return null;
+                if (!win.open) return null;
+                // Keep music mounted when minimized so audio keeps playing; hide with CSS instead
+                if (win.min && id !== 'music') return null;
                 if ((winWorkspace[id] ?? 0) !== workspace) return null;
                 const cfg = WIN_CFG[id];
+                const isMusicHidden = id === 'music' && win.min;
                 return (
                   <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
                     zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
                     defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
                     onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
+                    isHidden={isMusicHidden}
                   >
                     {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
                     {id === 'files'    && <FilesApp onOpenFile={(f) => { if (f.isPdf) openApp('pdf'); else openApp('editor', f); }} lang={lang} />}

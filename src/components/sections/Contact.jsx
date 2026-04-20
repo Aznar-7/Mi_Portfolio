@@ -39,7 +39,7 @@ export function Contact() {
   }
 
   return (
-    <SectionWrapper id="contact">
+    <SectionWrapper id="contact" className="overflow-hidden">
 
       {/* Ghost number — large decorative watermark */}
       <div
