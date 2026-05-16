@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Code2, Database, Download, Globe, Layers, MapPin, MonitorUp, Server, Sparkles } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowRight,
+  Download,
+  Languages,
+  MapPin,
+  MonitorUp,
+  Sparkles,
+} from 'lucide-react'
+import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { MagneticButton } from '@/components/common/MagneticButton'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
@@ -91,11 +100,9 @@ function Stat({ value, label }) {
 }
 
 function AnimatedTitle({ text }) {
-  const words = text.split(' ')
-
   return (
     <span className="inline-flex flex-wrap gap-x-[0.18em] gap-y-2">
-      {words.map((word, i) => (
+      {text.split(' ').map((word, i) => (
         <motion.span
           key={word}
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
@@ -117,17 +124,14 @@ export function Hero() {
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
   const visualY = useTransform(scrollYProgress, [0, 1], [0, -28])
-  const panelY = useTransform(scrollYProgress, [0, 1], [0, 24])
+  const panelY = useTransform(scrollYProgress, [0, 1], [0, 22])
   const githubUser = site.github?.split('github.com/')?.[1] ?? ''
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  const workSignals = lang === 'es'
-    ? ['Arquitectura full-stack', 'UX clara', 'Deploy cloud', 'Código mantenible']
-    : ['Full-stack architecture', 'Clear UX', 'Cloud deploy', 'Maintainable code']
-  const stack = [
-    { icon: Code2, label: 'Frontend', value: 'React / Vite' },
-    { icon: Server, label: 'Backend', value: 'Django / APIs' },
-    { icon: Database, label: 'Data', value: 'PostgreSQL' },
-    { icon: Globe, label: 'Infra', value: 'Linux / Cloud' },
+
+  const profileSignals = [
+    { label: T.portrait_signal_1, value: T.portrait_value_1 },
+    { label: T.portrait_signal_2, value: T.portrait_value_2 },
+    { label: T.portrait_signal_3, value: T.portrait_value_3 },
   ]
 
   const fp = (delay = 0) =>
@@ -150,9 +154,9 @@ export function Hero() {
         style={{ y: visualY }}
         className="pointer-events-none absolute inset-0 z-0 opacity-80"
       >
-        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(20,184,166,0.12),transparent_32%,rgba(124,106,247,0.12)_68%,transparent)]" />
-        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.1),transparent_60%)]" />
-        <div className="absolute left-0 top-0 h-full w-full bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(20,184,166,0.1),transparent_34%,rgba(124,106,247,0.1)_72%,transparent)]" />
+        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.09),transparent_60%)]" />
+        <div className="absolute left-0 top-0 h-full w-full bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
       </motion.div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
@@ -238,66 +242,53 @@ export function Hero() {
         <motion.div
           {...fp(0.2)}
           style={{ y: panelY }}
-          className="relative mx-auto w-full max-w-[560px] lg:max-w-none"
+          className="relative mx-auto flex w-full max-w-[520px] items-center justify-center lg:max-w-none"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c0d13]/88 shadow-[0_28px_90px_-38px_rgba(0,0,0,0.9)] backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-              </div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/34">
-                {T.preview_label}
+          <div className="relative w-full min-h-[420px] sm:min-h-[500px]">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(70vw,420px)] w-[min(70vw,420px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.06]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(54vw,330px)] w-[min(54vw,330px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--accent)]/20" />
+            <motion.div
+              animate={reduced ? {} : { rotate: 360 }}
+              transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[min(78vw,455px)] w-[min(78vw,455px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/[0.08]"
+            />
+
+            <div className="absolute left-1/2 top-1/2 h-[min(62vw,350px)] w-[min(62vw,350px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border border-white/[0.1] bg-white/[0.035] shadow-[0_30px_80px_-36px_rgba(0,0,0,0.9)]">
+              <ProgressiveImage
+                src="/port.jpg"
+                alt="Vicente Aznar"
+                eager
+                wrapperClassName="h-full w-full rounded-full"
+                className="h-full w-full object-cover object-center"
+              />
+              <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-t from-black/45 via-transparent to-white/[0.04]" />
+            </div>
+
+            <div className="absolute left-0 top-5 max-w-[230px] rounded-full border border-emerald-400/20 bg-[#08110f]/80 px-4 py-3 shadow-[0_20px_60px_-34px_rgba(0,0,0,0.9)] backdrop-blur-md sm:left-4 sm:top-12">
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+                {T.portrait_kicker}
+              </p>
+              <p className="mt-1 text-sm font-semibold leading-5 text-white/86">{T.portrait_title}</p>
+            </div>
+
+            <div className="absolute bottom-10 right-0 max-w-[240px] rounded-2xl border border-white/[0.08] bg-[#0c0d13]/82 px-4 py-3 shadow-[0_20px_60px_-34px_rgba(0,0,0,0.9)] backdrop-blur-md sm:right-3">
+              <p className="text-sm leading-6 text-white/68">{T.portrait_note}</p>
+            </div>
+
+            <div className="absolute right-1 top-20 flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#0c0d13]/82 px-3 py-2 backdrop-blur-md sm:right-8">
+              <Languages size={14} className="text-[var(--accent-hover)]" />
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white/62">
+                {T.portrait_language}
               </span>
             </div>
 
-            <div className="p-4 sm:p-5">
-              <div className="relative overflow-hidden rounded-xl border border-white/[0.07] bg-[#090b10] p-4 sm:p-5">
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(124,106,247,0.12),transparent_38%,rgba(20,184,166,0.1))]" />
-                <div className="relative flex items-start justify-between gap-5">
-                  <div>
-                    <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                      {T.panel_kicker}
-                    </p>
-                    <h2 className="mt-2 text-2xl font-black leading-tight text-white sm:text-3xl">
-                      {T.panel_title}
-                    </h2>
-                  </div>
-                  <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--accent-hover)] sm:flex">
-                    <Layers size={22} />
-                  </div>
-                </div>
-
-                <div className="relative mt-5 rounded-lg border border-white/[0.06] bg-black/35 p-3 font-mono text-[11px] leading-6 text-white/58">
-                  <p><span className="text-emerald-300">vicente@portfolio</span>:~$ build --scope product</p>
-                  <p className="text-white/38">analyzing needs... ok</p>
-                  <p className="text-white/38">shipping interface + backend + deploy... ok</p>
-                  <p><span className="text-[var(--accent-hover)]">{T.panel_status}</span></p>
-                </div>
-
-                <div className="relative mt-5 grid grid-cols-2 gap-2.5">
-                  {workSignals.map((signal) => (
-                    <div key={signal} className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2 text-[12px] font-semibold text-white/70">
-                      {signal}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {stack.map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-4">
-                    <div className="mb-2 flex items-center gap-2 text-[var(--accent-hover)]">
-                      <Icon size={15} />
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white/42">
-                        {label}
-                      </span>
-                    </div>
-                    <p className="text-sm font-semibold leading-6 text-white/76">{value}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="absolute bottom-0 left-0 flex max-w-[340px] flex-wrap gap-2 sm:left-6">
+              {profileSignals.map((signal) => (
+                <span key={signal.label} className="rounded-full border border-white/[0.08] bg-white/[0.045] px-3 py-2 text-[11px] font-semibold text-white/58 backdrop-blur-md">
+                  <span className="font-mono uppercase tracking-[0.12em] text-white/34">{signal.label}</span>
+                  <span className="ml-2 text-white/78">{signal.value}</span>
+                </span>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -306,16 +297,31 @@ export function Hero() {
       <motion.button
         {...fp(0.6)}
         onClick={() => scrollTo('featured')}
-        className="cursor-target absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/42 transition hover:text-white/80 sm:bottom-7"
+        whileHover={reduced ? {} : { y: -4 }}
+        whileTap={{ scale: 0.96 }}
+        className="cursor-target group absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/50 transition hover:text-white sm:bottom-7"
         aria-label={T.scroll_label}
       >
-        <div className="flex items-center font-mono text-[9px] uppercase tracking-[0.2em] sm:text-[10px]">
-          <span className="mr-2 font-bold text-[var(--accent)]/70">{'>'}</span>
+        <motion.div
+          animate={reduced ? {} : { y: [0, -3, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex items-center rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.2em] backdrop-blur-md sm:text-[10px]"
+        >
           <span>{T.scroll}</span>
-          <span className="ml-2 inline-block h-3 w-1.5 animate-[blink_1s_step-end_infinite] bg-[var(--accent)]/80" />
-        </div>
-        <div className="relative mt-1 h-10 w-px overflow-hidden bg-white/8">
-          <div className="absolute left-0 top-0 h-1/2 w-full animate-[scroll-line_2s_ease-in-out_infinite] bg-gradient-to-b from-transparent via-[var(--accent)] to-transparent" />
+          <ArrowDown size={12} className="ml-2 text-[var(--accent-hover)]" />
+        </motion.div>
+        <div className="relative mt-1 flex h-12 w-6 justify-center overflow-hidden">
+          <span className="absolute top-0 h-full w-px bg-white/10" />
+          <motion.span
+            animate={reduced ? {} : { y: [-18, 44], opacity: [0, 1, 0] }}
+            transition={{ duration: 1.35, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-0 h-5 w-px bg-gradient-to-b from-transparent via-[var(--accent-hover)] to-transparent shadow-[0_0_12px_rgba(155,140,255,0.8)]"
+          />
+          <motion.span
+            animate={reduced ? {} : { scale: [0.8, 1.2, 0.8], opacity: [0.35, 0.9, 0.35] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute bottom-0 h-1.5 w-1.5 rounded-full bg-[var(--accent-hover)]"
+          />
         </div>
       </motion.button>
     </section>

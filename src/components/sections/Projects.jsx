@@ -6,7 +6,6 @@ import { SectionHeading } from '@/components/common/SectionHeading'
 import { ProjectCard } from '@/components/common/ProjectCard'
 import { ProjectModal } from '@/components/common/ProjectModal'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
-import { Aurora } from '@/components/background/Aurora'
 import { TechTag } from '@/components/common/TechTag'
 import { projects } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
@@ -133,7 +132,6 @@ export function Projects() {
 
   return (
     <div className="relative overflow-hidden">
-      <Aurora />
       <SectionWrapper id="projects">
         <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
