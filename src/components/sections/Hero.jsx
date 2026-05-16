@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Download } from 'lucide-react'
-import BlurText from '@/components/common/BlurText'
+import { ArrowRight, Code2, Database, Download, Globe, Layers, MapPin, MonitorUp, Server, Sparkles } from 'lucide-react'
 import { MagneticButton } from '@/components/common/MagneticButton'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
@@ -10,46 +9,57 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 function GitHubLive({ username }) {
   const [data, setData] = useState(null)
+
   useEffect(() => {
     if (!username || username === 'YOUR_GITHUB') return
     fetch(`https://api.github.com/users/${username}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.public_repos) setData(d) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.public_repos) setData(d)
+      })
       .catch(() => {})
   }, [username])
+
   if (!data) return null
+
   return (
-    <span className="rounded-full border border-white/[0.07] px-2.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+    <span className="rounded-full border border-white/[0.07] bg-white/[0.03] px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">
       {data.public_repos} repos · {data.followers} followers
     </span>
   )
 }
 
 function useCounter(target, duration = 1400) {
-  const match   = /^(\d+)([^0-9.]*)$/.exec(target)
-  const isNum   = !!match
+  const match = /^(\d+)([^0-9.]*)$/.exec(target)
+  const isNum = !!match
   const numeric = isNum ? parseInt(match[1], 10) : 0
-  const suffix  = isNum ? match[2] : ''
-  const [val, setVal]         = useState(isNum ? `0${suffix}` : target)
+  const suffix = isNum ? match[2] : ''
+  const [val, setVal] = useState(isNum ? `0${suffix}` : target)
   const [started, setStarted] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        const t = setTimeout(() => setStarted(true), 700)
-        obs.disconnect()
-        return () => clearTimeout(t)
-      }
-    }, { threshold: 0.5 })
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          const t = setTimeout(() => setStarted(true), 700)
+          obs.disconnect()
+          return () => clearTimeout(t)
+        }
+      },
+      { threshold: 0.5 }
+    )
+
     if (ref.current) obs.observe(ref.current)
     return () => obs.disconnect()
   }, [])
 
   useEffect(() => {
     if (!started || !isNum) return
-    let raf = null, startTs = null
-    const step = ts => {
+
+    let raf = null
+    let startTs = null
+    const step = (ts) => {
       if (!startTs) startTs = ts
       const t = Math.min((ts - startTs) / duration, 1)
       const eased = 1 - Math.pow(1 - t, 3)
@@ -57,6 +67,7 @@ function useCounter(target, duration = 1400) {
       if (t < 1) raf = requestAnimationFrame(step)
       else setVal(`${numeric}${suffix}`)
     }
+
     raf = requestAnimationFrame(step)
     return () => cancelAnimationFrame(raf)
   }, [started]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -66,29 +77,30 @@ function useCounter(target, duration = 1400) {
 
 function Stat({ value, label }) {
   const [count, ref] = useCounter(value)
+
   return (
-    <div ref={ref} className="flex flex-col items-center gap-1 sm:gap-1.5 w-full text-center">
-      <span className="font-mono text-[1.4rem] sm:text-[2.1rem] font-black leading-none tracking-tighter text-[var(--text-primary)]">
+    <div ref={ref} className="flex min-w-0 flex-col gap-1">
+      <span className="font-mono text-[1.25rem] font-black leading-none text-white sm:text-[1.65rem]">
         {count}
       </span>
-      <span className="font-mono text-[8px] sm:text-[10px] font-semibold tracking-[0.1em] text-[var(--text-muted)] uppercase">
+      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-white/45">
         {label}
       </span>
     </div>
   )
 }
 
-// A more reliable BlurText implementation for the hero title that handles word wrapping gracefully
 function AnimatedTitle({ text }) {
   const words = text.split(' ')
+
   return (
-    <span className="inline-flex flex-wrap justify-center gap-x-[0.2em] gap-y-2">
+    <span className="inline-flex flex-wrap gap-x-[0.18em] gap-y-2">
       {words.map((word, i) => (
         <motion.span
-          key={i}
+          key={word}
           initial={{ filter: 'blur(10px)', opacity: 0, y: 20 }}
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: i * 0.15 + 0.1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: i * 0.14 + 0.08 }}
           className="inline-block"
         >
           {word}
@@ -102,149 +114,210 @@ export function Hero() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].hero
-
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
-  const y    = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const fade = useTransform(scrollYProgress, [0, 0.7], [1, 0])
-
-  const scrollTo = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, -28])
+  const panelY = useTransform(scrollYProgress, [0, 1], [0, 24])
   const githubUser = site.github?.split('github.com/')?.[1] ?? ''
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const workSignals = lang === 'es'
+    ? ['Arquitectura full-stack', 'UX clara', 'Deploy cloud', 'Código mantenible']
+    : ['Full-stack architecture', 'Clear UX', 'Cloud deploy', 'Maintainable code']
+  const stack = [
+    { icon: Code2, label: 'Frontend', value: 'React / Vite' },
+    { icon: Server, label: 'Backend', value: 'Django / APIs' },
+    { icon: Database, label: 'Data', value: 'PostgreSQL' },
+    { icon: Globe, label: 'Infra', value: 'Linux / Cloud' },
+  ]
 
   const fp = (delay = 0) =>
-    reduced ? {} : {
-      initial:    { opacity: 0, y: 30, filter: 'blur(10px)' },
-      animate:    { opacity: 1, y: 0, filter: 'blur(0px)' },
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay },
-    }
+    reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 30, filter: 'blur(10px)' },
+          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay },
+        }
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
       id="hero"
-      style={{ y, opacity: fade }}
-      className="relative flex min-h-[100svh] flex-col items-center justify-center px-4 sm:px-6 pt-24 pb-12 overflow-hidden"
+      className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-4 pb-24 pt-28 sm:px-6 sm:pb-28 lg:pt-24"
     >
-      {/* Background Orbs & Effects */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,140vw)] h-[min(500px,80vw)] bg-gradient-to-r from-[var(--accent)]/10 to-indigo-500/10 blur-[120px] rounded-[100%] opacity-50" />
-        <div className="absolute left-[30%] top-[30%] w-[min(300px,70vw)] h-[min(300px,70vw)] bg-blue-500/10 blur-[100px] rounded-full" />
-        <div className="absolute right-[30%] bottom-[30%] w-[min(400px,80vw)] h-[min(400px,80vw)] bg-purple-500/10 blur-[100px] rounded-full" />
-      </div>
+      <motion.div
+        aria-hidden="true"
+        style={{ y: visualY }}
+        className="pointer-events-none absolute inset-0 z-0 opacity-80"
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(20,184,166,0.12),transparent_32%,rgba(124,106,247,0.12)_68%,transparent)]" />
+        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.1),transparent_60%)]" />
+        <div className="absolute left-0 top-0 h-full w-full bg-[linear-gradient(rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
+      </motion.div>
 
-      <div className="relative z-10 mx-auto w-full max-w-4xl flex flex-col items-center text-center">
-        
-        {/* Status / Github Badge */}
-        <motion.div {...fp(0)} className="mb-8 flex items-center justify-center gap-3">
-          <div className="flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.03] px-3.5 py-1.5 backdrop-blur-md transition-colors hover:bg-white/[0.05]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="font-mono text-[11px] sm:text-xs font-medium text-emerald-400/90 tracking-wide uppercase">
-              {T.available}
-            </span>
-          </div>
-          <GitHubLive username={githubUser} />
-        </motion.div>
-
-        {/* Role & Location */}
-        <motion.div {...fp(0.1)} className="mb-4 font-mono text-[11px] sm:text-xs tracking-[0.2em] text-white/50 uppercase font-medium flex items-center gap-3">
-          <span className="text-[var(--accent)]">{site.role}</span>
-          <span className="h-1 w-1 bg-white/20 rounded-full" />
-          <span>Argentina</span>
-        </motion.div>
-
-        {/* Main Name Heading */}
-        <h1 className="mb-6 w-full text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.15] md:leading-[1.05] tracking-tight text-white drop-shadow-sm">
-          <AnimatedTitle text={site.name} />
-        </h1>
-
-        {/* Short bio/description */}
-        <motion.p
-          {...fp(0.3)}
-          className="mb-10 max-w-2xl px-4 text-base sm:text-lg md:text-xl text-white/60 leading-relaxed font-light"
-        >
-          {T.description}
-        </motion.p>
-
-        {/* Action Buttons */}
-        <motion.div {...fp(0.4)} className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4 mb-14">
-          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
-            <button
-              onClick={() => scrollTo('featured')}
-              className="group relative flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-black transition-all hover:scale-105 active:scale-95 shadow-md shadow-white/5"
-            >
-              {T.cta_primary}
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </button>
-          </MagneticButton>
-
-          {/* Download CV */}
-          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
-            <a
-              href="/ResumeVicenteAznar.pdf"
-              download="Vicente_Aznar_CV.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative w-full sm:w-auto flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95"
-            >
-              <Download size={16} className="text-gray-300 group-hover:text-white transition-colors" />
-              {lang === 'es' ? 'Descargar CV' : 'Download CV'}
-            </a>
-          </MagneticButton>
-
-          {/* Ubuntu Simulation - available on all devices */}
-          <MagneticButton strength={0.3} radius={80} className="w-full sm:w-auto">
-            <button
-              onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
-              className="group relative w-full sm:w-auto flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95"
-              title="Boot Ubuntu OS Simulation"
-            >
-              <div className="w-5 h-5 rounded-full bg-[#E95420] text-white flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                  <path d="M12,0C5.37,0,0,5.37,0,12c0,6.63,5.37,12,12,12c6.63,0,12-5.37,12-12C24,5.37,18.63,0,12,0z M19.46,15.68c-0.67,1.15-2.18,1.55-3.33,0.88c-1.92-1.11-4.32-1.11-6.25,0c-1.15,0.67-2.65,0.27-3.33-0.88c-0.67-1.15-0.27-2.65,0.88-3.33c2.88-1.66,6.48-1.66,9.36,0C19.74,13.03,20.13,14.53,19.46,15.68z M12,3.31c4.8,0,8.69,3.89,8.69,8.69s-3.89,8.69-8.69,8.69S3.31,16.8,3.31,12S7.2,3.31,12,3.31z M6.92,12c0-2.81,2.27-5.08,5.08-5.08s5.08,2.27,5.08,5.08s-2.27,5.08-5.08,5.08S6.92,14.81,6.92,12z" />
-                </svg>
-              </div>
-              Simulación OS
-            </button>
-          </MagneticButton>
-        </motion.div>
-
-        {/* Stats Section with Glassmorphism */}
-        <motion.div {...fp(0.5)} className="grid grid-cols-3 md:flex md:flex-row items-center justify-center gap-2 sm:gap-6 bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm rounded-2xl p-4 sm:p-6 w-full lg:w-auto">
-          {T.stats.map((stat, i) => (
-            <div key={i} className="flex items-center w-full justify-center lg:w-auto text-center">
-              {i > 0 && <div className="hidden md:block mx-6 h-10 w-px bg-white/10" />}
-              <Stat value={stat.value} label={stat.label} />
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
+        <div className="min-w-0">
+          <motion.div {...fp(0)} className="mb-7 flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3.5 py-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              </span>
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                {T.available}
+              </span>
             </div>
-          ))}
+            <GitHubLive username={githubUser} />
+          </motion.div>
+
+          <motion.div {...fp(0.08)} className="mb-5 flex flex-wrap items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/48">
+            <span className="inline-flex items-center gap-1.5 text-[var(--accent-hover)]">
+              <Sparkles size={13} />
+              {site.role}
+            </span>
+            <span className="h-1 w-1 rounded-full bg-white/22" />
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin size={13} />
+              Argentina
+            </span>
+          </motion.div>
+
+          <h1 className="max-w-3xl text-[clamp(2.65rem,8vw,6.4rem)] font-black leading-[0.96] text-white">
+            <AnimatedTitle text={site.name} />
+          </h1>
+
+          <motion.p {...fp(0.26)} className="mt-7 max-w-2xl text-base leading-8 text-white/68 sm:text-lg">
+            {T.description}
+          </motion.p>
+
+          <motion.div {...fp(0.36)} className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <MagneticButton strength={0.24} radius={90} className="w-full sm:w-auto">
+              <button
+                onClick={() => scrollTo('featured')}
+                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-bold text-black shadow-[0_18px_55px_-22px_rgba(255,255,255,0.8)] transition hover:-translate-y-0.5 hover:bg-white/92 active:translate-y-0 sm:w-auto"
+              >
+                {T.cta_primary}
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </button>
+            </MagneticButton>
+
+            <MagneticButton strength={0.24} radius={90} className="w-full sm:w-auto">
+              <a
+                href="/ResumeVicenteAznar.pdf"
+                download="Vicente_Aznar_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] active:translate-y-0 sm:w-auto"
+              >
+                <Download size={16} className="text-white/65 transition-colors group-hover:text-white" />
+                {lang === 'es' ? 'Descargar CV' : 'Download CV'}
+              </a>
+            </MagneticButton>
+
+            <MagneticButton strength={0.24} radius={90} className="w-full sm:w-auto">
+              <button
+                onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
+                className="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#E95420]/12 px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-[#E95420]/35 hover:bg-[#E95420]/18 active:translate-y-0 sm:w-auto"
+                title="Boot Ubuntu OS Simulation"
+              >
+                <MonitorUp size={16} className="text-[#ff9b72]" />
+                {lang === 'es' ? 'Abrir OS' : 'Open OS'}
+              </button>
+            </MagneticButton>
+          </motion.div>
+
+          <motion.div {...fp(0.46)} className="mt-8 grid grid-cols-3 gap-3 sm:max-w-xl">
+            {T.stats.map((stat) => (
+              <div key={stat.label} className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3.5 backdrop-blur-sm">
+                <Stat value={stat.value} label={stat.label} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        <motion.div
+          {...fp(0.2)}
+          style={{ y: panelY }}
+          className="relative mx-auto w-full max-w-[560px] lg:max-w-none"
+        >
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0c0d13]/88 shadow-[0_28px_90px_-38px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/34">
+                {T.preview_label}
+              </span>
+            </div>
+
+            <div className="p-4 sm:p-5">
+              <div className="relative overflow-hidden rounded-xl border border-white/[0.07] bg-[#090b10] p-4 sm:p-5">
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(124,106,247,0.12),transparent_38%,rgba(20,184,166,0.1))]" />
+                <div className="relative flex items-start justify-between gap-5">
+                  <div>
+                    <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                      {T.panel_kicker}
+                    </p>
+                    <h2 className="mt-2 text-2xl font-black leading-tight text-white sm:text-3xl">
+                      {T.panel_title}
+                    </h2>
+                  </div>
+                  <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.05] text-[var(--accent-hover)] sm:flex">
+                    <Layers size={22} />
+                  </div>
+                </div>
+
+                <div className="relative mt-5 rounded-lg border border-white/[0.06] bg-black/35 p-3 font-mono text-[11px] leading-6 text-white/58">
+                  <p><span className="text-emerald-300">vicente@portfolio</span>:~$ build --scope product</p>
+                  <p className="text-white/38">analyzing needs... ok</p>
+                  <p className="text-white/38">shipping interface + backend + deploy... ok</p>
+                  <p><span className="text-[var(--accent-hover)]">{T.panel_status}</span></p>
+                </div>
+
+                <div className="relative mt-5 grid grid-cols-2 gap-2.5">
+                  {workSignals.map((signal) => (
+                    <div key={signal} className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2 text-[12px] font-semibold text-white/70">
+                      {signal}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {stack.map(({ icon: Icon, label, value }) => (
+                  <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-4">
+                    <div className="mb-2 flex items-center gap-2 text-[var(--accent-hover)]">
+                      <Icon size={15} />
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white/42">
+                        {label}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold leading-6 text-white/76">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </motion.div>
-        
       </div>
 
-      {/* Developer Terminal Scroll Indicator */}
       <motion.button
         {...fp(0.6)}
         onClick={() => scrollTo('featured')}
-        className="absolute bottom-6 sm:bottom-10 flex flex-col items-center gap-3 group z-10 cursor-target"
+        className="cursor-target absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/42 transition hover:text-white/80 sm:bottom-7"
+        aria-label={T.scroll_label}
       >
-        {/* Terminal Prompt & Blinking Cursor */}
-        <div className="font-mono text-[9px] sm:text-[10px] tracking-[0.2em] text-white/40 uppercase flex items-center transition-colors group-hover:text-white/80">
-          <span className="text-accent/60 mr-2 font-bold">{'>'}</span>
+        <div className="flex items-center font-mono text-[9px] uppercase tracking-[0.2em] sm:text-[10px]">
+          <span className="mr-2 font-bold text-[var(--accent)]/70">{'>'}</span>
           <span>{T.scroll}</span>
-          <span 
-            className="inline-block w-1.5 h-3 bg-accent/80 ml-2 transition-colors group-hover:bg-accent animate-[blink_1s_step-end_infinite]"
-          />
+          <span className="ml-2 inline-block h-3 w-1.5 animate-[blink_1s_step-end_infinite] bg-[var(--accent)]/80" />
         </div>
-        
-        {/* Data Stream / Fiber Optic Line */}
-        <div className="relative h-12 w-[1px] bg-white/5 group-hover:bg-white/10 mt-1 overflow-hidden">
-          <div
-            className="absolute top-0 left-0 w-full h-[50%] bg-gradient-to-b from-transparent via-accent to-transparent animate-[scroll-line_2s_ease-in-out_infinite]"
-          />
+        <div className="relative mt-1 h-10 w-px overflow-hidden bg-white/8">
+          <div className="absolute left-0 top-0 h-1/2 w-full animate-[scroll-line_2s_ease-in-out_infinite] bg-gradient-to-b from-transparent via-[var(--accent)] to-transparent" />
         </div>
       </motion.button>
-    </motion.section>
+    </section>
   )
 }

@@ -34,6 +34,17 @@
   white-space: nowrap;
 }
 
+@media (max-width: 1024px) {
+  .gooey-nav-container ul {
+    gap: 2px;
+  }
+
+  .gooey-nav-container ul li a {
+    padding: 8px 11px;
+    font-size: 13px;
+  }
+}
+
 .gooey-nav-container ul li a:hover {
   color: var(--text-primary);
 }

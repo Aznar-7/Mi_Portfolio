@@ -8,7 +8,7 @@ import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 import GooeyNav from '@/components/layout/GooeyNav'
 
-const NAV_IDS = ['featured', 'experience', 'projects', 'skills', 'contact']
+const NAV_IDS = ['featured', 'experience', 'projects', 'skills', 'about', 'contact']
 
 export function Navbar() {
   const [visible, setVisible] = useState(true)
@@ -25,6 +25,7 @@ export function Navbar() {
     { id: 'experience', label: T.experience },
     { id: 'projects',   label: T.projects },
     { id: 'skills',     label: T.skills },
+    { id: 'about',      label: T.about },
     { id: 'contact',    label: T.contact },
   ]
 

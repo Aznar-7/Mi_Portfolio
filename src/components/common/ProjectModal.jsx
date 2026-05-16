@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { X, ChevronLeft, ChevronRight, ExternalLink, Cpu, Terminal } from 'lucide-react'
 import { GitHubIcon } from '@/components/common/SocialIcons'
 import { TechTag } from '@/components/common/TechTag'
+import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { l, STATUS_STYLES } from '@/lib/utils'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -13,11 +14,11 @@ const PLACEHOLDER_ICON_MAP = { Cpu, Terminal }
 function CarouselSlide({ src, placeholderGradient, placeholderIcon, title }) {
   if (src) {
     return (
-      <img
+      <ProgressiveImage
         src={src}
         alt={title}
+        wrapperClassName="h-full w-full"
         className="h-full w-full object-cover"
-        loading="lazy"
       />
     )
   }

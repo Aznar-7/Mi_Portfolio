@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { TechBadge } from '@/components/common/TechBadge'
+import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { featuredProject } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
@@ -109,11 +110,11 @@ export function FeaturedProject() {
                 className="relative mb-8 overflow-hidden rounded-2xl border border-white/[0.05] shadow-xl aspect-[16/9] group"
               >
                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <img
+                <ProgressiveImage
                   src={featuredProject.image}
                   alt={`${featuredProject.title} preview`}
+                  wrapperClassName="h-full w-full"
                   className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
-                  loading="lazy"
                 />
                 {/* Floating URL badge */}
                 {featuredProject.liveUrl && (

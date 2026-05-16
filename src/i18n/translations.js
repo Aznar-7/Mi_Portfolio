@@ -5,6 +5,7 @@ export const translations = {
       experience: 'Experiencia',
       projects:   'Proyectos',
       skills:     'Skills',
+      about:      'Sobre mí',
       contact:    'Contacto',
     },
     hero: {
@@ -13,6 +14,11 @@ export const translations = {
       description: 'Especializado en orquestar sistemas desde la raíz. De la lógica de negocio profunda a despliegues escalables en la nube y frontends de alto rendimiento. Resolviendo la complejidad con ingeniería real, sin soluciones de corto plazo.',
       cta_primary:   'Ver trabajo',
       cta_secondary: 'Contacto',
+      preview_label: 'Sistema de trabajo',
+      panel_kicker: 'Perfil técnico',
+      panel_title: 'Diseño, desarrollo y despliegue de productos web.',
+      panel_status: 'ready: convertir ideas en sistemas usables',
+      scroll_label: 'Ir al proyecto principal',
       stats: [
         { value: '2+',  label: 'Años de exp' },
         { value: '10+', label: 'Sistemas' },
@@ -91,6 +97,7 @@ export const translations = {
       experience: 'Experience',
       projects:   'Projects',
       skills:     'Skills',
+      about:      'About',
       contact:    'Contact',
     },
     hero: {
@@ -99,6 +106,11 @@ export const translations = {
       description: 'Specialized in orchestrating systems from the ground up. From deep business logic to scalable cloud deployments and high-performance frontends. Solving complexity with real engineering, not quick fixes.',
       cta_primary:   'See my work',
       cta_secondary: 'Contact',
+      preview_label: 'Work system',
+      panel_kicker: 'Technical profile',
+      panel_title: 'Design, development, and deployment for web products.',
+      panel_status: 'ready: turning ideas into usable systems',
+      scroll_label: 'Go to featured project',
       stats: [
         { value: '2+',  label: 'Years exp' },
         { value: '10+', label: 'Systems' },

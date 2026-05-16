@@ -8,11 +8,9 @@ import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 
 const Terminal = lazy(() => import('@/components/layout/Terminal').then(m => ({ default: m.Terminal })))
-const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then(m => ({ default: m.UbuntuOS })))
 
 export function Footer() {
   const [terminalOpen, setTerminalOpen] = useState(false)
-  const [ubuntuOpen, setUbuntuOpen] = useState(false)
   const { lang } = useLang()
   const T = translations[lang].footer
 
@@ -23,11 +21,6 @@ export function Footer() {
           {terminalOpen && (
             <Suspense fallback={null}>
               <Terminal onClose={() => setTerminalOpen(false)} />
-            </Suspense>
-          )}
-          {ubuntuOpen && (
-            <Suspense fallback={<div className="h-screen w-screen bg-black" />}>
-              <UbuntuOS onClose={() => setUbuntuOpen(false)} />
             </Suspense>
           )}
         </AnimatePresence>
@@ -69,7 +62,7 @@ export function Footer() {
             {/* Ubuntu easter egg */}
             <MagneticButton strength={0.3} radius={80}>
               <button
-                onClick={() => setUbuntuOpen(true)}
+                onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
                 className="flex items-center gap-2 rounded-md border border-[#E95420]/30 bg-[#E95420]/10 px-3 py-1.5 font-mono text-[10px] sm:text-[11px] text-[#ff9066] transition-all hover:border-[#E95420]/60 hover:bg-[#E95420]/20 hover:text-white whitespace-nowrap"
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">

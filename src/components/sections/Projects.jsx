@@ -5,6 +5,7 @@ import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { ProjectCard } from '@/components/common/ProjectCard'
 import { ProjectModal } from '@/components/common/ProjectModal'
+import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { Aurora } from '@/components/background/Aurora'
 import { TechTag } from '@/components/common/TechTag'
 import { projects } from '@/data/projects'
@@ -89,11 +90,11 @@ function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
         {/* Right: image + architecture */}
         <div className="relative h-48 w-full sm:h-auto sm:w-56 sm:flex-shrink-0 overflow-hidden sm:rounded-r-xl">
           {project.image ? (
-            <img
+            <ProgressiveImage
               src={project.image}
               alt={project.title}
+              wrapperClassName="h-full w-full"
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-              loading="lazy"
             />
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent" />

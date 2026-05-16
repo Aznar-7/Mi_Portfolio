@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
 import { Globe, Cpu, Terminal, Zap } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
+import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { l, STATUS_STYLES } from '@/lib/utils'
@@ -18,22 +19,12 @@ const PLACEHOLDER_ICONS = { Cpu, Terminal }
 function ImageArea({ project }) {
   if (project.image) {
     return (
-      <div className="relative h-full w-full bg-white/5 overflow-hidden">
-        {/* Skeleton Shimmer Overlay */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer" />
-        <img
-          src={project.image}
-          alt={project.title}
-          className="relative z-10 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
-          onLoad={(e) => {
-            if (e.target.parentElement?.firstChild) {
-              e.target.parentElement.firstChild.style.display = 'none';
-            }
-          }}
-        />
-      </div>
+      <ProgressiveImage
+        src={project.image}
+        alt={project.title}
+        wrapperClassName="h-full w-full"
+        className="h-full w-full object-cover group-hover:scale-105"
+      />
     )
   }
   const Icon = PLACEHOLDER_ICONS[project.placeholderIcon] ?? Terminal

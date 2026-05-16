@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
@@ -18,12 +18,58 @@ const CATEGORY_EN = {
   'Otros': 'Other'
 }
 
+function SkillIcon({ skill }) {
+  const [loaded, setLoaded] = useState(false)
+
+  return (
+    <div className="relative z-10 mb-3 h-10 w-10 transform overflow-hidden rounded-xl bg-white/[0.035] transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-110 sm:mb-4 sm:h-14 sm:w-14 md:h-16 md:w-16">
+      <div
+        className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent transition-opacity duration-300 -translate-x-full animate-shimmer ${
+          loaded ? 'opacity-0' : 'opacity-100'
+        }`}
+      />
+      <img
+        src={skill.icon}
+        alt={skill.name}
+        className={`h-full w-full object-contain p-1.5 drop-shadow-lg transition-opacity duration-500 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={(e) => {
+          e.currentTarget.style.display = 'none'
+          setLoaded(true)
+        }}
+      />
+    </div>
+  )
+}
+
 export function Skills() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].skills
   const { playSelect, playHover } = useSoundEffects()
   const [activeCategory, setActiveCategory] = useState('Frontend')
+
+  useEffect(() => {
+    const warmIconCache = () => {
+      skillsData.forEach((skill) => {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = skill.icon
+      })
+    }
+
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(warmIconCache, { timeout: 2500 })
+      return () => window.cancelIdleCallback?.(id)
+    }
+
+    const id = window.setTimeout(warmIconCache, 900)
+    return () => window.clearTimeout(id)
+  }, [])
 
   // const filteredSkills = activeCategory === 'Todos' 
   //   ? skillsData 
@@ -90,14 +136,7 @@ export function Skills() {
                 }}
               />
 
-              <div className="relative z-10 w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-3 sm:mb-4 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 drop-shadow-lg">
-                <img 
-                  src={skill.icon} 
-                  alt={skill.name} 
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
+              <SkillIcon skill={skill} />
 
               <span
                 className="relative z-10 text-[11px] sm:text-sm font-semibold tracking-wide text-white/60 group-hover:text-white transition-colors duration-300"
