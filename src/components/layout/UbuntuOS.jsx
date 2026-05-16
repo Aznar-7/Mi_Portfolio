@@ -37,8 +37,8 @@ function buildFS(lang) {
   const l = (v) => (v && typeof v === 'object' ? (v[lang] ?? v.es ?? '') : v ?? '');
 
   const readmes = {
-    'utn-hub': `# UTN Hub\n\n> Sistema web complejo para la comunidad universitaria UTN\n\n## Stack\n\n| Layer | Technology |\n|---|---|\n| Frontend | React 19, Vite, Tailwind CSS |\n| Backend | Django REST Framework, JWT |\n| Database | PostgreSQL |\n| Infra | Oracle Cloud, Nginx, SSL/TLS |\n\n## Arquitectura\n\n\`\`\`\nBrowser → Nginx → Django REST API → PostgreSQL\n               ↓\n          React SPA (Vite build)\n\`\`\`\n\n## Métricas\n\n- -40% tiempo de gestión interna\n- +1.200 usuarios activos\n- 4+ sistemas corporativos end-to-end\n\n## Setup\n\n\`\`\`bash\n# Frontend\nnpm install && npm run dev\n\n# Backend\npip install -r requirements.txt\npython manage.py migrate && python manage.py runserver\n\`\`\`\n\n## Live\n\nhttps://utnhub.com.ar`,
-    'agv-studio': `# AGV Studio\n\n> Startup de desarrollo y consultoría tecnológica\n\n## Stack\n\nReact · Django · Tailwind CSS · PostgreSQL\n\n## Descripción\n\nStartup orientada a la construcción de productos digitales y consultoría para PYMEs.\nArquitectura full-stack con foco en sistemas a medida y escalabilidad.\n\n## Live\n\nhttps://portfolio-agv.vercel.app/`,
+    'utn-hub': `# UTN Hub\n\n> Plataforma academica para estudiantes de UTN\n\n## Stack\n\n| Layer | Technology |\n|---|---|\n| Frontend | React, Vite, Tailwind CSS |\n| Backend | Django REST Framework, JWT |\n| Database | PostgreSQL |\n| Infra | Oracle Cloud, Nginx, SSL/TLS |\n\n## Que resuelve\n\nCentraliza calendario academico, parciales, documentos colaborativos, notas y notificaciones para estudiantes.\n\n## Arquitectura\n\n\`\`\`\nReact SPA -> Django REST API -> PostgreSQL\n                 |\n          Oracle Cloud + Nginx\n\`\`\`\n\n## Notas de implementacion\n\n- Autenticacion con JWT\n- Backend desplegado en VM Ubuntu propia\n- Frontend publicado en Vercel\n- Proyecto en desarrollo activo\n\n## Live\n\nhttps://utnhub.com.ar`,
+    'agv-studio': `# AGV Studio\n\n> Sitio y propuesta de estudio para desarrollo web\n\n## Stack\n\nReact · Django · Tailwind CSS · PostgreSQL\n\n## Descripcion\n\nProyecto orientado a presentar servicios de desarrollo web y explorar una identidad visual propia.\nIncluye estructura de landing, secciones de servicios y base para evolucionar hacia un sitio comercial real.\n\n## Live\n\nhttps://portfolio-agv.vercel.app/`,
     'esp32-monitor': `# ESP32 Climate Monitor\n\n> Monitoreo IoT de temperatura y humedad en tiempo real\n\n## Hardware\n\n- ESP32 DevKit v1\n- DHT22 (temp/humidity sensor)\n- OLED SSD1306 display\n\n## Stack\n\n\`\`\`\nESP32 (C/C++) → MQTT Broker → Django Consumer\n                                    ↓\n                              PostgreSQL → REST API → React Dashboard\n\`\`\`\n\n## Firmware\n\nEscrito en C++ con PlatformIO. Publica datos cada 30s al broker MQTT local.\n\n## Features\n\n- Lectura de sensor cada 2s\n- Publicación MQTT con QoS 1\n- Display OLED con última lectura\n- Alertas por umbral configurable`,
     'pytask-cli': `# PyTask CLI\n\n> Gestor de tareas y proyectos desde la terminal\n\n## Stack\n\nPython · Rich · SQLite · Click\n\n## Uso\n\n\`\`\`bash\npytask add "Mi tarea" --priority high --project dev\npytask list --filter priority=high\npytask done 3\npytask export --format csv\n\`\`\`\n\n## Features\n\n- Multi-proyecto\n- Prioridades (low/medium/high/critical)\n- Etiquetas y búsqueda\n- Exportación CSV/JSON\n- Interfaz Rich con colores y tablas`,
   };
@@ -87,8 +87,8 @@ function buildFS(lang) {
     'Home/Projects': projects.map(p => ({ name: p.id, type: 'folder', label: p.title })),
     'Home/Documents': [
       { name: 'resume.pdf', type: 'file', label: 'Resume (PDF)', isPdf: true },
-      { name: 'about.txt', type: 'file', content: `${site.name}\n${site.role}\n\n${site.description}\n\nEmail: ${site.email}\nGitHub: ${site.github}\nLinkedIn: ${site.linkedin}` },
-      { name: 'cover_letter.md', type: 'file', content: `# Cover Letter\n\nEstimado equipo,\n\nSoy ${site.name}, desarrollador Full Stack con experiencia real\nen construcción de sistemas end-to-end usando React, Django y PostgreSQL.\n\nActualmente trabajo en Porta Hnos donde arquitecté 4+ sistemas\ncorporativos, reduciendo el tiempo de gestión interna en un 40%.\n\nBusco roles donde pueda construir productos completos, desde el\ndiseño de la API hasta el deploy en producción.\n\nSaludos,\n${site.name}` },
+      { name: 'about.txt', type: 'file', content: `${site.name}\n${site.role}\n\nCurso Sistemas de Informacion en UTN: diseno, implementacion, organizacion y control de sistemas de informacion para organizaciones.\nLo conecto con desarrollo full-stack: procesos, datos, APIs, interfaces y despliegues.\n\nStack principal: React, Django, PostgreSQL, Linux/cloud\nIdiomas: Espanol nativo, Ingles C1, Portugues basico\n\nEmail: ${site.email}\nGitHub: ${site.github}\nLinkedIn: ${site.linkedin}` },
+      { name: 'cover_letter.md', type: 'file', content: `# Cover Letter\n\nEstimado equipo,\n\nSoy ${site.name}, desarrollador full-stack y estudiante de Sistemas de Informacion en UTN.\n\nMi formacion esta enfocada en sistemas de informacion para organizaciones: entender procesos, modelar datos, disenar soluciones y evaluar como se sostienen en operacion. En la practica trabajo con React, Django, PostgreSQL e infraestructura Linux/cloud.\n\nBusco un equipo donde pueda aportar criterio tecnico, aprender de revisiones reales y seguir creciendo en productos con usuarios concretos.\n\nSaludos,\n${site.name}` },
     ],
     'Home/Desktop': [
       { name: 'portfolio-v2', type: 'folder' },
@@ -2004,13 +2004,15 @@ function LinkedInTab() {
               <p className="text-gray-600 text-sm">{site.role}</p>
               <p className="text-gray-400 text-xs mt-1">Argentina · <a href={'mailto:' + site.email} className="text-[#0a66c2] hover:underline">{site.email}</a></p>
               <div className="flex items-center gap-3 mt-3 text-xs text-[#0a66c2] font-semibold">
-                <span className="cursor-pointer hover:underline">{projects.length} conexiones</span>
+                <span className="cursor-pointer hover:underline">{projects.length} proyectos visibles</span>
               </div>
             </div>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 shadow-sm">
             <h2 className="font-bold text-gray-900 mb-2">Acerca de</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">{site.description}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Desarrollador full-stack con base en Sistemas de Información: procesos, datos, interfaces, APIs y despliegues. Trabajo con React, Django, PostgreSQL y Linux/cloud.
+            </p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 shadow-sm">
             <h2 className="font-bold text-gray-900 mb-4">Experiencia</h2>
@@ -2019,7 +2021,7 @@ function LinkedInTab() {
                 <div className="w-10 h-10 rounded bg-gradient-to-br from-blue-500 to-blue-700 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">{exp.company[0]}</div>
                 <div className="flex-1">
                   <div className="font-semibold text-gray-900 text-sm">{exp.role.es}</div>
-                  <div className="text-gray-500 text-xs">{exp.company} · Tiempo completo</div>
+                  <div className="text-gray-500 text-xs">{exp.company} · Desarrollo web</div>
                   <div className="text-gray-400 text-xs">{exp.period.es}</div>
                   <ul className="mt-2 space-y-1">
                     {exp.impact.es.map((item, j) => (
@@ -2037,7 +2039,7 @@ function LinkedInTab() {
                 <div className="w-10 h-10 rounded bg-gradient-to-br from-orange-500 to-red-600 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">UTN</div>
                 <div>
                   <div className="font-semibold text-gray-900 text-sm">{edu.institution}</div>
-                  <div className="text-gray-500 text-xs">{edu.degree.es}</div>
+                  <div className="text-gray-500 text-xs">Diseño, implementación y control de sistemas de información</div>
                   <div className="text-gray-400 text-xs">{edu.period.es}</div>
                 </div>
               </div>
@@ -2055,7 +2057,7 @@ function LinkedInTab() {
         <div className="w-56 flex-shrink-0 hidden sm:block space-y-3">
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-gray-700">Páginas que podrían interesarte</h3>
-            {[{name:'GitHub',sub:'Software'},{name:'Vercel',sub:'Internet'},{name:'UTN',sub:'Educación'}].map(p => (
+            {[{name:'GitHub',sub:'Repositorios'},{name:'Vercel',sub:'Deploys'},{name:'UTN',sub:'Sistemas de Información'}].map(p => (
               <div key={p.name} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{p.name[0]}</div>
                 <div><div className="text-xs font-semibold text-gray-800">{p.name}</div><div className="text-[10px] text-gray-400">{p.sub}</div></div>
@@ -2279,7 +2281,7 @@ function BrowserApp({ lang }) {
                   <h1 className="text-xl font-bold text-[#e6edf3]">{site.name}</h1>
                   <p className="text-[#8b949e] text-sm">Aznar-7</p>
                 </div>
-                <p className="text-sm text-[#e6edf3]">Full Stack Developer · React · Django · PostgreSQL</p>
+                <p className="text-sm text-[#e6edf3]">Full Stack Developer · Sistemas de Información · Cloud</p>
                 <a href={site.github} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#e6edf3] text-xs font-semibold py-1.5 rounded-md transition-colors">
                   <ExternalLink size={12}/> Ver perfil real
                 </a>
@@ -2487,11 +2489,11 @@ function SettingsApp({ wallpaper, onWallpaper }) {
               {[
                 ['Nombre del equipo','aznar-dev.local'],
                 ['Sistema operativo','Ubuntu 24.04 LTS'],
-                ['Procesador',`${site.role} (8 cores)`],
-                ['Memoria','∞ Coffee · 16 GB RAM'],
+                ['Perfil',`${site.role}`],
+                ['Formación','Sistemas de Información — UTN'],
                 ['Stack', skillsData.slice(0,5).map(s=>s.name).join(' · ')],
-                ['Paquetes',`${skillsData.length} tecnologías instaladas`],
-                ['Uptime','2025 — Presente'],
+                ['Tecnologías listadas',`${skillsData.length}`],
+                ['Disponibilidad','Abierto a oportunidades'],
               ].map(([k,v]) => (
                 <div key={k} className="flex justify-between px-5 py-3 border-b border-white/5 last:border-0">
                   <span className="text-white/40 text-sm">{k}</span>

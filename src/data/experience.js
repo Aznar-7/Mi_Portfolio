@@ -12,7 +12,7 @@ export const experience = [
       ],
       en: [
         'Architected 4+ corporate systems end-to-end (React + Django + PostgreSQL), reducing internal management time by 40% through digitization of manual workflows.',
-        'Designed a reusable React component system that accelerated feature delivery by 30%, adopted as the team\'s development standard.',
+        "Designed a reusable React component system that accelerated feature delivery by 30%, adopted as the team's development standard.",
         'Led external API integrations and legacy-to-modern stack migration in an Agile (Scrum) environment with biweekly delivery cycles.',
       ],
     },
@@ -30,14 +30,14 @@ export const academic = [
     period: { es: '2024 — Presente', en: '2024 — Present' },
     highlights: {
       es: [
-        'Programación funcional en Haskell — tipos algebraicos, funciones de orden superior, monads, evaluación lazy.',
-        'Programación lógica en Prolog — resolución de problemas mediante unificación, backtracking y constraint solving.',
-        'SDLC completo: análisis de requerimientos, arquitectura de sistemas, implementación, testing y deploy en producción.',
+        'Formación orientada al diseño, implementación, organización y control de sistemas de información para organizaciones.',
+        'Programación funcional en Haskell y lógica en Prolog: abstracción, tipos, recursión, unificación, backtracking y resolución declarativa de problemas.',
+        'Análisis y diseño de sistemas: requerimientos, modelado, arquitectura, ciclo de vida, testing y criterios para llevar una solución a producción.',
       ],
       en: [
-        'Functional programming in Haskell — algebraic types, higher-order functions, monads, lazy evaluation.',
-        'Logic programming in Prolog — problem solving via unification, backtracking, and constraint solving.',
-        'Full SDLC: requirements analysis, system architecture, implementation, testing, and production deployment.',
+        'Education focused on designing, implementing, organizing, and controlling information systems for organizations.',
+        'Functional programming in Haskell and logic programming in Prolog: abstraction, types, recursion, unification, backtracking, and declarative problem solving.',
+        'Systems analysis and design: requirements, modeling, architecture, lifecycle, testing, and criteria for taking a solution to production.',
       ],
     },
   },

@@ -128,12 +128,6 @@ export function Hero() {
   const githubUser = site.github?.split('github.com/')?.[1] ?? ''
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-  const profileSignals = [
-    { label: T.portrait_signal_1, value: T.portrait_value_1 },
-    { label: T.portrait_signal_2, value: T.portrait_value_2 },
-    { label: T.portrait_signal_3, value: T.portrait_value_3 },
-  ]
-
   const fp = (delay = 0) =>
     reduced
       ? {}
@@ -264,17 +258,6 @@ export function Hero() {
               <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-t from-black/45 via-transparent to-white/[0.04]" />
             </div>
 
-            <div className="absolute left-0 top-5 max-w-[230px] rounded-full border border-emerald-400/20 bg-[#08110f]/80 px-4 py-3 shadow-[0_20px_60px_-34px_rgba(0,0,0,0.9)] backdrop-blur-md sm:left-4 sm:top-12">
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-300">
-                {T.portrait_kicker}
-              </p>
-              <p className="mt-1 text-sm font-semibold leading-5 text-white/86">{T.portrait_title}</p>
-            </div>
-
-            <div className="absolute bottom-10 right-0 max-w-[240px] rounded-2xl border border-white/[0.08] bg-[#0c0d13]/82 px-4 py-3 shadow-[0_20px_60px_-34px_rgba(0,0,0,0.9)] backdrop-blur-md sm:right-3">
-              <p className="text-sm leading-6 text-white/68">{T.portrait_note}</p>
-            </div>
-
             <div className="absolute right-1 top-20 flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#0c0d13]/82 px-3 py-2 backdrop-blur-md sm:right-8">
               <Languages size={14} className="text-[var(--accent-hover)]" />
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white/62">
@@ -282,13 +265,11 @@ export function Hero() {
               </span>
             </div>
 
-            <div className="absolute bottom-0 left-0 flex max-w-[340px] flex-wrap gap-2 sm:left-6">
-              {profileSignals.map((signal) => (
-                <span key={signal.label} className="rounded-full border border-white/[0.08] bg-white/[0.045] px-3 py-2 text-[11px] font-semibold text-white/58 backdrop-blur-md">
-                  <span className="font-mono uppercase tracking-[0.12em] text-white/34">{signal.label}</span>
-                  <span className="ml-2 text-white/78">{signal.value}</span>
-                </span>
-              ))}
+            <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-4 py-2 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-hover)]" />
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-white/48">
+                {T.portrait_signal}
+              </span>
             </div>
           </div>
         </motion.div>

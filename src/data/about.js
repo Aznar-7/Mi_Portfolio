@@ -1,20 +1,20 @@
 export const about = {
   bio: {
     es: [
-      'Estudiante de Ingeniería en Sistemas y Desarrollador Full-Stack enfocado en diseñar soluciones de software escalables con una mentalidad técnica rigurosa.',
-      'Me especializo en traducir lógicas de negocio complejas en sistemas robustos y listos para producción, priorizando siempre la estabilidad y el alto rendimiento. Me interesa entender cómo funcionan las cosas, no solo usarlas.',
-      'Con certificación de inglés C1 y experiencia en entornos corporativos, entrego software alineado con los más altos estándares internacionales de calidad y confiabilidad.',
+      'Curso Ingeniería en Sistemas de Información en la UTN, una carrera orientada al diseño, implementación, organización y control de sistemas de información en contextos reales.',
+      'Me interesa conectar esa base con desarrollo full-stack: entender procesos, modelar datos, construir interfaces claras, diseñar APIs y dejar despliegues funcionando.',
+      'Trabajo con React, Django, PostgreSQL y Linux/cloud. También sumo inglés C1 para documentación, comunicación técnica y colaboración con equipos fuera de Argentina.',
     ],
     en: [
-      "Systems Engineering student and Full-Stack Developer focused on designing scalable software solutions with a rigorous technical mindset.",
-      "I specialize in translating complex business logic into robust, production-ready systems, prioritizing stability and high performance. I am driven by understanding how things work at their core, not just how to use them.",
-      "With a C1 English certification and corporate experience, I deliver software aligned with the highest international standards of quality and reliability.",
+      'I study Information Systems Engineering at UTN, a degree focused on designing, implementing, organizing, and controlling information systems in real organizational contexts.',
+      'I connect that foundation with full-stack development: understanding processes, modeling data, building clear interfaces, designing APIs, and keeping deployments running.',
+      'I work with React, Django, PostgreSQL, and Linux/cloud. I also bring C1 English for documentation, technical communication, and collaboration beyond Argentina.',
     ],
   },
   quickFacts: [
     {
       label: { es: 'Formación', en: 'Education' },
-      value: 'Ing. en Sistemas — UTN',
+      value: { es: 'Sistemas de Información — UTN', en: 'Information Systems — UTN' },
     },
     {
       label: { es: 'Ubicación', en: 'Location' },
@@ -26,7 +26,7 @@ export const about = {
     },
     {
       label: { es: 'Idiomas', en: 'Languages' },
-      value: { es: 'Español (nativo), Inglés (C1), Portugués (Basico)', en: 'Spanish (native), English (C1), Portuguese (Basic)' },
+      value: { es: 'Español nativo, Inglés C1, Portugués básico', en: 'Spanish native, English C1, Portuguese basic' },
     },
   ],
 }

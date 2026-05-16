@@ -116,8 +116,8 @@ export function About() {
                </div>
                <span className="text-[16px] leading-[1.6] text-white/90 font-medium">
                  {lang === 'es'
-                   ? 'UTN Hub en desarrollo · Ing. en Sistemas cursando'
-                   : 'UTN Hub in development · Systems Engineering ongoing'}
+                   ? 'Cursando Sistemas de Información · foco en sistemas para organizaciones'
+                   : 'Information Systems student · focused on organizational systems'}
                </span>
              </dd>
           </motion.div>

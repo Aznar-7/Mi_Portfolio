@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+﻿import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { site } from '@/data/site'
 import { useLang } from '@/contexts/LanguageContext'
@@ -10,7 +10,7 @@ const COMMANDS = {
   help: () => [
     '',
     '  Comandos disponibles',
-    '  ─────────────────────────────────────────────────────',
+    '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
     '  whoami            Identity & role',
     '  skills            Technical stack overview',
     '  ls / ls projects  List all projects',
@@ -32,8 +32,8 @@ const COMMANDS = {
   ],
   apps: () => [
     '',
-    '  Aplicaciones disponibles — uso: open <nombre>',
-    '  ──────────────────────────────────────────────',
+    '  Aplicaciones disponibles â€” uso: open <nombre>',
+    '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
     '  terminal   files     browser   notes     paint',
     '  monitor    calc      settings  editor',
     '  snake      mines     tetris    doom',
@@ -42,69 +42,70 @@ const COMMANDS = {
   whoami: () => [
     '',
     '  Vicente Aznar',
-    '  Full Stack Developer — React · Django · Oracle Cloud',
-    '  Argentina — open to remote & relocation',
+    '  Full Stack Developer â€” React Â· Django Â· Oracle Cloud',
+    '  Argentina â€” open to remote & relocation',
     '',
   ],
   skills: () => [
     '',
-    '  ╔══════════════════════════════════════════╗',
-    '  ║           TECHNICAL STACK                ║',
-    '  ╚══════════════════════════════════════════╝',
+    '  â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—',
+    '  â•‘           TECHNICAL STACK                â•‘',
+    '  â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
     '',
-    '  FRONTEND   React 19 · Vite · Tailwind CSS · Motion',
-    '  BACKEND    Django REST Framework · Python',
-    '  DATABASE   PostgreSQL · SQLite',
-    '  CLOUD      Oracle Cloud · Nginx · SSL/TLS',
-    '  IOT        ESP32 · Arduino · MQTT · C/C++',
-    '  ACADEMIC   Haskell · Prolog',
+    '  FRONTEND   React 19 Â· Vite Â· Tailwind CSS Â· Motion',
+    '  BACKEND    Django REST Framework Â· Python',
+    '  DATABASE   PostgreSQL Â· SQLite',
+    '  CLOUD      Oracle Cloud Â· Nginx Â· SSL/TLS',
+    '  IOT        ESP32 Â· Arduino Â· MQTT Â· C/C++',
+    '  ACADEMIC   Haskell Â· Prolog',
     '',
   ],
   'ls projects': () => [
     '',
-    '  drwxr-xr-x  utn-hub         [React·Django·PostgreSQL·OCI]  ★ featured',
-    '  drwxr-xr-x  agv-studio       [React·Django·Tailwind]        in-development',
-    '  drwxr-xr-x  esp32-monitor    [C/C++·MQTT·Django·WebSocket]  completed',
-    '  drwxr-xr-x  pytask-cli       [Python·Rich·SQLite·Click]     completed',
+    '  drwxr-xr-x  utn-hub         [ReactÂ·DjangoÂ·PostgreSQLÂ·OCI]  â˜… featured',
+    '  drwxr-xr-x  agv-studio       [ReactÂ·DjangoÂ·Tailwind]        in-development',
+    '  drwxr-xr-x  camisetas-agv    [ReactÂ·MotionÂ·Vite]            completed',
+    '  drwxr-xr-x  autofull         [ESP32Â·ArduinoÂ·React Native]   completed',
     '',
-    `  4 projects total — use 'contact' to discuss any`,
+    `  4 projects total â€” use 'contact' to discuss any`,
     '',
   ],
   ls: () => COMMANDS['ls projects'](),
   contact: () => [
     '',
-    `  Email     →  ${site.email}`,
-    `  LinkedIn  →  linkedin.com/in/vicente-aznar-dev`,
-    `  GitHub    →  github.com/Aznar-7`,
+    `  Email     â†’  ${site.email}`,
+    `  LinkedIn  â†’  linkedin.com/in/vicente-aznar-dev`,
+    `  GitHub    â†’  github.com/Aznar-7`,
     '',
     `  Tip: run 'sudo hire' to send a hire request directly`,
     '',
   ],
   'cat about.txt': () => [
     '',
-    '  Full Stack Developer con experiencia real en sistemas corporativos.',
-    '  Construyo aplicaciones end-to-end: desde interfaces React hasta APIs',
-    '  Django, esquemas PostgreSQL e infraestructura en Oracle Cloud.',
+    '  Desarrollador full-stack y estudiante de Sistemas de Informacion (UTN).',
+    '  La carrera apunta al diseno, implementacion, organizacion y control',
+    '  de sistemas de informacion para organizaciones.',
+    '  Lo conecto con React, Django, PostgreSQL e infraestructura Linux/cloud.',
     '',
-    '  Actualmente cursando Ingeniería en Sistemas en UTN.',
-    '  Interesado en IoT/hardware y arquitecturas escalables.',
+    '  Ingles C1. Espanol nativo. Portugues basico.',
+    '  Disponible para oportunidades donde pueda aprender y aportar en producto real.',
     '',
   ],
   'cat cv.txt': () => [
     '',
-    '  ══════════════════════════════════════════',
-    '  VICENTE AZNAR — Full Stack Developer',
-    '  ══════════════════════════════════════════',
+    '  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
+    '  VICENTE AZNAR â€” Full Stack Developer',
+    '  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
     '',
     '  EXPERIENCIA',
-    '  Frontend Developer @ Porta Hnos (2025 — Presente)',
-    '  · 4+ sistemas corporativos end-to-end (React+Django+PostgreSQL)',
-    '  · Reducción del tiempo de gestión interna en 40%',
-    '  · Sistema de componentes reutilizables (+30% delivery speed)',
+    '  Frontend Developer @ Porta Hnos (2025 â€” Presente)',
+    '  · Interfaces internas con React y componentes reutilizables',
+    '  · Integraciones con APIs y modernizacion de herramientas existentes',
+    '  · Debugging, revision de requerimientos y entregas incrementales',
     '',
-    '  FORMACIÓN',
-    '  Ingeniería en Sistemas — UTN (2021 — Presente)',
-    '  · Haskell, Prolog, SDLC, Arquitectura de sistemas',
+    '  FORMACIÃ“N',
+    '  Sistemas de Informacion — UTN (2024 — Presente)',
+    '  · Sistemas de informacion, procesos, datos, Haskell, Prolog y SDLC',
     '',
     `  Descarga completa: ${site.resumeUrl}`,
     '',
@@ -112,19 +113,19 @@ const COMMANDS = {
   neofetch: () => [
     '',
     "         .'::::::::::'.         aznar@ubuntu-dev",
-    "       .'  .:++++++++:.  '.     ─────────────────────────",
+    "       .'  .:++++++++:.  '.     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€",
     "      .  .:++++++++++++:.  .    OS:      Ubuntu 24.04 LTS",
     "     : .:++++++++++++++++:. :   Shell:   bash 5.2",
-    "     '.::++++++++++++++::.'     Uptime:  2025 — Presente",
+    "     '.::++++++++++++++::.'     Uptime:  2025 â€” Presente",
     "      '.::++++++++++::.'        CPU:     Full Stack Dev",
-    "        '.::++++++::.'          RAM:     Infinity Coffee",
-    "           '.'  '.'             Stack:   React · Django · OCI",
+    "        '.::++++++::.'          Lang:    ES native / EN C1",
+    "           '.'  '.'             Stack:   React · Django · Linux",
     '',
-    '  Colors:  ████ ████ ████ ████ ████ ████',
+    '  Colors:  â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ',
     '',
   ],
   'uname -a': () => [
-    `  Linux aznar-dev 6.8.0-oracle #1 SMP PREEMPT_DYNAMIC Ubuntu — ${new Date().getFullYear()}`,
+    `  Linux aznar-dev 6.8.0-oracle #1 SMP PREEMPT_DYNAMIC Ubuntu â€” ${new Date().getFullYear()}`,
     '  x86_64 x86_64 x86_64 GNU/Linux (aznar-dev edition)',
     '',
   ],
@@ -136,7 +137,7 @@ const COMMANDS = {
     '  aznar      421   8.1   6.4  django manage.py runserver',
     '  aznar      422   3.2   4.1  postgres -D /var/lib/postgresql',
     '  aznar      423   0.8   1.2  nginx -g "daemon off"',
-    '  aznar      999   0.3   0.5  coffee --daemon --infinite',
+    '  aznar      999   0.3   0.5  docs --read --quiet',
     '',
   ],
   uptime: () => {
@@ -157,11 +158,11 @@ const COMMANDS = {
     window.open(`mailto:${site.email}?subject=We want to hire you!`, '_blank');
     return [
       '',
-      '  [sudo] contraseña para aznar: ****',
-      '  Autenticación correcta.',
-      '  Redirigiendo a protocolo de contratación seguro...',
+      '  [sudo] contraseÃ±a para aznar: ****',
+      '  AutenticaciÃ³n correcta.',
+      '  Redirigiendo a protocolo de contrataciÃ³n seguro...',
       '  Iniciando cliente de email...',
-      '  ✓ Acceso concedido: Acabas de tomar una gran decisión.',
+      '  âœ“ Acceso concedido: Acabas de tomar una gran decisiÃ³n.',
       '',
     ];
   },
@@ -200,9 +201,9 @@ async function processCommand(raw, setLines, onClose) {
     const appId = APP_MAP[arg]
     if (appId) {
       window.dispatchEvent(new CustomEvent('ubuntu-open-app', { detail: { app: appId } }))
-      return [`  ✓ Abriendo ${arg}...`, '']
+      return [`  âœ“ Abriendo ${arg}...`, '']
     }
-    return [`  open: aplicación no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
+    return [`  open: aplicaciÃ³n no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
   }
 
   if (cmd === 'sudo') {
@@ -217,12 +218,12 @@ async function processCommand(raw, setLines, onClose) {
       window.dispatchEvent(new CustomEvent('ubuntu-kernel-panic'));
     }, 1200);
     return [
-      '  [sudo] contraseña para aznar: ****',
+      '  [sudo] contraseÃ±a para aznar: ****',
       '  rm: it is dangerous to operate recursively on "/"',
       '  rm: use --no-preserve-root to override this failsafe',
       '  ...',
       '  Eliminando sistema de archivos...',
-      '  ██████████████████░░░░ 87%',
+      '  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘ 87%',
       '  !! KERNEL PANIC !!',
       '',
     ];
@@ -236,9 +237,9 @@ async function processCommand(raw, setLines, onClose) {
       const data = await res.json()
       
       const repoLines = data.map(r => {
-        const starStr = r.stargazers_count > 0 ? `  ★ ${r.stargazers_count}` : ''
+        const starStr = r.stargazers_count > 0 ? `  â˜… ${r.stargazers_count}` : ''
         const langStr = r.language ? `  [${r.language}]` : ''
-        return `  ❯ ${r.name.padEnd(20)} ${langStr.padEnd(15)} ${starStr}`
+        return `  â¯ ${r.name.padEnd(20)} ${langStr.padEnd(15)} ${starStr}`
       })
       
       return [
@@ -251,7 +252,7 @@ async function processCommand(raw, setLines, onClose) {
         ''
       ]
     } catch (err) {
-      return ['  [ERROR] No se pudieron obtener los repositorios. Revisa tu conexión =(', '']
+      return ['  [ERROR] No se pudieron obtener los repositorios. Revisa tu conexiÃ³n =(', '']
     }
   }
 
@@ -412,7 +413,7 @@ export function Terminal({ onClose, isEmbedded = false }) {
             <button onClick={handleClear} style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ffbd2e', border: 'none', cursor: 'none' }} />
             <div                          style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#28c840' }} />
             <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.05em' }}>
-              aznar-dev — bash
+              aznar-dev â€” bash
             </span>
           </div>
         )}
