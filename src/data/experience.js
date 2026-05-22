@@ -31,12 +31,12 @@ export const academic = [
     highlights: {
       es: [
         'Formación orientada al diseño, implementación, organización y control de sistemas de información para organizaciones.',
-        'Programación funcional en Haskell y lógica en Prolog: abstracción, tipos, recursión, unificación, backtracking y resolución declarativa de problemas.',
+        'Programación Full stack, utilizando diversos lenguajes y paradigmas (funcional, logico y objetos) para modelar y resolver problemas de manera eficiente.',
         'Análisis y diseño de sistemas: requerimientos, modelado, arquitectura, ciclo de vida, testing y criterios para llevar una solución a producción.',
       ],
       en: [
         'Education focused on designing, implementing, organizing, and controlling information systems for organizations.',
-        'Functional programming in Haskell and logic programming in Prolog: abstraction, types, recursion, unification, backtracking, and declarative problem solving.',
+        'Full stack programming, utilizing various languages and paradigms (functional, logical, and object-oriented) to model and solve problems efficiently.',
         'Systems analysis and design: requirements, modeling, architecture, lifecycle, testing, and criteria for taking a solution to production.',
       ],
     },

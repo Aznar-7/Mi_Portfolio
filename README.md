@@ -1,18 +1,78 @@
-# React + Vite
+# MiPortfolio V2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio personal de Vicente Aznar, construido como una experiencia web interactiva: secciones clasicas de perfil, proyectos y contacto, mas un modo Ubuntu jugable con apps, terminal, archivos, musica, juegos y detalles escondidos.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + Vite
+- Tailwind CSS 4
+- Motion para animaciones
+- Lucide React para iconografia
+- OGL y canvas para fondos interactivos
+- PWA con `vite-plugin-pwa`
 
-## React Compiler
+## Highlights
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- Hero animado con acceso rapido a redes, CV y modo Ubuntu.
+- Portfolio bilingue con datos centralizados en `src/data`.
+- Proyectos con galerias, arquitectura, metricas y enlaces.
+- Modo Ubuntu con ventanas, dock, workspaces, terminal, explorador, notas, musica, clima, paint y juegos.
+- Juegos integrados: Snake, Buscaminas, Tetris y DOOM embebido.
+- Efectos de sonido, cursor custom y fondos reactivos.
 
-Note: This will impact Vite dev & build performances.
+## Scripts
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
+npm run lint
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Estructura
+
+```text
+src/
+  components/
+    background/      Fondos, cursores y efectos visuales
+    common/          Componentes reutilizables
+    layout/          Navbar, footer, terminal y Ubuntu OS
+    sections/        Hero, About, Skills, Projects, Experience, Contact
+    ui/              Primitivas visuales
+  contexts/          Idioma y sonido
+  data/              Contenido editable del portfolio
+  hooks/             Hooks compartidos
+  i18n/              Traducciones
+```
+
+## Contenido editable
+
+- Datos generales: `src/data/site.js`
+- Perfil y bio: `src/data/about.js`
+- Skills: `src/data/skills.js`
+- Proyectos: `src/data/projects.js`
+- Experiencia: `src/data/experience.js`
+
+## Desarrollo
+
+El proyecto corre con Vite. Para trabajar localmente:
+
+```bash
+npm install
+npm run dev
+```
+
+Luego abrir la URL que muestre Vite, normalmente `http://localhost:5173`.
+
+## Build
+
+```bash
+npm run build
+```
+
+El resultado queda en `dist/`, listo para servir como sitio estatico.
+
+## Licencia
+
+Proyecto personal. El codigo y los assets estan pensados para este portfolio.

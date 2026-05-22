@@ -1489,6 +1489,18 @@ function DoomApp() {
     }
   }, [phase]);
 
+  useEffect(() => {
+    if (phase !== 'playing') return undefined;
+
+    const reportActivity = () => {
+      window.dispatchEvent(new CustomEvent('ubuntu-user-activity'));
+    };
+
+    reportActivity();
+    const id = setInterval(reportActivity, 10_000);
+    return () => clearInterval(id);
+  }, [phase]);
+
   return (
     <div className="h-full flex flex-col bg-black relative overflow-hidden font-mono selection:bg-[#E95420]/30">
       {/* CRT Scanline Overlay applied globally to the app */}
@@ -1532,7 +1544,11 @@ function DoomApp() {
       )}
 
       {phase === 'playing' && (
-        <div className="flex-1 w-full relative z-10 flex">
+        <div
+          className="flex-1 w-full relative z-10 flex"
+          onPointerDown={() => window.dispatchEvent(new CustomEvent('ubuntu-user-activity'))}
+          onPointerMove={() => window.dispatchEvent(new CustomEvent('ubuntu-user-activity'))}
+        >
           {/* Wrapper to force correct aspect ratio and center the iframe */}
           <iframe
             src="https://silentspacemarine.com/"
@@ -2973,7 +2989,7 @@ export function UbuntuOS({ onClose }) {
       clearTimeout(inactivityRef.current);
       inactivityRef.current = setTimeout(() => setScreensaver(true), INACTIVITY_MS);
     };
-    const events = ['mousemove', 'keydown', 'pointerdown', 'scroll'];
+    const events = ['mousemove', 'keydown', 'pointerdown', 'scroll', 'ubuntu-user-activity'];
     events.forEach(ev => window.addEventListener(ev, reset, { passive: true }));
     reset();
     return () => {
