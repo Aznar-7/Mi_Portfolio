@@ -29,7 +29,7 @@
   { name: 'PostgreSQL', category: 'Bases de datos', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg', color: '#4169E1' },
   { name: 'MySQL', category: 'Bases de datos', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg', color: '#4479A1' },
   { name: 'SqlServer', category: 'Bases de datos', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/microsoftsqlserver/microsoftsqlserver-original.svg', color: '#CC2927' },
-  { name: 'MongoDB', category: 'Bases de datos', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg', color: '#47A248' },
+  //{ name: 'MongoDB', category: 'Bases de datos', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg', color: '#47A248' },
 
   // IoT & Hardware
   { name: 'Arduino', category: 'IoT & Hardware', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/arduino/arduino-original.svg', color: '#00979D' },
