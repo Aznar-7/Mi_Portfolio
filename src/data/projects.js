@@ -73,6 +73,36 @@ export const projects = [
     githubUrl: null,
   },
   {
+    id: 'orden66-viandas',
+    title: 'Orden 66 Viandas',
+    tagline: {
+      es: 'Aplicación Web full stack para gestionar pedidos de viandas.',
+      en: 'Full-stack web application for managing daily food (viandas) orders.',
+    },
+    description: {
+      es: '[Full-Stack App] | Sistema de gestión de viandas con control de cupos diarios: autenticación con JWT, roles de usuario y administrador, pedidos con estados, validación de stock en backend, historial de cambios, filtros avanzados, panel administrativo y persistencia en SQLite. Foco en reglas de negocio reales, seguridad y arquitectura modular.',
+      en: '[Full-Stack App] | Vianda management system with daily quota control: JWT authentication, user and admin roles, orders with statuses, backend stock validation, change history, advanced filters, admin panel, and SQLite persistence. Focus on real business rules, security, and modular architecture.',
+    },
+    category: 'frontend',
+    featured: false,
+    status: 'completed',
+    tech: ['React', 'Express', 'Node.js', 'Tailwind CSS', 'SqlLite', 'Vercel', 'Render'],
+    architecture: [],
+    image: '/images/projects/orden66/cover.png',
+    gallery: [
+      '/images/projects/orden66/login.png',
+      '/images/projects/orden66/menus.png',
+      '/images/projects/orden66/screen-3.png',
+    ],
+    placeholderGradient: null,
+    placeholderIcon: null,
+    liveUrl: 'https://vianda-app-front.vercel.app/',
+    githubUrl: [
+      { label: 'Frontend', url: 'https://github.com/Aznar-7/ViandaApp_Front' },
+      { label: 'Backend', url: 'https://github.com/Aznar-7/ViandaApp_Back' }
+    ],
+  },
+  {
     id: 'agv-studio',
     title: 'AGV Studio',
     tagline: {
@@ -150,6 +180,31 @@ export const projects = [
     liveUrl: '',
     githubUrl: 'https://github.com/Aznar-7/AutoFull',
   },
+ /* {
+    id: 'Jira_Rag',
+    title: 'Jira Rag',
+    tagline: {
+      es: 'RAG para alimentar un llm en base a las tarjetas de jira de un tablero específico.',
+      en: 'RAG for feeding an LLM based on the cards of a specific Jira board.',
+    },
+    description: {
+      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
+      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
+    },
+    category: 'IOT & Hardware',
+    featured: false,
+    status: 'completed',
+    tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
+    architecture: [],
+    image: '',
+    gallery: [
+      
+    ],
+    placeholderGradient: null,
+    placeholderIcon: null,
+    liveUrl: '',
+    githubUrl: 'https://github.com/Aznar-7/AutoFull',
+  },*/
 
   /*{
     id: 'esp32-monitor',

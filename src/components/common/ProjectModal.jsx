@@ -99,6 +99,11 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
 
   const status = STATUS_STYLES[project.status]
   const statusLabel = T.status?.[project.status] ?? project.status
+  const githubLinks = Array.isArray(project.githubUrl)
+    ? project.githubUrl
+    : project.githubUrl
+      ? [{ url: project.githubUrl }]
+      : []
 
   return createPortal(
     <motion.div
@@ -278,18 +283,19 @@ export function ProjectModal({ project, lang = 'es', T = {}, onClose }) {
                   <ExternalLink size={13} /> {T.live ?? 'Ver en vivo'}
                 </a>
               )}
-              {project.githubUrl && (
+              {githubLinks.map(({ label, url }) => (
                 <a
-                  href={project.githubUrl}
+                  key={url}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onMouseEnter={playHover}
                   onClick={(e) => { e.stopPropagation(); playNavigation() }}
                   className="cursor-target inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-5 py-2.5 text-[13px] font-semibold text-[var(--text-secondary)] transition-all hover:border-white/[0.12] hover:text-white"
                 >
-                  <GitHubIcon size={13} /> {T.code ?? 'Ver código'}
+                  <GitHubIcon size={13} /> {label ?? T.code ?? 'Ver código'}
                 </a>
-              )}
+              ))}
             </div>
           </div>
         </motion.div>
