@@ -33,8 +33,13 @@ export const translations = {
     experience: {
       label:           '02 — Trayectoria',
       title:           'Experiencia',
-      subtitle:        'Impacto real, no solo tareas.',
-      academic_divider:'Formación académica',
+      subtitle:        'Experiencia profesional y formación que construyen una misma mirada técnica.',
+      work_title:       'Experiencia laboral',
+      work_subtitle:    'Roles, responsabilidades e impacto en productos y equipos reales.',
+      education_title:  'Educación',
+      education_subtitle:'Formación académica y áreas de especialización en curso.',
+      roles:            'roles',
+      programs:         'carreras',
     },
     projects: {
       label:        '03 — Proyectos',
@@ -123,8 +128,13 @@ export const translations = {
     experience: {
       label:           '02 — Career',
       title:           'Experience',
-      subtitle:        'Real impact, not just tasks.',
-      academic_divider:'Academic background',
+      subtitle:        'Professional experience and education shaping one technical perspective.',
+      work_title:       'Work experience',
+      work_subtitle:    'Roles, responsibilities, and impact across real products and teams.',
+      education_title:  'Education',
+      education_subtitle:'Academic background and current areas of specialization.',
+      roles:            'roles',
+      programs:         'programs',
     },
     projects: {
       label:        '03 — Projects',

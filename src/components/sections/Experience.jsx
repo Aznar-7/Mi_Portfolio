@@ -1,111 +1,171 @@
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
+import { BriefcaseBusiness, GraduationCap } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { experience, academic } from '@/data/experience'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { l } from '@/lib/utils'
 
-function l(value, lang) {
-  if (!value || typeof value === 'string') return value
-  return value[lang] ?? value.es ?? value.en ?? ''
-}
-
-const TYPE_STYLES = {
+const GROUP_STYLES = {
   work: {
-    dotBg:      'var(--accent)',
-    dotGlow:    '0 0 0 3px rgba(124,106,247,0.15), 0 0 18px rgba(124,106,247,0.35)',
-    badgeBg:    'rgba(124,106,247,0.07)',
-    badgeBorder:'rgba(124,106,247,0.22)',
-    badgeText:  'rgba(167,152,255,0.85)',
-    cardHover:  'rgba(124,106,247,0.12)',
-    bullet:     'var(--accent)',
+    Icon: BriefcaseBusiness,
+    accent: 'var(--accent)',
+    accentRgb: '124,106,247',
   },
   academic: {
-    dotBg:      '#22d3ee',
-    dotGlow:    '0 0 0 3px rgba(34,211,238,0.12), 0 0 18px rgba(34,211,238,0.3)',
-    badgeBg:    'rgba(34,211,238,0.06)',
-    badgeBorder:'rgba(34,211,238,0.2)',
-    badgeText:  'rgba(103,232,249,0.85)',
-    cardHover:  'rgba(34,211,238,0.06)',
-    bullet:     '#22d3ee',
+    Icon: GraduationCap,
+    accent: '#22d3ee',
+    accentRgb: '34,211,238',
   },
 }
 
-function ExperienceCard({ item, type, index = 0 }) {
+function ExperienceCard({ item, type, index, isLast }) {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const points = l(item.impact ?? item.highlights, lang) ?? []
-  const s = TYPE_STYLES[type]
-  const typeLabel = {
-    es: { work: 'Profesional', academic: 'Académico' },
-    en: { work: 'Professional', academic: 'Academic'  },
-  }[lang][type]
+  const style = GROUP_STYLES[type]
 
   return (
-    <motion.div
-      initial={reduced ? false : { opacity: 0, y: 28 }}
+    <motion.article
+      initial={reduced ? false : { opacity: 0, y: 24 }}
       whileInView={reduced ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
-      className="group relative grid gap-6 md:grid-cols-[180px_1fr] md:gap-10 pb-16 last:pb-0"
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
+      className={`group relative grid gap-4 md:grid-cols-[160px_1fr] md:gap-8 ${isLast ? '' : 'pb-10 sm:pb-12'}`}
     >
-      {/* Left: period + type badge */}
-      <div className="flex flex-col md:items-end md:text-right pt-1 gap-2.5">
-        <span className="font-mono text-[12px] font-semibold uppercase tracking-widest text-[var(--accent)]/80 sm:text-[13px]">
+      <div className="flex items-start justify-between gap-4 md:block md:pt-5 md:text-right">
+        <span
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em]"
+          style={{ color: style.accent }}
+        >
           {l(item.period, lang)}
         </span>
-        <span
-          className="inline-flex w-fit items-center rounded-full px-2.5 py-0.5 font-mono text-[9px] font-bold tracking-widest uppercase border"
-          style={{ background: s.badgeBg, borderColor: s.badgeBorder, color: s.badgeText }}
-        >
-          {typeLabel}
+        <span className="font-mono text-[10px] text-[var(--text-muted)] md:mt-2 md:block">
+          {String(index + 1).padStart(2, '0')}
         </span>
       </div>
 
-      {/* Timeline line + dot */}
-      <div className="absolute left-[8px] top-2 hidden h-full w-[2px] bg-gradient-to-b from-[var(--accent)]/35 via-white/[0.04] to-transparent md:left-[199px] md:block" />
+      {!isLast && (
+        <div
+          className="absolute bottom-0 left-[175px] top-7 hidden w-px md:block"
+          style={{ background: `linear-gradient(to bottom, rgba(${style.accentRgb},0.32), rgba(${style.accentRgb},0.04))` }}
+        />
+      )}
       <div
-        className="absolute left-0 top-[9px] hidden h-3.5 w-3.5 rounded-full border-[3px] border-[var(--bg-base)] transition-all duration-400 md:left-[193px] md:block"
+        className="absolute left-[170px] top-6 hidden h-3 w-3 rounded-full border-[3px] border-[var(--bg-base)] md:block"
         style={{
-          background: s.dotBg,
-          boxShadow: '0 0 0 2px rgba(124,106,247,0.1)',
+          background: style.accent,
+          boxShadow: `0 0 0 3px rgba(${style.accentRgb},0.12), 0 0 18px rgba(${style.accentRgb},0.22)`,
         }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow = s.dotGlow; e.currentTarget.style.transform = 'scale(1.3)' }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,106,247,0.1)'; e.currentTarget.style.transform = 'scale(1)' }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 pl-4 border-l border-white/[0.07] md:pl-8 md:border-0">
-        {/* Header */}
+      <div
+        className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.018] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] sm:p-6"
+        style={{ boxShadow: `inset 0 1px 0 rgba(${style.accentRgb},0.04)` }}
+      >
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-70"
+          style={{ background: `linear-gradient(to bottom, transparent, ${style.accent}, transparent)` }}
+        />
+
         <div className="mb-4">
-          <h3 className="text-[1.2rem] font-bold tracking-tight text-[var(--text-primary)] transition-colors duration-300 group-hover:text-[var(--accent)]">
+          <h4 className="text-[1.05rem] font-bold tracking-tight text-[var(--text-primary)] sm:text-[1.15rem]">
             {l(item.role ?? item.degree, lang)}
-          </h3>
-          <p className="mt-1 text-[13px] font-semibold tracking-wide text-[var(--text-muted)]">
+          </h4>
+          <p className="mt-1.5 text-[12px] font-semibold tracking-wide text-[var(--text-muted)] sm:text-[13px]">
             {item.company ?? item.institution}
           </p>
         </div>
 
-        {/* Points card */}
-        <div
-          className="rounded-2xl border border-white/[0.04] bg-white/[0.015] p-5 transition-all duration-400 group-hover:border-white/[0.08]"
-          style={{ '--hover-bg': s.cardHover }}
-        >
-          <ul className="flex flex-col gap-3.5">
-            {points.map((point, i) => (
-              <li key={i} className="relative pl-5 text-[13.5px] leading-[1.82] text-[var(--text-secondary)] transition-colors duration-300 group-hover:text-[var(--text-primary)]/80">
-                <span
-                  className="absolute left-0 top-[9px] h-1.5 w-1.5 rounded-full transition-colors duration-300"
-                  style={{ background: `${s.bullet}55` }}
-                />
-                {point}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="flex flex-col gap-3">
+          {points.map((point, pointIndex) => (
+            <li
+              key={pointIndex}
+              className="relative pl-4 text-[13px] leading-[1.75] text-[var(--text-secondary)]"
+            >
+              <span
+                className="absolute left-0 top-[8px] h-1.5 w-1.5 rounded-full"
+                style={{ background: `rgba(${style.accentRgb},0.55)` }}
+              />
+              {point}
+            </li>
+          ))}
+        </ul>
       </div>
-    </motion.div>
+    </motion.article>
+  )
+}
+
+function ExperienceGroup({ type, title, subtitle, countLabel, items }) {
+  const reduced = useReducedMotion()
+  const style = GROUP_STYLES[type]
+  const Icon = style.Icon
+
+  return (
+    <motion.section
+      initial={reduced ? false : { opacity: 0, y: 28 }}
+      whileInView={reduced ? {} : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[var(--bg-surface)]/55"
+    >
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{ background: `linear-gradient(to right, transparent, rgba(${style.accentRgb},0.55), transparent)` }}
+      />
+      <div
+        className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full blur-3xl"
+        style={{ background: `rgba(${style.accentRgb},0.07)` }}
+      />
+
+      <header className="relative flex flex-col gap-5 border-b border-white/[0.06] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+        <div className="flex items-start gap-4">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+            style={{
+              color: style.accent,
+              borderColor: `rgba(${style.accentRgb},0.2)`,
+              background: `rgba(${style.accentRgb},0.07)`,
+            }}
+          >
+            <Icon size={19} />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold tracking-tight text-[var(--text-primary)] sm:text-xl">
+              {title}
+            </h3>
+            <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[var(--text-muted)]">
+              {subtitle}
+            </p>
+          </div>
+        </div>
+
+        <span
+          className="w-fit rounded-full border px-3 py-1 font-mono text-[9px] font-semibold uppercase tracking-[0.14em]"
+          style={{
+            color: style.accent,
+            borderColor: `rgba(${style.accentRgb},0.18)`,
+            background: `rgba(${style.accentRgb},0.05)`,
+          }}
+        >
+          {items.length} {countLabel}
+        </span>
+      </header>
+
+      <div className="relative p-5 sm:p-7 lg:p-8">
+        {items.map((item, index) => (
+          <ExperienceCard
+            key={`${item.company ?? item.institution}-${index}`}
+            item={item}
+            type={type}
+            index={index}
+            isLast={index === items.length - 1}
+          />
+        ))}
+      </div>
+    </motion.section>
   )
 }
 
@@ -117,29 +177,21 @@ export function Experience() {
     <SectionWrapper id="experience">
       <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
-      <div className="relative mt-16 max-w-5xl">
-        {/* Professional */}
-        <div className="mb-20">
-          {experience.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="work" index={i} />
-          ))}
-        </div>
-
-        {/* Academic divider */}
-        <div className="mb-12 flex items-center gap-6">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/[0.06] md:flex-none md:w-[180px] md:to-[var(--accent)]/40" />
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-            {T.academic_divider}
-          </span>
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-white/[0.06] to-transparent md:from-[var(--accent)]/40" />
-        </div>
-
-        {/* Academic */}
-        <div>
-          {academic.map((item, i) => (
-            <ExperienceCard key={i} item={item} type="academic" index={i} />
-          ))}
-        </div>
+      <div className="mt-14 grid max-w-5xl gap-8">
+        <ExperienceGroup
+          type="work"
+          title={T.work_title}
+          subtitle={T.work_subtitle}
+          countLabel={T.roles}
+          items={experience}
+        />
+        <ExperienceGroup
+          type="academic"
+          title={T.education_title}
+          subtitle={T.education_subtitle}
+          countLabel={T.programs}
+          items={academic}
+        />
       </div>
     </SectionWrapper>
   )
