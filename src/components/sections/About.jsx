@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
+import { ResumeDownloadMenu } from '@/components/common/ResumeDownloadMenu'
 import { about } from '@/data/about'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
@@ -20,7 +21,7 @@ export function About() {
   const [isImageOpen, setIsImageOpen] = useState(false)
   const reduced = useReducedMotion()
   const { lang } = useLang()
-  const { playHover, playNavigation } = useSoundEffects()
+  const { playNavigation } = useSoundEffects()
   const T = translations[lang].about
   const bio = l(about.bio, lang)
 
@@ -69,22 +70,10 @@ export function About() {
             transition={{ delay: 0.4, duration: 0.7 }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
-            <a 
-              href="/ResumeVicenteAznar.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              onMouseEnter={playHover}
-              onClick={playNavigation}
-              className="group relative flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-6 py-2.5 text-sm font-medium text-[var(--accent)] transition-all hover:bg-[var(--accent)] hover:text-white"
-            >
-              <span>{lang === 'es' ? 'Descargar CV' : 'Download Resume'}</span>
-              <svg 
-                className="w-4 h-4 transition-transform group-hover:translate-x-1" 
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
+            <ResumeDownloadMenu
+              onDownload={playNavigation}
+              className="w-full sm:w-auto"
+            />
             <div className="h-px w-12 bg-white/20 ml-2" />
             <span className="font-mono text-xs text-white/40 tracking-[0.2em] font-medium uppercase">
                {lang === 'es' ? 'Construyendo el futuro' : 'Building the future'}

@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import {
   ArrowDown,
   ArrowRight,
-  Download,
   Languages,
   MapPin,
   MonitorUp,
@@ -11,6 +10,7 @@ import {
 } from 'lucide-react'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { MagneticButton } from '@/components/common/MagneticButton'
+import { ResumeDownloadMenu } from '@/components/common/ResumeDownloadMenu'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
@@ -199,18 +199,7 @@ export function Hero() {
               </button>
             </MagneticButton>
 
-            <MagneticButton strength={0.24} radius={90} className="w-full sm:w-auto">
-              <a
-                href="/ResumeVicenteAznar.pdf"
-                download="Vicente_Aznar_CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] active:translate-y-0 sm:w-auto"
-              >
-                <Download size={16} className="text-white/65 transition-colors group-hover:text-white" />
-                {lang === 'es' ? 'Descargar CV' : 'Download CV'}
-              </a>
-            </MagneticButton>
+            <ResumeDownloadMenu className="w-full sm:w-auto" />
 
             <MagneticButton strength={0.24} radius={90} className="w-full sm:w-auto">
               <button

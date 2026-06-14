@@ -2209,7 +2209,7 @@ function BrowserApp({ lang }) {
                     <a href={site.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-violet-600 transition-colors">LinkedIn</a>
                   </div>
                 </div>
-                <a href={site.resumeUrl} download className="flex items-center gap-2 bg-violet-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-violet-700 transition-colors flex-shrink-0">
+                <a href={site.resumes[lang].url} download={site.resumes[lang].filename} className="flex items-center gap-2 bg-violet-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-violet-700 transition-colors flex-shrink-0">
                   <ExternalLink size={13}/> Descargar PDF
                 </a>
               </div>
@@ -2399,14 +2399,16 @@ function EditorApp({ file }) {
 }
 
 // ── PDF Viewer App ────────────────────────────────────────────────
-function PdfViewerApp({ src = '/ResumeVicenteAznar.pdf' }) {
+function PdfViewerApp({ lang }) {
   const [zoom, setZoom] = useState(100);
+  const resume = site.resumes[lang];
+  const src = resume.url;
 
   return (
     <div className="h-full flex flex-col bg-[#1a1a1a]">
       {/* Toolbar */}
       <div className="h-9 bg-[#252526] border-b border-black/40 flex items-center px-3 gap-3 flex-shrink-0">
-        <span className="text-white/50 text-[11px] font-medium flex-1 truncate">ResumeVicenteAznar.pdf</span>
+        <span className="text-white/50 text-[11px] font-medium flex-1 truncate">{resume.filename}</span>
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setZoom(z => Math.max(50, z - 25))}
@@ -2420,7 +2422,7 @@ function PdfViewerApp({ src = '/ResumeVicenteAznar.pdf' }) {
         </div>
         <a
           href={src}
-          download
+          download={resume.filename}
           className="flex items-center gap-1.5 text-[11px] text-white/40 hover:text-white/70 transition-colors ml-1"
         >
           <ExternalLink size={12} /> Descargar
@@ -3305,7 +3307,7 @@ export function UbuntuOS({ onClose }) {
                     {id === 'browser'  && <BrowserApp lang={lang} />}
                     {id === 'settings' && <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />}
                     {id === 'editor'   && <EditorApp file={win.fileData} />}
-                    {id === 'pdf'      && <PdfViewerApp />}
+                    {id === 'pdf'      && <PdfViewerApp lang={lang} />}
                     {id === 'monitor'  && <SystemMonitor />}
                     {id === 'snake'    && <SnakeGame />}
                     {id === 'mines'    && <MinesweeperGame />}
