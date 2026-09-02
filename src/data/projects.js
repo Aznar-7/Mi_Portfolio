@@ -10,7 +10,7 @@ export const projects = [
       es: 'Plataforma académica para estudiantes de la UTN: centralización de información institucional, calendario de eventos y parciales, repositorio colaborativo de documentos, gestor de notas con cálculo automático de promedios, y sistema de notificaciones. Backend robusto con Django REST y PostgreSQL, frontend dinámico con React y Tailwind, y autenticación segura con JWT. Hosteado y configurado por nosotros desde 0 (BACKEND) en servidor propio oracle cloud, con ubuntu. Frontend en Vercel.',
       en: 'Academic platform for UTN students: centralization of institutional information, calendar of events and exams, collaborative document repository, grade manager with automatic average calculation, and notification system. Robust backend with Django REST and PostgreSQL, dynamic frontend with React and Tailwind, and secure authentication with JWT. Hosted and configured by us from scratch (BACKEND) on our own Oracle Cloud server with Ubuntu. Frontend on Vercel.',
     },
-    category: 'web',
+    category: 'full-stack',
     featured: true,
     status: 'in-development',
     tech: ['React', 'Vite', 'Django', 'PostgreSQL', 'Oracle Cloud', 'Nginx'],
@@ -83,7 +83,7 @@ export const projects = [
       es: '[Full-Stack App] | Sistema de gestión de viandas con control de cupos diarios: autenticación con JWT, roles de usuario y administrador, pedidos con estados, validación de stock en backend, historial de cambios, filtros avanzados, panel administrativo y persistencia en SQLite. Foco en reglas de negocio reales, seguridad y arquitectura modular.',
       en: '[Full-Stack App] | Vianda management system with daily quota control: JWT authentication, user and admin roles, orders with statuses, backend stock validation, change history, advanced filters, admin panel, and SQLite persistence. Focus on real business rules, security, and modular architecture.',
     },
-    category: 'frontend',
+    category: 'full-stack',
     featured: false,
     status: 'completed',
     tech: ['React', 'Express', 'Node.js', 'Tailwind CSS', 'SqlLite', 'Vercel', 'Render'],
@@ -113,7 +113,7 @@ export const projects = [
       es: 'Startup orientada a la construcción de productos digitales y consultoría para PYMEs. Arquitectura full-stack con foco en sistemas a medida y escalabilidad.',
       en: 'Startup focused on building digital products and consulting for SMBs. Full-stack architecture emphasizing custom systems and scalability.',
     },
-    category: 'startup',
+    category: 'full-stack',
     featured: false,
     status: 'in-development',
     tech: ['React', 'Django', 'Tailwind CSS', 'PostgreSQL'],
@@ -166,7 +166,32 @@ export const projects = [
       es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
       en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
     },
-    category: 'IOT & Hardware',
+    category: 'iot',
+    featured: false,
+    status: 'completed',
+    tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
+    architecture: [],
+    image: '',
+    gallery: [
+
+    ],
+    placeholderGradient: null,
+    placeholderIcon: null,
+    liveUrl: '',
+    githubUrl: 'https://github.com/Aznar-7/AutoFull',
+  },
+  {
+    id: 'Jira_Rag',
+    title: 'Jira Rag',
+    tagline: {
+      es: 'RAG para alimentar un llm en base a las tarjetas de jira de un tablero específico.',
+      en: 'RAG for feeding an LLM based on the cards of a specific Jira board.',
+    },
+    description: {
+      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
+      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
+    },
+    category: 'ai',
     featured: false,
     status: 'completed',
     tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
@@ -180,31 +205,26 @@ export const projects = [
     liveUrl: '',
     githubUrl: 'https://github.com/Aznar-7/AutoFull',
   },
- /* {
-    id: 'Jira_Rag',
-    title: 'Jira Rag',
+  {
+    id: 'Echo-spins',
+    title: 'Echo Spins',
     tagline: {
-      es: 'RAG para alimentar un llm en base a las tarjetas de jira de un tablero específico.',
-      en: 'RAG for feeding an LLM based on the cards of a specific Jira board.',
+      es: "Tocadiscos IOT miniatura, con webapp personalizada. Raspberry pi zero 2w, sensores, motor, nfc y  webapp rapida y ligera con js puro y python flask.",
+      en: "Miniature IOT turntable, with a custom webapp. Raspberry pi zero 2w, sensors, motor, nfc and fast and lightweight webapp with pure js and python flask.",
     },
-    description: {
-      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
-      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
-    },
-    category: 'IOT & Hardware',
+    category: 'iot',
     featured: false,
     status: 'completed',
-    tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
+    tech: ['Python', 'Flask', 'Raspberry Pi', 'NFC', 'JavaScript', 'HTML', 'CSS', 'Linux', '3d Modeling'],
     architecture: [],
     image: '',
-    gallery: [
-      
-    ],
+    gallery: [],
     placeholderGradient: null,
     placeholderIcon: null,
     liveUrl: '',
-    githubUrl: 'https://github.com/Aznar-7/AutoFull',
-  },*/
+    githubUrl: 'https://github.com/Aznar-7/proyect-ecoRecords-pi',
+
+  }
 
   /*{
     id: 'esp32-monitor',

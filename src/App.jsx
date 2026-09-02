@@ -147,6 +147,8 @@ function BootSequence({ onComplete }) {
   )
 }
 
+
+
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
   const [ubuntuOpen,  setUbuntuOpen]  = useState(false);

@@ -7,7 +7,9 @@ import { ProjectCard } from '@/components/common/ProjectCard'
 import { ProjectModal } from '@/components/common/ProjectModal'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { TechTag } from '@/components/common/TechTag'
+import { CategoryIcon } from '@/components/common/CategoryIcon'
 import { projects } from '@/data/projects'
+import { projectCategories } from '@/data/projectCategories'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -117,25 +119,63 @@ function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
   )
 }
 
+function CategoryFilter({ activeCategory, onSelect, T, lang }) {
+  const { playSelect, playHover } = useSoundEffects()
+
+  return (
+    <div className="mb-8 flex flex-wrap justify-center gap-3">
+      <button
+        onClick={() => { if (activeCategory !== 'all') { playSelect(); onSelect('all') } }}
+        onMouseEnter={playHover}
+        className={`cursor-target rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+          activeCategory === 'all'
+            ? 'border-white/30 bg-white/10 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+            : 'border-white/5 bg-transparent text-white/50 hover:border-white/20 hover:bg-white/[0.03] hover:text-white/90'
+        }`}
+      >
+        {T.all ?? 'Todos'}
+      </button>
+      {projectCategories.map((category) => (
+        <button
+          key={category.id}
+          onClick={() => { if (activeCategory !== category.id) { playSelect(); onSelect(category.id) } }}
+          onMouseEnter={playHover}
+          className={`cursor-target inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+            activeCategory === category.id
+              ? 'border-white/30 bg-white/10 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+              : 'border-white/5 bg-transparent text-white/50 hover:border-white/20 hover:bg-white/[0.03] hover:text-white/90'
+          }`}
+        >
+          <CategoryIcon name={category.icon} size={14} />
+          {l(category.label, lang)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Projects() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].projects
   const { playModalOpen, playModalClose } = useSoundEffects()
   const [selectedProject, setSelectedProject] = useState(null)
+  const [activeCategory, setActiveCategory] = useState('all')
 
   const openModal  = (p) => { playModalOpen();  setSelectedProject(p) }
   const closeModal = ()  => { playModalClose(); setSelectedProject(null) }
 
   const featured    = projects.filter((p) => p.featured)
-  const nonFeatured = projects.filter((p) => !p.featured)
+  const nonFeatured = projects
+    .filter((p) => !p.featured)
+    .filter((p) => activeCategory === 'all' || p.category === activeCategory)
 
   return (
     <div className="relative overflow-hidden">
       <SectionWrapper id="projects">
         <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {featured.map((p) => (
             <FeaturedBentoCard
               key={p.id}
@@ -145,24 +185,31 @@ export function Projects() {
               onOpenModal={() => openModal(p)}
             />
           ))}
-
-          {nonFeatured.map((project, i) => (
-            <motion.div
-              key={project.id}
-              initial={reduced ? false : { opacity: 0, y: 20 }}
-              whileInView={reduced ? {} : { opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{ type: 'spring', stiffness: 180, damping: 24, delay: i * 0.07 }}
-            >
-              <ProjectCard
-                project={project}
-                lang={lang}
-                T={T}
-                onClick={() => openModal(project)}
-              />
-            </motion.div>
-          ))}
         </div>
+
+        <CategoryFilter activeCategory={activeCategory} onSelect={setActiveCategory} T={T} lang={lang} />
+
+        <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <AnimatePresence mode="popLayout">
+            {nonFeatured.map((project, i) => (
+              <motion.div
+                layout
+                key={project.id}
+                initial={reduced ? false : { opacity: 0, y: 20 }}
+                animate={reduced ? {} : { opacity: 1, y: 0 }}
+                exit={reduced ? {} : { opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 180, damping: 24, delay: i * 0.05 }}
+              >
+                <ProjectCard
+                  project={project}
+                  lang={lang}
+                  T={T}
+                  onClick={() => openModal(project)}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </SectionWrapper>
 
       <AnimatePresence>

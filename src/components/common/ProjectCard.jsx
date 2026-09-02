@@ -1,18 +1,13 @@
 import { useRef } from 'react'
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
-import { Globe, Cpu, Terminal, Zap } from 'lucide-react'
+import { Cpu, Terminal } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
+import { CategoryIcon } from '@/components/common/CategoryIcon'
+import { projectCategories } from '@/data/projectCategories'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { l, STATUS_STYLES } from '@/lib/utils'
-
-const CATEGORY_ICONS = {
-  web:     Globe,
-  startup: Zap,
-  iot:     Cpu,
-  cli:     Terminal,
-}
 
 const PLACEHOLDER_ICONS = { Cpu, Terminal }
 
@@ -70,7 +65,7 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
 
   const status = STATUS_STYLES[project.status]
   const statusLabel = T.status?.[project.status] ?? project.status
-  const CategoryIcon = CATEGORY_ICONS[project.category]
+  const category = projectCategories.find((c) => c.id === project.category)
 
   return (
     <motion.div
@@ -113,9 +108,9 @@ export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
         </div>
 
         {/* Category icon — bottom left */}
-        {CategoryIcon && (
+        {category && (
           <span className="absolute bottom-2.5 left-3 flex h-6 w-6 items-center justify-center rounded-md bg-black/50 backdrop-blur-sm">
-            <CategoryIcon size={12} className="text-white/70" />
+            <CategoryIcon name={category.icon} size={12} className="text-white/70" />
           </span>
         )}
 
