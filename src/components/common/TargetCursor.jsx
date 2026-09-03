@@ -136,7 +136,17 @@ const TargetCursor = ({
         if (currentLeaveHandler) {
           currentLeaveHandler();
         }
+        return;
       }
+
+      const rect = activeTarget.getBoundingClientRect();
+      const { borderWidth, cornerSize } = constants;
+      targetCornerPositionsRef.current = [
+        { x: rect.left - borderWidth, y: rect.top - borderWidth },
+        { x: rect.right + borderWidth - cornerSize, y: rect.top - borderWidth },
+        { x: rect.right + borderWidth - cornerSize, y: rect.bottom + borderWidth - cornerSize },
+        { x: rect.left - borderWidth, y: rect.bottom + borderWidth - cornerSize }
+      ];
     };
     window.addEventListener('scroll', scrollHandler, { passive: true });
 
