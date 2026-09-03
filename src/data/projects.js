@@ -188,8 +188,8 @@ export const projects = [
       en: 'RAG for feeding an LLM based on the cards of a specific Jira board.',
     },
     description: {
-      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
-      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
+      es: '[RAG / IA] | Sistema de Retrieval-Augmented Generation que indexa las tarjetas de un tablero de Jira específico y las usa como contexto para un LLM, permitiendo consultar el estado de un proyecto en lenguaje natural y mantener informados a los supervisores sin que tengan que entrar a Jira.',
+      en: '[RAG / AI] | Retrieval-Augmented Generation system that indexes the cards of a specific Jira board and feeds them as context to an LLM, enabling natural-language queries about project status and keeping supervisors informed without them having to open Jira.',
     },
     category: 'ai',
     featured: false,
