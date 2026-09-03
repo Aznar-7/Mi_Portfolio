@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle, Color } from 'ogl';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const vertexShader = `
 attribute vec2 position;
@@ -109,9 +110,10 @@ const Threads = ({
 }) => {
   const containerRef = useRef(null);
   const animationFrameId = useRef();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || reducedMotion) return;
     const container = containerRef.current;
 
     const renderer = new Renderer({ alpha: true });
@@ -139,15 +141,20 @@ const Threads = ({
 
     const mesh = new Mesh(gl, { geometry, program });
 
-    function resize() {
+    function applySize() {
       const { clientWidth, clientHeight } = container;
       renderer.setSize(clientWidth, clientHeight);
       program.uniforms.iResolution.value.r = clientWidth;
       program.uniforms.iResolution.value.g = clientHeight;
       program.uniforms.iResolution.value.b = clientWidth / clientHeight;
     }
+    let resizeTimeout;
+    function resize() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(applySize, 150);
+    }
     window.addEventListener('resize', resize);
-    resize();
+    applySize();
 
     let currentMouse = [0.5, 0.5];
     let targetMouse = [0.5, 0.5];
@@ -182,6 +189,7 @@ const Threads = ({
     animationFrameId.current = requestAnimationFrame(update);
 
     return () => {
+      clearTimeout(resizeTimeout);
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       window.removeEventListener('resize', resize);
       if (enableMouseInteraction) {
@@ -191,7 +199,7 @@ const Threads = ({
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [color, amplitude, distance, enableMouseInteraction]);
+  }, [color, amplitude, distance, enableMouseInteraction, reducedMotion]);
 
   return (
     <div
