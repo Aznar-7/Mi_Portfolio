@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "optimize-images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^13.11.1",
@@ -43,6 +44,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "lucide-react": "^1.8.0",
+    "sharp": "^0.35.4",
     "tailwind-merge": "^3.5.0",
     "vite": "^8.0.1"
   },

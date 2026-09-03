@@ -7,7 +7,7 @@ const ALL_PLAYLISTS = [
     id: "p1",
     title: "Rock & Mix",
     description: "Tus temas favoritos de los proyectos.",
-    cover: "/images/projects/covers/AbbeyRoad.jpg",
+    cover: "/images/projects/covers/AbbeyRoad.webp",
     tracks: [
       {
         id: 2,
@@ -20,21 +20,21 @@ const ALL_PLAYLISTS = [
         id: 3,
         title: "Something",
         artist: "The Beatles",
-        cover: "/images/projects/covers/AbbeyRoad.jpg",
+        cover: "/images/projects/covers/AbbeyRoad.webp",
         url: "/audio/Something.mp3"
       },
       {
         id: 4,
         title: "No Voy En Tren",
         artist: "Charly García",
-        cover: "/images/projects/covers/NoVoy.jpg",
+        cover: "/images/projects/covers/NoVoy.webp",
         url: "/audio/NoVoyEnTren.mp3"
       },
       {
         id: 7,
         title: "Dirty Deeds Done Dirt Cheap",
         artist: "AC/DC",
-        cover: "/images/projects/covers/dirtyDeeds.jpg",
+        cover: "/images/projects/covers/dirtyDeeds.webp",
         url: "/audio/dirtyDeeds.mp3"
       }
     ]
