@@ -1,10 +1,8 @@
-import { useState } from 'react'
-import { Copy, Check, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
-import { Button } from '@/components/common/Button'
+import { CopyButton } from '@/components/common/CopyButton'
 import { useLang } from '@/contexts/LanguageContext'
-import { useSoundEffects } from '@/contexts/SoundContext'
 import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 
@@ -16,19 +14,6 @@ const LINKS = [
 export function Contact() {
   const { lang } = useLang()
   const T = translations[lang].contact
-  const { playSuccess } = useSoundEffects()
-  const [copied, setCopied] = useState(false)
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(site.email)
-      playSuccess()
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      window.location.href = `mailto:${site.email}`
-    }
-  }
 
   return (
     <SectionWrapper id="contact">
@@ -44,10 +29,7 @@ export function Contact() {
         >
           {site.email}
         </a>
-        <Button variant="secondary" size="sm" onClick={copyEmail} aria-live="polite">
-          {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
-          {copied ? T.copied : T.copy}
-        </Button>
+        <CopyButton value={site.email} label={T.copy} copiedLabel={T.copied} />
       </div>
 
       <ul className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--line)] pt-8">

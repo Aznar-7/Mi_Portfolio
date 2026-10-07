@@ -128,8 +128,15 @@ export function SoundProvider({ children }) {
 
   const toggleMute = useCallback(() => {
     init()
-    setIsMuted(m => !m)
-  }, [init])
+    const unmuting = isMuted
+    setIsMuted(!isMuted)
+    // Audible confirmation when sound turns on (ok() still sees muted here)
+    if (unmuting && ctx.current) {
+      ctx.current.resume?.()
+      note(ctx.current, 660, 'sine', 0.06, 0.003, 0.08)
+      note(ctx.current, 990, 'sine', 0.05, 0.003, 0.10, null, 0.07)
+    }
+  }, [init, isMuted])
 
   /* Guard — returns true only when audio is ready to play.
      Tries an inline resume so sounds don't silently drop on

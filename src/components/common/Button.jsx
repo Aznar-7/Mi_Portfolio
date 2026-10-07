@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { cn } from '@/lib/utils'
 
 const VARIANTS = {
@@ -14,19 +15,24 @@ const SIZES = {
 }
 
 // Renders an <a> when `href` is given (external links open in a new tab),
-// otherwise a <button>.
+// otherwise a <button>. Plays the shared hover/click sounds (muted by default).
 export const Button = forwardRef(function Button(
-  { variant = 'secondary', size = 'md', href, external, className, children, ...props },
+  { variant = 'secondary', size = 'md', href, external, className, children, onClick, onMouseEnter, ...props },
   ref,
 ) {
+  const { playHover, playClick } = useSoundEffects()
   const classes = cn(
-    'inline-flex shrink-0 items-center justify-center rounded-[10px] font-medium whitespace-nowrap',
-    'transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.98]',
+    'group/btn inline-flex shrink-0 items-center justify-center rounded-[10px] font-medium whitespace-nowrap',
+    'transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.97]',
     'disabled:pointer-events-none disabled:opacity-40',
     VARIANTS[variant],
     SIZES[size],
     className,
   )
+  const handlers = {
+    onMouseEnter: (e) => { playHover(); onMouseEnter?.(e) },
+    onClick: (e) => { playClick(); onClick?.(e) },
+  }
 
   if (href) {
     const isExternal = external ?? /^https?:/.test(href)
@@ -36,6 +42,7 @@ export const Button = forwardRef(function Button(
         href={href}
         className={classes}
         {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
+        {...handlers}
         {...props}
       >
         {children}
@@ -44,7 +51,7 @@ export const Button = forwardRef(function Button(
   }
 
   return (
-    <button ref={ref} type="button" className={classes} {...props}>
+    <button ref={ref} type="button" className={classes} {...handlers} {...props}>
       {children}
     </button>
   )

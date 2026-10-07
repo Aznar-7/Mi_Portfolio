@@ -223,10 +223,10 @@ export function BrowserApp({ lang }) {
                   <h2 className="text-sm font-semibold text-gray-500 mb-3">{group.label.es}</h2>
                   <div className="flex flex-wrap gap-2">
                     {group.items.map(name => {
-                      const Icon = TECH_ICONS[name];
+                      const Icon = TECH_ICONS[name]?.Icon;
                       return (
                         <div key={name} className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700">
-                          {Icon && <Icon size={14} color="currentColor" aria-hidden="true" />}
+                          {Icon && <Icon size={14} color="default" aria-hidden="true" />}
                           <span className="text-sm font-medium">{name}</span>
                         </div>
                       );

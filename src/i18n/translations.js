@@ -12,7 +12,7 @@ export const translations = {
     hero: {
       available:   'Disponible para nuevos roles',
       role:        'Full Stack Developer',
-      description: 'Diseño y construyo sistemas completos: la interfaz, la API, la base de datos, el servidor donde corren y, cuando hace falta, el hardware.',
+      description: 'Estudio Ingeniería en Sistemas y construyo software de punta a punta: entiendo el problema, diseño la arquitectura y la interfaz, lo desarrollo y lo dejo andando en producción. Cuando hace falta, también el hardware.',
       cta_primary: 'Ver proyectos',
       open_os:     'Abrir el OS',
       open_os_hint: 'Un escritorio Ubuntu simulado, con terminal y apps',
@@ -22,6 +22,10 @@ export const translations = {
         { term: 'Estudio',  detail: 'Ing. en Sistemas e IA, UTN' },
         { term: 'Idiomas',  detail: 'Español nativo, inglés C1' },
       ],
+    },
+    process: {
+      title:    'Del problema a producción',
+      subtitle: 'Me ocupo del ciclo completo. Así trabajo, con un ejemplo real en cada etapa.',
     },
     featured: {
       label:      'Proyecto principal',
@@ -33,7 +37,11 @@ export const translations = {
       title:             'Experiencia',
       subtitle:          'Dónde trabajé y qué estudio.',
       work_title:        'Trabajo',
+      work_note:         'Experiencia profesional',
       education_title:   'Formación',
+      education_note:    'Carreras universitarias',
+      current:           'Actual',
+      in_progress:       'En curso',
     },
     projects: {
       title:        'Proyectos',
@@ -83,7 +91,7 @@ export const translations = {
     hero: {
       available:   'Open to new roles',
       role:        'Full Stack Developer',
-      description: 'I design and build complete systems: the interface, the API, the database, the server they run on and, when needed, the hardware.',
+      description: 'I study Systems Engineering and build software end to end: I understand the problem, design the architecture and the interface, build it and keep it running in production. When needed, the hardware too.',
       cta_primary: 'See projects',
       open_os:     'Open the OS',
       open_os_hint: 'A simulated Ubuntu desktop, with a terminal and apps',
@@ -93,6 +101,10 @@ export const translations = {
         { term: 'Studying',  detail: 'Systems Engineering and AI, UTN' },
         { term: 'Languages', detail: 'Native Spanish, C1 English' },
       ],
+    },
+    process: {
+      title:    'From problem to production',
+      subtitle: 'I handle the whole cycle. This is how I work, with a real example at each stage.',
     },
     featured: {
       label:      'Featured project',
@@ -104,7 +116,11 @@ export const translations = {
       title:             'Experience',
       subtitle:          'Where I have worked and what I study.',
       work_title:        'Work',
+      work_note:         'Professional experience',
       education_title:   'Education',
+      education_note:    'University degrees',
+      current:           'Current',
+      in_progress:       'In progress',
     },
     projects: {
       title:        'Projects',

@@ -15,6 +15,7 @@ const named = (loader, name) => lazy(() => loader().then((m) => ({ default: m[na
 
 const UbuntuOS        = named(() => import('@/components/layout/UbuntuOS'), 'UbuntuOS')
 const CommandPalette  = named(() => import('@/components/layout/CommandPalette'), 'CommandPalette')
+const Process         = named(() => import('@/components/sections/Process'), 'Process')
 const FeaturedProject = named(() => import('@/components/sections/FeaturedProject'), 'FeaturedProject')
 const Experience      = named(() => import('@/components/sections/Experience'), 'Experience')
 const Projects        = named(() => import('@/components/sections/Projects'), 'Projects')
@@ -23,6 +24,7 @@ const About           = named(() => import('@/components/sections/About'), 'Abou
 const Contact         = named(() => import('@/components/sections/Contact'), 'Contact')
 
 const SECTIONS = [
+  ['process', Process],
   ['featured', FeaturedProject],
   ['experience', Experience],
   ['projects', Projects],

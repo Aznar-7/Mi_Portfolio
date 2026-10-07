@@ -1,16 +1,14 @@
 import { motion } from 'motion/react'
 import { ArrowDown, TerminalSquare } from 'lucide-react'
-import Threads from '@/components/background/Threads'
+import { HeroBackground } from '@/components/background/HeroBackground'
 import { Button } from '@/components/common/Button'
 import { HeroName } from '@/components/common/HeroName'
 import { ResumeDownloadMenu } from '@/components/common/ResumeDownloadMenu'
 import { useLang } from '@/contexts/LanguageContext'
-import { useSoundEffects } from '@/contexts/SoundContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const EASE = [0.16, 1, 0.3, 1]
-const THREAD_COLOR = [0.545, 0.482, 1]
 
 const openOS = () => document.dispatchEvent(new CustomEvent('open-ubuntu'))
 const scrollToProjects = () => document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' })
@@ -22,7 +20,6 @@ const scrollToProjects = () => document.getElementById('featured')?.scrollIntoVi
 export function Hero({ ready = true, fromIntro = false }) {
   const reduced = useReducedMotion()
   const { lang } = useLang()
-  const { playClick } = useSoundEffects()
   const T = translations[lang].hero
 
   // Staggered entrance for everything except the name, gated on `ready`
@@ -39,9 +36,9 @@ export function Hero({ ready = true, fromIntro = false }) {
     <section id="hero" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]"
+        className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
       >
-        <Threads color={THREAD_COLOR} amplitude={1.1} distance={0.25} />
+        <HeroBackground />
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-6 lg:pt-32">
@@ -81,13 +78,13 @@ export function Hero({ ready = true, fromIntro = false }) {
             </motion.p>
 
             <motion.div {...enter(2)} className="mt-10 flex flex-wrap items-center gap-3">
-              <Button variant="primary" onClick={() => { playClick(); scrollToProjects() }}>
+              <Button variant="primary" onClick={scrollToProjects}>
                 {T.cta_primary}
-                <ArrowDown size={16} aria-hidden="true" />
+                <ArrowDown size={16} aria-hidden="true" className="transition-transform duration-300 group-hover/btn:translate-y-0.5" />
               </Button>
               <ResumeDownloadMenu />
-              <Button variant="ghost" onClick={() => { playClick(); openOS() }} title={T.open_os_hint}>
-                <TerminalSquare size={16} aria-hidden="true" />
+              <Button variant="ghost" onClick={openOS} title={T.open_os_hint}>
+                <TerminalSquare size={16} aria-hidden="true" className="transition-transform duration-300 group-hover/btn:-rotate-6" />
                 {T.open_os}
               </Button>
             </motion.div>

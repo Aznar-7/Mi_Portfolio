@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Menu, X, Volume2, VolumeX } from 'lucide-react'
+import { Menu, X, VolumeX } from 'lucide-react'
 import { useScrollSpy } from '@/hooks/useScrollSpy'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -12,6 +12,33 @@ const NAV_IDS = ['featured', 'experience', 'projects', 'skills', 'about', 'conta
 const NAV_KEYS = { featured: 'project', experience: 'experience', projects: 'projects', skills: 'skills', about: 'about', contact: 'contact' }
 
 const scrollToId = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+
+// Three bars that bounce while sound is on
+function SoundBars() {
+  return (
+    <span aria-hidden="true" className="flex h-3.5 items-end gap-[2px]">
+      {[0, 0.2, 0.4].map((delay) => (
+        <motion.span
+          key={delay}
+          className="w-[2px] rounded-full bg-current"
+          animate={{ height: ['30%', '100%', '45%', '80%', '30%'] }}
+          transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut', delay }}
+        />
+      ))}
+    </span>
+  )
+}
+
+// Fade the page content out, swap language at the low point, fade back in
+function switchLanguage(toggle) {
+  const main = document.querySelector('main')
+  if (!main?.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return toggle()
+  main.animate([{ opacity: 1, filter: 'blur(0px)' }, { opacity: 0.15, filter: 'blur(4px)' }], { duration: 160, easing: 'ease-in', fill: 'forwards' })
+    .finished.then(() => {
+      toggle()
+      main.animate([{ opacity: 0.15, filter: 'blur(4px)' }, { opacity: 1, filter: 'blur(0px)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' })
+    })
+}
 
 function LangToggle({ lang, onToggle }) {
   return (
@@ -49,7 +76,7 @@ export function Navbar() {
   const lastY = useRef(0)
   const activeId = useScrollSpy(NAV_IDS)
   const { lang, toggle } = useLang()
-  const { isMuted, toggleMute, playClick, playNavigation, playToggle } = useSoundEffects()
+  const { isMuted, toggleMute, playClick, playHover, playNavigation, playToggle } = useSoundEffects()
   const T = translations[lang].nav
   const links = NAV_IDS.map((id) => ({ id, label: T[NAV_KEYS[id]] }))
 
@@ -107,6 +134,7 @@ export function Navbar() {
                   <a
                     href={`#${id}`}
                     onClick={(e) => { e.preventDefault(); go(id) }}
+                    onMouseEnter={playHover}
                     aria-current={activeId === id ? 'true' : undefined}
                     className={cn(
                       'relative block rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
@@ -128,9 +156,10 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LangToggle lang={lang} onToggle={() => { playToggle(); toggle() }} />
+            <LangToggle lang={lang} onToggle={() => { playToggle(); switchLanguage(toggle) }} />
             <button
-              onClick={() => { playToggle(); toggleMute() }}
+              onClick={toggleMute}
+              onMouseEnter={playHover}
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
               aria-pressed={!isMuted}
               className={cn(
@@ -138,7 +167,7 @@ export function Navbar() {
                 isMuted ? 'text-[var(--text-muted)]' : 'text-[var(--accent-hover)]',
               )}
             >
-              {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+              {isMuted ? <VolumeX size={14} aria-hidden="true" /> : <SoundBars />}
             </button>
             <button
               onClick={() => { playClick(); setMobileOpen((v) => !v) }}
