@@ -13,13 +13,13 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Vicente Aznar',
         short_name: 'Vicente',
-        description: 'Vicente Aznar Frontend Developer Portfolio',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        description: 'Vicente Aznar, Full Stack Developer',
+        theme_color: '#09090c',
+        background_color: '#09090c',
         display: 'standalone',
         icons: [
           {

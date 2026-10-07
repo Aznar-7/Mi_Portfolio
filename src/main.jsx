@@ -4,20 +4,13 @@ import './index.css'
 import App from './App.jsx'
 import { site } from './data/site.js'
 
-// Developer Easter Egg
+// Note for curious developers opening the console
 console.info(
-  `%c⚡ Vicente Aznar %c| Full Stack Developer\n%c================================================\n%c¿Revisando cómo está hecho esto? ¡Excelente!\n%cEl código fuente de este portfolio está estructurado para escalar, \ncon React 19, Vite, y un sistema de ventanas procedural en CSS/Motion.\n\n%c📫 Hablemos: %c${site.email} %c| %c${site.linkedin.replace(/^https?:\/\//, '')}\n%c================================================`,
-  "color: #7c6af7; font-size: 20px; font-weight: 900;",
-  "color: #a8a8b0; font-size: 16px; font-weight: normal;",
-  "color: #333;",
-  "color: #e8e8f0; font-size: 14px; font-weight: bold;",
-  "color: #8888aa; font-size: 12px; line-height: 1.5;",
-  "color: #e8e8f0; font-size: 14px; font-weight: bold;",
-  "color: #7c6af7; font-size: 14px; text-decoration: none;",
-  "color: #8888aa; font-size: 14px;",
-  "color: #7c6af7; font-size: 14px; text-decoration: none;",
-  "color: #333;"
-);
+  `%c${site.name}%c  ${site.role}\n\n%cReact 19, Vite y Motion. Si estás leyendo esto, hablemos:\n${site.email}  ${site.linkedin.replace(/^https?:\/\/(www\.)?/, '')}`,
+  'color:#ededf2;font-size:18px;font-weight:600;',
+  'color:#a3a3b5;font-size:13px;',
+  'color:#8b7bff;font-size:12px;line-height:1.6;',
+)
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
