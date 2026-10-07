@@ -327,6 +327,7 @@ const FALLBACK = {
   playModalOpen: NOOP, playModalClose: NOOP, playToggle: NOOP,
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook lives next to its provider
 export function useSoundEffects() {
   const ctx = useContext(SoundContext)
   return ctx ?? FALLBACK

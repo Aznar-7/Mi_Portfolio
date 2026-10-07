@@ -70,6 +70,8 @@ const ALL_PLAYLISTS = [
   }
 ];
 
+const randomIndex = (n) => Math.floor(Math.random() * n);
+
 export function MusicPlayer() {
   const [currentView, setCurrentView] = useState('home'); // 'home', 'playlist'
   const [activeViewPlaylist, setActiveViewPlaylist] = useState(ALL_PLAYLISTS[0]);
@@ -160,7 +162,7 @@ export function MusicPlayer() {
   const playEntirePlaylist = (playlist) => {
     setActivePlaylistData(playlist);
     if (isShuffle) {
-      setCurrentTrackIndex(Math.floor(Math.random() * playlist.tracks.length));
+      setCurrentTrackIndex(randomIndex(playlist.tracks.length));
     } else {
       setCurrentTrackIndex(0);
     }
@@ -447,8 +449,6 @@ export function MusicPlayer() {
                 className="flex-1 h-1 sm:h-1 bg-gray-600 rounded-full group cursor-pointer relative flex items-center py-2"
                 onClick={(e) => {
                   const bounds = e.currentTarget.getBoundingClientRect();
-                  // Ajuste de cálculo de bounds para un hitbox más grande py-2
-                  const yHitboxHeight = e.currentTarget.clientHeight;
                   const percent = (e.clientX - bounds.left) / bounds.width;
                   if (audioRef.current && percent >= 0 && percent <= 1) {
                     audioRef.current.currentTime = percent * duration;

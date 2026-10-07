@@ -21,7 +21,6 @@ export function WaveField() {
     let ctx     = null
     let W = 0, H = 0
     let mouse   = { x: -1, y: -1 }
-    let time    = 0
     // Per-wave phase accumulator
     let phases  = WAVES.map(w => w.phase)
     let splash  = null   // { x, t } — click distortion
@@ -96,7 +95,6 @@ export function WaveField() {
         if (splash.t > 60) splash = null
       }
 
-      time++
       raf = requestAnimationFrame(tick)
     }
 
