@@ -32,7 +32,10 @@ async function walk(dir) {
 async function convert(file) {
   const webpPath = join(dirname(file), basename(file, extname(file)) + '.webp')
   const before = (await stat(file)).size
-  await sharp(file).webp({ quality: 82 }).toFile(webpPath)
+  await sharp(file)
+    .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toFile(webpPath)
   const after = (await stat(webpPath)).size
   await unlink(file)
   const savedPct = Math.round((1 - after / before) * 100)

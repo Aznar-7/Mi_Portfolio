@@ -1,14 +1,18 @@
+// Project catalogue. `featured` gets its own section (FeaturedProject),
+// `highlight` renders as the wide lead card in the Projects grid.
+// githubUrl: string | { label, url }[] | null
+
 export const projects = [
   {
     id: 'utn-hub',
     title: 'UTN Hub',
     tagline: {
-      es: 'Plataforma universitaria para la gestión académica.',
-      en: 'University platform for academic management.',
+      es: 'Plataforma académica para estudiantes de la UTN.',
+      en: 'Academic platform for UTN students.',
     },
     description: {
-      es: 'Plataforma académica para estudiantes de la UTN: centralización de información institucional, calendario de eventos y parciales, repositorio colaborativo de documentos, gestor de notas con cálculo automático de promedios, y sistema de notificaciones. Backend robusto con Django REST y PostgreSQL, frontend dinámico con React y Tailwind, y autenticación segura con JWT. Hosteado y configurado por nosotros desde 0 (BACKEND) en servidor propio oracle cloud, con ubuntu. Frontend en Vercel.',
-      en: 'Academic platform for UTN students: centralization of institutional information, calendar of events and exams, collaborative document repository, grade manager with automatic average calculation, and notification system. Robust backend with Django REST and PostgreSQL, dynamic frontend with React and Tailwind, and secure authentication with JWT. Hosted and configured by us from scratch (BACKEND) on our own Oracle Cloud server with Ubuntu. Frontend on Vercel.',
+      es: 'Centraliza la información institucional, el calendario de eventos y parciales, un repositorio colaborativo de apuntes y un gestor de notas que calcula promedios automáticamente, con notificaciones. API en Django REST con PostgreSQL y autenticación JWT; frontend en React con Tailwind. El backend corre en un servidor Ubuntu en Oracle Cloud que configuramos desde cero; el frontend se despliega en Vercel.',
+      en: 'Brings together institutional information, an events and exams calendar, a collaborative notes repository and a grade manager that computes averages automatically, with notifications. Django REST API on PostgreSQL with JWT auth; React and Tailwind frontend. The backend runs on an Ubuntu server on Oracle Cloud that we set up from scratch; the frontend deploys on Vercel.',
     },
     category: 'full-stack',
     featured: true,
@@ -18,43 +22,31 @@ export const projects = [
       {
         layer: 'Frontend',
         detail: {
-          es: 'React 19 + Vite, Tailwind CSS, React Router, estado con Context API',
-          en: 'React 19 + Vite, Tailwind CSS, React Router, state with Context API',
+          es: 'React 19 y Vite, Tailwind CSS, React Router, estado con Context API.',
+          en: 'React 19 and Vite, Tailwind CSS, React Router, state with Context API.',
         },
       },
       {
         layer: 'Backend',
         detail: {
-          es: 'Django REST Framework, autenticación JWT, endpoints modulares por dominio',
-          en: 'Django REST Framework, JWT authentication, modular domain endpoints',
+          es: 'Django REST Framework, autenticación JWT, endpoints modulares por dominio.',
+          en: 'Django REST Framework, JWT authentication, modular endpoints per domain.',
         },
       },
       {
         layer: { es: 'Base de datos', en: 'Database' },
         detail: {
-          es: 'PostgreSQL — modelado relacional, migraciones Django, queries optimizadas',
-          en: 'PostgreSQL — relational modeling, Django migrations, optimized queries',
+          es: 'PostgreSQL con modelado relacional y migraciones de Django.',
+          en: 'PostgreSQL with relational modeling and Django migrations.',
         },
       },
       {
         layer: { es: 'Infraestructura', en: 'Infrastructure' },
         detail: {
-          es: 'Oracle Cloud VM, Nginx reverse proxy, SSL/TLS, dominio propio configurado',
-          en: 'Oracle Cloud VM, Nginx reverse proxy, SSL/TLS, custom domain configured',
+          es: 'VM en Oracle Cloud, Nginx como reverse proxy, SSL/TLS y dominio propio.',
+          en: 'Oracle Cloud VM, Nginx reverse proxy, SSL/TLS and custom domain.',
         },
       },
-    ],
-    metrics: [
-      {
-        label: { es: 'Capas de arquitectura', en: 'Architecture layers' },
-        value: '4',
-        icon: 'Layers'
-      },
-      {
-        label: { es: 'Tecnologías integradas', en: 'Integrated technologies' },
-        value: '6',
-        icon: 'Zap'
-      }
     ],
     image: '/images/projects/utnhub/utnhub-presentation.webp',
     gallery: [
@@ -66,210 +58,152 @@ export const projects = [
       '/images/projects/utnhub/screen-6.webp',
       '/images/projects/utnhub/screen-7.webp',
     ],
-    placeholderGradient: null,
-    placeholderIcon: null,
     liveUrl: 'https://utnhub.com.ar',
     githubUrl: null,
+  },
+  {
+    id: 'eco-records',
+    title: 'Eco Records',
+    tagline: {
+      es: 'Tocadiscos en miniatura con hardware, carcasa y app propios.',
+      en: 'Miniature record player with its own hardware, enclosure and app.',
+    },
+    description: {
+      es: 'Un tocadiscos a escala diseñado de punta a punta. La carcasa está modelada en 3D e impresa; adentro, una Raspberry Pi Zero 2W controla el motor del plato, lee tags NFC para reconocer cada disco y reproduce el álbum por el parlante integrado. Se maneja desde una webapp móvil hecha con Flask y JavaScript sin frameworks: reproductor, biblioteca de discos, importación de álbumes desde YouTube y un historial de escucha.',
+      en: 'A scale record player designed end to end. The enclosure is 3D modeled and printed; inside, a Raspberry Pi Zero 2W drives the platter motor, reads NFC tags to recognize each record and plays the album through a built-in speaker. It is controlled from a mobile web app built with Flask and framework-free JavaScript: player, record library, album import from YouTube and listening history.',
+    },
+    category: 'iot',
+    highlight: true,
+    status: 'completed',
+    tech: ['Raspberry Pi', 'Python', 'Flask', 'NFC', 'JavaScript', 'Linux', '3D Modeling'],
+    architecture: [
+      {
+        layer: 'Hardware',
+        detail: {
+          es: 'Raspberry Pi Zero 2W, lector NFC, motor del plato, parlante y batería en carcasa impresa en 3D.',
+          en: 'Raspberry Pi Zero 2W, NFC reader, platter motor, speaker and battery in a 3D-printed case.',
+        },
+      },
+      {
+        layer: 'Backend',
+        detail: {
+          es: 'Flask sobre Linux: reproducción, biblioteca, descargas y estadísticas de escucha.',
+          en: 'Flask on Linux: playback, library, downloads and listening stats.',
+        },
+      },
+      {
+        layer: 'App',
+        detail: {
+          es: 'Webapp móvil liviana en JavaScript puro, sin dependencias.',
+          en: 'Lightweight mobile web app in plain JavaScript, no dependencies.',
+        },
+      },
+    ],
+    image: '/images/projects/eco-records/foto-frente.webp',
+    gallery: [
+      '/images/projects/eco-records/foto-frente.webp',
+      '/images/projects/eco-records/foto-detalle.webp',
+      '/images/projects/eco-records/app-reproductor.webp',
+      '/images/projects/eco-records/app-discos.webp',
+      '/images/projects/eco-records/app-album.webp',
+      '/images/projects/eco-records/app-agregar.webp',
+      '/images/projects/eco-records/app-actividad.webp',
+    ],
+    liveUrl: null,
+    githubUrl: 'https://github.com/Aznar-7/proyect-ecoRecords-pi',
   },
   {
     id: 'orden66-viandas',
     title: 'Orden 66 Viandas',
     tagline: {
-      es: 'Aplicación Web full stack para gestionar pedidos de viandas.',
-      en: 'Full-stack web application for managing daily food (viandas) orders.',
+      es: 'Gestión de pedidos de viandas con cupos diarios.',
+      en: 'Meal order management with daily quotas.',
     },
     description: {
-      es: '[Full-Stack App] | Sistema de gestión de viandas con control de cupos diarios: autenticación con JWT, roles de usuario y administrador, pedidos con estados, validación de stock en backend, historial de cambios, filtros avanzados, panel administrativo y persistencia en SQLite. Foco en reglas de negocio reales, seguridad y arquitectura modular.',
-      en: '[Full-Stack App] | Vianda management system with daily quota control: JWT authentication, user and admin roles, orders with statuses, backend stock validation, change history, advanced filters, admin panel, and SQLite persistence. Focus on real business rules, security, and modular architecture.',
+      es: 'Sistema de pedidos con control de cupos diarios: autenticación JWT, roles de usuario y administrador, estados de pedido, validación de stock en el backend, historial de cambios, filtros y panel de administración. Foco en reglas de negocio reales, seguridad y una arquitectura modular.',
+      en: 'Ordering system with daily quota control: JWT authentication, user and admin roles, order states, backend stock validation, change history, filters and an admin panel. Focused on real business rules, security and a modular architecture.',
     },
     category: 'full-stack',
-    featured: false,
     status: 'completed',
-    tech: ['React', 'Express', 'Node.js', 'Tailwind CSS', 'SqlLite', 'Vercel', 'Render'],
-    architecture: [],
+    tech: ['React', 'Express', 'Node.js', 'Tailwind CSS', 'SQLite', 'Vercel', 'Render'],
     image: '/images/projects/orden66/cover.webp',
     gallery: [
+      '/images/projects/orden66/cover.webp',
       '/images/projects/orden66/login.webp',
       '/images/projects/orden66/menus.webp',
     ],
-    placeholderGradient: null,
-    placeholderIcon: null,
     liveUrl: 'https://vianda-app-front.vercel.app/',
     githubUrl: [
       { label: 'Frontend', url: 'https://github.com/Aznar-7/ViandaApp_Front' },
-      { label: 'Backend', url: 'https://github.com/Aznar-7/ViandaApp_Back' }
+      { label: 'Backend', url: 'https://github.com/Aznar-7/ViandaApp_Back' },
     ],
-  },
-  {
-    id: 'agv-studio',
-    title: 'AGV Studio',
-    tagline: {
-      es: 'Startup de desarrollo y consultoría tecnológica.',
-      en: 'Tech development and consulting startup.',
-    },
-    description: {
-      es: 'Startup orientada a la construcción de productos digitales y consultoría para PYMEs. Arquitectura full-stack con foco en sistemas a medida y escalabilidad.',
-      en: 'Startup focused on building digital products and consulting for SMBs. Full-stack architecture emphasizing custom systems and scalability.',
-    },
-    category: 'full-stack',
-    featured: false,
-    status: 'in-development',
-    tech: ['React', 'Django', 'Tailwind CSS', 'PostgreSQL'],
-    architecture: [],
-    image: '/images/projects/agv-studio/cover.webp',
-    gallery: [
-      '/images/projects/agv-studio/screen-1.webp',
-      '/images/projects/agv-studio/screen-2.webp',
-    ],
-    placeholderGradient: null,
-    placeholderIcon: null,
-    liveUrl: 'https://portfolio-agv.vercel.app/',
-    githubUrl: null,
   },
   {
     id: 'camisetas-agv',
     title: 'Camisetas AGV',
     tagline: {
-      es: 'front-end demo de plataforma e-commerce para camisetas de fútbol.',
-      en: 'Front-end demo of an e-commerce platform for football jerseys.',
+      es: 'E-commerce de camisetas de fútbol, mobile first.',
+      en: 'Mobile-first football jersey e-commerce.',
     },
     description: {
-      es: '[Front-End Demo] | Plataforma e-commerce completa para camisetas de fútbol: catálogo dinámico con filtros avanzados, carrito interactivo con persistencia local, simulación de checkout, gestión de talles y stock. Foco en performance y UX mobile-first.',
-      en: '[Front-End Demo] | Complete e-commerce platform for football jerseys: dynamic catalog with advanced filters, interactive cart with local persistence, checkout simulation, size and stock management. Focus on performance and mobile-first UX.',
+      es: 'Demo de frontend para una tienda de camisetas: catálogo con filtros, carrito persistente en el navegador, simulación de checkout y manejo de talles y stock. Foco en performance y en la experiencia mobile.',
+      en: 'Frontend demo for a jersey store: filterable catalog, cart persisted in the browser, checkout simulation and size and stock handling. Focused on performance and the mobile experience.',
     },
     category: 'frontend',
-    featured: false,
     status: 'completed',
     tech: ['React', 'Motion', 'Vite'],
-    architecture: [],
     image: '/images/projects/camisetas-agv/Camisetas2.webp',
     gallery: [
+      '/images/projects/camisetas-agv/Camisetas2.webp',
       '/images/projects/camisetas-agv/screen-1.webp',
       '/images/projects/camisetas-agv/screen-2.webp',
       '/images/projects/camisetas-agv/screen-3.webp',
     ],
-    placeholderGradient: null,
-    placeholderIcon: null,
     liveUrl: 'https://camisetas-app.vercel.app/',
     githubUrl: 'https://github.com/Aznar-7/Camisetas-app',
+  },
+  {
+    id: 'agv-studio',
+    title: 'AGV Studio',
+    tagline: {
+      es: 'Estudio de desarrollo y consultoría para PyMEs.',
+      en: 'Development and consulting studio for SMBs.',
+    },
+    description: {
+      es: 'Emprendimiento propio que construye productos digitales y sistemas a medida para PyMEs, desde el relevamiento hasta el despliegue.',
+      en: 'My own venture building digital products and custom systems for SMBs, from discovery to deployment.',
+    },
+    category: 'full-stack',
+    status: 'in-development',
+    tech: ['React', 'Django', 'Tailwind CSS', 'PostgreSQL'],
+    image: '/images/projects/agv-studio/cover.webp',
+    gallery: [
+      '/images/projects/agv-studio/cover.webp',
+      '/images/projects/agv-studio/screen-1.webp',
+      '/images/projects/agv-studio/screen-2.webp',
+    ],
+    liveUrl: 'https://portfolio-agv.vercel.app/',
+    githubUrl: null,
   },
   {
     id: 'autofull',
     title: 'AutoFull',
     tagline: {
-      es: 'Arduino & Esp32: auto p2wd con multiples sensores y pantalla OLED',
-      en: 'Arduino & Esp32: self-driving car with multiple sensors and OLED display',
+      es: 'Auto autónomo con ESP32, sensores y app de control.',
+      en: 'Autonomous car with ESP32, sensors and a control app.',
     },
     description: {
-      es: '[IoT & Hardware Demo] | Auto autónomo basado en ESP32 y Arduino con control de motores DC, sensor ultrasónico para detección de obstáculos, infrarrojos, sensor de humedad y temperatura y pantalla OLED para visualización de estado. Programación en C++ con FreeRTOS para multitarea y optimización de recursos. El auto es manejado por una app móvil hecha en React Native  para enviar comandos manuales y recibir telemetría en tiempo real.',
-      en: '[IoT & Hardware Demo] | Self-driving car based on ESP32 and Arduino with DC motor control, ultrasonic sensors for obstacle detection, infrared sensors, humidity and temperature sensor, and OLED display for status visualization. Programming in C++ with FreeRTOS for multitasking and resource optimization. The car is controlled by a mobile app made in React Native to send manual commands and receive real-time telemetry.',
+      es: 'Auto autónomo basado en ESP32 y Arduino: control de motores DC, sensor ultrasónico e infrarrojos para esquivar obstáculos, sensor de temperatura y humedad, y pantalla OLED de estado. Firmware en C++ con FreeRTOS para multitarea. Una app en React Native envía comandos manuales y recibe telemetría en tiempo real.',
+      en: 'Autonomous car based on ESP32 and Arduino: DC motor control, ultrasonic and infrared sensors for obstacle avoidance, temperature and humidity sensor, and an OLED status display. C++ firmware on FreeRTOS for multitasking. A React Native app sends manual commands and receives real-time telemetry.',
     },
     category: 'iot',
-    featured: false,
     status: 'completed',
     tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
-    architecture: [],
-    image: '',
-    gallery: [
-
-    ],
-    placeholderGradient: null,
-    placeholderIcon: null,
-    liveUrl: '',
-    githubUrl: 'https://github.com/Aznar-7/AutoFull',
-  },
-  {
-    id: 'Jira_Rag',
-    title: 'Jira Rag',
-    tagline: {
-      es: 'RAG para alimentar un llm en base a las tarjetas de jira de un tablero específico.',
-      en: 'RAG for feeding an LLM based on the cards of a specific Jira board.',
-    },
-    description: {
-      es: '[RAG / IA] | Sistema de Retrieval-Augmented Generation que indexa las tarjetas de un tablero de Jira específico y las usa como contexto para un LLM, permitiendo consultar el estado de un proyecto en lenguaje natural y mantener informados a los supervisores sin que tengan que entrar a Jira.',
-      en: '[RAG / AI] | Retrieval-Augmented Generation system that indexes the cards of a specific Jira board and feeds them as context to an LLM, enabling natural-language queries about project status and keeping supervisors informed without them having to open Jira.',
-    },
-    category: 'ai',
-    featured: false,
-    status: 'completed',
-    tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
-    architecture: [],
-    image: '',
-    gallery: [
-      
-    ],
-    placeholderGradient: null,
-    placeholderIcon: null,
-    liveUrl: '',
-    githubUrl: 'https://github.com/Aznar-7/AutoFull',
-  },
-  {
-    id: 'Echo-spins',
-    title: 'Echo Spins',
-    tagline: {
-      es: "Tocadiscos IOT miniatura, con webapp personalizada. Raspberry pi zero 2w, sensores, motor, nfc y  webapp rapida y ligera con js puro y python flask.",
-      en: "Miniature IOT turntable, with a custom webapp. Raspberry pi zero 2w, sensors, motor, nfc and fast and lightweight webapp with pure js and python flask.",
-    },
-    category: 'iot',
-    featured: false,
-    status: 'completed',
-    tech: ['Python', 'Flask', 'Raspberry Pi', 'NFC', 'JavaScript', 'HTML', 'CSS', 'Linux', '3d Modeling'],
-    architecture: [],
-    image: '',
-    gallery: [],
-    placeholderGradient: null,
-    placeholderIcon: null,
-    liveUrl: '',
-    githubUrl: 'https://github.com/Aznar-7/proyect-ecoRecords-pi',
-
-  }
-
-  /*{
-    id: 'esp32-monitor',
-    title: 'ESP32 Climate Monitor',
-    tagline: {
-      es: 'Monitoreo IoT de temperatura y humedad en tiempo real.',
-      en: 'Real-time IoT temperature and humidity monitoring.',
-    },
-    description: {
-      es: 'Dispositivo IoT basado en ESP32 que publica datos de sensores vía MQTT a un broker local. Backend Django consume el stream, almacena en PostgreSQL y expone una API REST con WebSocket para actualizaciones en tiempo real.',
-      en: 'ESP32-based IoT device publishing sensor data via MQTT to a local broker. Django backend consumes the stream, stores in PostgreSQL, and exposes a REST API with WebSocket for real-time updates.',
-    },
-    category: 'iot',
-    featured: false,
-    status: 'completed',
-    tech: ['C/C++', 'ESP32', 'MQTT', 'Django', 'WebSocket', 'PostgreSQL'],
-    architecture: [],
     image: null,
     gallery: [],
-    placeholderGradient: 'from-teal-900/60 to-transparent',
-    placeholderIcon: 'Cpu',
     liveUrl: null,
-    githubUrl: null,
+    githubUrl: 'https://github.com/Aznar-7/AutoFull',
   },
-  {
-    id: 'pytask-cli',
-    title: 'PyTask CLI',
-    tagline: {
-      es: 'Gestor de tareas y proyectos desde la terminal.',
-      en: 'Terminal-based task and project manager.',
-    },
-    description: {
-      es: 'Herramienta CLI construida con Python y Rich para gestión de proyectos en la terminal. Persistencia con SQLite, soporte para múltiples proyectos, prioridades y exportación de reportes.',
-      en: 'CLI tool built with Python and Rich for terminal-based project management. SQLite persistence, multi-project support, priorities, and report export.',
-    },
-    category: 'cli',
-    featured: false,
-    status: 'completed',
-    tech: ['Python', 'Rich', 'SQLite', 'Click'],
-    architecture: [],
-    image: null,
-    gallery: [],
-    placeholderGradient: 'from-emerald-900/60 to-transparent',
-    placeholderIcon: 'Terminal',
-    liveUrl: null,
-    githubUrl: null,
-  },*/
 ]
 
 export const featuredProject = projects.find((p) => p.featured)
