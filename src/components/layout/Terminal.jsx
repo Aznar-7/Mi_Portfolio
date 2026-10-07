@@ -1,7 +1,8 @@
-﻿import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { site } from '@/data/site'
-import { useLang } from '@/contexts/LanguageContext'
+import { projects } from '@/data/projects'
+import { skillGroups } from '@/data/skills'
 import { useSoundEffects } from '@/contexts/SoundContext'
 
 const PROMPT = 'aznar@portfolio:~$'
@@ -10,7 +11,7 @@ const COMMANDS = {
   help: () => [
     '',
     '  Comandos disponibles',
-    '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
+    '  ─────────────────────────────────────────────────────',
     '  whoami            Identity & role',
     '  skills            Technical stack overview',
     '  ls / ls projects  List all projects',
@@ -32,50 +33,40 @@ const COMMANDS = {
   ],
   apps: () => [
     '',
-    '  Aplicaciones disponibles â€” uso: open <nombre>',
-    '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
-    '  terminal   files     browser   notes     paint',
-    '  monitor    calc      settings  editor',
+    '  Aplicaciones disponibles — uso: open <nombre>',
+    '  ──────────────────────────────────────────────',
+    '  projects   terminal  files     browser   notes     paint',
+    '  monitor    calc      settings  editor    playground',
     '  snake      mines     tetris    doom',
     '',
   ],
   whoami: () => [
     '',
     '  Vicente Aznar',
-    '  Full Stack Developer â€” React Â· Django Â· Oracle Cloud',
-    '  Argentina â€” open to remote & relocation',
+    '  Full Stack Developer — React · Django · Oracle Cloud',
+    '  Argentina — open to remote & relocation',
     '',
   ],
   skills: () => [
     '',
-    '  â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—',
-    '  â•‘           TECHNICAL STACK                â•‘',
-    '  â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
-    '',
-    '  FRONTEND   React 19 Â· Vite Â· Tailwind CSS Â· Motion',
-    '  BACKEND    Django REST Framework Â· Python',
-    '  DATABASE   PostgreSQL Â· SQLite',
-    '  CLOUD      Oracle Cloud Â· Nginx Â· SSL/TLS',
-    '  IOT        ESP32 Â· Arduino Â· MQTT Â· C/C++',
-    '  ACADEMIC   Haskell Â· Prolog',
+    ...skillGroups.flatMap((g) => [`  ${g.label.en.toUpperCase().padEnd(18)} ${g.items.join(', ')}`]),
     '',
   ],
   'ls projects': () => [
     '',
-    '  drwxr-xr-x  utn-hub         [ReactÂ·DjangoÂ·PostgreSQLÂ·OCI]  â˜… featured',
-    '  drwxr-xr-x  agv-studio       [ReactÂ·DjangoÂ·Tailwind]        in-development',
-    '  drwxr-xr-x  camisetas-agv    [ReactÂ·MotionÂ·Vite]            completed',
-    '  drwxr-xr-x  autofull         [ESP32Â·ArduinoÂ·React Native]   completed',
+    ...projects.map((p) =>
+      `  drwxr-xr-x  ${p.id.padEnd(17)} ${`[${p.tech.slice(0, 3).join(', ')}]`.padEnd(34)} ${p.featured ? 'featured' : p.status}`,
+    ),
     '',
-    `  4 projects total â€” use 'contact' to discuss any`,
+    `  ${projects.length} projects total. Use 'contact' to discuss any`,
     '',
   ],
   ls: () => COMMANDS['ls projects'](),
   contact: () => [
     '',
-    `  Email     â†’  ${site.email}`,
-    `  LinkedIn  â†’  linkedin.com/in/vicente-aznar-dev`,
-    `  GitHub    â†’  github.com/Aznar-7`,
+    `  Email     →  ${site.email}`,
+    `  LinkedIn  →  linkedin.com/in/vicente-aznar-dev`,
+    `  GitHub    →  github.com/Aznar-7`,
     '',
     `  Tip: run 'sudo hire' to send a hire request directly`,
     '',
@@ -93,17 +84,17 @@ const COMMANDS = {
   ],
   'cat cv.txt': () => [
     '',
-    '  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
-    '  VICENTE AZNAR â€” Full Stack Developer',
-    '  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•',
+    '  ══════════════════════════════════════════',
+    '  VICENTE AZNAR — Full Stack Developer',
+    '  ══════════════════════════════════════════',
     '',
     '  EXPERIENCIA',
-    '  Frontend Developer @ Porta Hnos (2025 â€” Presente)',
+    '  Full Stack Developer @ Porta Hnos (2025 — Presente)',
     '  · Interfaces internas con React y componentes reutilizables',
     '  · Integraciones con APIs y modernizacion de herramientas existentes',
     '  · Debugging, revision de requerimientos y entregas incrementales',
     '',
-    '  FORMACIÃ“N',
+    '  FORMACIÓN',
     '  Sistemas de Informacion — UTN (2024 — Presente)',
     '  · Sistemas de informacion, procesos, datos, Haskell, Prolog y SDLC',
     '',
@@ -113,19 +104,19 @@ const COMMANDS = {
   neofetch: () => [
     '',
     "         .'::::::::::'.         aznar@ubuntu-dev",
-    "       .'  .:++++++++:.  '.     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€",
+    "       .'  .:++++++++:.  '.     ─────────────────────────",
     "      .  .:++++++++++++:.  .    OS:      Ubuntu 24.04 LTS",
     "     : .:++++++++++++++++:. :   Shell:   bash 5.2",
-    "     '.::++++++++++++++::.'     Uptime:  2025 â€” Presente",
+    "     '.::++++++++++++++::.'     Uptime:  2025 — Presente",
     "      '.::++++++++++::.'        CPU:     Full Stack Dev",
     "        '.::++++++::.'          Lang:    ES native / EN C1",
     "           '.'  '.'             Stack:   React · Django · Linux",
     '',
-    '  Colors:  â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ â–ˆâ–ˆâ–ˆâ–ˆ',
+    '  Colors:  ████ ████ ████ ████ ████ ████',
     '',
   ],
   'uname -a': () => [
-    `  Linux aznar-dev 6.8.0-oracle #1 SMP PREEMPT_DYNAMIC Ubuntu â€” ${new Date().getFullYear()}`,
+    `  Linux aznar-dev 6.8.0-oracle #1 SMP PREEMPT_DYNAMIC Ubuntu — ${new Date().getFullYear()}`,
     '  x86_64 x86_64 x86_64 GNU/Linux (aznar-dev edition)',
     '',
   ],
@@ -158,11 +149,11 @@ const COMMANDS = {
     window.open(`mailto:${site.email}?subject=We want to hire you!`, '_blank');
     return [
       '',
-      '  [sudo] contraseÃ±a para aznar: ****',
-      '  AutenticaciÃ³n correcta.',
-      '  Redirigiendo a protocolo de contrataciÃ³n seguro...',
+      '  [sudo] contraseña para aznar: ****',
+      '  Autenticación correcta.',
+      '  Redirigiendo a protocolo de contratación seguro...',
       '  Iniciando cliente de email...',
-      '  âœ“ Acceso concedido: Acabas de tomar una gran decisiÃ³n.',
+      '  [OK] Acceso concedido: acabás de tomar una gran decisión.',
       '',
     ];
   },
@@ -201,9 +192,9 @@ async function processCommand(raw, setLines, onClose) {
     const appId = APP_MAP[arg]
     if (appId) {
       window.dispatchEvent(new CustomEvent('ubuntu-open-app', { detail: { app: appId } }))
-      return [`  âœ“ Abriendo ${arg}...`, '']
+      return [`  ✓ Abriendo ${arg}...`, '']
     }
-    return [`  open: aplicaciÃ³n no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
+    return [`  open: aplicación no encontrada: '${arg}'`, `  Escribe 'apps' para ver las disponibles`, '']
   }
 
   if (cmd === 'sudo') {
@@ -218,12 +209,12 @@ async function processCommand(raw, setLines, onClose) {
       window.dispatchEvent(new CustomEvent('ubuntu-kernel-panic'));
     }, 1200);
     return [
-      '  [sudo] contraseÃ±a para aznar: ****',
+      '  [sudo] contraseña para aznar: ****',
       '  rm: it is dangerous to operate recursively on "/"',
       '  rm: use --no-preserve-root to override this failsafe',
       '  ...',
       '  Eliminando sistema de archivos...',
-      '  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‘â–‘â–‘â–‘ 87%',
+      '  ██████████████████░░░░ 87%',
       '  !! KERNEL PANIC !!',
       '',
     ];
@@ -237,9 +228,9 @@ async function processCommand(raw, setLines, onClose) {
       const data = await res.json()
       
       const repoLines = data.map(r => {
-        const starStr = r.stargazers_count > 0 ? `  â˜… ${r.stargazers_count}` : ''
+        const starStr = r.stargazers_count > 0 ? `  ★ ${r.stargazers_count}` : ''
         const langStr = r.language ? `  [${r.language}]` : ''
-        return `  â¯ ${r.name.padEnd(20)} ${langStr.padEnd(15)} ${starStr}`
+        return `  ❯ ${r.name.padEnd(20)} ${langStr.padEnd(15)} ${starStr}`
       })
       
       return [
@@ -251,8 +242,8 @@ async function processCommand(raw, setLines, onClose) {
         `  View more at ${site.github}`,
         ''
       ]
-    } catch (err) {
-      return ['  [ERROR] No se pudieron obtener los repositorios. Revisa tu conexiÃ³n =(', '']
+    } catch {
+      return ['  [ERROR] No se pudieron obtener los repositorios. Revisa tu conexión =(', '']
     }
   }
 
@@ -413,7 +404,7 @@ export function Terminal({ onClose, isEmbedded = false }) {
             <button onClick={handleClear} style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ffbd2e', border: 'none', cursor: 'none' }} />
             <div                          style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#28c840' }} />
             <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.05em' }}>
-              aznar-dev â€” bash
+              aznar-dev — bash
             </span>
           </div>
         )}

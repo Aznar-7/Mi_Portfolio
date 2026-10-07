@@ -1,153 +1,44 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ExternalLink } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { ProjectCard } from '@/components/common/ProjectCard'
 import { ProjectModal } from '@/components/common/ProjectModal'
-import { ProgressiveImage } from '@/components/common/ProgressiveImage'
-import { TechTag } from '@/components/common/TechTag'
-import { CategoryIcon } from '@/components/common/CategoryIcon'
 import { projects } from '@/data/projects'
 import { projectCategories } from '@/data/projectCategories'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { l, STATUS_STYLES } from '@/lib/utils'
-import { useSoundEffects } from '@/contexts/SoundContext'
+import { cn, l } from '@/lib/utils'
 
-function FeaturedBentoCard({ project, lang, T, onOpenModal }) {
-  const reduced = useReducedMotion()
-  const { playHover, playClick, playNavigation } = useSoundEffects()
-  const status = STATUS_STYLES[project.status]
-  const statusLabel = T.status?.[project.status] ?? project.status
+// The featured project has its own section above; it is not repeated here.
+const listed = projects.filter((p) => !p.featured)
 
-  return (
-    <motion.div
-      initial={reduced ? false : { opacity: 0, y: 20 }}
-      whileInView={reduced ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-20px' }}
-      transition={{ type: 'spring', stiffness: 180, damping: 24 }}
-      onMouseEnter={playHover}
-      className="group cursor-target relative col-span-1 sm:col-span-2 overflow-hidden rounded-xl border border-[var(--accent)]/15 bg-[var(--bg-surface)] transition-[border-color] hover:border-[var(--accent)]/30"
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent" />
-
-      <div className="flex flex-col sm:flex-row">
-        {/* Left: content */}
-        <div className="flex-1 p-5 sm:p-7">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            {status && (
-              <span
-                className="rounded-full px-2.5 py-1 font-mono text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase"
-                style={{
-                  color: status.color,
-                  backgroundColor: `${status.color}15`,
-                  border: `1px solid ${status.color}28`,
-                }}
-              >
-                {statusLabel}
-              </span>
-            )}
-            <span className="font-mono text-[9px] sm:text-[10px] tracking-wider text-[var(--accent)] uppercase">
-              {T.featured ?? 'featured'}
-            </span>
-          </div>
-
-          <h3 className="mb-2 text-lg sm:text-xl font-bold tracking-tight text-[var(--text-primary)]">
-            {project.title}
-          </h3>
-          <p className="mb-4 text-[12px] sm:text-[13px] leading-relaxed text-[var(--text-secondary)]">
-            {l(project.description, lang)}
-          </p>
-
-          <div className="mb-5 flex flex-wrap gap-1.5">
-            {project.tech.map((t) => <TechTag key={t} name={t} />)}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseEnter={playHover}
-                onClick={playNavigation}
-                className="cursor-target inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent-hover)] hover:shadow-[0_8px_24px_rgba(124,106,247,0.3)]"
-              >
-                <ExternalLink size={13} /> {T.live ?? 'Live'}
-              </a>
-            )}
-            <button
-              onMouseEnter={playHover}
-              onClick={() => { playClick(); onOpenModal(); }}
-              className="cursor-target inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-[var(--text-secondary)] transition-all hover:border-white/[0.12] hover:text-white"
-            >
-              {T.view_details ?? 'Ver detalles'} →
-            </button>
-          </div>
-        </div>
-
-        {/* Right: image + architecture */}
-        <div className="relative h-48 w-full sm:h-auto sm:w-56 sm:flex-shrink-0 overflow-hidden sm:rounded-r-xl">
-          {project.image ? (
-            <ProgressiveImage
-              src={project.image}
-              alt={project.title}
-              wrapperClassName="h-full w-full"
-              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            />
-          ) : (
-            <div className="h-full w-full bg-gradient-to-br from-[var(--accent)]/10 to-transparent" />
-          )}
-
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-            <p className="mb-1.5 font-mono text-[8px] tracking-[0.14em] text-[var(--text-muted)] uppercase">
-              {T.stack ?? 'Stack'}
-            </p>
-            <div className="flex flex-col gap-1">
-              {(project.architecture ?? []).slice(0, 4).map((item, i) => (
-                <p key={i} className="text-[10px] font-semibold text-[var(--accent)]">
-                  {l(item.layer, lang)}
-                </p>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function CategoryFilter({ activeCategory, onSelect, T, lang }) {
-  const { playSelect, playHover } = useSoundEffects()
+function CategoryFilter({ active, onSelect, T, lang }) {
+  const options = [{ id: 'all', label: T.all }, ...projectCategories.map((c) => ({ id: c.id, label: l(c.label, lang) }))]
 
   return (
-    <div className="mb-8 flex flex-wrap justify-center gap-3">
-      <button
-        onClick={() => { if (activeCategory !== 'all') { playSelect(); onSelect('all') } }}
-        onMouseEnter={playHover}
-        className={`cursor-target rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
-          activeCategory === 'all'
-            ? 'border-white/30 bg-white/10 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-            : 'border-white/5 bg-transparent text-white/50 hover:border-white/20 hover:bg-white/[0.03] hover:text-white/90'
-        }`}
-      >
-        {T.all ?? 'Todos'}
-      </button>
-      {projectCategories.map((category) => (
+    <div role="group" aria-label="Filtrar proyectos" className="flex flex-wrap gap-1 rounded-xl border border-[var(--line)] p-1">
+      {options.map(({ id, label }) => (
         <button
-          key={category.id}
-          onClick={() => { if (activeCategory !== category.id) { playSelect(); onSelect(category.id) } }}
-          onMouseEnter={playHover}
-          className={`cursor-target inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
-            activeCategory === category.id
-              ? 'border-white/30 bg-white/10 text-white shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-              : 'border-white/5 bg-transparent text-white/50 hover:border-white/20 hover:bg-white/[0.03] hover:text-white/90'
-          }`}
+          key={id}
+          type="button"
+          onClick={() => onSelect(id)}
+          aria-pressed={active === id}
+          className={cn(
+            'relative rounded-lg px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
+            active === id ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]',
+          )}
         >
-          <CategoryIcon name={category.icon} size={14} />
-          {l(category.label, lang)}
+          {active === id && (
+            <motion.span
+              layoutId="project-filter"
+              className="absolute inset-0 -z-10 rounded-lg bg-white/[0.07]"
+              transition={{ type: 'spring', stiffness: 400, damping: 34 }}
+            />
+          )}
+          {label}
         </button>
       ))}
     </div>
@@ -158,71 +49,63 @@ export function Projects() {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].projects
-  const { playModalOpen, playModalClose } = useSoundEffects()
-  const [selectedProject, setSelectedProject] = useState(null)
-  const [activeCategory, setActiveCategory] = useState('all')
+  const { playModalOpen, playModalClose, playSelect } = useSoundEffects()
+  const [selected, setSelected] = useState(null)
+  const [category, setCategory] = useState('all')
 
-  const openModal  = (p) => { playModalOpen();  setSelectedProject(p) }
-  const closeModal = ()  => { playModalClose(); setSelectedProject(null) }
-
-  const featured    = projects.filter((p) => p.featured)
-  const nonFeatured = projects
-    .filter((p) => !p.featured)
-    .filter((p) => activeCategory === 'all' || p.category === activeCategory)
+  const visible = listed.filter((p) => category === 'all' || p.category === category)
 
   return (
-    <div className="relative overflow-hidden">
+    <>
       <SectionWrapper id="projects">
-        <SectionHeading label={T.label} title={T.title} subtitle={T.subtitle} />
+        <SectionHeading title={T.title} subtitle={T.subtitle}>
+          <CategoryFilter
+            active={category}
+            onSelect={(id) => { if (id !== category) { playSelect(); setCategory(id) } }}
+            T={T}
+            lang={lang}
+          />
+        </SectionHeading>
 
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {featured.map((p) => (
-            <FeaturedBentoCard
-              key={p.id}
-              project={p}
-              lang={lang}
-              T={T}
-              onOpenModal={() => openModal(p)}
-            />
-          ))}
-        </div>
-
-        <CategoryFilter activeCategory={activeCategory} onSelect={setActiveCategory} T={T} lang={lang} />
-
-        <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <AnimatePresence mode="popLayout">
-            {nonFeatured.map((project, i) => (
-              <motion.div
-                layout
-                key={project.id}
-                initial={reduced ? false : { opacity: 0, y: 20 }}
-                animate={reduced ? {} : { opacity: 1, y: 0 }}
-                exit={reduced ? {} : { opacity: 0, scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 180, damping: 24, delay: i * 0.05 }}
-              >
-                <ProjectCard
-                  project={project}
-                  lang={lang}
-                  T={T}
-                  onClick={() => openModal(project)}
-                />
-              </motion.div>
-            ))}
+        <motion.ul layout={!reduced} className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visible.map((project) => {
+              const wide = project.highlight
+              return (
+                <motion.li
+                  layout={!reduced}
+                  key={project.id}
+                  className={wide ? 'md:col-span-2' : undefined}
+                  initial={reduced ? false : { opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={reduced ? undefined : { opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <ProjectCard
+                    project={project}
+                    lang={lang}
+                    T={T}
+                    wide={wide}
+                    onOpen={() => { playModalOpen(); setSelected(project) }}
+                  />
+                </motion.li>
+              )
+            })}
           </AnimatePresence>
-        </motion.div>
+        </motion.ul>
       </SectionWrapper>
 
       <AnimatePresence>
-        {selectedProject && (
+        {selected && (
           <ProjectModal
-            key={selectedProject.id}
-            project={selectedProject}
+            key={selected.id}
+            project={selected}
             lang={lang}
             T={T}
-            onClose={closeModal}
+            onClose={() => { playModalClose(); setSelected(null) }}
           />
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }

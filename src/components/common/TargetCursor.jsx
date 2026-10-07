@@ -9,7 +9,9 @@ const TargetCursor = ({
   hoverDuration = 0.2,
   parallaxOn = true
 }) => {
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  // Same query the global CSS uses to hide the system cursor, so the two
+  // can never disagree (touch-screen laptops still have a fine pointer)
+  const [isTouchDevice] = useState(() => !window.matchMedia('(pointer: fine)').matches);
   const cursorRef = useRef(null);
   const cornersRef = useRef(null);
   const spinTl = useRef(null);
@@ -19,8 +21,6 @@ const TargetCursor = ({
   const targetCornerPositionsRef = useRef(null);
   const tickerFnRef = useRef(null);
   const activeStrengthRef = useRef(0);
-
-  const isMobile = false;
 
   const constants = useMemo(
     () => ({
@@ -41,14 +41,8 @@ const TargetCursor = ({
   }, []);
 
   useEffect(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    setIsTouchDevice(isTouch);
-  }, []);
-
-  useEffect(() => {
     if (isTouchDevice || !cursorRef.current) return;
 
-    const originalCursor = document.body.style.cursor;
     if (hideDefaultCursor) {
       document.body.style.cursor = 'none';
     }
@@ -121,8 +115,14 @@ const TargetCursor = ({
 
     tickerFnRef.current = tickerFn;
 
-    const moveHandler = e => moveCursor(e.clientX, e.clientY);
+    // Hidden until the pointer first moves, and while it is outside the window
+    const moveHandler = e => {
+      cursor.style.opacity = '1';
+      moveCursor(e.clientX, e.clientY);
+    };
+    const hide = () => { cursor.style.opacity = '0'; };
     window.addEventListener('mousemove', moveHandler);
+    document.documentElement.addEventListener('mouseleave', hide);
 
     const scrollHandler = () => {
       if (!activeTarget || !cursorRef.current) return;
@@ -136,7 +136,17 @@ const TargetCursor = ({
         if (currentLeaveHandler) {
           currentLeaveHandler();
         }
+        return;
       }
+
+      const rect = activeTarget.getBoundingClientRect();
+      const { borderWidth, cornerSize } = constants;
+      targetCornerPositionsRef.current = [
+        { x: rect.left - borderWidth, y: rect.top - borderWidth },
+        { x: rect.right + borderWidth - cornerSize, y: rect.top - borderWidth },
+        { x: rect.right + borderWidth - cornerSize, y: rect.bottom + borderWidth - cornerSize },
+        { x: rect.left - borderWidth, y: rect.bottom + borderWidth - cornerSize }
+      ];
     };
     window.addEventListener('scroll', scrollHandler, { passive: true });
 
@@ -282,6 +292,7 @@ const TargetCursor = ({
       }
 
       window.removeEventListener('mousemove', moveHandler);
+      document.documentElement.removeEventListener('mouseleave', hide);
       window.removeEventListener('mouseover', enterHandler);
       window.removeEventListener('scroll', scrollHandler);
       window.removeEventListener('mousedown', mouseDownHandler);
@@ -313,7 +324,7 @@ const TargetCursor = ({
   if (isTouchDevice) return null;
 
   return (
-    <div ref={cursorRef} className="target-cursor-wrapper" style={{ display: 'block', visibility: 'visible', zIndex: 9999999, pointerEvents: 'none' }}>
+    <div ref={cursorRef} className="target-cursor-wrapper" style={{ opacity: 0, transition: 'opacity 0.2s', zIndex: 9999999 }} aria-hidden="true">
       <div ref={dotRef} className="target-cursor-dot" />
       <div className="target-cursor-corner corner-tl" />
       <div className="target-cursor-corner corner-tr" />

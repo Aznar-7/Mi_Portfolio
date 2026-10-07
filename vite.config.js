@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import { fileURLToPath } from 'node:url'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
@@ -13,13 +13,13 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Vicente Aznar',
         short_name: 'Vicente',
-        description: 'Vicente Aznar Frontend Developer Portfolio',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        description: 'Vicente Aznar, Full Stack Developer',
+        theme_color: '#09090c',
+        background_color: '#09090c',
         display: 'standalone',
         icons: [
           {
@@ -44,20 +44,17 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
       output: {
+        // Only pin React itself; everything else is split by Rollup so lazy
+        // features (OS, html2canvas, gsap, WebGL backgrounds) stay out of the initial load
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) return 'vendor'
-            if (id.includes('framer-motion')) return 'framer-motion'
-            if (id.includes('lucide-react') || id.includes('@icons-pack/react-simple-icons')) return 'icons'
-            return 'modules'
-          }
-        }
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react'
+        },
       }
     }
   }

@@ -1,111 +1,122 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, Download, Languages } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { Check, ChevronDown, Download, Languages, Package } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { site } from '@/data/site'
+import { cn } from '@/lib/utils'
 
-function downloadResume(resume) {
+function downloadFile({ url, filename }) {
   const anchor = document.createElement('a')
-  anchor.href = resume.url
-  anchor.download = resume.filename
+  anchor.href = url
+  anchor.download = filename
   document.body.appendChild(anchor)
   anchor.click()
   anchor.remove()
 }
 
-export function ResumeDownloadMenu({ className = '', onDownload }) {
+const LABELS = {
+  es: { main: 'Descargar CV', done: 'Descargado', es: 'CV en español', en: 'CV en inglés', both: 'Ambos (.zip)', choose: 'Elegir idioma del CV' },
+  en: { main: 'Download CV', done: 'Downloaded', es: 'Spanish CV', en: 'English CV', both: 'Both (.zip)', choose: 'Choose resume language' },
+}
+
+const ITEM = 'flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]'
+
+export function ResumeDownloadMenu({ className = '' }) {
   const [open, setOpen] = useState(false)
+  const [done, setDone] = useState(false)
   const rootRef = useRef(null)
+  const timer = useRef(0)
   const { lang } = useLang()
+  const { playHover, playClick, playSuccess, playSelect } = useSoundEffects()
+  const L = LABELS[lang]
 
   useEffect(() => {
-    const closeOnOutsideClick = (event) => {
-      if (!rootRef.current?.contains(event.target)) setOpen(false)
-    }
-    const closeOnEscape = (event) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-
-    document.addEventListener('pointerdown', closeOnOutsideClick)
-    document.addEventListener('keydown', closeOnEscape)
+    const onPointer = (e) => { if (!rootRef.current?.contains(e.target)) setOpen(false) }
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('pointerdown', closeOnOutsideClick)
-      document.removeEventListener('keydown', closeOnEscape)
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+      clearTimeout(timer.current)
     }
   }, [])
 
-  const download = (language) => {
-    downloadResume(site.resumes[language])
-    onDownload?.()
+  const download = (file) => {
+    downloadFile(file)
+    playSuccess()
     setOpen(false)
+    setDone(true)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setDone(false), 1800)
   }
-
-  const downloadBoth = () => {
-    downloadResume(site.resumesBundle)
-    onDownload?.()
-    setOpen(false)
-  }
-
-  const labels = lang === 'es'
-    ? { main: 'Descargar CV', es: 'CV en español', en: 'CV en inglés', both: 'Descargar ambos' }
-    : { main: 'Download CV', es: 'Spanish CV', en: 'English CV', both: 'Download both' }
 
   return (
-    <div ref={rootRef} className={`relative inline-flex max-w-full ${className}`}>
+    <div ref={rootRef} className={cn('relative inline-flex max-w-full', className)}>
       <button
         type="button"
-        onClick={() => download(lang)}
-        className="group flex min-w-0 flex-1 items-center justify-center gap-2 rounded-l-xl border border-r-0 border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] active:translate-y-0 sm:px-5"
+        onClick={() => download(site.resumes[lang])}
+        onMouseEnter={playHover}
+        className="group flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-l-[10px] border border-r-0 border-[var(--line-strong)] px-5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.04] active:scale-[0.98]"
       >
-        <Download size={16} className="shrink-0 text-white/65 transition-colors group-hover:text-white" />
-        <span className="min-w-0 truncate">{labels.main}</span>
-        <span className="shrink-0 rounded bg-white/[0.08] px-1.5 py-0.5 font-mono text-[9px] uppercase text-white/50">
-          {lang}
+        <span className="relative h-4 w-4 shrink-0 overflow-hidden">
+          <AnimatePresence initial={false} mode="popLayout">
+            {done ? (
+              <motion.span key="done" className="absolute inset-0 text-emerald-300"
+                initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
+                <Check size={16} aria-hidden="true" />
+              </motion.span>
+            ) : (
+              <motion.span key="idle" className="absolute inset-0 text-[var(--text-secondary)]"
+                initial={{ y: -16 }} animate={{ y: 0 }} exit={{ y: 16 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
+                <Download size={16} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-y-0.5" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </span>
-      </button>
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-label={lang === 'es' ? 'Elegir idioma del CV' : 'Choose resume language'}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="flex shrink-0 items-center justify-center rounded-r-xl border border-white/10 bg-white/[0.06] px-3 text-white/65 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] hover:text-white active:translate-y-0"
-      >
-        <ChevronDown size={15} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className="min-w-0 truncate" aria-live="polite">{done ? L.done : L.main}</span>
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-50 min-w-0 overflow-hidden rounded-xl border border-white/10 bg-[#11121a]/95 p-1.5 shadow-2xl backdrop-blur-xl sm:left-0 sm:right-auto sm:min-w-[13rem]"
-        >
-          {[
-            { id: 'es', label: labels.es },
-            { id: 'en', label: labels.en },
-          ].map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => download(option.id)}
-              role="menuitem"
-              className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
-            >
-              <Languages size={14} className="shrink-0 text-[var(--accent-hover)]" />
-              <span className="min-w-0 flex-1 truncate">{option.label}</span>
-              {lang === option.id && <Check size={13} className="shrink-0 text-emerald-400" />}
-            </button>
-          ))}
-          <div className="my-1 h-px bg-white/[0.07]" />
-          <button
-            type="button"
-            onClick={downloadBoth}
-            role="menuitem"
-            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+      <button
+        type="button"
+        onClick={() => { playClick(); setOpen((v) => !v) }}
+        onMouseEnter={playHover}
+        aria-label={L.choose}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex h-11 shrink-0 items-center justify-center rounded-r-[10px] border border-[var(--line-strong)] px-3 text-[var(--text-secondary)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
+      >
+        <ChevronDown size={15} aria-hidden="true" className={cn('transition-transform duration-300', open && 'rotate-180')} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="menu"
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute left-0 top-[calc(100%+0.5rem)] z-50 min-w-[13rem] origin-top-left overflow-hidden rounded-xl border border-[var(--line-strong)] bg-[var(--bg-elevated)] p-1.5 shadow-2xl"
           >
-            <Download size={14} className="shrink-0 text-[var(--accent-hover)]" />
-            <span className="min-w-0 truncate">{labels.both}</span>
-          </button>
-        </div>
-      )}
+            {['es', 'en'].map((id) => (
+              <button key={id} type="button" role="menuitem" onMouseEnter={playSelect} onClick={() => download(site.resumes[id])} className={ITEM}>
+                <Languages size={14} aria-hidden="true" className="shrink-0 text-[var(--text-muted)]" />
+                <span className="min-w-0 flex-1 truncate">{L[id]}</span>
+                {lang === id && <Check size={13} aria-hidden="true" className="shrink-0 text-[var(--accent-hover)]" />}
+              </button>
+            ))}
+            <div className="my-1 h-px bg-[var(--line)]" />
+            <button type="button" role="menuitem" onMouseEnter={playSelect} onClick={() => download(site.resumesBundle)} className={ITEM}>
+              <Package size={14} aria-hidden="true" className="shrink-0 text-[var(--text-muted)]" />
+              <span className="min-w-0 truncate">{L.both}</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

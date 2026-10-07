@@ -1,20 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { Wind, Thermometer, Umbrella, Sunrise, Loader2, AlertTriangle } from 'lucide-react';
+import { WeatherIcon } from './WeatherIcon';
 
 // ── Weather helpers ──────────────────────────────────────────────
 const WMO = {
-  emoji: (c) => {
-    if (c === 0)  return '☀️';
-    if (c <= 2)   return '🌤️';
-    if (c <= 3)   return '⛅';
-    if (c <= 48)  return '🌫️';
-    if (c <= 55)  return '🌦️';
-    if (c <= 67)  return '🌧️';
-    if (c <= 77)  return '❄️';
-    if (c <= 82)  return '🌦️';
-    if (c <= 99)  return '⛈️';
-    return '🌤️';
-  },
   label: (c) => {
     if (c === 0)  return 'Despejado';
     if (c <= 2)   return 'Mayormente despejado';
@@ -39,11 +29,11 @@ function getBg(code, isDay) {
   return ['#1a6fc4', '#2196f3', '#64b5f6'];
 }
 
-function MetricCard({ emoji, label, value, sub }) {
+function MetricCard({ icon: Icon, label, value, sub }) {
   return (
     <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl p-4 border border-white/[0.1] flex flex-col gap-2">
       <div className="flex items-center gap-1.5 text-white/50 text-[10px] uppercase tracking-widest font-semibold">
-        <span>{emoji}</span>
+        <Icon size={12} aria-hidden="true" />
         <span>{label}</span>
       </div>
       <div className="text-2xl font-semibold text-white leading-none">{value}</div>
@@ -70,7 +60,6 @@ export function WeatherApp() {
   const [data, setData]       = useState(null);
   const [error, setError]     = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView]       = useState('main'); // 'main' | 'forecast'
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -135,13 +124,7 @@ export function WeatherApp() {
   if (loading) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-[#1a4a8a]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-          className="text-4xl"
-        >
-          🌀
-        </motion.div>
+        <Loader2 size={32} className="animate-spin text-white/60" aria-hidden="true" />
       </div>
     );
   }
@@ -150,7 +133,7 @@ export function WeatherApp() {
   if (error) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center bg-[#1a2f45] text-white p-6 gap-4">
-        <span className="text-4xl">⚠️</span>
+        <AlertTriangle size={32} className="text-amber-300" aria-hidden="true" />
         <p className="text-sm text-white/60 text-center">{error}</p>
         <button
           onClick={() => fetchWeather(-34.6037, -58.3816)}
@@ -204,16 +187,14 @@ export function WeatherApp() {
           </p>
         </div>
 
-        {/* ── Big emoji ── */}
+        {/* ── Current condition ── */}
         <motion.div
           className="flex justify-center py-3"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 180, damping: 16, delay: 0.1 }}
         >
-          <span className="text-[72px] drop-shadow-2xl" style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}>
-            {WMO.emoji(current.weathercode)}
-          </span>
+          <WeatherIcon code={current.weathercode} size={72} strokeWidth={1.25} className="text-white drop-shadow-2xl" />
         </motion.div>
 
         {/* ── Hourly strip ── */}
@@ -231,7 +212,7 @@ export function WeatherApp() {
                 className="flex flex-col items-center gap-1.5 flex-shrink-0 min-w-[44px]"
               >
                 <span className="text-[11px] text-white/50 font-medium">{h.label}</span>
-                <span className="text-xl">{WMO.emoji(h.code)}</span>
+                <WeatherIcon code={h.code} size={20} className="text-white/90" />
                 <span className="text-[13px] font-semibold">{Math.round(h.temp)}°</span>
               </motion.div>
             ))}
@@ -249,7 +230,7 @@ export function WeatherApp() {
               className="flex items-center px-4 py-2.5 border-b border-white/[0.06] last:border-0"
             >
               <span className="w-10 text-[13px] font-medium text-white/80 capitalize">{dayLabel(dateStr, idx)}</span>
-              <span className="text-lg mx-2">{WMO.emoji(daily.weathercode[idx])}</span>
+              <WeatherIcon code={daily.weathercode[idx]} size={18} className="mx-2 text-white/90" />
               {daily.precipitation_probability_mean?.[idx] > 20 && (
                 <span className="text-[10px] text-blue-300 font-semibold mr-2 w-7">
                   {daily.precipitation_probability_mean[idx]}%
@@ -270,22 +251,22 @@ export function WeatherApp() {
 
         {/* ── Metrics grid ── */}
         <div className="mx-4 mb-5 grid grid-cols-2 gap-2.5">
-          <MetricCard emoji="💨" label="Viento" value={`${Math.round(current.windspeed)} km/h`} />
+          <MetricCard icon={Wind} label="Viento" value={`${Math.round(current.windspeed)} km/h`} />
           <MetricCard
-            emoji="🌡️"
+            icon={Thermometer}
             label="Sensación"
             value={feelsLike !== undefined ? `${Math.round(feelsLike)}°` : `${Math.round(current.temperature)}°`}
             sub={feelsLike !== undefined && feelsLike < current.temperature - 2 ? 'Más frío de lo que parece' : undefined}
           />
           {daily.precipitation_probability_mean?.[0] !== undefined && (
             <MetricCard
-              emoji="🌂"
+              icon={Umbrella}
               label="Prob. lluvia"
               value={`${daily.precipitation_probability_mean[0]}%`}
               sub={daily.precipitation_probability_mean[0] > 60 ? 'Lleva paraguas' : undefined}
             />
           )}
-          <MetricCard emoji="🌅" label="Momento" value={isDay ? 'Día' : 'Noche'} sub={`Zona ${Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[1] || 'local'}`} />
+          <MetricCard icon={Sunrise} label="Momento" value={isDay ? 'Día' : 'Noche'} sub={`Zona ${Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[1] || 'local'}`} />
         </div>
       </div>
     </div>
