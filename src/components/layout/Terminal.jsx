@@ -35,7 +35,7 @@ const COMMANDS = {
     '',
     '  Aplicaciones disponibles — uso: open <nombre>',
     '  ──────────────────────────────────────────────',
-    '  terminal   files     browser   notes     paint',
+    '  projects   terminal  files     browser   notes     paint',
     '  monitor    calc      settings  editor    playground',
     '  snake      mines     tetris    doom',
     '',

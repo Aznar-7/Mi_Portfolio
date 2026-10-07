@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Terminal as TerminalWindow } from '@/components/layout/Terminal';
-import { TerminalSquare, FolderOpen, Globe, Settings as SettingsIcon, Power, Code2, Palette, Gamepad2, Activity, Calculator as CalcIcon, StickyNote as StickyNoteIcon, Bomb, Bug, Blocks, Shell, Music, Cloud, Sparkles } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { TerminalSquare, FolderOpen, Globe, Settings as SettingsIcon, Power, Code2, Palette, Gamepad2, Activity, Calculator as CalcIcon, StickyNote as StickyNoteIcon, Bomb, Bug, Blocks, Shell, Music, Cloud, Sparkles, LayoutGrid, Hand } from 'lucide-react';
 import { AppDrawer } from './ubuntu/AppDrawer';
 import { MusicPlayer } from './ubuntu/MusicPlayer';
 import { WeatherApp } from './ubuntu/WeatherApp';
@@ -14,6 +13,8 @@ import { BrowserApp } from './ubuntu/apps/BrowserApp';
 import { Calculator } from './ubuntu/apps/Calculator';
 import { DoomApp } from './ubuntu/apps/DoomApp';
 import { PlaygroundApp } from './ubuntu/apps/PlaygroundApp';
+import { ProjectsApp } from './ubuntu/apps/ProjectsApp';
+import { WelcomeApp } from './ubuntu/apps/WelcomeApp';
 import { EditorApp } from './ubuntu/apps/EditorApp';
 import { FilesApp } from './ubuntu/apps/FilesApp';
 import { MinesweeperGame } from './ubuntu/apps/MinesweeperGame';
@@ -39,17 +40,23 @@ import { useWeather } from './ubuntu/useWeather';
 import { Window } from './ubuntu/shell/Window';
 import { WALLPAPERS } from './ubuntu/wallpapers';
 
+// Full boot sequence only the first time per session; afterwards straight to login
+const BOOTED_KEY = 'ubuntu_booted';
+const hasBooted = () => { try { return sessionStorage.getItem(BOOTED_KEY) === '1'; } catch { return false; } };
+
 export function UbuntuOS({ onClose }) {
-  const { playOpenApp, playClick, playCloseApp, isMuted, toggleMute } = useSoundEffects();
+  const { playOpenApp, playClick, playCloseApp, playSwipe, isMuted, toggleMute } = useSoundEffects();
   const { lang } = useLang();
   const weather = useWeather();
-  const [screen,   setScreen]   = useState('boot');
+  const [screen,   setScreen]   = useState(() => (hasBooted() ? 'login' : 'boot'));
   const [wallpaper, setWallpaper] = useState(0);
   const desktopRef = useRef(null);
   const osRootRef = useRef(null);
 
   const [wins, setWins] = useState({
     terminal: { open: true,  min: false, max: false },
+    welcome:  { open: false, min: false, max: false },
+    projects: { open: false, min: false, max: false },
     files:    { open: false, min: false, max: false },
     browser:  { open: false, min: false, max: false },
     settings: { open: false, min: false, max: false },
@@ -69,7 +76,7 @@ export function UbuntuOS({ onClose }) {
   });
   const [focused, setFocused] = useState('terminal');
   const zRef = useRef(100);
-  const [zMap, setZMap] = useState({ terminal:15, files:14, browser:13, settings:12, editor:11, monitor:10, snake:9, mines:8, calc:7, tetris:6, notes:5, doom:4, paint:3, music:2, weather:1, pdf:0, playground:0 });
+  const [zMap, setZMap] = useState({ terminal:15, files:14, browser:13, settings:12, editor:11, monitor:10, snake:9, mines:8, calc:7, tetris:6, notes:5, doom:4, paint:3, music:2, weather:1, pdf:0, playground:0, projects:0, welcome:0 });
   const [ctxMenu,    setCtxMenu]    = useState(null);
   const [gamePicker, setGamePicker] = useState(false);
   const [powerMenu,  setPowerMenu]  = useState(false);
@@ -113,6 +120,7 @@ export function UbuntuOS({ onClose }) {
   const takeScreenshot = useCallback(async () => {
     if (!osRootRef.current) return;
     try {
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(osRootRef.current, {
         useCORS: true,
         allowTaint: false,
@@ -257,8 +265,8 @@ export function UbuntuOS({ onClose }) {
   const focusWin = (id) => { zRef.current += 1; setZMap(p => ({ ...p, [id]: zRef.current })); setFocused(id); };
   const openApp  = (id, fileData = null) => { playOpenApp(); setWins(p => ({ ...p, [id]: { ...p[id], open: true, min: false, ...(fileData !== null ? { fileData } : {}) } })); setWinWorkspace(p => ({ ...p, [id]: workspace })); focusWin(id); };
   const closeApp = (id) => { playCloseApp(); if (id === 'music') setNowPlaying(null); setWins(p => ({ ...p, [id]: { ...p[id], open: false, min: false } })); };
-  const minApp   = (id) => setWins(p => ({ ...p, [id]: { ...p[id], min: true } }));
-  const toggleMax = (id) => setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } }));
+  const minApp   = (id) => { playSwipe(); setWins(p => ({ ...p, [id]: { ...p[id], min: true } })); };
+  const toggleMax = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], max: !p[id].max } })); };
   const restoreApp = (id) => { playClick(); setWins(p => ({ ...p, [id]: { ...p[id], min: false } })); focusWin(id); };
 
   // Power actions
@@ -288,6 +296,7 @@ export function UbuntuOS({ onClose }) {
   }, [screen, suspended, screensaver]);
 
   const DOCK_APPS = [
+    { id: 'projects', label: 'Proyectos',       icon: LayoutGrid },
     { id: 'terminal', label: 'Terminal',        icon: TerminalSquare },
     { id: 'files',    label: 'Archivos',         icon: FolderOpen },
     { id: 'browser',  label: 'Firefox',          icon: Globe },
@@ -319,6 +328,8 @@ export function UbuntuOS({ onClose }) {
 
   const WIN_CFG = {
     terminal: { title: 'aznar@dev: ~',                     w: 750, h: 490, top: 40,  left: 60  },
+    welcome:  { title: 'Bienvenido',                        w: 640, h: 540, top: 30,  left: 180 },
+    projects: { title: 'Proyectos',                         w: 820, h: 560, top: 25,  left: 110 },
     files:    { title: 'Archivos — Inicio',                 w: 780, h: 510, top: 30,  left: 90  },
     browser:  { title: 'Firefox',                           w: 820, h: 530, top: 20,  left: 70  },
     settings: { title: 'Configuración',                     w: 680, h: 490, top: 50,  left: 110 },
@@ -354,8 +365,18 @@ export function UbuntuOS({ onClose }) {
       }} />
     </AnimatePresence>
   );
-  if (screen === 'boot')  return <AnimatePresence mode="wait"><BootScreen  key="boot"  onDone={() => setScreen('login')} /></AnimatePresence>;
-  if (screen === 'login') return <AnimatePresence mode="wait"><LoginScreen key="login" onLogin={() => { setScreen('desktop'); setTimeout(() => { addNotif('Bienvenido', `Sesión iniciada como ${site.name}`); }, 600); setTimeout(() => addNotif('Terminal listo', "Escribe 'help' para ver comandos disponibles"), 2200); }} wallpaperBg={wallpaperBg} /></AnimatePresence>;
+  const finishBoot = () => {
+    try { sessionStorage.setItem(BOOTED_KEY, '1'); } catch { /* storage blocked */ }
+    setScreen('login');
+  };
+  const handleLogin = () => {
+    setScreen('desktop');
+    setTimeout(() => openApp('welcome'), 450);
+    setTimeout(() => addNotif('Sesión iniciada', `Hola, soy ${site.name.split(' ')[0]}. Explorá lo que quieras.`), 900);
+  };
+
+  if (screen === 'boot')  return <AnimatePresence mode="wait"><BootScreen  key="boot"  onDone={finishBoot} /></AnimatePresence>;
+  if (screen === 'login') return <AnimatePresence mode="wait"><LoginScreen key="login" onLogin={handleLogin} wallpaperBg={wallpaperBg} /></AnimatePresence>;
 
   return (
     <motion.div ref={osRootRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 0.25 }}
@@ -364,7 +385,7 @@ export function UbuntuOS({ onClose }) {
       onClick={() => { setCtxMenu(null); setQuickPanel(false); setCalOpen(false); setNotifCenter(false); setDockCtx(null); }}
       onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY }); }}
     >
-      <TopBar time={time} date={date} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={setWorkspace} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} onTrayClick={() => setQuickPanel(v => !v)} onCalendarClick={() => { setCalOpen(v => !v); setNotifCenter(false); }} onBellClick={() => { setNotifCenter(v => !v); setCalOpen(false); setUnread(0); }} unread={unread} />
+      <TopBar time={time} date={date} onExit={onClose} onPower={() => setPowerMenu(true)} onActivities={() => setAppDrawer(v => !v)} nowPlaying={nowPlaying} workspace={workspace} onWorkspaceChange={(w) => { if (w !== workspace) playSwipe(); setWorkspace(w); }} onScreenshot={takeScreenshot} weather={weather} onWeatherClick={() => openApp('weather')} onTrayClick={() => setQuickPanel(v => !v)} onCalendarClick={() => { setCalOpen(v => !v); setNotifCenter(false); }} onBellClick={() => { setNotifCenter(v => !v); setCalOpen(false); setUnread(0); }} unread={unread} />
 
       {/* Quick settings panel */}
       <AnimatePresence>
@@ -514,7 +535,9 @@ export function UbuntuOS({ onClose }) {
           </AnimatePresence>
 
           {/* Main Apps */}
-          <DesktopIcon icon={FolderOpen}     label="Proyectos" top={20}  left={20} constraintsRef={desktopRef} onClick={() => openApp('files')} />
+          <DesktopIcon icon={LayoutGrid}     label="Proyectos" top={20}  left={20} constraintsRef={desktopRef} onClick={() => openApp('projects')} />
+          <DesktopIcon icon={FolderOpen}     label="Archivos"  top={200} left={200} constraintsRef={desktopRef} onClick={() => openApp('files')} />
+          <DesktopIcon icon={Hand}           label="Bienvenida" top={290} left={200} constraintsRef={desktopRef} onClick={() => openApp('welcome')} />
           <DesktopIcon icon={TerminalSquare} label="Terminal"  top={110} left={20} constraintsRef={desktopRef} onClick={() => openApp('terminal')} />
           <DesktopIcon icon={Globe}          label="Firefox" top={200} left={20} constraintsRef={desktopRef} onClick={() => openApp('browser')} />
           <DesktopIcon icon={StickyNoteIcon}  label="Notas"     top={290} left={20} constraintsRef={desktopRef} onClick={() => openApp('notes')} />
@@ -577,27 +600,20 @@ export function UbuntuOS({ onClose }) {
             )}
           </AnimatePresence>
 
-          <motion.div
-            key={workspace}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.15 }}
-            className="absolute inset-0 pointer-events-none"
-          >
+          {/* Windows stay mounted across minimize and workspace switches so app
+              state survives; inactive ones are hidden by the Window itself */}
+          <div className="absolute inset-0 pointer-events-none">
             <AnimatePresence>
               {Object.entries(wins).map(([id, win]) => {
                 if (!win.open) return null;
-                // Keep music mounted when minimized so audio keeps playing; hide with CSS instead
-                if (win.min && id !== 'music') return null;
-                if ((winWorkspace[id] ?? 0) !== workspace) return null;
                 const cfg = WIN_CFG[id];
-                const isMusicHidden = id === 'music' && win.min;
+                const hidden = win.min || (winWorkspace[id] ?? 0) !== workspace;
                 return (
                   <Window key={id} title={id === 'editor' ? `${win.fileData?.name || 'Untitled'} — Editor` : cfg.title}
                     zIndex={zMap[id]} isFocused={focused===id} isMaximized={win.max} isMobile={isMobile}
                     defaultTop={cfg.top} defaultLeft={cfg.left} defaultW={cfg.w} defaultH={cfg.h}
                     onFocus={() => focusWin(id)} onClose={() => closeApp(id)} onMinimize={() => minApp(id)} onMaximize={() => toggleMax(id)}
-                    isHidden={isMusicHidden}
+                    isHidden={hidden}
                   >
                     {id === 'terminal' && <TerminalWindow onClose={() => closeApp(id)} isEmbedded />}
                     {id === 'files'    && <FilesApp onOpenFile={(f) => { if (f.isPdf) openApp('pdf'); else openApp('editor', f); }} lang={lang} />}
@@ -616,11 +632,13 @@ export function UbuntuOS({ onClose }) {
                     {id === 'music'    && <MusicPlayer onNowPlaying={setNowPlaying} />}
                     {id === 'weather'  && <WeatherApp />}
                     {id === 'playground' && <PlaygroundApp />}
+                    {id === 'projects' && <ProjectsApp lang={lang} />}
+                    {id === 'welcome'  && <WelcomeApp onOpen={(app) => (app === 'games' ? setGamePicker(true) : openApp(app))} onExit={onClose} />}
                   </Window>
                 );
               })}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
           <AnimatePresence>
             {appDrawer && (

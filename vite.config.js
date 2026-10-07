@@ -50,14 +50,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        // Only pin React itself; everything else is split by Rollup so lazy
+        // features (OS, html2canvas, gsap, WebGL backgrounds) stay out of the initial load
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) return 'vendor'
-            if (id.includes('framer-motion') || id.includes('/motion')) return 'motion'
-            if (id.includes('lucide-react') || id.includes('@icons-pack/react-simple-icons')) return 'icons'
-            return 'modules'
-          }
-        }
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react'
+        },
       }
     }
   }

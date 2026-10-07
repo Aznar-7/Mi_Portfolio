@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { WeatherIcon } from '../WeatherIcon';
-import { Power, Wifi, BatteryFull, Volume2, RefreshCw, Moon, Camera, Bell } from 'lucide-react';
+import { ArrowLeft, Power, Wifi, BatteryFull, Volume2, RefreshCw, Moon, Camera, Bell } from 'lucide-react';
 
 export function CalendarPopup() {
   const now = new Date();
@@ -123,7 +123,7 @@ export function PowerMenu({ onShutdown, onRestart, onSuspend, onCancel }) {
   )
 }
 
-export function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick, onTrayClick, onCalendarClick, onBellClick, unread }) {
+export function TopBar({ time, date, onExit, onPower, onActivities, nowPlaying, workspace, onWorkspaceChange, onScreenshot, weather, onWeatherClick, onTrayClick, onCalendarClick, onBellClick, unread }) {
   return (
     <div className="h-7 w-full bg-black/75 flex items-center justify-between px-4 text-white/85 text-[12px] font-medium z-50 backdrop-blur-sm flex-shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -132,6 +132,14 @@ export function TopBar({ time, date, onPower, onActivities, nowPlaying, workspac
           className="hover:text-white transition-colors cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded"
         >
           Activities
+        </button>
+        <button
+          onClick={onExit}
+          title="Volver al portfolio (Ctrl + Alt + T)"
+          className="flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-white/80 transition-colors hover:bg-[#E95420] hover:text-white"
+        >
+          <ArrowLeft size={12} aria-hidden="true" />
+          Portfolio
         </button>
         {/* Workspace dots */}
         <div className="flex gap-1">

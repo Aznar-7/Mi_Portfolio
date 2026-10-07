@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { site } from '@/data/site';
+import { useSoundEffects } from '@/contexts/SoundContext';
 
 export function LoginScreen({ onLogin, wallpaperBg }) {
   const [pwd, setPwd] = useState('');
+  const { playUnlock } = useSoundEffects();
+  const login = () => { playUnlock(); onLogin(); };
   const [clock, setClock] = useState({ time: '', date: '' });
   const inputRef = useRef(null);
 
@@ -34,16 +37,14 @@ export function LoginScreen({ onLogin, wallpaperBg }) {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
           className="flex flex-col items-center gap-5"
         >
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#E95420] to-[#77216F] flex items-center justify-center text-white text-3xl font-bold shadow-2xl select-none">
-            VA
-          </div>
+          <img src="/port.jpg" alt={site.name} width="80" height="80" className="h-20 w-20 rounded-full object-cover shadow-2xl ring-2 ring-white/20 select-none" draggable="false" />
           <div className="text-white font-medium text-lg tracking-wide select-none">{site.name}</div>
           <div className="flex items-center bg-white/10 border border-white/20 rounded-full overflow-hidden backdrop-blur-sm">
             <input ref={inputRef} type="password" placeholder="Contraseña" value={pwd}
-              onChange={e => setPwd(e.target.value)} onKeyDown={e => e.key === 'Enter' && onLogin()}
+              onChange={e => setPwd(e.target.value)} onKeyDown={e => e.key === 'Enter' && login()}
               className="bg-transparent text-white text-sm px-5 py-2.5 outline-none placeholder:text-white/30 w-44" autoComplete="off"
             />
-            <button onClick={onLogin} className="w-10 h-10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors">
+            <button onClick={login} aria-label="Iniciar sesión" className="w-10 h-10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors">
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
           </div>
