@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { ArrowDown, TerminalSquare } from 'lucide-react'
-import { HeroBackground } from '@/components/background/HeroBackground'
+import Circuit from '@/components/background/Circuit'
 import { Button } from '@/components/common/Button'
 import { HeroName } from '@/components/common/HeroName'
 import { ResumeDownloadMenu } from '@/components/common/ResumeDownloadMenu'
@@ -38,7 +38,7 @@ export function Hero({ ready = true, fromIntro = false }) {
         aria-hidden="true"
         className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
       >
-        <HeroBackground />
+        <Circuit />
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-6 lg:pt-32">
