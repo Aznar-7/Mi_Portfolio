@@ -54,13 +54,10 @@ export function ResumeDownloadMenu({ className = '', onDownload }) {
       <button
         type="button"
         onClick={() => download(lang)}
-        className="group flex min-w-0 flex-1 items-center justify-center gap-2 rounded-l-xl border border-r-0 border-white/10 bg-white/[0.06] px-4 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] active:translate-y-0 sm:px-5"
+        className="flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-l-[10px] border border-r-0 border-[var(--line-strong)] px-5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.04]"
       >
-        <Download size={16} className="shrink-0 text-white/65 transition-colors group-hover:text-white" />
+        <Download size={16} aria-hidden="true" className="shrink-0 text-[var(--text-secondary)]" />
         <span className="min-w-0 truncate">{labels.main}</span>
-        <span className="shrink-0 rounded bg-white/[0.08] px-1.5 py-0.5 font-mono text-[9px] uppercase text-white/50">
-          {lang}
-        </span>
       </button>
       <button
         type="button"
@@ -68,7 +65,7 @@ export function ResumeDownloadMenu({ className = '', onDownload }) {
         aria-label={lang === 'es' ? 'Elegir idioma del CV' : 'Choose resume language'}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex shrink-0 items-center justify-center rounded-r-xl border border-white/10 bg-white/[0.06] px-3 text-white/65 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/18 hover:bg-white/[0.1] hover:text-white active:translate-y-0"
+        className="flex h-11 shrink-0 items-center justify-center rounded-r-[10px] border border-[var(--line-strong)] px-3 text-[var(--text-secondary)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
       >
         <ChevronDown size={15} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -76,7 +73,7 @@ export function ResumeDownloadMenu({ className = '', onDownload }) {
       {open && (
         <div
           role="menu"
-          className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-50 min-w-0 overflow-hidden rounded-xl border border-white/10 bg-[#11121a]/95 p-1.5 shadow-2xl backdrop-blur-xl sm:left-0 sm:right-auto sm:min-w-[13rem]"
+          className="absolute left-0 top-[calc(100%+0.5rem)] z-50 min-w-[13rem] overflow-hidden rounded-xl border border-[var(--line-strong)] bg-[var(--bg-elevated)] p-1.5 shadow-2xl"
         >
           {[
             { id: 'es', label: labels.es },
@@ -87,21 +84,21 @@ export function ResumeDownloadMenu({ className = '', onDownload }) {
               type="button"
               onClick={() => download(option.id)}
               role="menuitem"
-              className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+              className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
             >
-              <Languages size={14} className="shrink-0 text-[var(--accent-hover)]" />
+              <Languages size={14} aria-hidden="true" className="shrink-0 text-[var(--text-muted)]" />
               <span className="min-w-0 flex-1 truncate">{option.label}</span>
-              {lang === option.id && <Check size={13} className="shrink-0 text-emerald-400" />}
+              {lang === option.id && <Check size={13} aria-hidden="true" className="shrink-0 text-[var(--accent-hover)]" />}
             </button>
           ))}
-          <div className="my-1 h-px bg-white/[0.07]" />
+          <div className="my-1 h-px bg-[var(--line)]" />
           <button
             type="button"
             onClick={downloadBoth}
             role="menuitem"
-            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
-            <Download size={14} className="shrink-0 text-[var(--accent-hover)]" />
+            <Download size={14} aria-hidden="true" className="shrink-0 text-[var(--text-muted)]" />
             <span className="min-w-0 truncate">{labels.both}</span>
           </button>
         </div>

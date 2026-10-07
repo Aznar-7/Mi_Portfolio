@@ -20,7 +20,10 @@ import { useLang } from '@/contexts/LanguageContext';
 import { useSoundEffects } from '@/contexts/SoundContext';
 import { site } from '@/data/site';
 import { projects } from '@/data/projects';
-import { skillsData } from '@/data/skills';
+import { skillGroups } from '@/data/skills';
+import { TECH_ICONS } from '@/data/techIcons';
+
+const allSkills = skillGroups.flatMap((g) => g.items);
 import { experience, academic } from '@/data/experience';
 
 // ── Wallpapers ────────────────────────────────────────────────────
@@ -2175,23 +2178,22 @@ function BrowserApp({ lang }) {
         {activeTab === 'skills' && (
           <div className="h-full overflow-auto p-5 max-w-3xl mx-auto">
             <h1 className="text-2xl font-bold text-gray-900 mb-5">Skills & Stack</h1>
-            {['Frontend','Backend','Infraestructura','Bases de datos','IoT & Hardware','Otros'].map(cat => {
-              const s = skillsData.filter(x => x.category === cat);
-              if (!s.length) return null;
-              return (
-                <div key={cat} className="mb-5">
-                  <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{cat}</h2>
+            {skillGroups.map(group => (
+                <div key={group.id} className="mb-5">
+                  <h2 className="text-sm font-semibold text-gray-500 mb-3">{group.label.es}</h2>
                   <div className="flex flex-wrap gap-2">
-                    {s.map(sk => (
-                      <div key={sk.name} className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5">
-                        <img src={sk.icon} alt={sk.name} className="w-4 h-4 object-contain" loading="lazy" onError={e => e.currentTarget.style.display='none'}/>
-                        <span className="text-sm text-gray-700 font-medium">{sk.name}</span>
-                      </div>
-                    ))}
+                    {group.items.map(name => {
+                      const Icon = TECH_ICONS[name];
+                      return (
+                        <div key={name} className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700">
+                          {Icon && <Icon size={14} color="currentColor" aria-hidden="true" />}
+                          <span className="text-sm font-medium">{name}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
+            ))}
           </div>
         )}
         {activeTab === 'cv' && (
@@ -2509,8 +2511,8 @@ function SettingsApp({ wallpaper, onWallpaper }) {
                 ['Sistema operativo','Ubuntu 24.04 LTS'],
                 ['Perfil',`${site.role}`],
                 ['Formación','Sistemas de Información — UTN'],
-                ['Stack', skillsData.slice(0,5).map(s=>s.name).join(' · ')],
-                ['Tecnologías listadas',`${skillsData.length}`],
+                ['Stack', allSkills.slice(0,5).join(', ')],
+                ['Tecnologías listadas',`${allSkills.length}`],
                 ['Disponibilidad','Abierto a oportunidades'],
               ].map(([k,v]) => (
                 <div key={k} className="flex justify-between px-5 py-3 border-b border-white/5 last:border-0">
@@ -2740,19 +2742,13 @@ function TopBar({ time, date, onPower, onActivities, nowPlaying, workspace, onWo
 
 // ── Main UbuntuOS ─────────────────────────────────────────────────
 export function UbuntuOS({ onClose }) {
-  const { playOpenApp, playClick, playCloseApp, setBgmAllowed, isMuted, toggleMute } = useSoundEffects();
+  const { playOpenApp, playClick, playCloseApp, isMuted, toggleMute } = useSoundEffects();
   const { lang } = useLang();
   const weather = useWeather();
   const [screen,   setScreen]   = useState('boot');
   const [wallpaper, setWallpaper] = useState(0);
   const desktopRef = useRef(null);
   const osRootRef = useRef(null);
-
-  useEffect(() => {
-    // Apagamos la música de fondo de 'modo normal' en Ubuntu
-    setBgmAllowed(false);
-    return () => setBgmAllowed(true);
-  }, [setBgmAllowed]);
 
   const [wins, setWins] = useState({
     terminal: { open: true,  min: false, max: false },

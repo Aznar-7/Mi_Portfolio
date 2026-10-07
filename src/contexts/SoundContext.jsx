@@ -88,15 +88,11 @@ function noise(ctx, vol, duration, lpHz = null, hpHz = null, offset = 0) {
    Provider
 ───────────────────────────────────────────────────────────── */
 export function SoundProvider({ children }) {
-  const [isMuted, setIsMuted] = useState(
-    () => typeof window !== 'undefined' && localStorage.getItem('site_muted') === 'true'
-  )
+  // UI sounds are opt-in: muted unless the visitor turned them on before
+  const [isMuted, setIsMuted] = useState(() => {
+    try { return localStorage.getItem('site_muted') !== 'false' } catch { return true }
+  })
   const ctx = useRef(null)
-  
-  // BGM references
-  const bgmRef = useRef(null)
-  const [bgmAllowed, setBgmAllowed] = useState(true)
-  const [bgmReady, setBgmReady] = useState(false)
 
   /* Init AudioContext on first user gesture.
      Chrome 74+ treats any pointer/input event as sufficient.
@@ -110,27 +106,7 @@ export function SoundProvider({ children }) {
     }
     if (ctx.current?.state === 'suspended') ctx.current.resume()
 
-    // Init background music
-    if (!bgmRef.current && typeof window !== 'undefined') {
-      bgmRef.current = new Audio('/audio/ps4-theme.mp3')
-      bgmRef.current.loop = true
-      bgmRef.current.volume = 0.15 // Subido un poco para que se note
-      setBgmReady(true)
-    }
   }, [])
-
-  // BGM Playback Control logic
-  useEffect(() => {
-    if (!bgmReady || !bgmRef.current) return
-
-    if (!isMuted && bgmAllowed) {
-      bgmRef.current.play().catch(() => {
-        // Autoplay policy might block it until heavy interaction
-      })
-    } else {
-      bgmRef.current.pause()
-    }
-  }, [isMuted, bgmAllowed, bgmReady])
 
   useEffect(() => {
     const EVENTS = ['pointermove', 'pointerdown', 'keydown', 'touchstart']
@@ -147,15 +123,8 @@ export function SoundProvider({ children }) {
   }, [init])
 
   useEffect(() => {
-    localStorage.setItem('site_muted', isMuted)
+    try { localStorage.setItem('site_muted', isMuted) } catch { /* storage blocked */ }
   }, [isMuted])
-
-  const startBgmExplicitly = useCallback(() => {
-    init()
-    if (bgmRef.current && !isMuted && bgmAllowed) {
-      bgmRef.current.play().catch(e => console.warn('BGM falló en iniciar', e))
-    }
-  }, [init, isMuted, bgmAllowed])
 
   const toggleMute = useCallback(() => {
     init()
@@ -322,9 +291,6 @@ export function SoundProvider({ children }) {
   const value = {
     isMuted,
     toggleMute,
-    bgmAllowed,
-    setBgmAllowed,
-    startBgmExplicitly,
     // Core
     playHover,
     playClick,
@@ -353,7 +319,7 @@ export function SoundProvider({ children }) {
 ───────────────────────────────────────────────────────────── */
 const NOOP = () => {}
 const FALLBACK = {
-  isMuted: true, toggleMute: NOOP, bgmAllowed: false, setBgmAllowed: NOOP, startBgmExplicitly: NOOP,
+  isMuted: true, toggleMute: NOOP,
   playHover: NOOP, playClick: NOOP, playTyping: NOOP,
   playOpenApp: NOOP, playCloseApp: NOOP,
   playSuccess: NOOP, playNavigation: NOOP, playSelect: NOOP, playCarousel: NOOP,

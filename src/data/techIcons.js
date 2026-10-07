@@ -1,0 +1,40 @@
+import {
+  SiReact, SiVite, SiDjango, SiPostgresql, SiNginx, SiPython, SiTailwindcss, SiSqlite,
+  SiCplusplus, SiFlask, SiRaspberrypi, SiJavascript, SiNodedotjs, SiExpress, SiArduino,
+  SiEspressif, SiLinux, SiHtml5, SiCss, SiOpenjdk, SiSpring, SiGit, SiDocker, SiVercel,
+  SiJira, SiMysql, SiHaskell, SiRender,
+} from '@icons-pack/react-simple-icons'
+
+// Monochrome brand marks keyed by the tech name used in data files.
+// Names without an entry render as text only.
+export const TECH_ICONS = {
+  'React':        SiReact,
+  'React Native': SiReact,
+  'Vite':         SiVite,
+  'Django':       SiDjango,
+  'PostgreSQL':   SiPostgresql,
+  'Nginx':        SiNginx,
+  'Python':       SiPython,
+  'Tailwind CSS': SiTailwindcss,
+  'SQLite':       SiSqlite,
+  'C/C++':        SiCplusplus,
+  'Flask':        SiFlask,
+  'Raspberry Pi': SiRaspberrypi,
+  'JavaScript':   SiJavascript,
+  'Node.js':      SiNodedotjs,
+  'Express':      SiExpress,
+  'Arduino':      SiArduino,
+  'ESP32':        SiEspressif,
+  'Linux':        SiLinux,
+  'HTML':         SiHtml5,
+  'CSS':          SiCss,
+  'Java':         SiOpenjdk,
+  'Spring':       SiSpring,
+  'Git':          SiGit,
+  'Docker':       SiDocker,
+  'Vercel':       SiVercel,
+  'Render':       SiRender,
+  'Jira':         SiJira,
+  'MySQL':        SiMysql,
+  'Haskell':      SiHaskell,
+}

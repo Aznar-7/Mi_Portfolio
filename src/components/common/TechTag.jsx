@@ -1,34 +1,16 @@
-import {
-  SiReact,
-  SiVite,
-  SiDjango,
-  SiPostgresql,
-  SiNginx,
-  SiPython,
-  SiTailwindcss,
-  SiSqlite,
-  SiMqtt,
-  SiCplusplus,
-} from '@icons-pack/react-simple-icons'
+import { TECH_ICONS } from '@/data/techIcons'
+import { cn } from '@/lib/utils'
 
-const ICON_MAP = {
-  'React':        SiReact,
-  'Vite':         SiVite,
-  'Django':       SiDjango,
-  'PostgreSQL':   SiPostgresql,
-  'Nginx':        SiNginx,
-  'Python':       SiPython,
-  'Tailwind CSS': SiTailwindcss,
-  'SQLite':       SiSqlite,
-  'MQTT':         SiMqtt,
-  'C/C++':        SiCplusplus,
-}
-
-export function TechTag({ name }) {
-  const Icon = ICON_MAP[name]
+export function TechTag({ name, size = 'sm' }) {
+  const Icon = TECH_ICONS[name]
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] text-[var(--text-muted)] ring-1 ring-white/[0.06]">
-      {Icon && <Icon size={11} color="currentColor" />}
+    <span
+      className={cn(
+        'inline-flex items-center rounded-md border border-[var(--line)] text-[var(--text-secondary)]',
+        size === 'md' ? 'h-9 gap-2 px-3 text-sm' : 'h-7 gap-1.5 px-2.5 text-xs',
+      )}
+    >
+      {Icon && <Icon size={size === 'md' ? 15 : 12} color="currentColor" aria-hidden="true" />}
       {name}
     </span>
   )

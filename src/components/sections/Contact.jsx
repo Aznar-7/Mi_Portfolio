@@ -1,154 +1,71 @@
 import { useState } from 'react'
-import { motion } from 'motion/react'
 import { Copy, Check, ArrowUpRight } from 'lucide-react'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
+import { Button } from '@/components/common/Button'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { useSoundEffects } from '@/contexts/SoundContext'
 
-const ease = [0.16, 1, 0.3, 1]
-
-const fp = (delay = 0, reduced) =>
-  reduced ? {} : {
-    initial:    { opacity: 0, y: 18 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport:   { once: true },
-    transition: { duration: 0.6, delay, ease },
-  }
+const LINKS = [
+  { href: site.github, label: 'GitHub', Icon: GitHubIcon },
+  { href: site.linkedin, label: 'LinkedIn', Icon: LinkedInIcon },
+]
 
 export function Contact() {
-  const reduced  = useReducedMotion()
   const { lang } = useLang()
-  const T        = translations[lang].contact
-  const [copied, setCopied] = useState(false)
+  const T = translations[lang].contact
   const { playSuccess } = useSoundEffects()
-
-  const githubUser  = site.github.split('github.com/')[1]  ?? 'GitHub'
-  const linkedinSlug = site.linkedin.split('/in/')[1]?.replace(/\/$/, '') ?? 'LinkedIn'
+  const [copied, setCopied] = useState(false)
 
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(site.email)
       playSuccess()
       setCopied(true)
-      setTimeout(() => setCopied(false), 2200)
-    } catch {}
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.location.href = `mailto:${site.email}`
+    }
   }
 
   return (
-    <SectionWrapper id="contact" className="overflow-hidden">
+    <SectionWrapper id="contact">
+      <h2 className="max-w-4xl text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-[var(--text-primary)]">
+        {T.title}
+      </h2>
+      <p className="mt-6 max-w-md text-lg text-[var(--text-secondary)]">{T.subtitle}</p>
 
-      {/* Ghost number — large decorative watermark */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 select-none overflow-hidden font-black leading-none tracking-[-0.06em] text-white/[0.022]"
-        style={{ fontSize: 'clamp(9rem, 24vw, 20rem)' }}
-      >
-        06
-      </div>
-
-      {/* Top rule */}
-      <div className="mb-12 h-px w-full bg-gradient-to-r from-[var(--accent)]/35 via-white/[0.07] to-transparent" />
-
-      {/* Header row: title left / availability right */}
-      <div className="mb-12 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <motion.p {...fp(0, reduced)} className="mb-5 font-mono text-[10px] tracking-[0.2em] text-[var(--accent)] uppercase">
-            {T.label}
-          </motion.p>
-          <motion.h2
-            {...fp(0.06, reduced)}
-            className="text-[clamp(2.8rem,9vw,6.5rem)] font-bold leading-[1.01] tracking-[-0.05em] text-[var(--text-primary)]"
-          >
-            {T.title}
-          </motion.h2>
-        </div>
-
-        <motion.div {...fp(0.12, reduced)} className="flex flex-col items-start md:items-end gap-2 pb-1">
-          <div className="flex items-center gap-2.5">
-            <div className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-70" />
-              <span className="relative block h-2 w-2 rounded-full bg-green-500" />
-            </div>
-            <span className="font-mono text-[11px] font-semibold tracking-[0.14em] text-green-400/85 uppercase">
-              {lang === 'es' ? 'Disponible' : 'Available'}
-            </span>
-          </div>
-          <span className="font-mono text-[10px] text-[var(--text-muted)] tracking-wide">
-            {lang === 'es' ? 'Freelance · Roles · Colabs' : 'Freelance · Roles · Collabs'}
-          </span>
-        </motion.div>
-      </div>
-
-      {/* Divider */}
-      <motion.div {...fp(0.18, reduced)} className="mb-14 h-px w-full bg-white/[0.06]" />
-
-      {/* Email — main focal point */}
-      <motion.div {...fp(0.24, reduced)} className="mb-3 flex flex-wrap items-center gap-4">
+      <div className="mt-14 flex flex-wrap items-center gap-3">
         <a
           href={`mailto:${site.email}`}
-          className="group relative font-mono text-[clamp(1rem,3.2vw,1.85rem)] font-semibold tracking-tight text-[var(--text-secondary)] transition-colors duration-200 hover:text-[var(--text-primary)]"
+          className="group mr-2 break-all text-[clamp(1.25rem,3.4vw,2rem)] font-medium tracking-[-0.02em] text-[var(--text-primary)] underline decoration-[var(--line-strong)] decoration-1 underline-offset-[0.3em] transition-[text-decoration-color] duration-300 hover:decoration-[var(--accent-hover)]"
         >
-          {/* Animated underline */}
-          <span className="absolute inset-x-0 -bottom-0.5 block h-[1.5px] scale-x-0 origin-left bg-[var(--accent)]/60 transition-transform duration-300 group-hover:scale-x-100" />
           {site.email}
         </a>
+        <Button variant="secondary" size="sm" onClick={copyEmail} aria-live="polite">
+          {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+          {copied ? T.copied : T.copy}
+        </Button>
+      </div>
 
-        <button
-          onClick={copyEmail}
-          title={copied ? (lang === 'es' ? 'Copiado' : 'Copied') : (lang === 'es' ? 'Copiar email' : 'Copy email')}
-          className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] px-3 py-1.5 font-mono text-[10px] font-semibold tracking-widest uppercase text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--accent)]/35 hover:bg-[var(--accent)]/[0.07] hover:text-[var(--accent)]"
-        >
-          {copied
-            ? <><Check size={11} />{lang === 'es' ? 'Copiado' : 'Copied'}</>
-            : <><Copy size={11} />{lang === 'es' ? 'Copiar' : 'Copy'}</>
-          }
-        </button>
-      </motion.div>
-
-      {/* Subtitle */}
-      <motion.p {...fp(0.3, reduced)} className="mb-14 max-w-sm text-[14.5px] leading-[1.72] text-[var(--text-muted)]">
-        {T.subtitle}
-      </motion.p>
-
-      {/* Social links — plain text, no cards */}
-      <motion.div {...fp(0.36, reduced)} className="flex items-center gap-6 sm:gap-10">
-        <a
-          href={site.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-2 font-mono text-[12px] font-bold tracking-[0.18em] text-[var(--text-muted)] uppercase transition-colors duration-200 hover:text-[var(--text-primary)]"
-        >
-          <GitHubIcon size={14} />
-          GitHub
-          <ArrowUpRight
-            size={11}
-            className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-          />
-        </a>
-
-        <div className="h-4 w-px bg-white/[0.1]" />
-
-        <a
-          href={site.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-2 font-mono text-[12px] font-bold tracking-[0.18em] text-[var(--text-muted)] uppercase transition-colors duration-200 hover:text-[#4ea7d8]"
-        >
-          <LinkedInIcon size={14} />
-          LinkedIn
-          <ArrowUpRight
-            size={11}
-            className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-          />
-        </a>
-      </motion.div>
-
-      {/* Bottom rule */}
-      <motion.div {...fp(0.42, reduced)} className="mt-16 h-px w-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
+      <ul className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--line)] pt-8">
+        {LINKS.map(({ href, label, Icon }) => (
+          <li key={label}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 text-[15px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              <Icon size={16} />
+              {label}
+              <ArrowUpRight size={14} aria-hidden="true" className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
+          </li>
+        ))}
+      </ul>
     </SectionWrapper>
   )
 }

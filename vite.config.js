@@ -53,7 +53,7 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom')) return 'vendor'
-            if (id.includes('framer-motion')) return 'framer-motion'
+            if (id.includes('framer-motion') || id.includes('/motion')) return 'motion'
             if (id.includes('lucide-react') || id.includes('@icons-pack/react-simple-icons')) return 'icons'
             return 'modules'
           }

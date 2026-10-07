@@ -1,154 +1,107 @@
-import { useRef } from 'react'
-import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
-import { Cpu, Terminal } from 'lucide-react'
+import { motion, useMotionTemplate, useMotionValue } from 'motion/react'
+import { ArrowUpRight } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
+import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { CategoryIcon } from '@/components/common/CategoryIcon'
 import { projectCategories } from '@/data/projectCategories'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useSoundEffects } from '@/contexts/SoundContext'
-import { l, STATUS_STYLES } from '@/lib/utils'
+import { cn, l } from '@/lib/utils'
 
-const PLACEHOLDER_ICONS = { Cpu, Terminal }
-
-function ImageArea({ project }) {
+function Cover({ project, T, wide }) {
   if (project.image) {
     return (
       <ProgressiveImage
         src={project.image}
-        alt={project.title}
+        alt=""
         wrapperClassName="h-full w-full"
-        className="h-full w-full object-cover group-hover:scale-105"
+        className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
       />
     )
   }
-  const Icon = PLACEHOLDER_ICONS[project.placeholderIcon] ?? Terminal
+  const category = projectCategories.find((c) => c.id === project.category)
   return (
-    <div
-      className={`flex h-full w-full items-center justify-center bg-gradient-to-b ${project.placeholderGradient ?? 'from-[var(--bg-elevated)] to-transparent'}`}
-    >
-      <Icon size={40} className="text-white/20" />
+    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_40%,rgba(139,123,255,0.08),transparent_60%)] text-[var(--text-muted)]">
+      {category && <CategoryIcon name={category.icon} size={wide ? 40 : 28} strokeWidth={1.25} aria-hidden="true" />}
+      <span className="text-xs">{T.no_image}</span>
     </div>
   )
 }
 
-export function ProjectCard({ project, lang = 'es', T = {}, onClick }) {
-  const reduced = useReducedMotion()
+/**
+ * Clickable project summary; opens the detail modal.
+ * `wide` lays image and text side by side for the lead project.
+ */
+export function ProjectCard({ project, lang, T, onOpen, wide = false }) {
   const { playHover, playClick } = useSoundEffects()
-  const cardRef = useRef(null)
+  const mx = useMotionValue(-999)
+  const my = useMotionValue(-999)
+  const spotlight = useMotionTemplate`radial-gradient(360px circle at ${mx}px ${my}px, rgba(139,123,255,0.09), transparent 70%)`
 
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const rawRotateX = useMotionValue(0)
-  const rawRotateY = useMotionValue(0)
-  const rotateX = useSpring(rawRotateX, { stiffness: 200, damping: 25 })
-  const rotateY = useSpring(rawRotateY, { stiffness: 200, damping: 25 })
-
-  const spotlightBg = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(124,106,247,0.08), transparent 70%)`
-
-  function onMouseMove(e) {
-    if (reduced) return
-    const rect = cardRef.current?.getBoundingClientRect()
-    if (!rect) return
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-    rawRotateX.set(-(e.clientY - cy) / 14)
-    rawRotateY.set((e.clientX - cx) / 14)
+  const onMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    mx.set(e.clientX - r.left)
+    my.set(e.clientY - r.top)
   }
 
-  function onMouseLeave() {
-    mouseX.set(0); mouseY.set(0)
-    rawRotateX.set(0); rawRotateY.set(0)
-  }
-
-  const status = STATUS_STYLES[project.status]
-  const statusLabel = T.status?.[project.status] ?? project.status
-  const category = projectCategories.find((c) => c.id === project.category)
+  const techLimit = wide ? 6 : 4
 
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+    <button
+      type="button"
+      onClick={() => { playClick(); onOpen() }}
       onMouseEnter={playHover}
-      onClick={(e) => {
-        playClick()
-        if (onClick) onClick(e)
-      }}
-      style={{
-        rotateX: reduced ? 0 : rotateX,
-        rotateY: reduced ? 0 : rotateY,
-        transformPerspective: 800,
-        transformStyle: 'preserve-3d',
-        cursor: 'pointer',
-      }}
-      whileHover={reduced ? {} : { y: -6 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="group cursor-target relative flex h-full flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[var(--bg-surface)]/90 shadow-lg backdrop-blur-md transition-[border-color] hover:border-[var(--accent)]/30"
+      onMouseMove={onMove}
+      onMouseLeave={() => { mx.set(-999); my.set(-999) }}
+      aria-label={`${project.title}: ${T.view_details}`}
+      className={cn(
+        'group relative flex h-full w-full overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] text-left',
+        'transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[var(--line-strong)]',
+        wide ? 'flex-col md:flex-row' : 'flex-col',
+      )}
     >
-      {/* Mouse spotlight */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background: spotlightBg,
-        }}
-      />
+      <motion.span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10" style={{ background: spotlight }} />
 
-      {/* Image area */}
-      <div className="relative h-[180px] overflow-hidden">
-        <ImageArea project={project} />
-
-        {/* Hover overlay */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <span className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-medium text-white backdrop-blur-sm">
-            {T.view_details ?? 'Ver detalles'} →
-          </span>
-        </div>
-
-        {/* Category icon — bottom left */}
-        {category && (
-          <span className="absolute bottom-2.5 left-3 flex h-6 w-6 items-center justify-center rounded-md bg-black/50 backdrop-blur-sm">
-            <CategoryIcon name={category.icon} size={12} className="text-white/70" />
-          </span>
+      <div
+        className={cn(
+          'relative shrink-0 overflow-hidden bg-[var(--bg-surface)]',
+          wide ? 'aspect-[4/3] md:aspect-auto md:w-[52%]' : 'aspect-[16/10]',
         )}
-
-        {/* Status badge — bottom right */}
-        {status && (
-          <span
-            className="absolute bottom-2.5 right-3 rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-            style={{
-              color: status.color,
-              backgroundColor: `${status.color}18`,
-              border: `1px solid ${status.color}30`,
-            }}
-          >
-            {statusLabel}
-          </span>
-        )}
+      >
+        <Cover project={project} T={T} wide={wide} />
       </div>
 
-      {/* Card content */}
-      <div className="relative z-10 flex flex-1 flex-col p-5">
-        <h3 className="mb-1 text-base font-semibold leading-tight tracking-tight text-[var(--text-primary)]">
+      <div className={cn('relative flex flex-1 flex-col', wide ? 'p-6 sm:p-8 md:p-10' : 'p-6')}>
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <StatusBadge status={project.status} label={T.status[project.status]} />
+          <ArrowUpRight
+            size={18}
+            aria-hidden="true"
+            className="text-[var(--text-muted)] transition-[color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[var(--text-primary)]"
+          />
+        </div>
+
+        <h3 className={cn('font-semibold tracking-[-0.025em] text-[var(--text-primary)]', wide ? 'text-3xl sm:text-4xl' : 'text-xl')}>
           {project.title}
         </h3>
-        <p className="mb-4 line-clamp-1 text-[12px] text-[var(--text-muted)]">
+        <p className={cn('mt-2 text-[var(--text-secondary)]', wide ? 'text-base sm:text-lg' : 'line-clamp-2 text-sm leading-relaxed')}>
           {l(project.tagline, lang)}
         </p>
+        {wide && (
+          <p className="mt-5 line-clamp-4 max-w-prose text-[15px] leading-relaxed text-[var(--text-muted)]">
+            {l(project.description, lang)}
+          </p>
+        )}
 
-        <div className="mt-auto flex flex-wrap gap-1.5 border-t border-white/[0.05] pt-4">
-          {project.tech.slice(0, 4).map((t) => (
-            <TechTag key={t} name={t} />
-          ))}
-          {project.tech.length > 4 && (
-            <span className="rounded-md bg-white/[0.04] px-2.5 py-1 text-[11px] text-[var(--text-muted)] ring-1 ring-white/[0.06]">
-              +{project.tech.length - 4}
+        <div className="mt-auto flex flex-wrap gap-1.5 pt-6">
+          {project.tech.slice(0, techLimit).map((t) => <TechTag key={t} name={t} />)}
+          {project.tech.length > techLimit && (
+            <span className="inline-flex h-7 items-center px-1.5 text-xs text-[var(--text-muted)]">
+              +{project.tech.length - techLimit}
             </span>
           )}
         </div>
       </div>
-    </motion.div>
+    </button>
   )
 }

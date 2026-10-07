@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import Cubes from '../background/Cubes'
 import { ParticleField } from '../common/ParticleField'
 import { WaveField }     from '../common/WaveField'

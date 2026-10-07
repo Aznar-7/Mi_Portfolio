@@ -111,6 +111,7 @@ const Threads = ({
   const containerRef = useRef(null);
   const animationFrameId = useRef();
   const reducedMotion = useReducedMotion();
+  const colorKey = color.join(',');
 
   useEffect(() => {
     if (!containerRef.current || reducedMotion) return;
@@ -132,7 +133,7 @@ const Threads = ({
         iResolution: {
           value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height),
         },
-        uColor: { value: new Color(...color) },
+        uColor: { value: new Color(...colorKey.split(',').map(Number)) },
         uAmplitude: { value: amplitude },
         uDistance: { value: distance },
         uMouse: { value: new Float32Array([0.5, 0.5]) },
@@ -174,7 +175,16 @@ const Threads = ({
       container.addEventListener('mouseleave', handleMouseLeave);
     }
 
+    // Only render while the container is on screen
+    let visible = true;
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && !animationFrameId.current) animationFrameId.current = requestAnimationFrame(update);
+    });
+    io.observe(container);
+
     function update(t) {
+      if (!visible) { animationFrameId.current = null; return; }
       if (enableMouseInteraction) {
         const s = 0.04;
         currentMouse[0] += s * (targetMouse[0] - currentMouse[0]);
@@ -190,6 +200,7 @@ const Threads = ({
 
     return () => {
       clearTimeout(resizeTimeout);
+      io.disconnect();
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       window.removeEventListener('resize', resize);
       if (enableMouseInteraction) {
@@ -199,17 +210,15 @@ const Threads = ({
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [color, amplitude, distance, enableMouseInteraction, reducedMotion]);
+  }, [colorKey, amplitude, distance, enableMouseInteraction, reducedMotion]);
 
   return (
     <div
       ref={containerRef}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
-        zIndex: 0,
         pointerEvents: 'none',
-        opacity: 0.45,
         ...style,
       }}
     />

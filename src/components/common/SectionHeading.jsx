@@ -1,22 +1,20 @@
-export function SectionHeading({ label, title, subtitle }) {
+// Section header: optional context line, title, optional subtitle.
+// Pass `label` only when it adds information the title doesn't carry.
+export function SectionHeading({ label, title, subtitle, children }) {
   return (
-    <div className="mb-14">
-      {label && (
-        <div className="mb-4 flex items-center gap-3">
-          <span className="h-px w-6 bg-[var(--accent)] opacity-70" />
-          <p className="font-mono text-[11px] font-medium tracking-[0.16em] text-[var(--accent)] uppercase">
-            {label.replace('//', '').trim()}
+    <header className="mb-12 flex flex-col gap-6 sm:mb-16 md:flex-row md:items-end md:justify-between">
+      <div className="max-w-2xl">
+        {label && <p className="mb-3 text-sm text-[var(--accent-hover)]">{label}</p>}
+        <h2 className="text-[clamp(2rem,4.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.035em] text-[var(--text-primary)]">
+          {title}
+        </h2>
+        {subtitle && (
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-[17px]">
+            {subtitle}
           </p>
-        </div>
-      )}
-      <h2 className="mb-4 text-[clamp(28px,5vw,44px)] font-bold leading-[1.1] tracking-[-0.035em] text-[var(--text-primary)]">
-        {title}
-      </h2>
-      {subtitle && (
-        <p className="max-w-lg text-base leading-relaxed text-[var(--text-secondary)]">
-          {subtitle}
-        </p>
-      )}
-    </div>
+        )}
+      </div>
+      {children}
+    </header>
   )
 }
