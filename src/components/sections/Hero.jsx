@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { ArrowDown, TerminalSquare } from 'lucide-react'
+import { ArrowDown, GitCommitHorizontal, TerminalSquare } from 'lucide-react'
 import Circuit from '@/components/background/Circuit'
 import { Button } from '@/components/common/Button'
 import { HeroName } from '@/components/common/HeroName'
@@ -7,6 +7,8 @@ import { ResumeDownloadMenu } from '@/components/common/ResumeDownloadMenu'
 import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useLatestPush, timeAgo } from '@/hooks/useLatestPush'
+import { site } from '@/data/site'
 
 const EASE = [0.16, 1, 0.3, 1]
 
@@ -21,6 +23,7 @@ export function Hero({ ready = true, fromIntro = false }) {
   const reduced = useReducedMotion()
   const { lang } = useLang()
   const T = translations[lang].hero
+  const push = useLatestPush(site.github.split('github.com/')[1])
 
   // Staggered entrance for everything except the name, gated on `ready`
   const enter = (i) =>
@@ -44,7 +47,7 @@ export function Hero({ ready = true, fromIntro = false }) {
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-6 lg:pt-32">
         <div className="grid items-end gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
           <div className="min-w-0">
-            <motion.div {...enter(0)} className="mb-8 flex items-center gap-3">
+            <motion.div {...enter(0)} className="mb-8 flex flex-wrap items-center gap-3">
               <img
                 src="/port.jpg"
                 alt={T.portrait_alt}
@@ -59,6 +62,20 @@ export function Hero({ ready = true, fromIntro = false }) {
                 </span>
                 {T.available}
               </span>
+              {push && (
+                <motion.a
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                  href={`${site.github}/${push.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden items-center gap-2 border-l border-[var(--line-strong)] pl-3 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] sm:inline-flex"
+                >
+                  <GitCommitHorizontal size={15} aria-hidden="true" />
+                  {T.last_push(timeAgo(push.at, lang), push.repo)}
+                </motion.a>
+              )}
             </motion.div>
 
             <h1>

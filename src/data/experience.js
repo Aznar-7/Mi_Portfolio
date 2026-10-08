@@ -3,19 +3,19 @@ export const experience = [
     type: 'work',
     role: { es: 'Full Stack Developer', en: 'Full Stack Developer' },
     company: 'Porta Hnos',
-    period: { es: '2025 — Presente', en: '2025 — Present' },
+    period: { es: '2025 — hoy', en: '2025 — now' },
     impact: {
       es: [
-        'Arquitecturé 4+ sistemas corporativos end-to-end (React + Django + PostgreSQL), reduciendo el tiempo de gestión interna en un 40% mediante la digitalización de flujos manuales.',
-        'Diseñé un sistema de componentes reutilizables en React que aceleró el delivery de nuevas features en un 30%, adoptado como estándar de desarrollo por el equipo.',
-        'Diseñé un sistema RAG que alimenta un LLM con las tarjetas de un tablero de Jira, para que los supervisores consulten el estado de los proyectos en lenguaje natural.',
-        'Lideré integraciones con APIs externas y migración de herramientas legacy a stack moderno en entorno Agile (Scrum), con ciclos de entrega quincenal.',
+        'Desarrollé cuatro sistemas internos completos con React, Django y PostgreSQL que reemplazaron procesos manuales. El tiempo de gestión interna bajó un 40%.',
+        'Armé la librería de componentes React que el equipo adoptó como estándar. Las features nuevas salen un 30% más rápido.',
+        'Construí un sistema RAG sobre las tarjetas de Jira: los supervisores preguntan en lenguaje natural cómo viene cada proyecto.',
+        'Integré APIs externas y migré herramientas legacy a un stack moderno, en sprints de dos semanas.',
       ],
       en: [
-        'Architected 4+ corporate systems end-to-end (React + Django + PostgreSQL), reducing internal management time by 40% through digitization of manual workflows.',
-        "Designed a reusable React component system that accelerated feature delivery by 30%, adopted as the team's development standard.",
-        'Designed a RAG system that feeds an LLM with the cards of a Jira board, so supervisors can query project status in natural language.',
-        'Led external API integrations and legacy-to-modern stack migration in an Agile (Scrum) environment with biweekly delivery cycles.',
+        'Built four complete internal systems with React, Django and PostgreSQL that replaced manual processes. Internal management time dropped 40%.',
+        'Built the React component library the team adopted as its standard. New features ship 30% faster.',
+        'Built a RAG system over the Jira cards: supervisors ask in plain language how each project is going.',
+        'Integrated external APIs and migrated legacy tools to a modern stack, in two-week sprints.',
       ],
     },
   },
@@ -26,10 +26,10 @@ export const experience = [
     period: { es: '2023', en: '2023' },
     impact: {
       es: [
-        'Participé en el desarrollo de un producto de gestión académica desde cero, pasando por todas las etapas: diseño, asignación de roles, coordinación del equipo, desarrollo, testing y despliegue.',
+        'Construimos en equipo un producto de gestión académica desde cero, de la definición al despliegue. Participé en diseño, organización del equipo, desarrollo y testing.',
       ],
       en: [
-        'Took part in building an academic management product from scratch, through every stage: design, role assignment, team coordination, development, testing and deployment.',
+        'As a team we built an academic management product from scratch, from definition to deployment. I worked on design, team organization, development and testing.',
       ],
     },
   },
@@ -43,7 +43,7 @@ export const academic = [
       en: 'Information Systems Engineering',
     },
     institution: 'UTN — Universidad Tecnológica Nacional',
-    period: { es: '2024 — Presente', en: '2024 — Present' },
+    period: { es: '2024 — hoy', en: '2024 — now' },
     highlights: {
       es: [
         'Formación orientada al diseño, implementación, organización y control de sistemas de información para organizaciones.',
@@ -64,7 +64,7 @@ export const academic = [
       en: 'Bachelor of Science in Artificial Intelligence',
     },
     institution: 'UTN — Universidad Tecnológica Nacional',
-    period: { es: '2024 — Presente', en: '2024 — Present' },
+    period: { es: '2024 — hoy', en: '2024 — now' },
     highlights: {
       es: [
         'Implementación de modelos de lenguaje, aprendizaje automático y redes neuronales para resolver problemas complejos en diversos dominios.',

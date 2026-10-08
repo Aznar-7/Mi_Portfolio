@@ -48,6 +48,49 @@ export const projects = [
         },
       },
     ],
+    // Request path rendered by ArchitectureFlow; `host` groups nodes that share a machine
+    flow: [
+      {
+        id: 'client',
+        name: { es: 'Navegador', en: 'Browser' },
+        tech: 'React 19, Vite, Tailwind',
+        host: 'Vercel',
+        detail: {
+          es: 'La SPA se sirve desde Vercel. React Router resuelve la navegación y el estado vive en Context; cada pedido a la API viaja con el token JWT.',
+          en: 'The SPA is served from Vercel. React Router handles navigation and state lives in Context; every API call carries the JWT.',
+        },
+      },
+      {
+        id: 'proxy',
+        name: { es: 'Nginx', en: 'Nginx' },
+        tech: 'Reverse proxy, SSL/TLS',
+        host: 'Oracle Cloud',
+        detail: {
+          es: 'Termina HTTPS con el certificado del dominio propio y reenvía el tráfico a la aplicación Django dentro de la VM.',
+          en: 'Terminates HTTPS with the custom domain certificate and forwards traffic to the Django app inside the VM.',
+        },
+      },
+      {
+        id: 'api',
+        name: { es: 'API', en: 'API' },
+        tech: 'Django REST Framework, JWT',
+        host: 'Oracle Cloud',
+        detail: {
+          es: 'Valida el token y resuelve el pedido en endpoints separados por dominio: calendario, apuntes, notas y notificaciones.',
+          en: 'Validates the token and serves the request from endpoints split by domain: calendar, notes, grades and notifications.',
+        },
+      },
+      {
+        id: 'db',
+        name: { es: 'Base de datos', en: 'Database' },
+        tech: 'PostgreSQL',
+        host: 'Oracle Cloud',
+        detail: {
+          es: 'Modelo relacional versionado con migraciones de Django. Los promedios se calculan a partir de las notas guardadas.',
+          en: 'Relational model versioned with Django migrations. Averages are computed from the stored grades.',
+        },
+      },
+    ],
     image: '/images/projects/utnhub/utnhub-presentation.webp',
     gallery: [
       '/images/projects/utnhub/screen-2.webp',

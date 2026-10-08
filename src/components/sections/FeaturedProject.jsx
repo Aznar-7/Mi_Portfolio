@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { Button } from '@/components/common/Button'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { ProjectModal } from '@/components/common/ProjectModal'
+import { ArchitectureFlow } from '@/components/common/ArchitectureFlow'
 import { featuredProject as project } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -59,29 +60,23 @@ export function FeaturedProject() {
         )}
       </button>
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_26rem] lg:gap-16">
+      <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_22rem] lg:gap-16">
         <div>
           <StatusBadge status={project.status} label={T.active} />
           <p className="mt-4 max-w-prose text-[17px] leading-relaxed text-[var(--text-secondary)]">
             {l(project.description, lang)}
           </p>
-          <div className="mt-8 flex flex-wrap gap-1.5">
-            {project.tech.map((t) => <TechTag key={t} name={t} />)}
-          </div>
         </div>
-
-        <div>
-          <h3 className="mb-2 text-sm text-[var(--text-muted)]">{T.arch_label}</h3>
-          <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-            {project.architecture.map((item) => (
-              <div key={l(item.layer, 'en')} className="py-4">
-                <dt className="text-[15px] font-medium text-[var(--text-primary)]">{l(item.layer, lang)}</dt>
-                <dd className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">{l(item.detail, lang)}</dd>
-              </div>
-            ))}
-          </dl>
+        <div className="flex flex-wrap content-start gap-1.5 lg:pt-9">
+          {project.tech.map((t) => <TechTag key={t} name={t} />)}
         </div>
       </div>
+
+      {project.flow && (
+        <div className="mt-12">
+          <ArchitectureFlow flow={project.flow} lang={lang} title={T.arch_label} hint={T.arch_hint} />
+        </div>
+      )}
 
       <AnimatePresence>
         {galleryOpen && (
