@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'motion/react'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -6,66 +6,22 @@ import { cn, l } from '@/lib/utils'
 
 const STEP_MS = 1400
 const HOLD_MS = 2800 // pause on the last hop before the request starts over
+const COLS = 'md:[grid-template-columns:repeat(var(--n),minmax(0,1fr))]'
 
-// Consecutive nodes on the same host share one dashed box
+// Consecutive nodes on the same host share one dimension line
 function groupByHost(flow) {
-  return flow.reduce((groups, node, index) => {
+  return flow.reduce((groups, node) => {
     const last = groups[groups.length - 1]
-    if (last?.host === node.host) last.items.push({ node, index })
-    else groups.push({ host: node.host, items: [{ node, index }] })
+    if (last?.host === node.host) last.count += 1
+    else groups.push({ host: node.host, count: 1 })
     return groups
   }, [])
 }
 
-// Line between two hops. It fills once the request has passed it (top-down
-// on mobile, left-right on desktop); the hop in progress also shows a packet.
-function Connector({ filled, travelling, grow }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        'relative mx-auto block h-7 w-px shrink-0 self-center bg-[var(--line-strong)] md:mx-0 md:h-px',
-        grow ? 'md:w-auto md:min-w-8 md:flex-1' : 'md:w-14',
-      )}
-    >
-      <span
-        style={{ '--p': filled ? 1 : 0 }}
-        className="absolute inset-0 origin-top bg-[var(--accent-hover)] transition-transform duration-500 ease-out [transform:scaleY(var(--p))] md:origin-left md:[transform:scaleX(var(--p))]"
-      />
-      {travelling && (
-        <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 animate-[packet-y_0.5s_ease-out_forwards] rounded-full bg-white shadow-[0_0_10px_3px_var(--accent-hover)] md:left-0 md:top-1/2 md:animate-[packet-x_0.5s_ease-out_forwards]" />
-      )}
-    </span>
-  )
-}
-
-function Node({ node, state, lang, onPin, onRelease }) {
-  return (
-    <button
-      type="button"
-      onMouseEnter={onPin}
-      onFocus={onPin}
-      onMouseLeave={onRelease}
-      onBlur={onRelease}
-      aria-pressed={state === 'active'}
-      className={cn(
-        'relative w-full rounded-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow] duration-300 md:w-auto md:min-w-[9.5rem]',
-        state === 'active' && 'border-[var(--accent-hover)] bg-[var(--accent)]/10 shadow-[0_0_0_4px_var(--accent-glow)]',
-        state === 'reached' && 'border-[var(--line-strong)] bg-[var(--bg-surface)]',
-        state === 'idle' && 'border-[var(--line)] bg-[var(--bg-surface)]/40',
-      )}
-    >
-      <span className={cn('block text-[15px] font-medium transition-colors duration-300', state === 'idle' ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]')}>
-        {l(node.name, lang)}
-      </span>
-      <span className="mt-0.5 block text-xs text-[var(--text-muted)]">{node.tech}</span>
-    </button>
-  )
-}
-
 /**
- * A request travelling through a system's layers. Auto-plays while on
- * screen; hovering or focusing a layer pins it and shows what it does.
+ * A request travelling through a system's layers, drawn like a blueprint:
+ * one track, a marker per layer, hosts as dimension lines. Auto-plays while
+ * on screen; hovering or focusing a layer pins it and explains it.
  */
 export function ArchitectureFlow({ flow, lang, title, hint }) {
   const reduced = useReducedMotion()
@@ -85,36 +41,84 @@ export function ArchitectureFlow({ flow, lang, title, hint }) {
 
   const pin = (index) => { if (pinned !== index) playHover(); setPinned(index) }
   const release = () => { if (pinned !== null) setActive(pinned); setPinned(null) }
-  const stateOf = (index) => (index === shown ? 'active' : index < shown ? 'reached' : 'idle')
+
   const node = flow[shown]
+  const vars = {
+    '--n': flow.length,
+    '--edge': `${50 / flow.length}%`, // track runs between the first and last marker centers
+    '--p': last ? shown / last : 0,
+  }
 
   return (
-    <figure ref={rootRef} className="rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] p-5 sm:p-8">
-      <figcaption className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-sm text-[var(--text-secondary)]">{title}</span>
-        <span className="hidden text-xs text-[var(--text-muted)] md:inline">{hint}</span>
+    <figure ref={rootRef} style={vars} className="border-t border-[var(--line)] pt-8">
+      <figcaption className="mb-10 flex flex-wrap items-baseline justify-between gap-2">
+        <span className="text-sm text-[var(--text-muted)]">{title}</span>
+        <span className="hidden text-sm text-[var(--text-muted)] md:inline">{hint}</span>
       </figcaption>
 
-      <div className="flex flex-col md:flex-row md:items-stretch">
-        {groupByHost(flow).map((group, g) => (
-          <Fragment key={group.host + g}>
-            {g > 0 && <Connector filled={group.items[0].index <= shown} travelling={group.items[0].index === shown && shown > 0} />}
-            <div className={cn('relative rounded-2xl border border-dashed border-[var(--line-strong)] p-3 pt-8 md:flex md:items-center', group.items.length > 1 && 'md:flex-1')}>
-              <span className="absolute left-3 top-2.5 text-xs text-[var(--text-muted)]">{group.host}</span>
-              <div className="flex flex-col md:w-full md:flex-row md:items-center">
-                {group.items.map(({ node: n, index }, i) => (
-                  <Fragment key={n.id}>
-                    {i > 0 && <Connector filled={index <= shown} travelling={index === shown} grow />}
-                    <Node node={n} state={stateOf(index)} lang={lang} onPin={() => pin(index)} onRelease={release} />
-                  </Fragment>
-                ))}
-              </div>
-            </div>
-          </Fragment>
+      {/* Hosts as dimension lines over the layers they run (desktop) */}
+      <div className={cn('mb-6 hidden md:grid', COLS)}>
+        {groupByHost(flow).map((g, i) => (
+          <div key={g.host + i} style={{ gridColumn: `span ${g.count}` }} className="px-3">
+            <span className="block text-xs text-[var(--text-muted)]">{g.host}</span>
+            <span aria-hidden="true" className="mt-2 block h-2 border-x border-t border-[var(--line-strong)]" />
+          </div>
         ))}
       </div>
 
-      <div className="mt-6 min-h-[5.5rem] border-t border-[var(--line)] pt-5" aria-live="polite">
+      <div className={cn('relative grid auto-rows-fr md:auto-rows-auto', COLS)}>
+        {/* Track: vertical on mobile, horizontal on desktop */}
+        <span
+          aria-hidden="true"
+          className="absolute bottom-[var(--edge)] left-[7px] top-[var(--edge)] w-px bg-[var(--line-strong)] md:bottom-auto md:left-[var(--edge)] md:right-[var(--edge)] md:top-[7px] md:h-px md:w-auto"
+        >
+          <span className="absolute inset-0 origin-top bg-[var(--accent-hover)] transition-transform duration-700 ease-out [transform:scaleY(var(--p))] md:origin-left md:[transform:scaleX(var(--p))]" />
+          {!reduced && (
+            <span
+              className={cn(
+                'absolute left-1/2 top-[calc(var(--p)*100%)] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_10px_3px_var(--accent-hover)] md:left-[calc(var(--p)*100%)] md:top-1/2',
+                shown === 0 ? 'opacity-0' : 'transition-[top,left] duration-700 ease-out',
+              )}
+            />
+          )}
+        </span>
+
+        {flow.map((n, i) => {
+          const state = i === shown ? 'active' : i < shown ? 'reached' : 'idle'
+          return (
+            <button
+              key={n.id}
+              type="button"
+              onMouseEnter={() => pin(i)}
+              onFocus={() => pin(i)}
+              onMouseLeave={release}
+              onBlur={release}
+              aria-pressed={state === 'active'}
+              className="group relative flex items-center gap-4 py-3 text-left md:flex-col md:gap-3 md:px-3 md:py-0 md:text-center"
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'relative z-10 h-[15px] w-[15px] shrink-0 rounded-full border transition-[background-color,border-color,box-shadow] duration-300',
+                  state === 'active' && 'border-[var(--accent-hover)] bg-[var(--accent)] shadow-[0_0_0_5px_var(--accent-glow)]',
+                  state === 'reached' && 'border-[var(--accent-hover)] bg-[var(--bg-base)]',
+                  state === 'idle' && 'border-[var(--line-strong)] bg-[var(--bg-base)] group-hover:border-[var(--text-muted)]',
+                )}
+              />
+              <span>
+                <span className={cn('block text-[15px] font-medium transition-colors duration-300', state === 'idle' ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]')}>
+                  {l(n.name, lang)}
+                </span>
+                <span className="mt-0.5 block text-xs text-[var(--text-muted)]">
+                  <span className="md:hidden">{n.host}, </span>{n.tech}
+                </span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="mt-10 min-h-[5.5rem] border-t border-[var(--line)] pt-6" aria-live="polite">
         <motion.div
           key={node.id}
           initial={reduced ? false : { opacity: 0, y: 6 }}

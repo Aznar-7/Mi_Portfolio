@@ -92,18 +92,6 @@
   }
 }
 
-/* ── Request packet travelling along an ArchitectureFlow connector ── */
-@keyframes packet-x {
-  from { left: 0%;   opacity: 1; }
-  80%  { opacity: 1; }
-  to   { left: 100%; opacity: 0; }
-}
-@keyframes packet-y {
-  from { top: 0%;   opacity: 1; }
-  80%  { opacity: 1; }
-  to   { top: 100%; opacity: 0; }
-}
-
 /* ── Reduced motion: collapse CSS animations and transitions ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
