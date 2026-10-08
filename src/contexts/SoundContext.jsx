@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 
 const SoundContext = createContext(null)
+const SOUND_KEY = 'site_sound'
 
 /* ─────────────────────────────────────────────────────────────
    Low-level audio primitives
@@ -88,9 +89,10 @@ function noise(ctx, vol, duration, lpHz = null, hpHz = null, offset = 0) {
    Provider
 ───────────────────────────────────────────────────────────── */
 export function SoundProvider({ children }) {
-  // UI sounds are opt-in: muted unless the visitor turned them on before
+  // UI sounds are opt-in: muted unless the visitor explicitly turned them on.
+  // New key on purpose: an older version wrote 'site_muted=false' on every visit.
   const [isMuted, setIsMuted] = useState(() => {
-    try { return localStorage.getItem('site_muted') !== 'false' } catch { return true }
+    try { return localStorage.getItem(SOUND_KEY) !== 'on' } catch { return true }
   })
   const ctx = useRef(null)
 
@@ -122,14 +124,12 @@ export function SoundProvider({ children }) {
     return () => handlers.forEach(([e, fn]) => window.removeEventListener(e, fn))
   }, [init])
 
-  useEffect(() => {
-    try { localStorage.setItem('site_muted', isMuted) } catch { /* storage blocked */ }
-  }, [isMuted])
 
   const toggleMute = useCallback(() => {
     init()
     const unmuting = isMuted
     setIsMuted(!isMuted)
+    try { localStorage.setItem(SOUND_KEY, unmuting ? 'on' : 'off') } catch { /* storage blocked */ }
     // Audible confirmation when sound turns on (ok() still sees muted here)
     if (unmuting && ctx.current) {
       ctx.current.resume?.()

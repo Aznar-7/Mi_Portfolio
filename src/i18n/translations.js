@@ -11,6 +11,7 @@ export const translations = {
     intro: { skip: 'Saltear intro' },
     hero: {
       available:   'Disponible para nuevos roles',
+      last_push:   (ago, repo) => `Último push ${ago} en ${repo}`,
       role:        'Full Stack Developer',
       description: 'Estudio Ingeniería en Sistemas y construyo software de punta a punta: entiendo el problema, diseño la arquitectura y la interfaz, lo desarrollo y lo dejo andando en producción. Cuando hace falta, también el hardware.',
       cta_primary: 'Ver proyectos',
@@ -31,7 +32,8 @@ export const translations = {
       label:      'Proyecto principal',
       active:     'En desarrollo activo',
       view:       'Visitar UTN Hub',
-      arch_label: 'Arquitectura',
+      arch_label: 'Recorrido de un request',
+      arch_hint:  'Pasá el mouse por una capa para ver qué hace',
     },
     experience: {
       title:             'Experiencia',
@@ -86,6 +88,7 @@ export const translations = {
     intro: { skip: 'Skip intro' },
     hero: {
       available:   'Open to new roles',
+      last_push:   (ago, repo) => `Last push ${ago} to ${repo}`,
       role:        'Full Stack Developer',
       description: 'I study Systems Engineering and build software end to end: I understand the problem, design the architecture and the interface, build it and keep it running in production. When needed, the hardware too.',
       cta_primary: 'See projects',
@@ -106,7 +109,8 @@ export const translations = {
       label:      'Featured project',
       active:     'Actively in development',
       view:       'Visit UTN Hub',
-      arch_label: 'Architecture',
+      arch_label: 'How a request travels',
+      arch_hint:  'Hover a layer to see what it does',
     },
     experience: {
       title:             'Experience',
