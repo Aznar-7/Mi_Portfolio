@@ -1,4 +1,5 @@
 import { GitHubCalendar } from 'react-github-calendar'
+import { ArrowUpRight } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
 import { SectionHeading } from '@/components/common/SectionHeading'
 import { about } from '@/data/about'
@@ -8,7 +9,7 @@ import { translations } from '@/i18n/translations'
 import { l } from '@/lib/utils'
 
 // Violet ramp matching --accent, from empty cell to busiest day
-const CALENDAR_THEME = { dark: ['#16161d', '#2e2852', '#4a3f8f', '#6d5fd6', '#a99dff'] }
+const CALENDAR_THEME = { dark: ['#14141b', '#2e2852', '#4a3f8f', '#6d5fd6', '#a99dff'] }
 const githubUser = site.github.split('github.com/')[1]
 
 export function About() {
@@ -42,22 +43,38 @@ export function About() {
         </dl>
       </div>
 
-      <figure className="mt-20 overflow-x-auto rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] p-6 sm:p-8">
-        <figcaption className="mb-6 text-sm text-[var(--text-secondary)]">
-          {lang === 'es' ? 'Actividad en GitHub, último año' : 'GitHub activity, last year'}
+      <figure className="mt-20 border-t border-[var(--line)] pt-8">
+        <figcaption className="mb-6 flex flex-wrap items-baseline justify-between gap-4">
+          <span className="text-sm text-[var(--text-muted)]">
+            {lang === 'es' ? 'Actividad en GitHub, último año' : 'GitHub activity, last year'}
+          </span>
+          <a
+            href={site.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+          >
+            github.com/{githubUser}
+            <ArrowUpRight size={14} aria-hidden="true" className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
         </figcaption>
-        <GitHubCalendar
-          username={githubUser}
-          colorScheme="dark"
-          theme={CALENDAR_THEME}
-          blockRadius={3}
-          fontSize={12}
-          labels={lang === 'es' ? {
-            totalCount: '{{count}} contribuciones en el último año',
-            legend: { less: 'Menos', more: 'Más' },
-            months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-          } : undefined}
-        />
+        {/* The library sizes itself with inline styles; stretch its SVG (it has a viewBox) to the column */}
+        <div className="text-[var(--text-muted)] [&_.react-activity-calendar]:!w-full [&_.react-activity-calendar__footer]:!text-sm [&_svg]:!h-auto [&_svg]:!w-full">
+          <GitHubCalendar
+            username={githubUser}
+            colorScheme="dark"
+            theme={CALENDAR_THEME}
+            blockSize={12}
+            blockMargin={4}
+            blockRadius={2}
+            fontSize={11}
+            labels={lang === 'es' ? {
+              totalCount: '{{count}} contribuciones en el último año',
+              legend: { less: 'Menos', more: 'Más' },
+              months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            } : undefined}
+          />
+        </div>
       </figure>
     </SectionWrapper>
   )

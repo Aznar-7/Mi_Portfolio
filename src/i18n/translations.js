@@ -37,11 +37,7 @@ export const translations = {
       title:             'Experiencia',
       subtitle:          'Dónde trabajé y qué estudio.',
       work_title:        'Trabajo',
-      work_note:         'Experiencia profesional',
       education_title:   'Formación',
-      education_note:    'Carreras universitarias',
-      current:           'Actual',
-      in_progress:       'En curso',
     },
     projects: {
       title:        'Proyectos',
@@ -116,11 +112,7 @@ export const translations = {
       title:             'Experience',
       subtitle:          'Where I have worked and what I study.',
       work_title:        'Work',
-      work_note:         'Professional experience',
       education_title:   'Education',
-      education_note:    'University degrees',
-      current:           'Current',
-      in_progress:       'In progress',
     },
     projects: {
       title:        'Projects',
