@@ -27,6 +27,9 @@ import {
   SiMysql, SiMysqlHex,
   SiHaskell, SiHaskellHex,
   SiRender, SiRenderHex,
+  SiAstro, SiAstroHex,
+  SiTypescript, SiTypescriptHex,
+  SiMaplibre, SiMaplibreHex,
 } from '@icons-pack/react-simple-icons'
 
 const ICONS = {
@@ -59,6 +62,9 @@ const ICONS = {
   'Jira': [SiJira, SiJiraHex],
   'MySQL': [SiMysql, SiMysqlHex],
   'Haskell': [SiHaskell, SiHaskellHex],
+  'Astro': [SiAstro, SiAstroHex],
+  'TypeScript': [SiTypescript, SiTypescriptHex],
+  'MapLibre GL': [SiMaplibre, SiMaplibreHex],
 }
 
 // Near-black brand colors would vanish on the dark UI; use the text color instead

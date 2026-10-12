@@ -9,7 +9,6 @@ export function buildFS(lang) {
 
   const readmes = {
     'utn-hub': `# UTN Hub\n\n> Plataforma academica para estudiantes de UTN\n\n## Stack\n\n| Layer | Technology |\n|---|---|\n| Frontend | React, Vite, Tailwind CSS |\n| Backend | Django REST Framework, JWT |\n| Database | PostgreSQL |\n| Infra | Oracle Cloud, Nginx, SSL/TLS |\n\n## Que resuelve\n\nCentraliza calendario academico, parciales, documentos colaborativos, notas y notificaciones para estudiantes.\n\n## Arquitectura\n\n\`\`\`\nReact SPA -> Django REST API -> PostgreSQL\n                 |\n          Oracle Cloud + Nginx\n\`\`\`\n\n## Notas de implementacion\n\n- Autenticacion con JWT\n- Backend desplegado en VM Ubuntu propia\n- Frontend publicado en Vercel\n- Proyecto en desarrollo activo\n\n## Live\n\nhttps://utnhub.com.ar`,
-    'agv-studio': `# AGV Studio\n\n> Sitio y propuesta de estudio para desarrollo web\n\n## Stack\n\nReact · Django · Tailwind CSS · PostgreSQL\n\n## Descripcion\n\nProyecto orientado a presentar servicios de desarrollo web y explorar una identidad visual propia.\nIncluye estructura de landing, secciones de servicios y base para evolucionar hacia un sitio comercial real.\n\n## Live\n\nhttps://portfolio-agv.vercel.app/`,
   };
 
   const projectFiles = projects.reduce((acc, p) => {

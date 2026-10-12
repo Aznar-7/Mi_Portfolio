@@ -2,7 +2,7 @@ export const skillGroups = [
   {
     id: 'frontend',
     label: { es: 'Frontend', en: 'Frontend' },
-    items: ['React', 'React Native', 'JavaScript', 'Vite', 'Tailwind CSS', 'HTML', 'CSS'],
+    items: ['React', 'React Native', 'TypeScript', 'JavaScript', 'Astro', 'Vite', 'Tailwind CSS', 'HTML', 'CSS'],
   },
   {
     id: 'backend',
