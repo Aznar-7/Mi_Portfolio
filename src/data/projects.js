@@ -156,6 +156,30 @@ export const projects = [
     githubUrl: 'https://github.com/Aznar-7/proyect-ecoRecords-pi',
   },
   {
+    id: 'gavia',
+    title: 'Gavia',
+    tagline: {
+      es: 'Estudio de software a medida que cofundé en Córdoba.',
+      en: 'Custom software studio I co-founded in Córdoba.',
+    },
+    description: {
+      es: 'Estudio de desarrollo que fundé con Agustín García y Benjamín Viberti. Diseñamos, construimos y mantenemos sistemas para empresas en cinco etapas (relevamiento, propuesta, desarrollo, puesta en marcha y mantenimiento), con precio cerrado por etapa y el código siempre del cliente. Hice la landing con Astro y TypeScript alrededor de una carta de navegación: cada proyecto es un recorrido con paradas. Incluye el mapa interactivo de Flety, nuestro primer producto propio, hecho con MapLibre.',
+      en: 'Development studio I founded with Agustín García and Benjamín Viberti. We design, build and maintain systems for companies in five stages (discovery, proposal, development, launch and maintenance), with a fixed price per stage and the code always owned by the client. I built the landing with Astro and TypeScript around a navigation chart: every project is a route with stops. It includes the interactive map for Flety, our first in-house product, built with MapLibre.',
+    },
+    category: 'frontend',
+    status: 'in-development',
+    tech: ['Astro', 'TypeScript', 'MapLibre GL', 'Vercel'],
+    image: '/images/projects/gavia/inicio.webp',
+    gallery: [
+      '/images/projects/gavia/inicio.webp',
+      '/images/projects/gavia/proceso.webp',
+      '/images/projects/gavia/flety.webp',
+      '/images/projects/gavia/logo.webp',
+    ],
+    liveUrl: 'https://www.gaviasoftware.com',
+    githubUrl: 'https://github.com/Aznar-7/GAVIA',
+  },
+  {
     id: 'orden66-viandas',
     title: 'Orden 66 Viandas',
     tagline: {
@@ -204,29 +228,6 @@ export const projects = [
     ],
     liveUrl: 'https://camisetas-app.vercel.app/',
     githubUrl: 'https://github.com/Aznar-7/Camisetas-app',
-  },
-  {
-    id: 'agv-studio',
-    title: 'AGV Studio',
-    tagline: {
-      es: 'Estudio de desarrollo y consultoría para PyMEs.',
-      en: 'Development and consulting studio for SMBs.',
-    },
-    description: {
-      es: 'Emprendimiento propio que construye productos digitales y sistemas a medida para PyMEs, desde el relevamiento hasta el despliegue.',
-      en: 'My own venture building digital products and custom systems for SMBs, from discovery to deployment.',
-    },
-    category: 'full-stack',
-    status: 'in-development',
-    tech: ['React', 'Django', 'Tailwind CSS', 'PostgreSQL'],
-    image: '/images/projects/agv-studio/cover.webp',
-    gallery: [
-      '/images/projects/agv-studio/cover.webp',
-      '/images/projects/agv-studio/screen-1.webp',
-      '/images/projects/agv-studio/screen-2.webp',
-    ],
-    liveUrl: 'https://portfolio-agv.vercel.app/',
-    githubUrl: null,
   },
   {
     id: 'autofull',
