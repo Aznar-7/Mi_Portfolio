@@ -3,9 +3,9 @@ import { useSoundEffects } from '@/contexts/SoundContext'
 import { cn } from '@/lib/utils'
 
 const VARIANTS = {
-  primary:   'bg-[var(--text-primary)] text-[var(--bg-base)] hover:bg-white',
-  accent:    'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]',
-  secondary: 'border border-[var(--line-strong)] text-[var(--text-primary)] hover:border-white/30 hover:bg-white/[0.04]',
+  // Copper pad: the one filled action on a screen
+  primary:   'bg-[var(--accent)] text-[var(--bg-base)] hover:bg-[var(--accent-hover)]',
+  secondary: 'border border-[var(--line-strong)] text-[var(--text-primary)] hover:border-[var(--accent)] hover:bg-[var(--accent-glow)]',
   ghost:     'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.04]',
 }
 
@@ -22,7 +22,7 @@ export const Button = forwardRef(function Button(
 ) {
   const { playHover, playClick } = useSoundEffects()
   const classes = cn(
-    'group/btn inline-flex shrink-0 items-center justify-center rounded-[10px] font-medium whitespace-nowrap',
+    'group/btn inline-flex shrink-0 items-center justify-center rounded-[2px] font-medium whitespace-nowrap',
     'transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.97]',
     'disabled:pointer-events-none disabled:opacity-40',
     VARIANTS[variant],

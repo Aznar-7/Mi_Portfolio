@@ -13,7 +13,3 @@ export function l(value, lang) {
   return value[lang] ?? value.es ?? value.en ?? ''
 }
 
-export const STATUS_STYLES = {
-  'in-development': { color: '#4ade80' },
-  completed:        { color: '#9b8cff' },
-}

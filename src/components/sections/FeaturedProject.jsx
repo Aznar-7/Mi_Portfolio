@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { Button } from '@/components/common/Button'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
 import { ProjectModal } from '@/components/common/ProjectModal'
+import { Fiducials } from '@/components/common/Fiducials'
 import { ArchitectureFlow } from '@/components/common/ArchitectureFlow'
 import { featuredProject as project } from '@/data/projects'
 import { useLang } from '@/contexts/LanguageContext'
@@ -26,7 +27,7 @@ export function FeaturedProject() {
 
   return (
     <SectionWrapper id="featured">
-      <SectionHeading label={T.label} title={project.title} subtitle={l(project.tagline, lang)}>
+      <SectionHeading title={project.title} subtitle={l(project.tagline, lang)}>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={openGallery}>
             <Images size={16} aria-hidden="true" />
@@ -41,24 +42,27 @@ export function FeaturedProject() {
         </div>
       </SectionHeading>
 
-      <button
-        type="button"
-        onClick={openGallery}
-        aria-label={`${project.title}: ${TP.view_details}`}
-        className="group relative block w-full overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--bg-surface)]"
-      >
-        <ProgressiveImage
-          src={project.image}
-          alt=""
-          wrapperClassName="aspect-[16/9] w-full"
-          className="h-full w-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
-        />
-        {project.liveUrl && (
-          <span className="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 font-mono text-xs text-white/80 backdrop-blur-md">
-            {project.liveUrl.replace(/^https?:\/\//, '')}
-          </span>
-        )}
-      </button>
+      <div className="relative">
+        <Fiducials inset="-10px" />
+        <button
+          type="button"
+          onClick={openGallery}
+          aria-label={`${project.title}: ${TP.view_details}`}
+          className="group relative block w-full overflow-hidden rounded-[2px] bg-[var(--bg-surface)]"
+        >
+          <ProgressiveImage
+            src={project.image}
+            alt=""
+            wrapperClassName="aspect-[16/9] w-full"
+            className="h-full w-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
+          />
+          {project.liveUrl && (
+            <span className="silkscreen absolute bottom-4 left-4 rounded-[2px] bg-[var(--bg-base)]/85 px-2.5 py-1 !text-[var(--text-secondary)]">
+              {project.liveUrl.replace(/^https?:\/\//, '')}
+            </span>
+          )}
+        </button>
+      </div>
 
       <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_22rem] lg:gap-16">
         <div>

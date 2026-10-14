@@ -27,7 +27,7 @@ export function Experience() {
 
   return (
     <SectionWrapper id="experience">
-      <SectionHeading title={T.title} subtitle={T.subtitle} />
+      <SectionHeading title={T.title} subtitle={T.subtitle} annotation={T.count(experience.length, academic.length)} />
 
       <h3 className="mb-2 text-sm text-[var(--text-muted)]">{T.work_title}</h3>
       <ol className="border-b border-[var(--line)]">

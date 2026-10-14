@@ -16,10 +16,12 @@ import { cn, l } from '@/lib/utils'
 const listed = projects.filter((p) => !p.featured)
 
 function CategoryFilter({ active, onSelect, T, lang }) {
+  const count = (id) => (id === 'all' ? listed.length : listed.filter((p) => p.category === id).length)
   const options = [{ id: 'all', label: T.all }, ...projectCategories.map((c) => ({ id: c.id, label: l(c.label, lang) }))]
+    .filter(({ id }) => count(id) > 0)
 
   return (
-    <div role="group" aria-label="Filtrar proyectos" className="flex flex-wrap gap-1 rounded-xl border border-[var(--line)] p-1">
+    <div role="group" aria-label="Filtrar proyectos" className="flex flex-wrap gap-1 rounded-[2px] border border-[var(--line)] p-1">
       {options.map(({ id, label }) => (
         <button
           key={id}
@@ -27,18 +29,19 @@ function CategoryFilter({ active, onSelect, T, lang }) {
           onClick={() => onSelect(id)}
           aria-pressed={active === id}
           className={cn(
-            'relative min-h-10 rounded-lg px-3.5 py-2 text-[13px] font-medium transition-colors duration-200',
+            'relative min-h-10 rounded-[2px] px-3.5 py-2 text-[13px] font-medium transition-colors duration-200',
             active === id ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]',
           )}
         >
           {active === id && (
             <motion.span
               layoutId="project-filter"
-              className="absolute inset-0 -z-10 rounded-lg bg-white/[0.07]"
+              className="absolute inset-0 -z-10 rounded-[2px] bg-[var(--accent-glow)] shadow-[inset_0_-2px_0_var(--accent)]"
               transition={{ type: 'spring', stiffness: 400, damping: 34 }}
             />
           )}
           {label}
+          <span className="ml-1.5 font-mono text-[11px] tabular-nums text-[var(--text-muted)]">{count(id)}</span>
         </button>
       ))}
     </div>

@@ -63,14 +63,14 @@ export function ProjectGallery({ images, index, onChange, title, T, reduced }) {
                 disabled={disabled}
                 aria-label={label}
                 className={cn(
-                  'absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition-opacity hover:bg-black/70 disabled:opacity-0 sm:flex',
+                  'absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-[2px] border border-[var(--line-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] transition-[opacity,border-color] hover:border-[var(--accent)] disabled:opacity-0 sm:flex',
                   side,
                 )}
               >
                 <Icon size={18} aria-hidden="true" />
               </button>
             ))}
-            <span className="absolute bottom-3 right-3 z-10 rounded-full bg-black/60 px-2.5 py-1 text-xs tabular-nums text-white/80 backdrop-blur-md">
+            <span className="absolute bottom-3 right-3 z-10 rounded-[2px] bg-[var(--bg-surface)] px-2.5 py-1 font-mono text-xs tabular-nums text-[var(--text-secondary)]">
               {index + 1} / {count}
             </span>
           </>
@@ -87,7 +87,7 @@ export function ProjectGallery({ images, index, onChange, title, T, reduced }) {
               aria-label={`${T.slide} ${i + 1}`}
               aria-current={i === index ? 'true' : undefined}
               className={cn(
-                'h-12 w-16 shrink-0 overflow-hidden rounded-md border transition-[opacity,border-color] duration-200',
+                'h-12 w-16 shrink-0 overflow-hidden rounded-[2px] border transition-[opacity,border-color] duration-200',
                 i === index ? 'border-[var(--text-primary)] opacity-100' : 'border-transparent opacity-45 hover:opacity-80',
               )}
             >

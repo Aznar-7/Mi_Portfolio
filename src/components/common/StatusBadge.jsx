@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 const DOT = {
-  'in-development': 'bg-emerald-400',
+  'in-development': 'bg-[var(--accent-hover)]',
   completed:        'bg-[var(--text-muted)]',
 }
 

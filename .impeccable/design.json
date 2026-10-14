@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T00:00:00Z",
+  "title": "Design System: Vicente Aznar, Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "copper":           { "role": "primary", "displayName": "Copper",           "canonical": "#c97d4f", "tonalRamp": ["#2a160b", "#4a2814", "#6e3d20", "#94542e", "#c97d4f", "#dc9c74", "#ebc0a3", "#f7e3d6"] },
+      "copper-bright":    { "role": "primary", "displayName": "Bright Copper",    "canonical": "#e29a6c", "tonalRamp": ["#2e1a0d", "#512f18", "#784626", "#a86338", "#e29a6c", "#ebb390", "#f3cdb4", "#fae8dc"] },
+      "copper-wash":      { "role": "primary", "displayName": "Copper Wash",      "canonical": "rgba(226, 154, 108, 0.16)", "tonalRamp": ["rgba(226,154,108,0.04)", "rgba(226,154,108,0.08)", "rgba(226,154,108,0.12)", "rgba(226,154,108,0.16)", "rgba(226,154,108,0.24)", "rgba(226,154,108,0.35)", "rgba(226,154,108,0.5)", "rgba(226,154,108,0.7)"] },
+      "board-black":      { "role": "neutral", "displayName": "Board Black",      "canonical": "#0d0c0a", "tonalRamp": ["#0d0c0a", "#14120f", "#1b1814", "#2a2620", "#4a443b", "#7a7266", "#b5ad9f", "#ede8de"] },
+      "board-layer":      { "role": "neutral", "displayName": "Board Layer",      "canonical": "#14120f", "tonalRamp": ["#0d0c0a", "#14120f", "#1b1814", "#2a2620", "#4a443b", "#7a7266", "#b5ad9f", "#ede8de"] },
+      "board-surface":    { "role": "neutral", "displayName": "Board Surface",    "canonical": "#1b1814", "tonalRamp": ["#0d0c0a", "#14120f", "#1b1814", "#2a2620", "#4a443b", "#7a7266", "#b5ad9f", "#ede8de"] },
+      "hairline":         { "role": "neutral", "displayName": "Hairline",         "canonical": "rgba(237, 232, 222, 0.09)" },
+      "hairline-strong":  { "role": "neutral", "displayName": "Hairline Strong",  "canonical": "rgba(237, 232, 222, 0.17)" },
+      "silkscreen-ink":   { "role": "neutral", "displayName": "Silkscreen Ink",   "canonical": "#ede8de", "tonalRamp": ["#1b1814", "#3a352d", "#5c564c", "#7a7266", "#928a7d", "#b5ad9f", "#d4cdc1", "#ede8de"] },
+      "silkscreen-dim":   { "role": "neutral", "displayName": "Silkscreen Dim",   "canonical": "#b5ad9f", "tonalRamp": ["#1b1814", "#3a352d", "#5c564c", "#7a7266", "#928a7d", "#b5ad9f", "#d4cdc1", "#ede8de"] },
+      "silkscreen-muted": { "role": "neutral", "displayName": "Silkscreen Muted", "canonical": "#928a7d", "tonalRamp": ["#1b1814", "#3a352d", "#5c564c", "#7a7266", "#928a7d", "#b5ad9f", "#d4cdc1", "#ede8de"] }
+    },
+    "typographyMeta": {
+      "display":    { "displayName": "Display",    "purpose": "The hero name, Archivo at wdth 125; the contact headline one step down." },
+      "headline":   { "displayName": "Headline",   "purpose": "Section titles, expanded, balanced wrapping." },
+      "title":      { "displayName": "Title",      "purpose": "Card and item titles at normal width." },
+      "body":       { "displayName": "Body",       "purpose": "Reading copy in silkscreen-dim, about a 36rem measure." },
+      "label":      { "displayName": "Label",      "purpose": "Nav links, small buttons, filter tabs." },
+      "silkscreen": { "displayName": "Silkscreen", "purpose": "Mono annotations that carry real data only: counts, dates, local time, last push." }
+    },
+    "shadows": [
+      { "name": "overlay-drop", "value": "0 40px 120px -20px rgba(0,0,0,0.8)", "purpose": "Modal dialogs and command palette only." },
+      { "name": "via-ring", "value": "0 0 0 5px var(--accent-glow)", "purpose": "Hard copper-wash ring on the active request-flow node." },
+      { "name": "tab-underline", "value": "inset 0 -2px 0 var(--accent)", "purpose": "Copper base of the active filter tab." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default deceleration for entrances, reveals, and image zoom." },
+      { "name": "state", "value": "200ms", "purpose": "Colour and border transitions on buttons, tags, links." },
+      { "name": "card", "value": "300ms", "purpose": "Card lift and border; 700ms for cover zoom and flow signal travel." },
+      { "name": "trace-fill", "value": "spring(stiffness 140, damping 26)", "purpose": "Margin trace filling with scroll." },
+      { "name": "indicator", "value": "spring(stiffness 380-420, damping 32-34)", "purpose": "Sliding nav underline, language pill, filter tab." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px", "note": "Margin trace appears." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one copper-filled pad per screen.",
+      "html": "<button class=\"ds-btn-primary\">Ver proyectos<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border: 0; border-radius: 2px; background: var(--accent, #c97d4f); color: var(--bg-base, #0d0c0a); font: 500 14px 'Archivo Variable', system-ui, sans-serif; transition: background-color 200ms, transform 200ms; } .ds-btn-primary:hover { background: var(--accent-hover, #e29a6c); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined pad; copper border and wash on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Descargar CV</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border: 1px solid var(--line-strong, rgba(237,232,222,0.17)); border-radius: 2px; background: transparent; color: var(--text-primary, #ede8de); font: 500 14px 'Archivo Variable', system-ui, sans-serif; transition: background-color 200ms, border-color 200ms, transform 200ms; } .ds-btn-secondary:hover { border-color: var(--accent, #c97d4f); background: var(--accent-glow, rgba(226,154,108,0.16)); } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet text action, such as the OS link.",
+      "html": "<button class=\"ds-btn-ghost\">Abrir el OS</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border: 0; border-radius: 2px; background: transparent; color: var(--text-secondary, #b5ad9f); font: 500 14px 'Archivo Variable', system-ui, sans-serif; transition: background-color 200ms, color 200ms; } .ds-btn-ghost:hover { color: var(--text-primary, #ede8de); background: rgba(255,255,255,0.04); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Tech Tag",
+      "kind": "chip",
+      "refersTo": "tech-tag",
+      "description": "Monochrome outlined tag; the icon takes its brand colour on hover.",
+      "html": "<span class=\"ds-tag\" style=\"--brand:#61dafb\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"2\"/><ellipse cx=\"12\" cy=\"12\" rx=\"10\" ry=\"4\"/></svg>React</span>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid var(--line, rgba(237,232,222,0.09)); border-radius: 2px; color: var(--text-secondary, #b5ad9f); font: 400 12px 'Archivo Variable', system-ui, sans-serif; transition: border-color 200ms, color 200ms, transform 200ms; } .ds-tag svg { transition: color 200ms; } .ds-tag:hover { transform: translateY(-1px); border-color: var(--line-strong, rgba(237,232,222,0.17)); color: var(--text-primary, #ede8de); } .ds-tag:hover svg { color: var(--brand); }"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "project-card",
+      "description": "Board-layer card with a fiducial-framed cover; copper border on hover.",
+      "html": "<button class=\"ds-card\"><span class=\"ds-card-cover\"><span class=\"ds-fid ds-fid-tl\"></span><span class=\"ds-fid ds-fid-tr\"></span><span class=\"ds-fid ds-fid-bl\"></span><span class=\"ds-fid ds-fid-br\"></span></span><span class=\"ds-card-body\"><span class=\"ds-status\"><span class=\"ds-dot\"></span>En desarrollo</span><span class=\"ds-card-title\">Gavia</span><span class=\"ds-card-text\">Estudio de software a medida.</span></span></button>",
+      "css": ".ds-card { display: flex; flex-direction: column; width: 320px; padding: 0; overflow: hidden; text-align: left; border: 1px solid var(--line, rgba(237,232,222,0.09)); border-radius: 2px; background: var(--bg-elevated, #14120f); transition: border-color 300ms, transform 300ms; } .ds-card:hover { transform: translateY(-2px); border-color: rgba(201,125,79,0.5); } .ds-card:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; } .ds-card-cover { position: relative; aspect-ratio: 16/10; background: var(--bg-surface, #1b1814); } .ds-fid { position: absolute; width: 14px; height: 14px; border: 0 solid var(--accent, #c97d4f); } .ds-fid-tl { left: 12px; top: 12px; border-left-width: 2px; border-top-width: 2px; } .ds-fid-tr { right: 12px; top: 12px; border-right-width: 2px; border-top-width: 2px; } .ds-fid-bl { left: 12px; bottom: 12px; border-left-width: 2px; border-bottom-width: 2px; } .ds-fid-br { right: 12px; bottom: 12px; border-right-width: 2px; border-bottom-width: 2px; } .ds-card-body { display: flex; flex-direction: column; padding: 24px; } .ds-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary, #b5ad9f); margin-bottom: 16px; } .ds-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--accent-hover, #e29a6c); } .ds-card-title { font: 600 20px 'Archivo Variable', system-ui, sans-serif; letter-spacing: -0.025em; color: var(--text-primary, #ede8de); } .ds-card-text { margin-top: 8px; font-size: 14px; line-height: 1.625; color: var(--text-secondary, #b5ad9f); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Muted links with a sliding 2px copper underline on the active item.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link is-active\">Proyectos</a><a href=\"#\" class=\"ds-nav-link\">Experiencia</a><a href=\"#\" class=\"ds-nav-link\">Proceso</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; } .ds-nav-link { position: relative; padding: 6px 14px; border-radius: 2px; font: 500 13px 'Archivo Variable', system-ui, sans-serif; color: var(--text-muted, #928a7d); text-decoration: none; transition: color 200ms; } .ds-nav-link:hover, .ds-nav-link.is-active { color: var(--text-primary, #ede8de); } .ds-nav-link.is-active::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: -2px; height: 2px; border-radius: 9999px; background: var(--accent, #c97d4f); } .ds-nav-link:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Silkscreen Annotation",
+      "kind": "custom",
+      "description": "Mono data note, always real data.",
+      "html": "<p class=\"ds-silk\"><span class=\"ds-dot\"></span>Córdoba, 14:32 (UTC-3)</p>",
+      "css": ".ds-silk { display: inline-flex; align-items: center; gap: 8px; margin: 0; font: 400 12px/1.4 'Chivo Mono Variable', ui-monospace, monospace; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; color: var(--text-muted, #928a7d); } .ds-silk .ds-dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--accent-hover, #e29a6c); }"
+    },
+    {
+      "name": "Margin Trace Via",
+      "kind": "custom",
+      "description": "Segment of the margin trace: copper bed, filled portion, ring via (xl and up).",
+      "html": "<span class=\"ds-trace\"><span class=\"ds-trace-fill\"></span><span class=\"ds-via\"></span></span>",
+      "css": ".ds-trace { position: relative; display: block; width: 1px; height: 160px; background: rgba(201,125,79,0.2); } .ds-trace-fill { position: absolute; inset: 0 0 40% 0; background: var(--accent, #c97d4f); } .ds-via { position: absolute; left: 50%; top: 48px; width: 11px; height: 11px; transform: translateX(-50%); border: 2px solid var(--accent, #c97d4f); border-radius: 9999px; background: var(--bg-base, #0d0c0a); box-sizing: border-box; }"
+    },
+    {
+      "name": "Contact Pad",
+      "kind": "button",
+      "refersTo": "contact-pad",
+      "description": "The page's terminal: email set in expanded Archivo on a copper pad.",
+      "html": "<a href=\"#\" class=\"ds-contact-pad\">aznarvicente8@gmail.com</a>",
+      "css": ".ds-contact-pad { display: inline-flex; align-items: center; min-height: 64px; padding: 12px 24px; border-radius: 2px; background: var(--accent, #c97d4f); color: var(--bg-base, #0d0c0a); font: 600 clamp(0.95rem, 2.4vw, 1.5rem) 'Archivo Variable', system-ui, sans-serif; font-stretch: 125%; letter-spacing: -0.01em; text-decoration: none; transition: background-color 200ms, transform 200ms; } .ds-contact-pad:hover { background: var(--accent-hover, #e29a6c); } .ds-contact-pad:active { transform: scale(0.99); } .ds-contact-pad:focus-visible { outline: 2px solid var(--accent-hover, #e29a6c); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Placa de cobre",
+    "overview": "The page is a working circuit board. The ground is matte solder-mask black with a faint static noise, layered in two slightly warmer tones. Copper is the only colour that acts: traces, filled pads for primary actions, the active state. Every small label is silkscreen, set in mono, and it always carries real data (a count, a date, a live time, a last push), never a category name.\n\nOn wide screens (xl and up) one copper trace leaves the hero board on a square pad, runs down the left margin through every section, lights a ring via level with each heading, fills with scroll, and terminates by bending onto the contact email pad. Images sit inside fiducial corner marks like a board waiting for the pick-and-place machine. Type is Archivo: expanded to its widest axis for display, like equipment lettering, and normal width for reading.\n\nThe system is flat and precise: hairline rules instead of boxes, 2px corners, no glass, no glow halos, no decorative shadows. It explicitly refuses the dark-violet developer template (Geist, glowing edges, rounded cards, eyebrow labels). The Ubuntu OS simulator (`src/components/ubuntu/**`, `UbuntuOS.jsx`, `Terminal.jsx`) is a separate, authentic Ubuntu world and is out of scope for this document.",
+    "keyCharacteristics": [
+      "Matte board black with two warmer layers; copper as the single active colour.",
+      "Archivo expanded (wdth 125) semibold for display; Chivo Mono only for data.",
+      "2px pads everywhere; full circles reserved for vias and status dots.",
+      "Hairline section boundaries and a margin trace that ties the page together.",
+      "Fiducial corner marks on images and covers.",
+      "Flat at rest; motion is short and decelerating."
+    ],
+    "rules": [
+      { "name": "The One Metal Rule", "body": "Copper is the only chromatic colour in the interface. Brand colours appear only on a tech icon while it is hovered.", "section": "colors" },
+      { "name": "The One Filled Pad Rule", "body": "A screen carries at most one copper-filled action (the hero \"Ver proyectos\", the contact email pad). Everything else is an outline or a ghost.", "section": "colors" },
+      { "name": "The Silkscreen Carries Data Rule", "body": "Mono is used for real data: counts, dates, local time, last push, key hints. If the text is a category name or a section label, it is not silkscreen and should not exist as a kicker.", "section": "typography" },
+      { "name": "The Wide Voice Rule", "body": "The 125% width is for display and headline only. Body, titles, and labels stay at normal width.", "section": "typography" },
+      { "name": "The No Glow Rule", "body": "No blurred coloured shadows, no backdrop-filter glass, no glowing edges. Copper shows up as a solid line, fill, or ring.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use 2px corners on every rectangular element, and keep circles for vias, status dots, and flow nodes.",
+      "Do keep copper as the only active colour and show at most one copper-filled pad per screen.",
+      "Do make every mono annotation carry live or factual data (a count, time, date, or last push).",
+      "Do set display and section headings in Archivo at wdth 125 and weight 600 with tight negative tracking.",
+      "Do separate sections with a full-width hairline, and frame images with fiducials.",
+      "Do ease with `cubic-bezier(0.16, 1, 0.3, 1)` and collapse motion under prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't use glows, blurred coloured shadows, or backdrop-filter glass. Ambient drop shadows belong on true overlays only.",
+      "Don't add eyebrow or kicker labels above headings. A silkscreen line that names a category instead of carrying data is a kicker.",
+      "Don't round cards, buttons, or tags beyond 2px, or turn them into pills.",
+      "Don't introduce a second accent hue. Brand colours live only on hovered tech icons.",
+      "Don't use Geist or a system display face for headings.",
+      "Don't apply this system to the Ubuntu OS simulator, which keeps its own Ubuntu world."
+    ]
+  }
+}

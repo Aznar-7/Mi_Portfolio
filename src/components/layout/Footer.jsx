@@ -20,7 +20,7 @@ export function Footer() {
         >
           <TerminalSquare size={15} aria-hidden="true" />
           {H.open_os}
-          <kbd className="hidden rounded border border-[var(--line)] px-1.5 py-0.5 font-mono text-[11px] sm:inline">Ctrl Alt T</kbd>
+          <kbd className="hidden rounded-[2px] border border-[var(--line)] px-1.5 py-0.5 font-mono text-[11px] sm:inline">Ctrl Alt T</kbd>
         </button>
       </div>
     </footer>

@@ -37,9 +37,9 @@ export function CopyButton({ value, label, copiedLabel, className }) {
       onClick={copy}
       onMouseEnter={playHover}
       className={cn(
-        'relative inline-flex h-9 items-center gap-2 overflow-hidden rounded-[10px] border px-3.5 text-[13px] font-medium transition-colors duration-300 active:scale-[0.97]',
+        'relative inline-flex h-9 items-center gap-2 overflow-hidden rounded-[2px] border px-3.5 text-[13px] font-medium transition-colors duration-300 active:scale-[0.97]',
         copied
-          ? 'border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300'
+          ? 'border-[var(--accent)] bg-[var(--accent-glow)] text-[var(--accent-hover)]'
           : 'border-[var(--line-strong)] text-[var(--text-primary)] hover:bg-white/[0.04]',
         className,
       )}

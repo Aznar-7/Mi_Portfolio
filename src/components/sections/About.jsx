@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { GitHubCalendar } from 'react-github-calendar'
 import { ArrowUpRight } from 'lucide-react'
 import { SectionWrapper } from '@/components/common/SectionWrapper'
@@ -8,14 +9,32 @@ import { useLang } from '@/contexts/LanguageContext'
 import { translations } from '@/i18n/translations'
 import { l } from '@/lib/utils'
 
-// Violet ramp matching --accent, from empty cell to busiest day
-const CALENDAR_THEME = { dark: ['#14141b', '#2e2852', '#4a3f8f', '#6d5fd6', '#a99dff'] }
+// Copper ramp matching --accent, from bare board to busiest day
+const CALENDAR_THEME = { dark: ['#1b1814', '#4a2f1f', '#7a4a2e', '#c97d4f', '#f0b48a'] }
 const githubUser = site.github.split('github.com/')[1]
 
 export function About() {
   const { lang } = useLang()
   const T = translations[lang].about
   const [lead, ...rest] = l(about.bio, lang)
+  const calendarRef = useRef(null)
+
+  // On phones the calendar scrolls sideways; open it on the latest weeks, not the oldest.
+  // The library renders after fetching, so wait for the scroller to appear, then let go.
+  useEffect(() => {
+    const root = calendarRef.current
+    if (!root) return
+    const toLatest = () => {
+      const scroller = [...root.querySelectorAll('*')].find((el) => el.scrollWidth > el.clientWidth)
+      if (!scroller) return false
+      scroller.scrollLeft = scroller.scrollWidth
+      return true
+    }
+    if (toLatest()) return
+    const observer = new MutationObserver(() => toLatest() && observer.disconnect())
+    observer.observe(root, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <SectionWrapper id="about">
@@ -58,8 +77,8 @@ export function About() {
             <ArrowUpRight size={14} aria-hidden="true" className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
         </figcaption>
-        {/* The library sizes itself with inline styles; stretch its SVG (it has a viewBox) to the column */}
-        <div className="text-[var(--text-muted)] [&_.react-activity-calendar]:!w-full [&_.react-activity-calendar__footer]:!text-sm [&_svg]:!h-auto [&_svg]:!w-full">
+        {/* The library sizes itself with inline styles. From md up, stretch its SVG (it has a viewBox) to the column; on phones keep real cell size and let it scroll */}
+        <div ref={calendarRef} className="text-[var(--text-muted)] md:[&_.react-activity-calendar]:!w-full md:[&_.react-activity-calendar__footer]:!text-sm md:[&_svg]:!h-auto md:[&_svg]:!w-full">
           <GitHubCalendar
             username={githubUser}
             colorScheme="dark"

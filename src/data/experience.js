@@ -1,6 +1,24 @@
 export const experience = [
   {
     type: 'work',
+    role: { es: 'Cofundador', en: 'Co-founder' },
+    company: 'Gavia',
+    period: { es: '2026 — hoy', en: '2026 — now' },
+    impact: {
+      es: [
+        'Fundé con Agustín García y Benjamín Viberti un estudio que desarrolla y mantiene software a medida para empresas, con precio cerrado por etapa y el código siempre del cliente.',
+        'Diseñé y construí la web del estudio con Astro, TypeScript y MapLibre.',
+        'Desarrollamos Flety, nuestro primer producto propio: conecta camiones que vuelven vacíos con cargas que van en su camino.',
+      ],
+      en: [
+        'Founded with Agustín García and Benjamín Viberti a studio that builds and maintains custom software for companies, with a fixed price per stage and the code always owned by the client.',
+        'Designed and built the studio website with Astro, TypeScript and MapLibre.',
+        'We are building Flety, our first in-house product: it matches trucks returning empty with cargo along their route.',
+      ],
+    },
+  },
+  {
+    type: 'work',
     role: { es: 'Full Stack Developer', en: 'Full Stack Developer' },
     company: 'Porta Hnos',
     period: { es: '2025 — hoy', en: '2025 — now' },

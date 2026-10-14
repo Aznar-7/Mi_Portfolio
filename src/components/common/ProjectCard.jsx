@@ -1,8 +1,8 @@
-import { motion, useMotionTemplate, useMotionValue } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { TechTag } from '@/components/common/TechTag'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressiveImage } from '@/components/common/ProgressiveImage'
+import { Fiducials } from '@/components/common/Fiducials'
 import { CategoryIcon } from '@/components/common/CategoryIcon'
 import { projectCategories } from '@/data/projectCategories'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -21,9 +21,9 @@ function Cover({ project, T, wide }) {
   }
   const category = projectCategories.find((c) => c.id === project.category)
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_40%,rgba(139,123,255,0.08),transparent_60%)] text-[var(--text-muted)]">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
       {category && <CategoryIcon name={category.icon} size={wide ? 40 : 28} strokeWidth={1.25} aria-hidden="true" />}
-      <span className="text-xs">{T.no_image}</span>
+      <span className="silkscreen">{T.no_image}</span>
     </div>
   )
 }
@@ -34,15 +34,6 @@ function Cover({ project, T, wide }) {
  */
 export function ProjectCard({ project, lang, T, onOpen, wide = false }) {
   const { playHover, playClick } = useSoundEffects()
-  const mx = useMotionValue(-999)
-  const my = useMotionValue(-999)
-  const spotlight = useMotionTemplate`radial-gradient(360px circle at ${mx}px ${my}px, rgba(139,123,255,0.09), transparent 70%)`
-
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect()
-    mx.set(e.clientX - r.left)
-    my.set(e.clientY - r.top)
-  }
 
   const techLimit = wide ? 6 : 4
 
@@ -51,17 +42,13 @@ export function ProjectCard({ project, lang, T, onOpen, wide = false }) {
       type="button"
       onClick={() => { playClick(); onOpen() }}
       onMouseEnter={playHover}
-      onMouseMove={onMove}
-      onMouseLeave={() => { mx.set(-999); my.set(-999) }}
       aria-label={`${project.title}: ${T.view_details}`}
       className={cn(
-        'group relative flex h-full w-full overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--bg-elevated)] text-left',
-        'transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[var(--line-strong)]',
+        'group relative flex h-full w-full overflow-hidden rounded-[2px] border border-[var(--line)] bg-[var(--bg-elevated)] text-left',
+        'transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[var(--accent)]/50',
         wide ? 'flex-col md:flex-row' : 'flex-col',
       )}
     >
-      <motion.span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10" style={{ background: spotlight }} />
-
       <div
         className={cn(
           'relative shrink-0 overflow-hidden bg-[var(--bg-surface)]',
@@ -69,6 +56,7 @@ export function ProjectCard({ project, lang, T, onOpen, wide = false }) {
         )}
       >
         <Cover project={project} T={T} wide={wide} />
+        <Fiducials inset="12px" />
       </div>
 
       <div className={cn('relative flex flex-1 flex-col', wide ? 'p-6 sm:p-8 md:p-10' : 'p-6')}>
