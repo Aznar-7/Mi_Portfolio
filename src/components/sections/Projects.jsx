@@ -27,7 +27,7 @@ function CategoryFilter({ active, onSelect, T, lang }) {
           onClick={() => onSelect(id)}
           aria-pressed={active === id}
           className={cn(
-            'relative rounded-lg px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
+            'relative min-h-10 rounded-lg px-3.5 py-2 text-[13px] font-medium transition-colors duration-200',
             active === id ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]',
           )}
         >

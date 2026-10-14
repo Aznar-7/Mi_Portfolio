@@ -17,6 +17,7 @@ export default defineConfig({
       manifest: {
         name: 'Vicente Aznar',
         short_name: 'Vicente',
+        lang: 'es',
         description: 'Vicente Aznar, Full Stack Developer',
         theme_color: '#09090c',
         background_color: '#09090c',

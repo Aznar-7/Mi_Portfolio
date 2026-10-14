@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { ArrowDown, GitCommitHorizontal, TerminalSquare } from 'lucide-react'
+import { ErrorBoundary } from 'react-error-boundary'
 import Circuit from '@/components/background/Circuit'
 import { Button } from '@/components/common/Button'
 import { HeroName } from '@/components/common/HeroName'
@@ -32,7 +33,7 @@ export function Hero({ ready = true, fromIntro = false }) {
       : {
           initial: { opacity: 0, y: 14 },
           animate: ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
-          transition: { duration: 0.8, ease: EASE, delay: (fromIntro ? 0.45 : 0.55) + i * 0.08 },
+          transition: { duration: 0.6, ease: EASE, delay: (fromIntro ? 0.2 : 0.3) + i * 0.07 },
         }
 
   return (
@@ -41,7 +42,9 @@ export function Hero({ ready = true, fromIntro = false }) {
         aria-hidden="true"
         className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
       >
-        <Circuit />
+        <ErrorBoundary fallback={null}>
+          <Circuit />
+        </ErrorBoundary>
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-6 lg:pt-32">
@@ -110,7 +113,7 @@ export function Hero({ ready = true, fromIntro = false }) {
           <motion.figure
             initial={reduced ? false : { clipPath: 'inset(100% 0 0 0)' }}
             animate={ready ? { clipPath: 'inset(0% 0 0 0)' } : undefined}
-            transition={{ duration: 1.1, ease: EASE, delay: fromIntro ? 0.35 : 0.45 }}
+            transition={{ duration: 0.9, ease: EASE, delay: fromIntro ? 0.15 : 0.25 }}
             className="relative hidden aspect-[4/5] w-[300px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--bg-surface)] lg:block xl:w-[340px]"
           >
             <img

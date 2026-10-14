@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { motion } from 'motion/react'
 import { site } from '@/data/site'
 
@@ -13,16 +14,20 @@ export function HeroName({ as: Tag = 'span', layoutId, reveal = false, className
     <Tag className={`block text-[clamp(3.6rem,12vw,9.5rem)] font-semibold leading-[0.86] tracking-[-0.055em] text-[var(--text-primary)] ${className}`}>
       <motion.span layoutId={layoutId} transition={{ duration: 0.9, ease: EASE }} className="block">
         {words.map((word, i) => (
-          <span key={word} className="block overflow-hidden pb-[0.06em]">
-            <motion.span
-              className="block"
-              initial={reveal ? { y: '105%' } : false}
-              animate={{ y: 0 }}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.12 }}
-            >
-              {word}
-            </motion.span>
-          </span>
+          <Fragment key={word}>
+            {/* Real space between the block-level words so assistive tech reads "Vicente Aznar" */}
+            {i > 0 && ' '}
+            <span className="block overflow-hidden pb-[0.06em]">
+              <motion.span
+                className="block"
+                initial={reveal ? { y: '105%' } : false}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.7, ease: EASE, delay: 0.08 + i * 0.1 }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          </Fragment>
         ))}
       </motion.span>
     </Tag>

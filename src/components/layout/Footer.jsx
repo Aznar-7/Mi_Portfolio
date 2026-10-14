@@ -16,7 +16,7 @@ export function Footer() {
           type="button"
           onClick={() => document.dispatchEvent(new CustomEvent('open-ubuntu'))}
           title={H.open_os_hint}
-          className="inline-flex items-center gap-2 transition-colors hover:text-[var(--text-primary)]"
+          className="inline-flex min-h-11 items-center gap-2 transition-colors hover:text-[var(--text-primary)]"
         >
           <TerminalSquare size={15} aria-hidden="true" />
           {H.open_os}

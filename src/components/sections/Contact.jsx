@@ -25,7 +25,7 @@ export function Contact() {
       <div className="mt-14 flex flex-wrap items-center gap-3">
         <a
           href={`mailto:${site.email}`}
-          className="group mr-2 break-all text-[clamp(1.25rem,3.4vw,2rem)] font-medium tracking-[-0.02em] text-[var(--text-primary)] underline decoration-[var(--line-strong)] decoration-1 underline-offset-[0.3em] transition-[text-decoration-color] duration-300 hover:decoration-[var(--accent-hover)]"
+          className="group mr-2 break-all py-1.5 text-[clamp(1.25rem,3.4vw,2rem)] font-medium tracking-[-0.02em] text-[var(--text-primary)] underline decoration-[var(--line-strong)] decoration-1 underline-offset-[0.3em] transition-[text-decoration-color] duration-300 hover:decoration-[var(--accent-hover)]"
         >
           {site.email}
         </a>
@@ -39,7 +39,7 @@ export function Contact() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 text-[15px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+              className="group inline-flex min-h-11 items-center gap-2 text-[15px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
               <Icon size={16} />
               {label}

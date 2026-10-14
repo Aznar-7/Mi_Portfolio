@@ -1,14 +1,14 @@
 export const about = {
   bio: {
     es: [
-      'Curso Ingeniería en Sistemas de Información en la UTN, una carrera orientada al diseño, implementación, organización y control de sistemas de información en contextos reales.',
-      'Me interesa conectar esa base con desarrollo full-stack: entender procesos, modelar datos, construir interfaces claras, diseñar APIs y dejar despliegues funcionando.',
-      'Trabajo con React, Django, PostgreSQL y Linux/cloud. También sumo inglés C1 para documentación, comunicación técnica y colaboración con equipos fuera de Argentina.',
+      'Soy Vicente. Trabajo como Full Stack en Porta Hnos, estudio Ingeniería en Sistemas e Inteligencia Artificial en la UTN y cofundé Gavia, un estudio de software en Córdoba.',
+      'Me gusta llevar una idea hasta algo que funcione de verdad: una plataforma para los estudiantes de mi facultad, un tocadiscos que reconoce cada disco por NFC, un auto que esquiva obstáculos con un ESP32.',
+      'Antes de escribir código quiero entender cómo trabaja la gente que lo va a usar. Mi stack de todos los días es React, Django, PostgreSQL y Linux, y uso inglés C1 para documentar y trabajar con equipos de afuera.',
     ],
     en: [
-      'I study Information Systems Engineering at UTN, a degree focused on designing, implementing, organizing, and controlling information systems in real organizational contexts.',
-      'I connect that foundation with full-stack development: understanding processes, modeling data, building clear interfaces, designing APIs, and keeping deployments running.',
-      'I work with React, Django, PostgreSQL, and Linux/cloud. I also bring C1 English for documentation, technical communication, and collaboration beyond Argentina.',
+      "I'm Vicente. I work as a Full Stack developer at Porta Hnos, study Systems Engineering and Artificial Intelligence at UTN, and co-founded Gavia, a software studio in Córdoba.",
+      'I like taking an idea all the way to something that actually works: a platform for the students at my university, a record player that recognizes each record over NFC, a car that dodges obstacles with an ESP32.',
+      'Before writing code I want to understand how the people who will use it actually work. My everyday stack is React, Django, PostgreSQL and Linux, and I use C1 English to document and work with teams abroad.',
     ],
   },
   quickFacts: [

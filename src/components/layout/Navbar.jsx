@@ -8,8 +8,11 @@ import { translations } from '@/i18n/translations'
 import { site } from '@/data/site'
 import { cn } from '@/lib/utils'
 
-const NAV_IDS = ['featured', 'experience', 'projects', 'skills', 'about', 'contact']
-const NAV_KEYS = { featured: 'project', experience: 'experience', projects: 'projects', skills: 'skills', about: 'about', contact: 'contact' }
+// Nav items in page order; the featured project and the project grid share one item
+const NAV_IDS = ['featured', 'experience', 'process', 'skills', 'about', 'contact']
+const NAV_KEYS = { featured: 'projects', experience: 'experience', process: 'process', skills: 'skills', about: 'about', contact: 'contact' }
+const SPY_IDS = ['featured', 'projects', 'experience', 'process', 'skills', 'about', 'contact']
+const SPY_ALIAS = { projects: 'featured' }
 
 const scrollToId = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
@@ -45,13 +48,13 @@ function LangToggle({ lang, onToggle }) {
     <button
       onClick={onToggle}
       aria-label={lang === 'es' ? 'Switch to English' : 'Cambiar a español'}
-      className="relative flex shrink-0 items-center rounded-full border border-[var(--line)] p-0.5 text-[11px] font-semibold"
+      className="relative flex h-10 shrink-0 items-center rounded-full border border-[var(--line)] p-0.5 text-[11px] font-semibold"
     >
       {['es', 'en'].map((code) => (
         <span
           key={code}
           className={cn(
-            'relative z-10 rounded-full px-2.5 py-1 uppercase transition-colors duration-200',
+            'relative z-10 rounded-full px-3 py-2 uppercase transition-colors duration-200',
             lang === code ? 'text-[var(--bg-base)]' : 'text-[var(--text-muted)]',
           )}
         >
@@ -74,7 +77,8 @@ export function Navbar() {
   const [atTop, setAtTop] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const lastY = useRef(0)
-  const activeId = useScrollSpy(NAV_IDS)
+  const spied = useScrollSpy(SPY_IDS)
+  const activeId = SPY_ALIAS[spied] ?? spied
   const { lang, toggle } = useLang()
   const { isMuted, toggleMute, playClick, playHover, playNavigation, playToggle } = useSoundEffects()
   const T = translations[lang].nav
@@ -106,7 +110,15 @@ export function Navbar() {
 
   return (
     <>
+      <a
+        href="#contenido"
+        className="sr-only z-[60] rounded-lg bg-[var(--text-primary)] px-4 py-2.5 text-sm font-medium text-[var(--bg-base)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        {T.skip}
+      </a>
       <motion.header
+        // Keyboard focus entering the auto-hidden header brings it back (WCAG 2.4.11)
+        onFocus={() => setVisible(true)}
         initial={false}
         animate={{ y: visible || mobileOpen ? 0 : -96 }}
         transition={{ type: 'spring', stiffness: 320, damping: 34 }}
@@ -122,7 +134,7 @@ export function Navbar() {
             href="#hero"
             data-brand-mark
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="mr-auto text-[15px] font-semibold tracking-[-0.02em] text-[var(--text-primary)]"
+            className="mr-auto py-2.5 text-[15px] font-semibold tracking-[-0.02em] text-[var(--text-primary)]"
           >
             {site.name}
           </a>
@@ -163,7 +175,7 @@ export function Navbar() {
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
               aria-pressed={!isMuted}
               className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-full border border-[var(--line)] transition-colors hover:text-[var(--text-primary)]',
+                'flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] transition-colors hover:text-[var(--text-primary)]',
                 isMuted ? 'text-[var(--text-muted)]' : 'text-[var(--accent-hover)]',
               )}
             >
@@ -173,7 +185,7 @@ export function Navbar() {
               onClick={() => { playClick(); setMobileOpen((v) => !v) }}
               aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={mobileOpen}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--line)] text-[var(--text-secondary)] md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] text-[var(--text-secondary)] md:hidden"
             >
               {mobileOpen ? <X size={15} /> : <Menu size={15} />}
             </button>

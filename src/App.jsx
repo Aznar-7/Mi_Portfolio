@@ -23,11 +23,12 @@ const Skills          = named(() => import('@/components/sections/Skills'), 'Ski
 const About           = named(() => import('@/components/sections/About'), 'About')
 const Contact         = named(() => import('@/components/sections/Contact'), 'Contact')
 
+// Evidence first (work), then how it was done; method and stack come after
 const SECTIONS = [
-  ['process', Process],
   ['featured', FeaturedProject],
-  ['experience', Experience],
   ['projects', Projects],
+  ['experience', Experience],
+  ['process', Process],
   ['skills', Skills],
   ['about', About],
   ['contact', Contact],
@@ -98,12 +99,15 @@ export default function App() {
 
             <ScrollProgress />
             <Navbar />
-            <main className="relative">
+            <main id="contenido" tabIndex={-1} className="relative outline-none">
               <Hero ready={introDone} fromIntro={playIntro} />
+              {/* A failing section drops out on its own instead of blanking the page */}
               {SECTIONS.map(([key, Section]) => (
-                <Suspense key={key} fallback={<SectionFallback />}>
-                  <Section />
-                </Suspense>
+                <ErrorBoundary key={key} fallback={null}>
+                  <Suspense fallback={<SectionFallback />}>
+                    <Section />
+                  </Suspense>
+                </ErrorBoundary>
               ))}
             </main>
             <Footer />

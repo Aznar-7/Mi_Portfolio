@@ -99,6 +99,8 @@ export default function Circuit({ color = [139, 123, 255] }) {
       const rect = canvas.getBoundingClientRect()
       dpr = Math.min(window.devicePixelRatio || 1, 2)
       w = rect.width; h = rect.height
+      // Hidden or collapsed container (preview panes, iframes): nothing to draw
+      if (!w || !h) return
       for (const c of [canvas, board]) { c.width = w * dpr; c.height = h * dpr }
       traces = buildTraces(Math.ceil(w / CELL), Math.ceil(h / CELL))
       lengths = traces.map(polylineLength)
@@ -121,6 +123,8 @@ export default function Circuit({ color = [139, 123, 255] }) {
     }
 
     const render = (now) => {
+      // drawImage throws on a 0x0 source canvas
+      if (!w || !h) return now
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, w, h)
       ctx.drawImage(board, 0, 0, w, h)

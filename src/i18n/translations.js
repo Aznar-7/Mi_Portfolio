@@ -1,7 +1,8 @@
 export const translations = {
   es: {
     nav: {
-      project:    'Proyecto',
+      skip:       'Saltar al contenido',
+      process:    'Proceso',
       experience: 'Experiencia',
       projects:   'Proyectos',
       skills:     'Stack',
@@ -78,7 +79,8 @@ export const translations = {
 
   en: {
     nav: {
-      project:    'Project',
+      skip:       'Skip to content',
+      process:    'Process',
       experience: 'Experience',
       projects:   'Projects',
       skills:     'Stack',
