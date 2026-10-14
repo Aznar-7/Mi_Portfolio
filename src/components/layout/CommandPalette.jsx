@@ -86,7 +86,7 @@ export function CommandPalette() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[9999] flex items-start justify-center bg-[var(--bg-base)]/85 px-4 pt-[15vh]"
+          className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/60 px-4 pt-[15vh] backdrop-blur-sm"
           onClick={close}
         >
           <motion.div
@@ -98,7 +98,7 @@ export function CommandPalette() {
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             onAnimationStart={() => inputRef.current?.focus()}
-            className="w-full max-w-lg overflow-hidden rounded-[2px] border border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
+            className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 border-b border-[var(--line)] px-4">
@@ -113,7 +113,7 @@ export function CommandPalette() {
                 aria-activedescendant={results[active] ? `cmd-${results[active].id}` : undefined}
                 className="flex-1 bg-transparent py-4 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               />
-              <kbd className="rounded-[2px] border border-[var(--line)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]">Esc</kbd>
+              <kbd className="rounded border border-[var(--line)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]">Esc</kbd>
             </div>
 
             <ul id="command-results" role="listbox" className="max-h-[60vh] overflow-y-auto p-2">
@@ -131,7 +131,7 @@ export function CommandPalette() {
                     onMouseMove={() => setActive(i)}
                     onClick={() => run(action)}
                     className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-[2px] px-3 py-2.5 text-sm transition-colors',
+                      'flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                       i === active ? 'bg-white/[0.06] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
                     )}
                   >

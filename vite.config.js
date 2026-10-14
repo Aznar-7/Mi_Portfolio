@@ -19,8 +19,8 @@ export default defineConfig({
         short_name: 'Vicente',
         lang: 'es',
         description: 'Vicente Aznar, Full Stack Developer',
-        theme_color: '#0d0c0a',
-        background_color: '#0d0c0a',
+        theme_color: '#09090c',
+        background_color: '#09090c',
         display: 'standalone',
         icons: [
           {

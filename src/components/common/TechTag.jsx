@@ -8,7 +8,7 @@ export function TechTag({ name, size = 'sm' }) {
     <span
       style={entry ? { '--brand': entry.brand } : undefined}
       className={cn(
-        'group/tag inline-flex items-center rounded-[2px] border border-[var(--line)] text-[var(--text-secondary)] transition-[border-color,color,transform] duration-200 hover:-translate-y-px hover:border-[var(--line-strong)] hover:text-[var(--text-primary)]',
+        'group/tag inline-flex items-center rounded-md border border-[var(--line)] text-[var(--text-secondary)] transition-[border-color,color,transform] duration-200 hover:-translate-y-px hover:border-[var(--line-strong)] hover:text-[var(--text-primary)]',
         size === 'md' ? 'h-9 gap-2 px-3 text-sm' : 'h-7 gap-1.5 px-2.5 text-xs',
       )}
     >

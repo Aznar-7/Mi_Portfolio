@@ -48,13 +48,13 @@ function LangToggle({ lang, onToggle }) {
     <button
       onClick={onToggle}
       aria-label={lang === 'es' ? 'Switch to English' : 'Cambiar a español'}
-      className="relative flex h-10 shrink-0 items-center rounded-[2px] border border-[var(--line)] p-0.5 text-[11px] font-semibold"
+      className="relative flex h-10 shrink-0 items-center rounded-full border border-[var(--line)] p-0.5 text-[11px] font-semibold"
     >
       {['es', 'en'].map((code) => (
         <span
           key={code}
           className={cn(
-            'relative z-10 rounded-[2px] px-3 py-2 uppercase transition-colors duration-200',
+            'relative z-10 rounded-full px-3 py-2 uppercase transition-colors duration-200',
             lang === code ? 'text-[var(--bg-base)]' : 'text-[var(--text-muted)]',
           )}
         >
@@ -62,7 +62,7 @@ function LangToggle({ lang, onToggle }) {
           {lang === code && (
             <motion.span
               layoutId="lang-pill"
-              className="absolute inset-0 -z-10 rounded-[2px] bg-[var(--accent)]"
+              className="absolute inset-0 -z-10 rounded-full bg-[var(--text-primary)]"
               transition={{ type: 'spring', stiffness: 420, damping: 34 }}
             />
           )}
@@ -112,7 +112,7 @@ export function Navbar() {
     <>
       <a
         href="#contenido"
-        className="sr-only z-[60] rounded-[2px] bg-[var(--text-primary)] px-4 py-2.5 text-sm font-medium text-[var(--bg-base)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-[60] rounded-lg bg-[var(--text-primary)] px-4 py-2.5 text-sm font-medium text-[var(--bg-base)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
         {T.skip}
       </a>
@@ -126,7 +126,7 @@ export function Navbar() {
           'fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-300',
           atTop && !mobileOpen
             ? 'border-transparent bg-transparent'
-            : 'border-[var(--line)] bg-[var(--bg-base)]/95',
+            : 'border-[var(--line)] bg-[var(--bg-base)]/80 backdrop-blur-xl',
         )}
       >
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-5 sm:px-6">
@@ -149,14 +149,14 @@ export function Navbar() {
                     onMouseEnter={playHover}
                     aria-current={activeId === id ? 'true' : undefined}
                     className={cn(
-                      'relative block rounded-[2px] px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
+                      'relative block rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200',
                       activeId === id ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]',
                     )}
                   >
                     {activeId === id && (
                       <motion.span
                         layoutId="nav-pill"
-                        className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-[var(--accent)]"
+                        className="absolute inset-0 -z-10 rounded-full bg-white/[0.07]"
                         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       />
                     )}
@@ -175,7 +175,7 @@ export function Navbar() {
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
               aria-pressed={!isMuted}
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-[2px] border border-[var(--line)] transition-colors hover:text-[var(--text-primary)]',
+                'flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] transition-colors hover:text-[var(--text-primary)]',
                 isMuted ? 'text-[var(--text-muted)]' : 'text-[var(--accent-hover)]',
               )}
             >
@@ -185,7 +185,7 @@ export function Navbar() {
               onClick={() => { playClick(); setMobileOpen((v) => !v) }}
               aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={mobileOpen}
-              className="flex h-10 w-10 items-center justify-center rounded-[2px] border border-[var(--line)] text-[var(--text-secondary)] md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] text-[var(--text-secondary)] md:hidden"
             >
               {mobileOpen ? <X size={15} /> : <Menu size={15} />}
             </button>
@@ -200,7 +200,7 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-[var(--bg-base)] md:hidden"
+            className="fixed inset-0 z-40 bg-[var(--bg-base)]/97 backdrop-blur-xl md:hidden"
             onClick={() => setMobileOpen(false)}
           >
             <nav aria-label="Principal" className="flex h-full flex-col justify-center px-8" onClick={(e) => e.stopPropagation()}>

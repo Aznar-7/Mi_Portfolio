@@ -20,7 +20,7 @@ const LABELS = {
   en: { main: 'Download CV', done: 'Downloaded', es: 'Spanish CV', en: 'English CV', both: 'Both (.zip)', choose: 'Choose resume language' },
 }
 
-const ITEM = 'flex w-full min-w-0 items-center gap-2 rounded-[2px] px-3 py-2.5 text-left text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]'
+const ITEM = 'flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]'
 
 export function ResumeDownloadMenu({ className = '' }) {
   const [open, setOpen] = useState(false)
@@ -58,12 +58,12 @@ export function ResumeDownloadMenu({ className = '' }) {
         type="button"
         onClick={() => download(site.resumes[lang])}
         onMouseEnter={playHover}
-        className="group flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-l-[2px] border border-r-0 border-[var(--line-strong)] px-5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.04] active:scale-[0.98]"
+        className="group flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-l-[10px] border border-r-0 border-[var(--line-strong)] px-5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.04] active:scale-[0.98]"
       >
         <span className="relative h-4 w-4 shrink-0 overflow-hidden">
           <AnimatePresence initial={false} mode="popLayout">
             {done ? (
-              <motion.span key="done" className="absolute inset-0 text-[var(--accent-hover)]"
+              <motion.span key="done" className="absolute inset-0 text-emerald-300"
                 initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
                 <Check size={16} aria-hidden="true" />
@@ -87,7 +87,7 @@ export function ResumeDownloadMenu({ className = '' }) {
         aria-label={L.choose}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex h-11 shrink-0 items-center justify-center rounded-r-[2px] border border-[var(--line-strong)] px-3 text-[var(--text-secondary)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
+        className="flex h-11 shrink-0 items-center justify-center rounded-r-[10px] border border-[var(--line-strong)] px-3 text-[var(--text-secondary)] transition-colors hover:bg-white/[0.04] hover:text-[var(--text-primary)]"
       >
         <ChevronDown size={15} aria-hidden="true" className={cn('transition-transform duration-300', open && 'rotate-180')} />
       </button>
@@ -100,7 +100,7 @@ export function ResumeDownloadMenu({ className = '' }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute left-0 top-[calc(100%+0.5rem)] z-50 min-w-[13rem] origin-top-left overflow-hidden rounded-[2px] border border-[var(--line-strong)] bg-[var(--bg-elevated)] p-1.5 shadow-2xl"
+            className="absolute left-0 top-[calc(100%+0.5rem)] z-50 min-w-[13rem] origin-top-left overflow-hidden rounded-xl border border-[var(--line-strong)] bg-[var(--bg-elevated)] p-1.5 shadow-2xl"
           >
             {['es', 'en'].map((id) => (
               <button key={id} type="button" role="menuitem" onMouseEnter={playSelect} onClick={() => download(site.resumes[id])} className={ITEM}>

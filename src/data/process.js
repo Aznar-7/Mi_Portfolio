@@ -2,7 +2,6 @@
 export const processSteps = [
   {
     id: 'understand',
-    project: 'Orden 66',
     title: { es: 'Entender', en: 'Understand' },
     detail: {
       es: 'Relevo el problema con quien lo vive: procesos, reglas de negocio, restricciones y qué significa que funcione.',
@@ -15,7 +14,6 @@ export const processSteps = [
   },
   {
     id: 'design',
-    project: 'UTN Hub',
     title: { es: 'Diseñar', en: 'Design' },
     detail: {
       es: 'Modelo de datos, arquitectura y contrato de la API; flujos e interfaz pensados antes de escribir código.',
@@ -28,7 +26,6 @@ export const processSteps = [
   },
   {
     id: 'build',
-    project: 'Eco Records',
     title: { es: 'Construir', en: 'Build' },
     detail: {
       es: 'Frontend, backend y, cuando el problema lo pide, hardware. Código legible y fácil de mantener.',
@@ -41,7 +38,6 @@ export const processSteps = [
   },
   {
     id: 'ship',
-    project: 'UTN Hub',
     title: { es: 'Desplegar', en: 'Ship' },
     detail: {
       es: 'Servidores Linux, reverse proxy, certificados y dominio. Lo dejo andando en producción, no en mi máquina.',
@@ -54,7 +50,6 @@ export const processSteps = [
   },
   {
     id: 'iterate',
-    project: 'Porta Hnos',
     title: { es: 'Iterar', en: 'Iterate' },
     detail: {
       es: 'Escucho a quien lo usa y mejoro lo que ya está en producción, sin romper lo que funciona.',

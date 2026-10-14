@@ -11,7 +11,7 @@ export function HeroName({ as: Tag = 'span', layoutId, reveal = false, className
   const words = site.name.split(' ')
 
   return (
-    <Tag className={`font-wide block text-[clamp(3rem,10vw,8rem)] font-semibold leading-[0.88] tracking-[-0.04em] text-[var(--text-primary)] ${className}`}>
+    <Tag className={`block text-[clamp(3.6rem,12vw,9.5rem)] font-semibold leading-[0.86] tracking-[-0.055em] text-[var(--text-primary)] ${className}`}>
       <motion.span layoutId={layoutId} transition={{ duration: 0.9, ease: EASE }} className="block">
         {words.map((word, i) => (
           <Fragment key={word}>

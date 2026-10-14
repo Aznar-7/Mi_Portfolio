@@ -13,12 +13,13 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 6px;
-  height: 6px;
-  background: var(--accent-hover);
+  width: 8px;
+  height: 8px;
+  background: white;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   will-change: transform;
+  box-shadow: 0 0 10px rgba(124,106,247,0.8);
 }
 
 .target-cursor-corner {
@@ -27,8 +28,9 @@
   top: 50%;
   width: 14px;
   height: 14px;
-  border: 2px solid var(--text-primary);
+  border: 3px solid white;
   will-change: transform;
+  filter: drop-shadow(0 0 4px rgba(124, 106, 247, 0.8));
 }
 
 .corner-tl {

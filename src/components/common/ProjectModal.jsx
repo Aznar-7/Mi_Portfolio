@@ -17,9 +17,9 @@ function githubLinks(githubUrl) {
   return githubUrl ? [{ url: githubUrl }] : []
 }
 
-export function ProjectModal({ project, lang, T, onClose }) {
+export function ProjectModal({ project, lang, T, onClose, startIndex = 0 }) {
   const reduced = useReducedMotion()
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(startIndex)
   const panelRef = useRef(null)
   const closeRef = useRef(null)
 
@@ -53,7 +53,7 @@ export function ProjectModal({ project, lang, T, onClose }) {
 
   return createPortal(
     <motion.div
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-[var(--bg-base)]/90 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-6"
       initial={reduced ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -70,14 +70,14 @@ export function ProjectModal({ project, lang, T, onClose }) {
         animate={{ opacity: 1, y: 0 }}
         exit={reduced ? undefined : { opacity: 0, y: 24 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        className="relative max-h-[92svh] w-full max-w-4xl overflow-y-auto overscroll-contain rounded-t-[2px] border border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.8)] sm:rounded-[2px]"
+        className="relative max-h-[92svh] w-full max-w-4xl overflow-y-auto overscroll-contain rounded-t-2xl border border-[var(--line-strong)] bg-[var(--bg-elevated)] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.8)] sm:rounded-2xl"
       >
         <button
           ref={closeRef}
           type="button"
           onClick={onClose}
           aria-label={T.close}
-          className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-[2px] border border-[var(--line-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]"
+          className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white backdrop-blur-md transition-colors hover:bg-black/70"
         >
           <X size={18} aria-hidden="true" />
         </button>

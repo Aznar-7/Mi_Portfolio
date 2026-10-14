@@ -14,14 +14,13 @@ export const translations = {
       available:   'Disponible para nuevos roles',
       last_push:   (ago, repo) => `Último push ${ago} en ${repo}`,
       role:        'Full Stack Developer',
-      description: 'Pienso los problemas como ingeniero y los resuelvo de punta a punta: la interfaz, la API, el servidor donde corre y, cuando hace falta, el hardware. Estudio Ingeniería en Sistemas e IA en la UTN.',
-      local_time:  (t) => `Córdoba, Argentina, ${t} (UTC−3)`,
+      description: 'Estudio Ingeniería en Sistemas y construyo software de punta a punta: entiendo el problema, diseño la arquitectura y la interfaz, lo desarrollo y lo dejo andando en producción. Cuando hace falta, también el hardware.',
       cta_primary: 'Ver proyectos',
       open_os:     'Abrir el OS',
       open_os_hint: 'Un escritorio Ubuntu simulado, con terminal y apps',
       portrait_alt: 'Retrato de Vicente Aznar',
       facts: [
-        { term: 'Ahora',    detail: 'Full Stack en Porta Hnos, cofundador de Gavia' },
+        { term: 'Ahora',    detail: 'Full Stack Developer en Porta Hnos' },
         { term: 'Estudio',  detail: 'Ing. en Sistemas e IA, UTN' },
         { term: 'Idiomas',  detail: 'Español nativo, inglés C1' },
       ],
@@ -29,12 +28,10 @@ export const translations = {
     process: {
       title:    'Del problema a producción',
       subtitle: 'Me ocupo del ciclo completo. Así trabajo, con un ejemplo real en cada etapa.',
-      flow_label: 'Un proyecto, etapa por etapa',
-      flow_hint:  'Pasá el mouse por una etapa para fijarla',
     },
     featured: {
-      label:      'Proyecto principal',
       active:     'En desarrollo activo',
+      facts:      { status: 'Estado', live: 'En producción', stack: 'Stack' },
       view:       'Visitar UTN Hub',
       arch_label: 'Recorrido de un request',
       arch_hint:  'Pasá el mouse por una capa para ver qué hace',
@@ -42,7 +39,6 @@ export const translations = {
     experience: {
       title:             'Experiencia',
       subtitle:          'Dónde trabajé y qué estudio.',
-      count:             (w, e) => `${w} trabajos y ${e} carreras desde 2023`,
       work_title:        'Trabajo',
       education_title:   'Formación',
     },
@@ -68,7 +64,6 @@ export const translations = {
     skills: {
       title:    'Stack',
       subtitle: 'Herramientas que uso en proyectos reales, del componente al servidor y al circuito.',
-      count:    (n, g) => `${n} herramientas en ${g} áreas`,
     },
     about: {
       title: 'Sobre mí',
@@ -97,14 +92,13 @@ export const translations = {
       available:   'Open to new roles',
       last_push:   (ago, repo) => `Last push ${ago} to ${repo}`,
       role:        'Full Stack Developer',
-      description: 'I approach problems as an engineer and solve them end to end: the interface, the API, the server it runs on and, when needed, the hardware. I study Systems Engineering and AI at UTN.',
-      local_time:  (t) => `Córdoba, Argentina, ${t} (UTC−3)`,
+      description: 'I study Systems Engineering and build software end to end: I understand the problem, design the architecture and the interface, build it and keep it running in production. When needed, the hardware too.',
       cta_primary: 'See projects',
       open_os:     'Open the OS',
       open_os_hint: 'A simulated Ubuntu desktop, with a terminal and apps',
       portrait_alt: 'Portrait of Vicente Aznar',
       facts: [
-        { term: 'Now',       detail: 'Full Stack at Porta Hnos, co-founder of Gavia' },
+        { term: 'Now',       detail: 'Full Stack Developer at Porta Hnos' },
         { term: 'Studying',  detail: 'Systems Engineering and AI, UTN' },
         { term: 'Languages', detail: 'Native Spanish, C1 English' },
       ],
@@ -112,12 +106,10 @@ export const translations = {
     process: {
       title:    'From problem to production',
       subtitle: 'I handle the whole cycle. This is how I work, with a real example at each stage.',
-      flow_label: 'One project, stage by stage',
-      flow_hint:  'Hover a stage to pin it',
     },
     featured: {
-      label:      'Featured project',
       active:     'Actively in development',
+      facts:      { status: 'Status', live: 'Live at', stack: 'Stack' },
       view:       'Visit UTN Hub',
       arch_label: 'How a request travels',
       arch_hint:  'Hover a layer to see what it does',
@@ -125,7 +117,6 @@ export const translations = {
     experience: {
       title:             'Experience',
       subtitle:          'Where I have worked and what I study.',
-      count:             (w, e) => `${w} roles and ${e} degrees since 2023`,
       work_title:        'Work',
       education_title:   'Education',
     },
@@ -151,7 +142,6 @@ export const translations = {
     skills: {
       title:    'Stack',
       subtitle: 'Tools I use on real projects, from component to server to circuit.',
-      count:    (n, g) => `${n} tools across ${g} areas`,
     },
     about: {
       title: 'About',

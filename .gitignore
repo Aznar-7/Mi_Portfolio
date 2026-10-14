@@ -28,6 +28,3 @@ CLAUDE.MD
 *.njsproj
 *.sln
 *.sw?
-
-# Impeccable review captures (local evidence only)
-.impeccable/review/

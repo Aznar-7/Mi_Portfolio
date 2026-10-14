@@ -58,7 +58,7 @@ function pointAt(pts, dist) {
  * Animated circuit-board background. Signals travel along traces; traces
  * near the pointer light up and attract new signals; click fires a burst.
  */
-export default function Circuit({ color = [226, 154, 108] }) {
+export default function Circuit({ color = [139, 123, 255] }) {
   const canvasRef = useRef(null)
   const reduced = useReducedMotion()
   const [r, g, b] = color
@@ -81,8 +81,8 @@ export default function Circuit({ color = [226, 154, 108] }) {
       bctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       bctx.clearRect(0, 0, w, h)
       bctx.lineWidth = 1
-      bctx.strokeStyle = 'rgba(201,125,79,0.13)' // dormant copper
-      bctx.fillStyle = 'rgba(201,125,79,0.22)'
+      bctx.strokeStyle = 'rgba(255,255,255,0.055)'
+      bctx.fillStyle = 'rgba(255,255,255,0.09)'
       for (const t of traces) {
         bctx.beginPath()
         t.forEach(([x, y], i) => (i ? bctx.lineTo(x, y) : bctx.moveTo(x, y)))

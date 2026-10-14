@@ -12,11 +12,7 @@ export function Skills() {
 
   return (
     <SectionWrapper id="skills">
-      <SectionHeading
-        title={T.title}
-        subtitle={T.subtitle}
-        annotation={T.count(skillGroups.flatMap((g) => g.items).length, skillGroups.length)}
-      />
+      <SectionHeading title={T.title} subtitle={T.subtitle} />
       <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
         {skillGroups.map((group) => (
           <div key={group.id} className="grid gap-4 py-6 md:grid-cols-[12rem_1fr] md:gap-10">

@@ -19,10 +19,9 @@ function groupByHost(flow) {
 }
 
 /**
- * A signal travelling through a sequence of stops, drawn like a trace on a
- * board: one track, a pad per stop, optional hosts as dimension lines.
- * Auto-plays while on screen; hovering or focusing a stop pins it.
- * Nodes: { id, name, tech, detail, note?, host? } (name/detail/note localized).
+ * A request travelling through a system's layers, drawn like a blueprint:
+ * one track, a marker per layer, hosts as dimension lines. Auto-plays while
+ * on screen; hovering or focusing a layer pins it and explains it.
  */
 export function ArchitectureFlow({ flow, lang, title, hint }) {
   const reduced = useReducedMotion()
@@ -58,14 +57,14 @@ export function ArchitectureFlow({ flow, lang, title, hint }) {
       </figcaption>
 
       {/* Hosts as dimension lines over the layers they run (desktop) */}
-      {flow.some((n) => n.host) && <div className={cn('mb-6 hidden md:grid', COLS)}>
+      <div className={cn('mb-6 hidden md:grid', COLS)}>
         {groupByHost(flow).map((g, i) => (
           <div key={g.host + i} style={{ gridColumn: `span ${g.count}` }} className="px-3">
             <span className="block text-xs text-[var(--text-muted)]">{g.host}</span>
             <span aria-hidden="true" className="mt-2 block h-2 border-x border-t border-[var(--line-strong)]" />
           </div>
         ))}
-      </div>}
+      </div>
 
       <div className={cn('relative grid auto-rows-fr md:auto-rows-auto', COLS)}>
         {/* Track: vertical on mobile, horizontal on desktop */}
@@ -77,7 +76,7 @@ export function ArchitectureFlow({ flow, lang, title, hint }) {
           {!reduced && (
             <span
               className={cn(
-                'absolute left-1/2 top-[calc(var(--p)*100%)] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-hover)] md:left-[calc(var(--p)*100%)] md:top-1/2',
+                'absolute left-1/2 top-[calc(var(--p)*100%)] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_10px_3px_var(--accent-hover)] md:left-[calc(var(--p)*100%)] md:top-1/2',
                 shown === 0 ? 'opacity-0' : 'transition-[top,left] duration-700 ease-out',
               )}
             />
@@ -111,7 +110,7 @@ export function ArchitectureFlow({ flow, lang, title, hint }) {
                   {l(n.name, lang)}
                 </span>
                 <span className="mt-0.5 block text-xs text-[var(--text-muted)]">
-                  {n.host && <span className="md:hidden">{n.host}, </span>}{n.tech}
+                  <span className="md:hidden">{n.host}, </span>{n.tech}
                 </span>
               </span>
             </button>
@@ -131,9 +130,6 @@ export function ArchitectureFlow({ flow, lang, title, hint }) {
             <span className="text-sm font-normal text-[var(--text-muted)]">{node.tech}</span>
           </p>
           <p className="mt-1.5 max-w-3xl text-[15px] leading-relaxed text-[var(--text-secondary)]">{l(node.detail, lang)}</p>
-          {node.note && (
-            <p className="mt-3 max-w-3xl border-l border-[var(--accent)] pl-3 text-sm leading-relaxed text-[var(--text-muted)]">{l(node.note, lang)}</p>
-          )}
         </motion.div>
       </div>
     </figure>

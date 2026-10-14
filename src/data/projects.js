@@ -243,6 +243,36 @@ export const projects = [
     category: 'iot',
     status: 'completed',
     tech: ['C/C++', 'ESP32', 'Arduino', 'FreeRTOS', 'React Native'],
+    architecture: [
+      {
+        layer: 'Hardware',
+        detail: {
+          es: 'ESP32 y Arduino, motores DC, pantalla OLED de estado.',
+          en: 'ESP32 and Arduino, DC motors, OLED status display.',
+        },
+      },
+      {
+        layer: { es: 'Sensores', en: 'Sensors' },
+        detail: {
+          es: 'Ultrasónico e infrarrojos para esquivar obstáculos; temperatura y humedad.',
+          en: 'Ultrasonic and infrared for obstacle avoidance; temperature and humidity.',
+        },
+      },
+      {
+        layer: 'Firmware',
+        detail: {
+          es: 'C++ con FreeRTOS para multitarea.',
+          en: 'C++ on FreeRTOS for multitasking.',
+        },
+      },
+      {
+        layer: 'App',
+        detail: {
+          es: 'React Native: comandos manuales y telemetría en tiempo real.',
+          en: 'React Native: manual commands and real-time telemetry.',
+        },
+      },
+    ],
     image: null,
     gallery: [],
     liveUrl: null,

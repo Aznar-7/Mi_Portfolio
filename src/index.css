@@ -1,7 +1,4 @@
 @import "tailwindcss";
-/* Archivo and Chivo Mono: Omnibus-Type, Buenos Aires. Self-hosted, no third-party font requests */
-@import "@fontsource-variable/archivo/standard.css";
-@import "@fontsource-variable/chivo-mono/wght.css";
 
 @theme {
   --animate-shimmer: shimmer 2s infinite;
@@ -10,45 +7,27 @@
   }
 }
 
-/* Archivo's width axis at its widest: the display voice, like equipment lettering */
-@utility font-wide {
-  font-stretch: 125%;
-}
-
-/* Silkscreen annotation: small mono label that always carries real data */
-@utility silkscreen {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Design tokens: a matte circuit board ────────────────────── */
+/* ── Design tokens ───────────────────────────────────────────── */
 :root {
-  /* Board: solder-mask black with two warmer layers */
-  --bg-base:     #0d0c0a;
-  --bg-elevated: #14120f;
-  --bg-surface:  #1b1814;
+  --bg-base:     #09090c;
+  --bg-elevated: #0f0f14;
+  --bg-surface:  #14141a;
 
-  --line:        rgba(237, 232, 222, 0.09);
-  --line-strong: rgba(237, 232, 222, 0.17);
+  --line:        rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
 
-  /* Silkscreen ink (all AA on every board layer) */
-  --text-primary:   #ede8de;
-  --text-secondary: #b5ad9f;
-  --text-muted:     #928a7d;
+  --text-primary:   #ededf2;
+  --text-secondary: #a3a3b5;
+  --text-muted:     #838397;
 
-  /* Copper: traces, actions, the active state */
-  --accent:       #c97d4f;
-  --accent-hover: #e29a6c;
-  --accent-glow:  rgba(226, 154, 108, 0.16);
+  --accent:       #8b7bff;
+  --accent-hover: #a99dff;
+  --accent-glow:  rgba(139, 123, 255, 0.16);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --font-sans: 'Archivo Variable', system-ui, sans-serif;
-  --font-mono: 'Chivo Mono Variable', ui-monospace, monospace;
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 
   color-scheme: dark;
 }
@@ -66,8 +45,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scrollbar-width: thin;
-    scrollbar-color: rgba(201, 125, 79, 0.35) transparent;
-    caret-color: var(--accent-hover);
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -81,26 +59,26 @@
 
   ::-webkit-scrollbar             { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track       { background: transparent; }
-  ::-webkit-scrollbar-thumb       { background: rgba(201, 125, 79, 0.35); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(226, 154, 108, 0.6); }
+  ::-webkit-scrollbar-thumb       { background: rgba(255, 255, 255, 0.12); border-radius: 100px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
 
-  ::selection { background: var(--accent); color: var(--bg-base); }
+  ::selection { background: var(--accent); color: #fff; }
 
   :focus-visible {
     outline: 2px solid var(--accent-hover);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 6px;
   }
 
+  /* Film grain (pointer devices only, cheap static texture) */
   @media (pointer: fine) {
-    /* Matte solder-mask texture (cheap static noise) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       z-index: 998;
       pointer-events: none;
-      opacity: 0.04;
+      opacity: 0.035;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 200px 200px;
     }
