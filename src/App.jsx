@@ -1,47 +1,38 @@
-import { lazy, Suspense, useState, useEffect, useCallback } from 'react'
-import { AnimatePresence, LayoutGroup } from 'motion/react'
+import { lazy, Suspense, useState, useEffect } from 'react'
+import { AnimatePresence } from 'motion/react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { LanguageProvider } from '@/contexts/LanguageContext'
+import { LanguageProvider, useLang } from '@/contexts/LanguageContext'
 import { SoundProvider } from '@/contexts/SoundContext'
-import TargetCursor from '@/components/common/TargetCursor'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
-import { ScrollProgress } from '@/components/layout/ScrollProgress'
-import { Intro } from '@/components/layout/Intro'
-import { shouldPlayIntro } from '@/lib/intro'
-import { Hero } from '@/components/sections/Hero'
+import { Hero } from '@/components/board/Hero'
+import { Work } from '@/components/board/Work'
+import { Shop } from '@/components/board/Shop'
+import { Path } from '@/components/board/Path'
+import { Contact, Console, Footer, SecretToast } from '@/components/board/Closing'
+import { installEggs } from '@/lib/eggs'
 
-const named = (loader, name) => lazy(() => loader().then((m) => ({ default: m[name] })))
+const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
-const UbuntuOS        = named(() => import('@/components/layout/UbuntuOS'), 'UbuntuOS')
-const CommandPalette  = named(() => import('@/components/layout/CommandPalette'), 'CommandPalette')
-const Process         = named(() => import('@/components/sections/Process'), 'Process')
-const FeaturedProject = named(() => import('@/components/sections/FeaturedProject'), 'FeaturedProject')
-const Experience      = named(() => import('@/components/sections/Experience'), 'Experience')
-const Projects        = named(() => import('@/components/sections/Projects'), 'Projects')
-const Skills          = named(() => import('@/components/sections/Skills'), 'Skills')
-const About           = named(() => import('@/components/sections/About'), 'About')
-const Contact         = named(() => import('@/components/sections/Contact'), 'Contact')
-
-// Evidence first (work), then how it was done; method and stack come after
-const SECTIONS = [
-  ['featured', FeaturedProject],
-  ['projects', Projects],
-  ['experience', Experience],
-  ['process', Process],
-  ['skills', Skills],
-  ['about', About],
-  ['contact', Contact],
-]
-
-// Reserves space while a lazy section loads so the scrollbar doesn't jump
-const SectionFallback = () => <div className="min-h-[70vh]" aria-hidden="true" />
+function Board() {
+  const { lang } = useLang()
+  return (
+    <div className="site">
+      <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+      <Hero />
+      <main>
+        <Work />
+        <Shop />
+        <Path />
+        <Contact />
+        <Console />
+      </main>
+      <Footer />
+      <SecretToast />
+    </div>
+  )
+}
 
 export default function App() {
-  const [playIntro] = useState(shouldPlayIntro)
-  const [introDone, setIntroDone] = useState(!playIntro)
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
-  const finishIntro = useCallback(() => setIntroDone(true), [])
 
   useEffect(() => {
     const open = () => setUbuntuOpen(true)
@@ -54,11 +45,16 @@ export default function App() {
     }
     document.addEventListener('open-ubuntu', open)
     document.addEventListener('keydown', onKey)
+    const uninstall = installEggs()
     return () => {
       document.removeEventListener('open-ubuntu', open)
       document.removeEventListener('keydown', onKey)
+      uninstall()
     }
   }, [])
+
+  // the page powered down to open the OS (lib/power); bring it back when the OS closes
+  useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
 
   return (
     <SoundProvider>
@@ -72,47 +68,7 @@ export default function App() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
-
-        {introDone && (
-          <ErrorBoundary fallback={null}>
-            <Suspense fallback={null}>
-              <CommandPalette />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-
-        {introDone && !ubuntuOpen && (
-          <TargetCursor
-            spinDuration={2}
-            hideDefaultCursor={false}
-            parallaxOn
-            hoverDuration={0.2}
-            targetSelector="a, button, .cursor-target, [role='button']"
-          />
-        )}
-
-        {!ubuntuOpen && (
-          <LayoutGroup>
-            <AnimatePresence>
-              {!introDone && <Intro key="intro" onDone={finishIntro} />}
-            </AnimatePresence>
-
-            <ScrollProgress />
-            <Navbar />
-            <main id="contenido" tabIndex={-1} className="relative outline-none">
-              <Hero ready={introDone} fromIntro={playIntro} />
-              {/* A failing section drops out on its own instead of blanking the page */}
-              {SECTIONS.map(([key, Section]) => (
-                <ErrorBoundary key={key} fallback={null}>
-                  <Suspense fallback={<SectionFallback />}>
-                    <Section />
-                  </Suspense>
-                </ErrorBoundary>
-              ))}
-            </main>
-            <Footer />
-          </LayoutGroup>
-        )}
+        {!ubuntuOpen && <Board />}
       </LanguageProvider>
     </SoundProvider>
   )

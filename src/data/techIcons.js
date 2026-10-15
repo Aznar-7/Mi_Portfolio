@@ -1,5 +1,7 @@
 import {
   SiReact, SiReactHex,
+  SiKotlin, SiKotlinHex,
+  SiGradle, SiGradleHex,
   SiVite, SiViteHex,
   SiDjango, SiDjangoHex,
   SiPostgresql, SiPostgresqlHex,
@@ -35,6 +37,8 @@ import {
 const ICONS = {
   'React': [SiReact, SiReactHex],
   'React Native': [SiReact, SiReactHex],
+  Kotlin: [SiKotlin, SiKotlinHex],
+  Gradle: [SiGradle, SiGradleHex],
   'Vite': [SiVite, SiViteHex],
   'Django': [SiDjango, SiDjangoHex],
   'PostgreSQL': [SiPostgresql, SiPostgresqlHex],

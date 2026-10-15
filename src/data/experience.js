@@ -4,6 +4,7 @@ export const experience = [
     role: { es: 'Cofundador', en: 'Co-founder' },
     company: 'Gavia',
     period: { es: '2026 — hoy', en: '2026 — now' },
+    span: [2026, null], // [from, to]; null means ongoing
     impact: {
       es: [
         'Fundé con Agustín García y Benjamín Viberti un estudio que desarrolla y mantiene software a medida para empresas, con precio cerrado por etapa y el código siempre del cliente.',
@@ -22,6 +23,7 @@ export const experience = [
     role: { es: 'Full Stack Developer', en: 'Full Stack Developer' },
     company: 'Porta Hnos',
     period: { es: '2025 — hoy', en: '2025 — now' },
+    span: [2025, null], // [from, to]; null means ongoing
     impact: {
       es: [
         'Desarrollé cuatro sistemas internos completos con React, Django y PostgreSQL que reemplazaron procesos manuales. El tiempo de gestión interna bajó un 40%.',
@@ -42,6 +44,7 @@ export const experience = [
     role: { es: 'Pasante en software y desarrollo de productos', en: 'Software and product development intern' },
     company: 'Globant',
     period: { es: '2023', en: '2023' },
+    span: [2023, 2023], // [from, to]; null means ongoing
     impact: {
       es: [
         'Construimos en equipo un producto de gestión académica desde cero, de la definición al despliegue. Participé en diseño, organización del equipo, desarrollo y testing.',
@@ -56,12 +59,14 @@ export const experience = [
 export const academic = [
   {
     type: 'academic',
+    short: { es: 'Sistemas', en: 'Systems' },
     degree: {
       es: 'Ingeniería en Sistemas de Información',
       en: 'Information Systems Engineering',
     },
     institution: 'UTN — Universidad Tecnológica Nacional',
     period: { es: '2024 — hoy', en: '2024 — now' },
+    span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
         'Formación orientada al diseño, implementación, organización y control de sistemas de información para organizaciones.',
@@ -77,12 +82,14 @@ export const academic = [
   },
   {
     type: 'academic',
+    short: { es: 'IA', en: 'AI' },
     degree: {
       es: 'Licenciatura en Inteligencia Artificial',
       en: 'Bachelor of Science in Artificial Intelligence',
     },
     institution: 'UTN — Universidad Tecnológica Nacional',
     period: { es: '2024 — hoy', en: '2024 — now' },
+    span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
         'Implementación de modelos de lenguaje, aprendizaje automático y redes neuronales para resolver problemas complejos en diversos dominios.',

@@ -6,6 +6,10 @@ export const projects = [
   {
     id: 'utn-hub',
     title: 'UTN Hub',
+    summary: {
+      es: 'Plataforma académica para estudiantes de la UTN: calendario de parciales, apuntes compartidos y un gestor de notas que calcula los promedios solo. Corre en una VM mía en Oracle Cloud.',
+      en: 'An academic platform for UTN students: exam calendar, shared notes and a grade tracker that works out your averages for you. It runs on my own VM in Oracle Cloud.',
+    },
     tagline: {
       es: 'Plataforma académica para estudiantes de la UTN.',
       en: 'Academic platform for UTN students.',
@@ -107,6 +111,10 @@ export const projects = [
   {
     id: 'eco-records',
     title: 'Eco Records',
+    summary: {
+      es: 'Un tocadiscos a escala. La carcasa está impresa en 3D y adentro una Raspberry Pi Zero 2W mueve el plato, lee el tag NFC de cada disco y reproduce el álbum. Se maneja desde una app web en JavaScript puro, sin dependencias.',
+      en: 'A scale record player. The case is 3D printed, and inside a Raspberry Pi Zero 2W spins the platter, reads each record\'s NFC tag and plays the album. You control it from a web app in plain JavaScript, no dependencies.',
+    },
     tagline: {
       es: 'Tocadiscos en miniatura con hardware, carcasa y app propios.',
       en: 'Miniature record player with its own hardware, enclosure and app.',
@@ -158,6 +166,10 @@ export const projects = [
   {
     id: 'gavia',
     title: 'Gavia',
+    summary: {
+      es: 'El estudio de software que fundé con Agustín García y Benjamín Viberti en Córdoba. Diseñamos, construimos y mantenemos sistemas para empresas. El sitio está hecho en Astro y TypeScript.',
+      en: 'The software studio I founded with Agustín García and Benjamín Viberti in Córdoba. We design, build and maintain systems for companies. The site is built with Astro and TypeScript.',
+    },
     tagline: {
       es: 'Estudio de software a medida que cofundé en Córdoba.',
       en: 'Custom software studio I co-founded in Córdoba.',
@@ -182,6 +194,10 @@ export const projects = [
   {
     id: 'orden66-viandas',
     title: 'Orden 66 Viandas',
+    summary: {
+      es: 'Pedidos de viandas con cupos diarios. Roles de usuario y administrador, estados de pedido y stock validado en el backend: las reglas salen del negocio real.',
+      en: 'Meal orders with daily quotas. User and admin roles, order states and stock checked on the backend: the rules come from a real business.',
+    },
     tagline: {
       es: 'Gestión de pedidos de viandas con cupos diarios.',
       en: 'Meal order management with daily quotas.',
@@ -208,6 +224,10 @@ export const projects = [
   {
     id: 'camisetas-agv',
     title: 'Camisetas AGV',
+    summary: {
+      es: 'Tienda de camisetas de fútbol pensada primero para el celular: catálogo con filtros, carrito que sobrevive al refresh y talles con stock.',
+      en: 'A football jersey shop designed for the phone first: filterable catalog, a cart that survives a refresh, and sizes with stock.',
+    },
     tagline: {
       es: 'E-commerce de camisetas de fútbol, mobile first.',
       en: 'Mobile-first football jersey e-commerce.',
@@ -232,6 +252,10 @@ export const projects = [
   {
     id: 'autofull',
     title: 'AutoFull',
+    summary: {
+      es: 'Auto autónomo. El firmware en C++ sobre FreeRTOS reparte el trabajo entre motores, sensores y pantalla; una app en React Native manda comandos y recibe telemetría en tiempo real.',
+      en: 'An autonomous car. C++ firmware on FreeRTOS splits the work between motors, sensors and display; a React Native app sends commands and gets live telemetry back.',
+    },
     tagline: {
       es: 'Auto autónomo con ESP32, sensores y app de control.',
       en: 'Autonomous car with ESP32, sensors and a control app.',
