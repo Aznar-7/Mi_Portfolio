@@ -1,32 +1,82 @@
+// `usedIn` points each tool at the work that proves it: project ids from projects.js, or 'porta' for the job.
+// A tool with no entry has no public evidence yet, and the Taller section says so.
 export const skillGroups = [
   {
     id: 'frontend',
     label: { es: 'Frontend', en: 'Frontend' },
-    items: ['React', 'React Native', 'TypeScript', 'JavaScript', 'Astro', 'Vite', 'Tailwind CSS', 'HTML', 'CSS'],
+    sub: 'web',
+    items: ['React', 'TypeScript', 'JavaScript', 'Astro', 'Vite', 'Tailwind CSS', 'HTML', 'CSS'],
+    usedIn: {
+      React: ['utn-hub', 'orden66-viandas', 'camisetas-agv', 'porta'],
+      TypeScript: ['gavia'],
+      JavaScript: ['eco-records'],
+      Astro: ['gavia'],
+      Vite: ['utn-hub', 'camisetas-agv'],
+      'Tailwind CSS': ['utn-hub', 'orden66-viandas'],
+      HTML: ['utn-hub', 'gavia', 'orden66-viandas', 'camisetas-agv'],
+      CSS: ['utn-hub', 'gavia', 'orden66-viandas', 'camisetas-agv'],
+    },
+  },
+  {
+    id: 'mobile',
+    label: { es: 'Mobile', en: 'Mobile' },
+    sub: 'apps',
+    items: ['React Native', 'Kotlin', 'Gradle'],
+    usedIn: { 'React Native': ['autofull'], Kotlin: ['porta'], Gradle: ['porta'] },
   },
   {
     id: 'backend',
     label: { es: 'Backend', en: 'Backend' },
+    sub: 'apis',
     items: ['Python', 'Django', 'Flask', 'Node.js', 'Express', 'Java', 'Spring'],
+    usedIn: {
+      Python: ['utn-hub', 'eco-records', 'porta'],
+      Django: ['utn-hub', 'porta'],
+      Flask: ['eco-records'],
+      'Node.js': ['orden66-viandas'],
+      Express: ['orden66-viandas'],
+    },
   },
   {
     id: 'data',
     label: { es: 'Bases de datos', en: 'Databases' },
+    sub: 'sql',
     items: ['PostgreSQL', 'MySQL', 'SQL Server', 'SQLite'],
+    usedIn: { PostgreSQL: ['utn-hub', 'porta'], SQLite: ['orden66-viandas'] },
   },
   {
     id: 'infra',
     label: { es: 'Infraestructura', en: 'Infrastructure' },
+    sub: 'deploy',
     items: ['Linux', 'Nginx', 'Docker', 'Oracle Cloud', 'Vercel', 'Git', 'Jira'],
+    usedIn: {
+      Linux: ['utn-hub', 'eco-records'],
+      Nginx: ['utn-hub'],
+      'Oracle Cloud': ['utn-hub'],
+      Vercel: ['utn-hub', 'gavia', 'orden66-viandas'],
+      Git: ['utn-hub', 'eco-records', 'gavia', 'orden66-viandas', 'camisetas-agv', 'autofull', 'porta'],
+      Jira: ['porta'],
+    },
   },
   {
     id: 'hardware',
     label: { es: 'IoT y hardware', en: 'IoT and hardware' },
+    sub: 'firmware',
     items: ['C/C++', 'Arduino', 'ESP32', 'Raspberry Pi', 'FreeRTOS', '3D Modeling'],
+    usedIn: {
+      'C/C++': ['autofull'],
+      Arduino: ['autofull'],
+      ESP32: ['autofull'],
+      'Raspberry Pi': ['eco-records'],
+      FreeRTOS: ['autofull'],
+      '3D Modeling': ['eco-records'],
+    },
   },
   {
     id: 'other',
     label: { es: 'Paradigmas', en: 'Paradigms' },
+    sub: 'utn',
     items: ['Haskell', 'Prolog'],
+    usedIn: {},
   },
 ]

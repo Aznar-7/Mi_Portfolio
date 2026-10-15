@@ -1,0 +1,90 @@
+/* Middle-earth: the map itself, with the portfolio inked over it in red. Picking a place flies the
+   map toward it and a parchment note unrolls beside it. */
+.me{--ink:#2b1d10; --ink-2:#5a4128; --red:#8e2a1a; --paper:#ecd6a4;
+  position:fixed; inset:0; z-index:9000; display:grid; place-items:center; padding:clamp(8px,2vw,28px);
+  touch-action:none; overscroll-behavior:contain;
+  background:radial-gradient(ellipse at 50% 42%, #33251a 0%, #120d08 78%);
+  font-family:'IM Fell English', Georgia, 'Palatino Linotype', serif; color:var(--ink);
+  animation:me-in .7s ease both}
+@keyframes me-in{from{background-color:#f3e6c4; opacity:0}}
+.me-sheet{position:relative; overflow:hidden; width:min(100%, calc((100vh - 2 * clamp(8px,2vw,28px)) * 4 / 3)); aspect-ratio:4/3;
+  border-radius:4px; box-shadow:0 0 0 1px rgba(236,214,164,.18), 0 40px 90px rgba(0,0,0,.65); animation:me-unroll 1.1s cubic-bezier(.65,0,.25,1) both}
+@keyframes me-unroll{from{clip-path:inset(0 50% 0 50%); transform:scale(1.03)} to{clip-path:inset(0); transform:none}}
+
+/* the world: the image and the ink layer move together */
+.me-world{position:absolute; inset:0; transform-origin:0 0; transition:transform 1.1s cubic-bezier(.65,0,.2,1)}
+.me-world img{position:absolute; inset:0; width:100%; height:100%; display:block; user-select:none}
+.me-layer{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
+.me.zoomed .me-world img{filter:saturate(1.05) contrast(1.02)}
+
+.me-route{fill:none; stroke:var(--red); stroke-width:4.5; stroke-dasharray:.003 .006; stroke-linecap:round; opacity:.85}
+.me-reveal{fill:none; stroke:#fff; stroke-width:24; stroke-dasharray:1; stroke-dashoffset:1; animation:me-route 3s 1s ease-in-out forwards}
+@keyframes me-route{to{stroke-dashoffset:0}}
+
+/* places: red ink so they read as the clickable layer over the old map */
+.me-place{cursor:pointer; outline:none; opacity:0; animation:me-pop .45s var(--d) cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes me-pop{from{opacity:0} to{opacity:1}}
+.me-place .hit{fill:transparent}
+.me-place .ring{fill:rgba(241,223,180,.92); stroke:var(--red); stroke-width:3; transform-box:fill-box; transform-origin:center; transition:transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.me-place .dot{fill:var(--red)}
+.me-name{font:400 30px 'IM Fell English', Georgia, serif; fill:var(--red); paint-order:stroke; stroke:rgba(236,214,164,.95); stroke-width:8px; stroke-linejoin:round; transition:opacity .4s}
+.me-place:hover .ring,.me-place:focus-visible .ring,.me-place.on .ring{transform:scale(1.5)}
+.me-place:hover .me-name,.me-place:focus-visible .me-name,.me-place.on .me-name{fill:#5e1206}
+.me-place.on .ring{animation:me-pulse 1.8s ease-out infinite}
+@keyframes me-pulse{50%{transform:scale(1.9)}}
+.me-place:focus-visible .hit{stroke:var(--red); stroke-width:2; stroke-dasharray:6 6}
+.me.zoomed .me-place:not(.on){opacity:.55}
+.me.zoomed .me-place:not(.on) .me-name{opacity:0}
+.me.zoomed .me-name{font-size:16px; stroke-width:4px}
+.me.zoomed .me-place .ring{r:7px; stroke-width:1.6} .me.zoomed .me-place .dot{r:3.2px} .me.zoomed .me-place .hit{r:14px}
+.me.zoomed .me-route{stroke-width:2.2}
+
+/* chrome */
+.me-cartouche{position:absolute; left:3%; bottom:6%; padding:12px 18px; background:rgba(236,214,164,.88); border:1px solid var(--ink); box-shadow:0 10px 26px rgba(40,26,10,.3); transition:opacity .4s, transform .4s}
+.me-cartouche h2{margin:0; font:400 clamp(20px,2.4vw,34px)/1 'Uncial Antiqua', Georgia, serif; color:var(--ink)}
+.me-cartouche p{margin:6px 0 0; font:italic 400 clamp(11px,1vw,14px)/1.2 'IM Fell English', serif; color:var(--ink-2)}
+.me.zoomed .me-cartouche{opacity:0; transform:translateY(10px); pointer-events:none}
+.me-tools{position:absolute; z-index:3; right:2%; top:2.6%; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px}
+.me-btn{display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border:1px solid var(--ink); background:rgba(236,214,164,.94); color:var(--ink); font:400 15px/1 'IM Fell English', Georgia, serif; cursor:pointer; transition:background .2s, color .2s, transform .15s}
+.me-btn:hover,.me-btn:focus-visible{background:var(--ink); color:var(--paper); outline:none}
+.me-btn:active{transform:scale(.97)}
+.me-btn[aria-pressed="false"]{opacity:.75}
+.me-hint{position:absolute; left:50%; bottom:3%; translate:-50% 0; margin:0; padding:9px 16px; background:rgba(236,214,164,.92); border:1px solid var(--ink); font:italic 400 16px/1.3 'IM Fell English', serif; color:var(--ink); white-space:nowrap; animation:me-pop .5s 1.8s both}
+
+/* the note: unrolls on the right, its lines inked one after another */
+.me-note{position:absolute; z-index:2; right:2.4%; top:13%; max-height:81%; width:min(380px, 36%); overflow:auto; padding:22px 24px; background:linear-gradient(rgba(244,229,190,.97), rgba(232,210,160,.97)); border:1px solid var(--ink); box-shadow:0 20px 50px rgba(40,26,10,.45); transform-origin:top; animation:me-unfurl .7s .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes me-unfurl{from{clip-path:inset(0 0 100% 0); transform:translateY(-8px)}}
+.me-note > *{animation:me-ink .5s cubic-bezier(.2,.8,.2,1) both}
+.me-note > :nth-child(1){animation-delay:.9s} .me-note > :nth-child(2){animation-delay:1s} .me-note > :nth-child(3){animation-delay:1.1s}
+.me-note > :nth-child(4){animation-delay:1.2s} .me-note > :nth-child(5){animation-delay:1.3s} .me-note > :nth-child(6){animation-delay:1.4s} .me-note > :nth-child(7){animation-delay:1.5s}
+@keyframes me-ink{from{opacity:0; filter:blur(3px); transform:translateY(6px)}}
+.me-note small{font:italic 400 14px/1 'IM Fell English', serif; color:var(--red)}
+.me-note h3{margin:8px 0 10px; font:400 clamp(22px,2.2vw,30px)/1.1 'Uncial Antiqua', Georgia, serif; color:var(--ink)}
+.me-note p{margin:0 0 10px; font-size:16.5px; line-height:1.45; color:var(--ink-2)}
+.me-note .flavor{font-style:italic; color:var(--ink)}
+.me-note .film{margin-top:14px; padding-top:12px; border-top:1px solid rgba(43,29,16,.25); font-style:italic; color:var(--red)}
+.me-tech{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 0; padding:0; list-style:none}
+.me-tech li{padding:4px 8px; border:1px solid rgba(43,29,16,.4); font-size:13px; color:var(--ink)}
+.me-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+.me-actions button{padding:8px 12px; border:1px solid var(--ink); background:transparent; color:var(--ink); font:400 15px/1 'IM Fell English', serif; cursor:pointer; transition:background .2s, color .2s, transform .15s}
+.me-actions button.go{background:var(--red); border-color:var(--red); color:#f6ecd2}
+.me-actions button:hover,.me-actions button:focus-visible{background:var(--ink); border-color:var(--ink); color:var(--paper); outline:none}
+.me-actions button:active{transform:scale(.97)}
+
+/* leaving: the sheet rolls back to a line and the room goes dark */
+.me.leaving{animation:me-out .68s ease-in forwards}
+.me.leaving .me-sheet{animation:me-roll .6s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes me-out{to{opacity:0}}
+@keyframes me-roll{to{clip-path:inset(0 50% 0 50%); transform:scale(.97)}}
+
+@media (max-width:760px){
+  .me{padding:0; place-items:stretch}
+  .me-sheet{width:100%; height:100%; aspect-ratio:auto; border-radius:0}
+  .me-world{inset:auto; left:0; top:0; height:100%; aspect-ratio:4/3}
+  .me-cartouche,.me-hint{display:none}
+  .me-note{left:10px; right:10px; top:auto; bottom:10px; width:auto; max-height:52%}
+}
+@media (prefers-reduced-motion: reduce){
+  .me,.me-sheet,.me-place,.me-note,.me-note > *,.me-place.on .ring,.me.leaving,.me.leaving .me-sheet,.me-hint{animation:none}
+  .me-world{transition:none} .me-place{opacity:1} .me-reveal{animation:none; stroke-dashoffset:0}
+}

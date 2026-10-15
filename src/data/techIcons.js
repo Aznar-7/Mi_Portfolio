@@ -1,5 +1,9 @@
 import {
   SiReact, SiReactHex,
+  SiKotlin, SiKotlinHex,
+  SiNfc, SiNfcHex,
+  SiFramer, SiFramerHex,
+  SiGradle, SiGradleHex,
   SiVite, SiViteHex,
   SiDjango, SiDjangoHex,
   SiPostgresql, SiPostgresqlHex,
@@ -35,6 +39,10 @@ import {
 const ICONS = {
   'React': [SiReact, SiReactHex],
   'React Native': [SiReact, SiReactHex],
+  Kotlin: [SiKotlin, SiKotlinHex],
+  NFC: [SiNfc, SiNfcHex],
+  Motion: [SiFramer, SiFramerHex], // Motion is the former Framer Motion
+  Gradle: [SiGradle, SiGradleHex],
   'Vite': [SiVite, SiViteHex],
   'Django': [SiDjango, SiDjangoHex],
   'PostgreSQL': [SiPostgresql, SiPostgresqlHex],

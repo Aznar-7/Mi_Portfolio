@@ -1,0 +1,356 @@
+/* Portfolio 95: the 1995 easter egg desktop. Everything is scoped under .w95. */
+
+.w95 {
+  --face: #c0c0c0;
+  --light: #ffffff;
+  --hilite: #dfdfdf;
+  --shade: #808080;
+  --dark: #0a0a0a;
+  --navy: #000080;
+  --sky: #1084d0;
+  --desk: #008080;
+  --tb: 40px;
+
+  --raised: inset -1px -1px var(--dark), inset 1px 1px var(--light), inset -2px -2px var(--shade), inset 2px 2px var(--hilite);
+  --pressed: inset -1px -1px var(--light), inset 1px 1px var(--dark), inset -2px -2px var(--hilite), inset 2px 2px var(--shade);
+  --sunken: inset -1px -1px var(--light), inset 1px 1px var(--shade), inset -2px -2px var(--hilite), inset 2px 2px var(--dark);
+  --frame: inset -1px -1px var(--dark), inset 1px 1px var(--hilite), inset -2px -2px var(--shade), inset 2px 2px var(--light);
+
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  overflow: hidden;
+  background: var(--desk);
+  color: #000;
+  font: 12px/1.4 Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  -webkit-font-smoothing: none;
+  cursor: default;
+  user-select: none;
+  color-scheme: light;
+}
+
+.w95 *, .w95 *::before, .w95 *::after { box-sizing: border-box; }
+.w95 ::selection { background: var(--navy); color: #fff; }
+.w95 p, .w95 h2, .w95 h3, .w95 ul, .w95 dl, .w95 dd { margin: 0; }
+.w95 button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: default; }
+.w95 svg { flex: none; display: block; }
+
+/* scrollbars: checker track, beveled thumb */
+.w95 ::-webkit-scrollbar { width: 16px; height: 16px; }
+.w95 ::-webkit-scrollbar-track {
+  background: var(--light) repeating-conic-gradient(var(--face) 0 25%, var(--light) 0 50%) 0 0 / 2px 2px;
+}
+.w95 ::-webkit-scrollbar-thumb { background: var(--face); box-shadow: var(--raised); }
+.w95 ::-webkit-scrollbar-button:single-button { display: block; height: 16px; background: var(--face); box-shadow: var(--raised); }
+
+/* keyboard focus: the classic dotted rectangle */
+.w95 :focus { outline: none; }
+.w95 :focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* ---------- desktop icons ---------- */
+
+.w95-desktop { position: absolute; inset: 0 0 var(--tb) 0; }
+
+.w95-icons {
+  list-style: none;
+  padding: 8px 4px;
+  display: flex;
+  flex-flow: column wrap;
+  align-content: flex-start;
+  gap: 6px;
+  height: 100%;
+}
+
+.w95 .w95-icon {
+  width: 84px;
+  min-height: 72px;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  touch-action: manipulation;
+}
+.w95-icon span { padding: 1px 3px; text-align: center; line-height: 1.25; border: 1px dotted transparent; }
+.w95 .w95-icon:focus-visible { outline: none; }
+.w95 .w95-icon:focus-visible span { border-color: #fff; }
+.w95-icon.is-sel span { background: var(--navy); }
+.w95-icon.is-sel svg { filter: brightness(.6) sepia(1) hue-rotate(190deg) saturate(4); }
+
+/* ---------- windows ---------- */
+
+.w95-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 16px);
+  min-height: 120px;
+  padding: 3px;
+  background: var(--face);
+  box-shadow: var(--frame);
+  user-select: text;
+}
+.w95-win[hidden] { display: none; }
+.w95-win.is-max { inset: 0 0 0 0; width: auto; max-width: none; max-height: none; }
+
+.w95-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 2px 0 3px;
+  flex: none;
+  background: linear-gradient(90deg, var(--shade), #b5b5b5);
+  color: var(--face);
+  font-weight: bold;
+  touch-action: none;
+  user-select: none;
+}
+.w95-win.is-active .w95-title { background: linear-gradient(90deg, var(--navy), var(--sky)); color: #fff; }
+.w95-title-text { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.w95 .w95-ctl {
+  width: 16px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--face);
+  box-shadow: var(--raised);
+}
+.w95 .w95-ctl:active { box-shadow: var(--pressed); padding: 1px 0 0 1px; }
+.w95 .w95-ctl:focus-visible { outline-offset: -3px; }
+.w95-ctl-close { margin-left: 2px; }
+
+.w95-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin-top: 3px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.w95 .w95-body > * + * { margin-top: 12px; }
+.w95 .w95-body > .w95-h + .w95-lead { margin-top: 2px; }
+.w95-body p { max-width: 68ch; }
+.w95-body-flush { padding: 0; }
+
+.w95-h { font-size: 16px; font-weight: bold; line-height: 1.25; }
+.w95-lead { color: #303030; }
+.w95-hero { display: flex; align-items: center; gap: 14px; }
+.w95-hero .w95-lead + .w95-lead { margin-top: 0; }
+
+.w95-group {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 0;
+  box-shadow: inset -1px -1px var(--light), inset 1px 1px var(--shade), inset -2px -2px var(--shade), inset 2px 2px var(--light);
+}
+.w95-group legend { padding: 0 4px; font-size: 12px; }
+.w95 .w95-group p + p { margin-top: 8px; }
+
+.w95-facts > div { display: grid; grid-template-columns: minmax(96px, 30%) 1fr; gap: 8px; padding: 3px 0; }
+.w95-facts > div + div { border-top: 1px solid var(--shade); box-shadow: 0 -1px 0 var(--light) inset; }
+.w95-facts dt { color: #303030; }
+
+.w95-chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.w95-chips li { padding: 2px 8px; background: #fff; box-shadow: var(--sunken); font-size: 12px; }
+
+.w95-entry + .w95-entry { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--shade); box-shadow: inset 0 1px var(--light); }
+.w95-entry h3 { font-size: 13px; font-weight: bold; }
+.w95-entry h3 span { font-weight: normal; }
+.w95-entry h3 span::before { content: "@ "; color: var(--shade); }
+.w95 .w95-when { color: #404040; font-size: 12px; margin-bottom: 4px; }
+.w95-entry ul { padding-left: 18px; }
+.w95-entry li + li { margin-top: 3px; }
+.w95-entry li::marker { content: "■  "; font-size: 8px; color: var(--navy); }
+
+.w95-frame { padding: 2px; background: #fff; box-shadow: var(--sunken); }
+.w95-frame img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #000; }
+
+/* buttons and link-buttons */
+.w95-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.w95-actions-col { flex-direction: column; align-items: stretch; }
+.w95 .w95-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 96px;
+  min-height: 28px;
+  padding: 4px 14px;
+  background: var(--face);
+  box-shadow: var(--raised);
+  color: #000;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.w95 .w95-btn:active { box-shadow: var(--pressed); padding: 5px 13px 3px 15px; }
+.w95-btn small { font-size: 11px; color: #303030; }
+
+/* explorer details list */
+.w95-list { background: #fff; box-shadow: var(--sunken); padding: 2px; min-height: 100%; }
+.w95 .w95-list-row {
+  display: grid;
+  grid-template-columns: 1fr 88px 104px;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 4px 8px;
+  text-align: left;
+}
+.w95-list-head { background: var(--face); box-shadow: var(--raised); padding: 2px 8px; font-size: 12px; }
+.w95-list-name { display: grid; grid-template-columns: 16px 1fr; column-gap: 6px; align-items: center; min-width: 0; }
+.w95-list-name i { grid-column: 2; font-style: normal; font-size: 12px; color: #404040; }
+.w95-list-row.is-sel { background: var(--navy); color: #fff; }
+.w95-list-row.is-sel i { color: #dfe4ff; }
+
+.w95-statusbar { display: flex; gap: 2px; flex: none; margin-top: 2px; font-size: 12px; }
+.w95-statusbar span { flex: 1; padding: 2px 6px; box-shadow: inset -1px -1px var(--light), inset 1px 1px var(--shade); }
+
+/* notepad */
+.w95-menubar { display: flex; gap: 2px; padding: 2px 0 0; flex: none; }
+.w95-menubar span { padding: 1px 6px; }
+.w95 .w95-notepad {
+  margin-top: 2px;
+  background: #fff;
+  box-shadow: var(--sunken);
+  padding: 10px 12px;
+  font: 14px/1.5 "Fixedsys", "Lucida Console", "Courier New", monospace;
+  white-space: pre-wrap;
+  min-height: 240px;
+}
+
+/* ---------- start menu ---------- */
+
+.w95-start {
+  position: absolute;
+  left: 2px;
+  bottom: calc(var(--tb) - 2px);
+  z-index: 100000;
+  display: flex;
+  padding: 3px;
+  background: var(--face);
+  box-shadow: var(--frame);
+}
+.w95-start-band {
+  width: 28px;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 0;
+  background: linear-gradient(0deg, var(--navy), var(--shade));
+  color: var(--face);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 20px;
+  letter-spacing: .02em;
+  line-height: 28px;
+}
+.w95-start-band b { color: #fff; margin-bottom: 4px; }
+.w95-start ul { list-style: none; padding: 0; min-width: 210px; }
+.w95-start li button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  padding: 4px 18px 4px 6px;
+  text-align: left;
+  font-size: 13px;
+}
+.w95-start li button:hover, .w95-start li button:focus-visible { background: var(--navy); color: #fff; outline: none; }
+.w95-sep { height: 2px; margin: 3px 2px; border-top: 1px solid var(--shade); border-bottom: 1px solid var(--light); }
+
+/* ---------- taskbar ---------- */
+
+.w95-taskbar {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--tb);
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 3px 3px;
+  background: var(--face);
+  box-shadow: inset 0 1px var(--hilite), inset 0 2px var(--light);
+}
+
+.w95 .w95-startbtn, .w95 .w95-task {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px 0 5px;
+  background: var(--face);
+  box-shadow: var(--raised);
+}
+.w95 .w95-startbtn { font-weight: bold; flex: none; }
+.w95 .w95-startbtn.is-down, .w95 .w95-startbtn:active,
+.w95 .w95-task.is-down, .w95 .w95-task:active { box-shadow: var(--pressed); }
+.w95 .w95-task.is-down {
+  font-weight: bold;
+  background: var(--light) repeating-conic-gradient(var(--face) 0 25%, var(--light) 0 50%) 0 0 / 2px 2px;
+}
+
+.w95-tasks { flex: 1; min-width: 0; display: flex; gap: 3px; height: 100%; }
+.w95 .w95-task { flex: 0 1 160px; min-width: 40px; }
+.w95-task span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.w95-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 10px 0 8px;
+  flex: none;
+  box-shadow: inset -1px -1px var(--light), inset 1px 1px var(--shade);
+}
+
+/* ---------- boot ---------- */
+
+.w95-boot { position: absolute; inset: 0; z-index: 200000; background: #000; display: grid; place-items: center; }
+.w95-boot.is-splash { background: linear-gradient(180deg, #5fb4f0 0%, #a8d8ff 60%, #e8f4ff 100%); }
+.w95-splash { display: grid; justify-items: center; gap: 10px; color: var(--navy); text-align: center; }
+.w95-splash p { margin: 0; font-size: 14px; }
+.w95-splash-name { font-size: 40px !important; line-height: 1; letter-spacing: -.01em; color: #fff; text-shadow: 2px 2px 0 var(--navy); }
+.w95-splash-name b { margin-right: 6px; }
+.w95-progress { width: 220px; height: 18px; padding: 3px; background: #fff; box-shadow: var(--sunken); }
+.w95-progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: repeating-linear-gradient(90deg, var(--navy) 0 10px, transparent 10px 12px);
+  transform-origin: left;
+  animation: w95-fill .9s steps(18, end) both;
+}
+@keyframes w95-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 639px) {
+  .w95 { --tb: 48px; font-size: 13px; }
+  .w95-icons { display: grid; grid-template-columns: repeat(4, 1fr); flex-flow: row; height: auto; gap: 8px 2px; padding: 12px 6px; }
+  .w95 .w95-icon { width: 100%; min-height: 80px; }
+  .w95-win { inset: 0 0 0 0 !important; width: auto !important; max-width: none !important; max-height: none !important; }
+  .w95-title { height: 32px; }
+  .w95 .w95-ctl { width: 32px; height: 26px; }
+  .w95-taskbar { padding: 5px 4px 4px; }
+  .w95 .w95-task span { display: none; }
+  .w95 .w95-task { flex: 0 0 44px; justify-content: center; padding: 0; }
+  .w95 .w95-list-row { grid-template-columns: 1fr; gap: 2px; padding: 8px; }
+  .w95 .w95-list-row > span:not(.w95-list-name) { display: none; }
+  .w95-list-head { display: none !important; }
+  .w95-start li button { min-height: 44px; }
+  .w95 .w95-btn { min-height: 40px; }
+}
+
+/* the 1995 arrow, drawn pixel for pixel: black outline, white fill */
+.w95, .w95 * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='19' shape-rendering='crispEdges'%3E%3Cpath d='M0.5 0.5v16l4-4 3 6 2-1-3-6h5.5z' fill='%23fff' stroke='%23000'/%3E%3C/svg%3E") 0 0, default !important; }
+
+/* leaving 1995: the CRT collapses to a line, then a dot */
+.w95-wrap.leaving .w95{animation:w95-off .66s cubic-bezier(.6,0,.4,1) forwards; transform-origin:50% 50%}
+@keyframes w95-off{40%{transform:scaleY(.008) scaleX(1); filter:brightness(3)} 75%{transform:scaleY(.008) scaleX(.02); filter:brightness(4)} to{transform:scale(0); opacity:0}}
+@media (prefers-reduced-motion: reduce){ .w95-wrap.leaving .w95{animation:none} }

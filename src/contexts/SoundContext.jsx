@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { CUES } from '@/lib/sfx'
 
 const SoundContext = createContext(null)
 const SOUND_KEY = 'site_sound'
@@ -92,7 +93,8 @@ export function SoundProvider({ children }) {
   // UI sounds are opt-in: muted unless the visitor explicitly turned them on.
   // New key on purpose: an older version wrote 'site_muted=false' on every visit.
   const [isMuted, setIsMuted] = useState(() => {
-    try { return localStorage.getItem(SOUND_KEY) !== 'on' } catch { return true }
+    // sound is on by default; only an explicit 'off' from the visitor mutes it
+    try { return localStorage.getItem(SOUND_KEY) === 'off' } catch { return false }
   })
   const ctx = useRef(null)
 
@@ -295,8 +297,15 @@ export function SoundProvider({ children }) {
     note(ctx.current, 360, 'sine', 0.055, 0.002, 0.060, 480)
   }, [ok])
 
+  // Easter egg cues live in lib/sfx (filters, noise and a shared echo); this only gates them on mute
+  const playEgg = useCallback((id) => {
+    if (!ok()) return
+    CUES[id]?.(ctx.current)
+  }, [ok])
+
   const value = {
     isMuted,
+    playEgg,
     toggleMute,
     // Core
     playHover,
@@ -331,7 +340,7 @@ const FALLBACK = {
   playOpenApp: NOOP, playCloseApp: NOOP,
   playSuccess: NOOP, playNavigation: NOOP, playSelect: NOOP, playCarousel: NOOP,
   playUnlock: NOOP, playSwipe: NOOP,
-  playModalOpen: NOOP, playModalClose: NOOP, playToggle: NOOP,
+  playModalOpen: NOOP, playModalClose: NOOP, playToggle: NOOP, playEgg: NOOP,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- hook lives next to its provider

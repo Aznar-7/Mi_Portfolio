@@ -9,7 +9,7 @@
 
 /* ── Design tokens ───────────────────────────────────────────── */
 :root {
-  --bg-base:     #09090c;
+  --bg-base:     #0e1014;
   --bg-elevated: #0f0f14;
   --bg-surface:  #14141a;
 
@@ -18,7 +18,7 @@
 
   --text-primary:   #ededf2;
   --text-secondary: #a3a3b5;
-  --text-muted:     #6e6e82;
+  --text-muted:     #838397;
 
   --accent:       #8b7bff;
   --accent-hover: #a99dff;
@@ -83,10 +83,10 @@
       background-size: 200px 200px;
     }
 
-    /* TargetCursor replaces the system cursor outside the Ubuntu simulator */
-    body:not(.ubuntu-mode) *,
-    body:not(.ubuntu-mode) *::before,
-    body:not(.ubuntu-mode) *::after {
+    /* TargetCursor replaces the system cursor outside the Ubuntu simulator and the full-screen eggs */
+    body:not(.ubuntu-mode):not(.native-cursor) *,
+    body:not(.ubuntu-mode):not(.native-cursor) *::before,
+    body:not(.ubuntu-mode):not(.native-cursor) *::after {
       cursor: none !important;
     }
   }

@@ -1,46 +1,93 @@
-import { lazy, Suspense, useState, useEffect, useCallback } from 'react'
-import { AnimatePresence, LayoutGroup } from 'motion/react'
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react'
+import { AnimatePresence } from 'motion/react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { LanguageProvider } from '@/contexts/LanguageContext'
+import { LanguageProvider, useLang } from '@/contexts/LanguageContext'
 import { SoundProvider } from '@/contexts/SoundContext'
+import { Hero } from '@/components/board/Hero'
+import { Work } from '@/components/board/Work'
+import { About } from '@/components/board/About'
+import { Process } from '@/components/board/Process'
+import { Shop } from '@/components/board/Shop'
+import { Path } from '@/components/board/Path'
+import { Contact, Console, Footer, SecretToast } from '@/components/board/Closing'
+import { installEggs } from '@/lib/eggs'
+import { initMotion } from '@/lib/motion'
+import { EggStage } from '@/components/board/EggStage'
+import { Mascot } from '@/components/board/Mascot'
 import TargetCursor from '@/components/common/TargetCursor'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
-import { ScrollProgress } from '@/components/layout/ScrollProgress'
-import { Intro } from '@/components/layout/Intro'
-import { shouldPlayIntro } from '@/lib/intro'
-import { Hero } from '@/components/sections/Hero'
+import { Intro } from '@/components/board/Intro'
 
-const named = (loader, name) => lazy(() => loader().then((m) => ({ default: m[name] })))
+const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
+// full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
+const OVERLAYS = {
+  middle: lazy(() => import('@/components/retro/MiddleEarth').then((m) => ({ default: m.MiddleEarth }))),
+  galaxy: lazy(() => import('@/components/retro/Galaxy').then((m) => ({ default: m.Galaxy }))),
+}
+const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
-const UbuntuOS        = named(() => import('@/components/layout/UbuntuOS'), 'UbuntuOS')
-const CommandPalette  = named(() => import('@/components/layout/CommandPalette'), 'CommandPalette')
-const Process         = named(() => import('@/components/sections/Process'), 'Process')
-const FeaturedProject = named(() => import('@/components/sections/FeaturedProject'), 'FeaturedProject')
-const Experience      = named(() => import('@/components/sections/Experience'), 'Experience')
-const Projects        = named(() => import('@/components/sections/Projects'), 'Projects')
-const Skills          = named(() => import('@/components/sections/Skills'), 'Skills')
-const About           = named(() => import('@/components/sections/About'), 'About')
-const Contact         = named(() => import('@/components/sections/Contact'), 'Contact')
+function Board() {
+  const { lang } = useLang()
+  const root = useRef(null)
+  // re-run per language: the titles are re-split into new letters
+  useEffect(() => {
+    let undo = () => {}, cancelled = false
+    document.fonts.ready.then(() => { if (!cancelled) undo = initMotion(root.current) })
+    return () => { cancelled = true; undo() }
+  }, [lang])
+  return (
+    <div className="site" ref={root}>
+      <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+      <Hero />
+      <main>
+        <Work />
+        <Process />
+        <About />
+        <Shop />
+        <Path />
+        <Contact />
+        <Console />
+      </main>
+      <Footer />
+      <SecretToast />
+      <EggStage />
+      <Mascot />
+    </div>
+  )
+}
 
-const SECTIONS = [
-  ['process', Process],
-  ['featured', FeaturedProject],
-  ['experience', Experience],
-  ['projects', Projects],
-  ['skills', Skills],
-  ['about', About],
-  ['contact', Contact],
-]
+function Retro({ onExit, leaving }) {
+  const { lang } = useLang()
+  return (
+    <div className={`w95-wrap${leaving ? ' leaving' : ''}`}>
+      <Suspense fallback={<div className="fixed inset-0 bg-black" />}><Win95 lang={lang} onExit={onExit} /></Suspense>
+    </div>
+  )
+}
 
-// Reserves space while a lazy section loads so the scrollbar doesn't jump
-const SectionFallback = () => <div className="min-h-[70vh]" aria-hidden="true" />
+function Overlay({ id, onExit, leaving }) {
+  const { lang } = useLang()
+  const View = OVERLAYS[id]
+  return <Suspense fallback={<div className="fixed inset-0 z-[9000] bg-black" />}><View lang={lang} onExit={onExit} leaving={leaving} /></Suspense>
+}
 
 export default function App() {
-  const [playIntro] = useState(shouldPlayIntro)
-  const [introDone, setIntroDone] = useState(!playIntro)
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
-  const finishIntro = useCallback(() => setIntroDone(true), [])
+  const [retro, setRetro] = useState(false)
+  const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy'
+  // leaving an egg is a scene too: it plays its exit, then the board powers back on
+  const [leaving, setLeaving] = useState(false)
+  const leave = useCallback((after) => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    setLeaving(true)
+    setTimeout(() => {
+      after(); setLeaving(false)
+      if (reduced) return
+      document.body.classList.add('returning')
+      setTimeout(() => document.body.classList.remove('returning'), 1000)
+    }, reduced ? 0 : 680)
+  }, [])
+  const closeOverlay = useCallback(() => leave(() => setOverlay(null)), [leave])
+  const closeRetro = useCallback(() => leave(() => setRetro(false)), [leave])
 
   useEffect(() => {
     const open = () => setUbuntuOpen(true)
@@ -51,13 +98,28 @@ export default function App() {
         setUbuntuOpen((o) => !o)
       }
     }
+    const toRetro = () => { setRetro(true); scrollTo({ top: 0, behavior: 'instant' }) }
+    const toMap = () => setOverlay('middle'), toGalaxy = () => setOverlay('galaxy')
+    document.addEventListener('open-middle-earth', toMap)
+    document.addEventListener('open-galaxy', toGalaxy)
     document.addEventListener('open-ubuntu', open)
+    document.addEventListener('open-retro', toRetro)
     document.addEventListener('keydown', onKey)
+    const uninstall = installEggs()
     return () => {
       document.removeEventListener('open-ubuntu', open)
+      document.removeEventListener('open-retro', toRetro)
+      document.removeEventListener('open-middle-earth', toMap)
+      document.removeEventListener('open-galaxy', toGalaxy)
       document.removeEventListener('keydown', onKey)
+      uninstall()
     }
   }, [])
+
+  // the page powered down to open the OS (lib/power); bring it back when the OS closes
+  useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
+  // the eggs bring their own cursors; the board's TargetCursor steps aside
+  useEffect(() => { document.body.classList.toggle('native-cursor', retro || !!overlay) }, [retro, overlay])
 
   return (
     <SoundProvider>
@@ -71,43 +133,14 @@ export default function App() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
-
-        {introDone && (
-          <ErrorBoundary fallback={null}>
-            <Suspense fallback={null}>
-              <CommandPalette />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-
-        {introDone && !ubuntuOpen && (
-          <TargetCursor
-            spinDuration={2}
-            hideDefaultCursor={false}
-            parallaxOn
-            hoverDuration={0.2}
-            targetSelector="a, button, .cursor-target, [role='button']"
-          />
-        )}
-
-        {!ubuntuOpen && (
-          <LayoutGroup>
-            <AnimatePresence>
-              {!introDone && <Intro key="intro" onDone={finishIntro} />}
-            </AnimatePresence>
-
-            <ScrollProgress />
-            <Navbar />
-            <main className="relative">
-              <Hero ready={introDone} fromIntro={playIntro} />
-              {SECTIONS.map(([key, Section]) => (
-                <Suspense key={key} fallback={<SectionFallback />}>
-                  <Section />
-                </Suspense>
-              ))}
-            </main>
-            <Footer />
-          </LayoutGroup>
+        {retro && !ubuntuOpen && <Retro onExit={closeRetro} leaving={leaving} />}
+        {!ubuntuOpen && !retro && (
+          <>
+            {!overlay && <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />}
+            <Board />
+            <Intro />
+            {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
+          </>
         )}
       </LanguageProvider>
     </SoundProvider>

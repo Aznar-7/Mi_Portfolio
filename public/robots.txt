@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vicenteaznar.dev/sitemap.xml
+Sitemap: https://www.vicenteaznar.dev/sitemap.xml

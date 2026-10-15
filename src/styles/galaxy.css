@@ -1,0 +1,103 @@
+/* The galaxy the hyperspace jump lands in: deep space, a slow spiral and a cyan holo readout */
+.gx{--holo:143,211,255; position:fixed; inset:0; z-index:9000; overflow:hidden; touch-action:none; overscroll-behavior:contain; background:radial-gradient(ellipse at 50% 52%, #120f24 0%, #05060c 60%, #020205 100%); color:#e8f2ff; font-family:'Funnel Sans', system-ui, sans-serif; animation:gx-in 1.2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes gx-in{from{opacity:0; transform:scale(1.25); filter:blur(8px) brightness(2.2)}}
+.gx-sky{position:absolute; inset:0; width:100%; height:100%}
+
+.gx-systems{position:absolute; inset:0; margin:0; padding:0; list-style:none; pointer-events:none}
+.gx-systems li{position:absolute; left:0; top:0; will-change:transform; opacity:0; animation:gx-fade .5s var(--d) ease forwards}
+@keyframes gx-fade{to{opacity:1}}
+.gx-systems button{position:relative; display:flex; align-items:center; gap:8px; translate:-8px -8px; padding:2px 8px 2px 0; border:0; background:none; color:rgba(232,242,255,.82); font:500 11px/1 'Red Hat Mono', ui-monospace, monospace; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; pointer-events:auto; transition:color .2s}
+.gx-systems i{position:relative; flex:none; width:16px; height:16px; border-radius:50%; box-shadow:inset 0 0 0 1.5px rgba(var(--holo),.75); transition:box-shadow .25s, transform .25s}
+.gx-systems i::after{content:""; position:absolute; inset:5px; border-radius:50%; background:rgb(var(--holo)); box-shadow:0 0 10px rgba(var(--holo),.9)}
+.gx-systems span{padding:3px 6px; border-radius:4px; background:rgba(5,6,12,.55); backdrop-filter:blur(2px)}
+.gx-systems button:hover,.gx-systems button:focus-visible,.gx-systems button.on{color:#fff; outline:none}
+.gx-systems button:hover i,.gx-systems button:focus-visible i{transform:scale(1.25); box-shadow:inset 0 0 0 1.5px rgb(var(--holo)), 0 0 0 6px rgba(var(--holo),.15)}
+.gx-systems button.on i{box-shadow:inset 0 0 0 1.5px #fff, 0 0 0 8px rgba(var(--holo),.2)}
+.gx-systems button.on i::before{content:""; position:absolute; inset:-10px; border-radius:50%; border:1px dashed rgba(var(--holo),.9); animation:gx-lock 6s linear infinite}
+@keyframes gx-lock{to{transform:rotate(360deg)}}
+
+.gx-head{position:absolute; left:clamp(16px,4vw,48px); top:clamp(16px,4vh,40px)}
+.gx-head h2{margin:0; font:600 clamp(22px,2.6vw,36px)/1.05 'Funnel Display', system-ui, sans-serif; letter-spacing:-.01em}
+.gx-head p{margin:8px 0 0; font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; letter-spacing:.14em; text-transform:uppercase; color:rgba(var(--holo),.8)}
+.gx-tools{position:absolute; z-index:3; right:clamp(16px,4vw,48px); top:clamp(16px,4vh,40px); display:flex; gap:8px}
+.gx-back{display:inline-flex; align-items:center; gap:6px; padding:10px 16px; border:0; border-radius:999px; background:rgba(232,242,255,.08); color:#e8f2ff; font:500 14px/1 'Funnel Sans', system-ui, sans-serif; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(232,242,255,.18); transition:background .2s}
+.gx-back:hover,.gx-back:focus-visible{background:rgba(232,242,255,.16); outline:none}
+.gx-head{z-index:3}
+
+.gx-hint{position:absolute; left:50%; bottom:clamp(16px,4vh,36px); translate:-50% 0; margin:0; width:max-content; max-width:calc(100% - 32px); padding:10px 18px; border-radius:999px; background:rgba(6,10,20,.7); box-shadow:inset 0 0 0 1px rgba(var(--holo),.25); font:400 14px/1.4 'Funnel Sans', system-ui, sans-serif; color:rgba(232,242,255,.82); text-align:center; transition:opacity .3s}
+
+/* the jump: the galaxy rushes toward the picked system and burns out */
+.gx-sky,.gx-systems{transition:transform .65s cubic-bezier(.6,0,.4,1), opacity .65s ease, filter .65s}
+.gx.warping .gx-sky,.gx.warping .gx-systems{transform-origin:var(--wx) var(--wy); transform:scale(7); opacity:0; filter:blur(4px)}
+.gx.visiting .gx-sky{opacity:.2; filter:blur(3px)}
+.gx.visiting .gx-systems,.gx.visiting .gx-hint,.gx.warping .gx-hint{opacity:0; pointer-events:none}
+.gx.visiting .gx-systems button{pointer-events:none}
+
+/* the visit: the planet on the left, a holo readout on the right */
+.gx-visit{position:absolute; inset:0; z-index:2; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); align-items:center; gap:clamp(16px,4vw,64px); padding:clamp(88px,12vh,120px) clamp(16px,6vw,96px) clamp(24px,6vh,64px); animation:gx-arrive 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gx-arrive{from{opacity:0; transform:scale(.55)}}
+.planet{position:relative; justify-self:center; width:min(56vh, 40vw); aspect-ratio:1}
+.planet canvas{position:relative; z-index:1; display:block; width:100%; height:100%; border-radius:50%; filter:drop-shadow(0 0 50px rgba(var(--atmo),.35))}
+.planet .sun{position:absolute; z-index:0; border-radius:50%}
+.planet .sun.one{width:46%; height:46%; left:-44%; top:-26%; background:radial-gradient(circle, #fffbe6 0 9%, #ffd27a 15%, rgba(255,190,90,.25) 30%, rgba(255,170,60,0) 62%)}
+.planet .sun.two{width:30%; height:30%; left:-14%; top:-30%; background:radial-gradient(circle, #fff 0 9%, #ffb27a 16%, rgba(255,140,80,.22) 32%, rgba(255,120,60,0) 64%)}
+.planet .ring{position:absolute; left:-34%; right:-34%; top:39%; height:22%; border-radius:50%; transform:rotate(-14deg); box-shadow:inset 0 0 0 5px rgba(214,150,110,.6), inset 0 0 0 11px rgba(160,100,70,.25), inset 0 0 0 15px rgba(214,150,110,.32)}
+.planet .ring.back{z-index:0}
+.planet .ring.front{z-index:2; clip-path:inset(52% 0 0 0)}
+
+.gx-card{position:relative; width:min(420px,100%); padding:22px 24px; border-radius:16px; background:linear-gradient(rgba(var(--holo),.07), rgba(var(--holo),.02)), rgba(6,10,20,.82); box-shadow:inset 0 0 0 1px rgba(var(--holo),.35), 0 0 50px rgba(var(--holo),.08); backdrop-filter:blur(6px); animation:gx-holo .5s .3s ease-out both}
+@keyframes gx-holo{0%{opacity:0; clip-path:inset(48% 0 48% 0)} 60%{opacity:1} to{clip-path:inset(0)}}
+.gx-card small{font:500 11px/1 'Red Hat Mono', ui-monospace, monospace; letter-spacing:.14em; text-transform:uppercase; color:rgb(var(--holo))}
+.gx-card h3{margin:10px 0; font:600 clamp(24px,2.4vw,34px)/1.1 'Funnel Display', system-ui, sans-serif; color:#fff}
+.gx-card p{margin:0 0 8px; font:400 15px/1.55 'Funnel Sans', system-ui, sans-serif; color:rgba(232,242,255,.72)}
+.gx-card .flavor{color:#e8f2ff}
+.gx-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px}
+.gx-actions button,.gx-hop button{padding:10px 16px; border:0; border-radius:999px; background:rgba(232,242,255,.08); color:#e8f2ff; font:500 14px/1 'Funnel Sans', system-ui, sans-serif; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(232,242,255,.18); transition:background .2s, transform .15s}
+.gx-actions button.go{background:rgb(var(--holo)); color:#06101c; box-shadow:none}
+.gx-actions button:hover,.gx-actions button:focus-visible,.gx-hop button:hover,.gx-hop button:focus-visible{background:rgba(232,242,255,.18); outline:none}
+.gx-actions button.go:hover,.gx-actions button.go:focus-visible{background:#c4e6ff}
+.gx-actions button:active,.gx-hop button:active{transform:scale(.96)}
+.gx-hop{display:flex; align-items:center; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid rgba(var(--holo),.18); font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; color:rgba(232,242,255,.6)}
+.gx-hop button{width:38px; height:38px; padding:0; font-size:16px}
+
+@media (max-width:820px){
+  .gx-visit{grid-template-columns:1fr; align-content:center; justify-items:center; padding-top:96px; overflow:auto}
+  .planet{width:min(64vw, 36vh)}
+}
+@media (max-width:640px){ .gx-head{max-width:calc(100% - 150px)} .gx-head h2{font-size:20px} .gx-back{padding:9px 12px; font-size:13px} .gx-systems span{font-size:10px; padding:2px 4px} }
+@media (prefers-reduced-motion: reduce){ .gx,.gx-systems li,.gx-visit,.gx-card{animation:none} .gx-sky,.gx-systems{transition:none} .gx-systems li{opacity:1} .gx-systems button.on i::before{animation:none} }
+
+
+/* leaving: everything streaks away into a point, as if we jumped back out */
+.gx.leaving{animation:gx-out .68s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes gx-out{to{transform:scale(.15); filter:blur(6px) brightness(2.5); opacity:0}}
+@media (prefers-reduced-motion: reduce){ .gx.leaving{animation:none} }
+
+/* arrival: the planet swims up out of the jump, the readout streams out of it line by line */
+.gx-world{animation:planet-in 1.4s cubic-bezier(.16,1,.3,1) both}
+@keyframes planet-in{from{transform:scale(.12) rotate(-30deg); filter:blur(14px) brightness(3); opacity:0} 60%{opacity:1}}
+.gx-card{animation:none}
+.gx-card::before{content:""; position:absolute; right:100%; top:46px; width:clamp(20px,5vw,80px); height:1px; background:linear-gradient(90deg, rgba(var(--holo),0), rgb(var(--holo))); transform-origin:left; animation:gx-wire .5s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gx-wire{from{transform:scaleX(0)}}
+.gx-card{background:none; box-shadow:none; backdrop-filter:none}
+.gx-card::after{content:""; position:absolute; inset:0; z-index:-1; border-radius:16px; background:linear-gradient(rgba(var(--holo),.07), rgba(var(--holo),.02)), rgba(6,10,20,.82); box-shadow:inset 0 0 0 1px rgba(var(--holo),.35), 0 0 50px rgba(var(--holo),.08); animation:gx-panel .45s .85s ease-out both}
+@keyframes gx-panel{from{clip-path:inset(0 100% 0 0); opacity:.4}}
+.gx-card > *{animation:gx-line .55s cubic-bezier(.2,.8,.2,1) both}
+.gx-card > :nth-child(1){animation-delay:1s} .gx-card > :nth-child(2){animation-delay:1.08s} .gx-card > :nth-child(3){animation-delay:1.16s}
+.gx-card > :nth-child(4){animation-delay:1.24s} .gx-card > :nth-child(5){animation-delay:1.32s} .gx-card > :nth-child(6){animation-delay:1.4s} .gx-card > :nth-child(7){animation-delay:1.48s}
+@keyframes gx-line{from{opacity:0; transform:translateX(-28px); filter:blur(4px)}}
+.gx-card{isolation:isolate}
+.gx-card .desc{color:rgba(232,242,255,.66); font-size:14.5px}
+.gx-tech{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; padding:0; list-style:none}
+.gx-tech li{padding:5px 9px; border-radius:999px; font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; color:rgb(var(--holo)); box-shadow:inset 0 0 0 1px rgba(var(--holo),.3)}
+
+@media (prefers-reduced-motion: reduce){ .gx-world,.gx-card::before,.gx-card::after,.gx-card > *{animation:none} }
+
+/* 3D dogfight layer and the model credits */
+.gx-ships3d{position:absolute; inset:0; z-index:1; pointer-events:none; transition:opacity .4s}
+.gx-ships3d canvas{display:block; width:100%; height:100%}
+.gx.visiting .gx-ships3d,.gx.warping .gx-ships3d{opacity:0}
+.gx-credit{position:absolute; z-index:3; left:clamp(16px,4vw,48px); bottom:clamp(10px,2vh,18px); max-width:min(300px,26vw); margin:0; text-align:left; font:400 11px/1.5 'Red Hat Mono', ui-monospace, monospace; color:rgba(232,242,255,.42)}
+.gx-credit a{color:rgba(232,242,255,.62); text-decoration:underline; text-underline-offset:2px}
+.gx-credit a:hover,.gx-credit a:focus-visible{color:#fff; outline:none}
+@media (max-width:820px){ .gx-credit{left:16px; right:16px; max-width:none; text-align:left; bottom:70px} }
