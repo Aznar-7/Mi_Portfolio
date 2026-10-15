@@ -6,6 +6,7 @@ import { copy } from '@/i18n/site'
 import { experience, academic } from '@/data/experience'
 import { l } from '@/lib/utils'
 import { PowerTitle } from './PowerTitle'
+import { ToolIcon } from './ToolIcon'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -16,7 +17,7 @@ export function Path() {
   const T = copy[lang].path
   const root = useRef(null)
   const items = [
-    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang) })),
+    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), tech: e.tech, stats: e.stats?.map((st) => ({ value: st.value, label: l(st.label, lang) })) })),
     ...academic.map((a) => ({ kind: 'study', name: l(a.degree, lang), role: a.institution.replace(' — ', ' · '), span: a.span, bullets: l(a.highlights, lang) })),
   ]
   const [active, setActive] = useState(0)
@@ -62,7 +63,13 @@ export function Path() {
                   <p className="tl-role">{it.role}</p>
                 </div>
               </div>
+              {it.stats && (
+                <dl className="tl-stats">
+                  {it.stats.map((st) => <div key={st.label}><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
+                </dl>
+              )}
               <ul>{it.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
+              {it.tech && <ul className="chips tl-chips">{it.tech.map((t) => <li key={t}><ToolIcon name={t} />{t}</li>)}</ul>}
             </li>
           ))}
           </ol>

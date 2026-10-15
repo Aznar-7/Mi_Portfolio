@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLang } from '@/contexts/LanguageContext'
@@ -9,54 +9,154 @@ import { PowerTitle } from './PowerTitle'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Five stages on one trace. Scrolling through the section carries the signal along it and powers
-// each stage as it arrives; every stage cites the real project where it happened.
+// ── One authored diagram per stage, drawn from the real case it cites. They animate when their
+// panel turns on (CSS, keyed on .on), and sit fully drawn with reduced motion.
+
+function Understand({ D }) {
+  return (
+    <svg viewBox="0 0 380 260" className="dia">
+      {D.rules.map((r, i) => (
+        <g key={r} className="pop" style={{ '--d': `${i * 0.12}s` }}>
+          <rect x="10" y={30 + i * 70} width="128" height="44" rx="8" className="card" />
+          <text x="74" y={57 + i * 70} className="t">{r}</text>
+          <path d={`M138 ${52 + i * 70} C 166 ${52 + i * 70}, 160 130, 182 130`} className="wire draw" style={{ '--d': `${0.4 + i * 0.1}s` }} pathLength="1" />
+        </g>
+      ))}
+      {D.states.map((s, i) => (
+        <g key={s} className="state" style={{ '--d': `${0.9 + i * 0.35}s` }}>
+          <circle cx={204 + i * 66} cy="130" r="20" className="node-c" />
+          <text x={204 + i * 66} y="170" className="t sm">{s}</text>
+          {i < 2 && <path d={`M${224 + i * 66} 130 H${250 + i * 66}`} className="wire draw" pathLength="1" style={{ '--d': `${1.1 + i * 0.35}s` }} />}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+function Design({ D }) {
+  const layers = D.layers
+  return (
+    <svg viewBox="0 0 380 260" className="dia">
+      <path d="M190 26 V234" className="wire draw" pathLength="1" />
+      {layers.map(([a, b], i) => (
+        <g key={a} className="slide" style={{ '--d': `${i * 0.14}s` }}>
+          <rect x="70" y={14 + i * 60} width="240" height="44" rx="8" className={`card ${i ? 'hosted' : ''}`} />
+          <text x="86" y={41 + i * 60} className="t l">{a}</text>
+          <text x="294" y={41 + i * 60} className="t r dim">{b}</text>
+        </g>
+      ))}
+      <circle r="5" className="packet"><animateMotion dur="2.4s" repeatCount="indefinite" path="M190 26 V234" /></circle>
+    </svg>
+  )
+}
+
+function Build() {
+  return (
+    <svg viewBox="0 0 380 260" className="dia">
+      <rect x="10" y="20" width="170" height="220" rx="10" className="card" />
+      {[120, 90, 140, 70, 110, 100, 60, 130].map((w, i) => (
+        <rect key={i} x={26 + (i % 3 === 1 ? 14 : 0)} y={44 + i * 22} width={w} height="7" rx="3.5" className="code" style={{ '--d': `${i * 0.12}s`, '--w': `${w}px` }} />
+      ))}
+      <path d="M180 130 H220" className="wire draw" pathLength="1" style={{ '--d': '.9s' }} />
+      <rect x="220" y="60" width="150" height="140" rx="8" className="card board-c" />
+      <text x="232" y="84" className="t l sm">RPi Zero 2W</text>
+      {[0, 1, 2].map((i) => <rect key={i} x={252 + i * 9} y={102 + i * 9} width={86 - i * 18} height={70 - i * 18} rx={10 - i * 2} className="coil" style={{ '--d': `${1 + i * 0.15}s` }} />)}
+    </svg>
+  )
+}
+
+function Deploy({ D }) {
+  return (
+    <svg viewBox="0 0 380 260" className="dia">
+      <rect x="10" y="14" width="360" height="232" rx="10" className="term-c" />
+      <circle cx="30" cy="32" r="4" className="tl-dot" /><circle cx="44" cy="32" r="4" className="tl-dot" /><circle cx="58" cy="32" r="4" className="tl-dot" />
+      {D.log.map(([cmd, ok], i) => (
+        <g key={cmd} className="line" style={{ '--d': `${0.3 + i * 0.38}s` }}>
+          <text x="28" y={72 + i * 30} className="t l mono"><tspan className="pr">$ </tspan>{cmd}</text>
+          {ok && <text x="352" y={72 + i * 30} className="t r mono ok">{ok}</text>}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+function Iterate({ D }) {
+  const ticks = Array.from({ length: 8 }, (_, i) => i)
+  return (
+    <svg viewBox="0 0 380 260" className="dia">
+      <path d="M190 38 A92 92 0 1 1 189.9 38" className="loop draw" pathLength="1" />
+      {ticks.map((i) => {
+        const a = (i / ticks.length) * Math.PI * 2 - Math.PI / 2
+        return <circle key={i} cx={190 + Math.cos(a) * 92} cy={130 + Math.sin(a) * 92} r="5" className="tick" style={{ '--d': `${0.4 + i * 0.1}s` }} />
+      })}
+      <circle r="7" className="packet"><animateMotion dur="4s" repeatCount="indefinite" path="M190 38 A92 92 0 1 1 189.9 38" /></circle>
+      <text x="190" y="124" className="t">{D.loop}</text>
+      <text x="190" y="146" className="t sm dim">{D.sprint}</text>
+    </svg>
+  )
+}
+
+const DIAGRAMS = [Understand, Design, Build, Deploy, Iterate]
+
 export function Process() {
   const { lang } = useLang()
   const T = copy[lang].process
-  const root = useRef(null)
+  const root = useRef(null), track = useRef(null)
+  const [active, setActive] = useState(0)
+  // phones and reduced motion get a plain vertical stack with every diagram drawn
+  const [flat] = useState(() => matchMedia('(prefers-reduced-motion: reduce), (max-width: 900px)').matches)
 
   useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      root.current.querySelectorAll('.stage').forEach((s) => s.classList.add('on'))
-      return
-    }
+    if (flat) return
     const ctx = gsap.context(() => {
-      const stages = gsap.utils.toArray('.stage')
-      // horizontal pipe on desktop, vertical on phones: grow along whichever axis it runs
-      const axis = matchMedia('(max-width: 900px)').matches ? 'scaleY' : 'scaleX'
-      gsap.fromTo('.pipe-fill', { [axis]: 0 }, {
-        [axis]: 1, ease: 'none',
+      const el = track.current
+      // the track is padded so the first and last panels sit centered; travel is its overflow
+      const distance = () => el.scrollWidth - el.clientWidth
+      const n = processSteps.length
+      gsap.to(el, {
+        x: () => -distance(), ease: 'none',
         scrollTrigger: {
-          trigger: '.pipe', start: 'top 75%', end: 'bottom 45%', scrub: 0.6,
-          onUpdate: (st) => stages.forEach((s, i) => s.classList.toggle('on', st.progress >= i / stages.length + 0.02)),
+          trigger: '.ps-pin', start: 'top top', end: () => `+=${distance() * 1.2}`, pin: true, scrub: 0.8, invalidateOnRefresh: true,
+          snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, delay: 0.08, ease: 'power2.inOut' },
+          onUpdate: (st) => setActive(Math.round(st.progress * (n - 1))),
         },
       })
     }, root)
     return () => ctx.revert()
-  }, [])
+  }, [flat])
 
   return (
-    <section className="process" id="proceso" ref={root}>
+    <section className={`process${flat ? ' flat' : ''}`} id="proceso" ref={root}>
       <PowerTitle text={T.title} />
       <p className="sec-intro">{T.intro}</p>
-      <div className="pipe">
-        <span className="pipe-line" aria-hidden="true"><span className="pipe-fill" /></span>
-        <ol className="stages">
-        {processSteps.map((s, i) => {
-          const ex = l(s.example, lang), at = ex.indexOf(': ')
-          return (
-            <li key={s.id} className="stage">
-              <span className="stage-pad" aria-hidden="true">{i + 1}</span>
-              <h3>{l(s.title, lang)}</h3>
-              <p>{l(s.detail, lang)}</p>
-              <p className="stage-ex">
-                <b>{at > 0 ? ex.slice(0, at) : ''}</b>
-                {at > 0 ? ex.charAt(at + 2).toUpperCase() + ex.slice(at + 3) : ex}
-              </p>
-            </li>
-          )
-        })}
+      <div className="ps-pin">
+        <div className="ps-bus" aria-hidden="true">
+          <span className="ps-line"><span className="ps-fill" style={{ transform: `scaleX(${active / (processSteps.length - 1)})` }} /></span>
+          {processSteps.map((s, i) => (
+            <span key={s.id} className={`ps-pad${i <= active ? ' on' : ''}`} style={{ left: `${(i / (processSteps.length - 1)) * 100}%` }}>
+              <b>{l(s.title, lang)}</b>
+            </span>
+          ))}
+        </div>
+        <ol className="ps-track" ref={track}>
+          {processSteps.map((s, i) => {
+            const Dia = DIAGRAMS[i]
+            const ex = l(s.example, lang), at = ex.indexOf(': ')
+            return (
+              <li key={s.id} className={`panel${flat || i === active ? ' on' : ''}${i < active ? ' past' : ''}`}>
+                <div className="panel-text">
+                  <span className="panel-n">{String(i + 1).padStart(2, '0')}</span>
+                  <h3>{l(s.title, lang)}</h3>
+                  <p>{l(s.detail, lang)}</p>
+                  <p className="panel-case">
+                    <b>{at > 0 ? ex.slice(0, at) : ''}</b>
+                    {at > 0 ? ex.charAt(at + 2).toUpperCase() + ex.slice(at + 3) : ex}
+                  </p>
+                </div>
+                <div className="panel-dia" aria-hidden="true"><Dia D={T.dia} /></div>
+              </li>
+            )
+          })}
         </ol>
       </div>
     </section>

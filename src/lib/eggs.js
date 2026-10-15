@@ -40,9 +40,12 @@ export function installEggs() {
   }
 
   // 88 mph: a sustained fast scroll
-  let lastY = scrollY, lastT = performance.now(), fast = 0, mphDone = false
+  // only a hand on the wheel or the screen counts: anchor jumps and smooth scrolls never do
+  let lastY = scrollY, lastT = performance.now(), fast = 0, mphDone = false, handAt = 0
+  for (const ev of ['wheel', 'touchmove']) on(window, ev, () => { handAt = performance.now() }, { passive: true })
   on(window, 'scroll', () => {
     const now = performance.now(), v = Math.abs(scrollY - lastY) / Math.max(1, now - lastT)
+    if (now - handAt > 150) { lastY = scrollY; lastT = now; fast = 0; return }
     lastY = scrollY; lastT = now
     fast = v > 7 ? fast + 1 : 0
     if (fast > 4 && !mphDone) {

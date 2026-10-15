@@ -5,6 +5,7 @@ export const experience = [
     company: 'Gavia',
     period: { es: '2026 — hoy', en: '2026 — now' },
     span: [2026, null], // [from, to]; null means ongoing
+    tech: ['Astro', 'TypeScript', 'MapLibre GL', 'Vercel'],
     impact: {
       es: [
         'Fundé con Agustín García y Benjamín Viberti un estudio que desarrolla y mantiene software a medida para empresas, con precio cerrado por etapa y el código siempre del cliente.',
@@ -24,6 +25,13 @@ export const experience = [
     company: 'Porta Hnos',
     period: { es: '2025 — hoy', en: '2025 — now' },
     span: [2025, null], // [from, to]; null means ongoing
+    tech: ['React', 'Django', 'PostgreSQL', 'Kotlin', 'Gradle', 'Jira'],
+    // figures already stated in the impact lines below
+    stats: [
+      { value: '4', label: { es: 'sistemas internos completos', en: 'complete internal systems' } },
+      { value: '−40%', label: { es: 'tiempo de gestión interna', en: 'internal management time' } },
+      { value: '+30%', label: { es: 'velocidad para sacar features', en: 'faster feature delivery' } },
+    ],
     impact: {
       es: [
         'Desarrollé cuatro sistemas internos completos con React, Django y PostgreSQL que reemplazaron procesos manuales. El tiempo de gestión interna bajó un 40%.',

@@ -67,7 +67,7 @@ export function Console() {
   const COMMANDS = {
     '': () => { say(T.booting); powerOn() },
     'ssh vicente': () => { say(T.booting); powerOn() },
-    mellon: () => { findSecret('mellon'); say(T.mellon, true); setTimeout(powerOn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 2600) },
+    mellon: () => { findSecret('mellon'); say(T.mellon, true); setTimeout(powerOn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 3300) },
     'sudo hire': () => { findSecret('hire'); say(T.hire); setTimeout(() => { location.href = `mailto:${site.email}?subject=Hola%20Vicente` }, 900) },
     help: () => say(T.help),
     ls: () => say(T.ls),

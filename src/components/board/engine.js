@@ -4,12 +4,11 @@
 
 const P = 22 // grid pitch: the board's 0.1" raster
 const PARTS = [
-  { id: 'esp', w: 8, h: 11, at: [.655, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
+  { id: 'esp', w: 8, h: 11, at: [.677, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
   { id: 'nfc', w: 9, h: 7, at: [.685, .62], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
   { id: 'eth', w: 6, h: 5, at: [.554, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
 ]
 const ESP_PINS_L = ['3V3', 'EN', 'IO36', 'IO39', 'IO34', 'IO35', 'IO32', 'IO33']
-const ESP_PINS_R = ['GND', 'IO23', 'IO22', 'TX0', 'RX0', 'IO21', 'IO19', 'IO18']
 const key = (c, r) => c + ',' + r
 const rnd = (a, b) => a + Math.random() * (b - a)
 
@@ -157,7 +156,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     if (pr && pr.width) {
       const c = Math.floor((pr.left - rect.left) / P), r = Math.floor((pr.top - rect.top) / P)
       const w = Math.ceil(pr.width / P), h = Math.ceil(pr.height / P)
-      blockRect(c - 2, r - 1, w + 2, h + 1) // extra clearance so neighbouring pin labels stay off the frame
+      blockRect(c - 1, r - 1, w + 1, h + 1)
       parts.push({ id: 'photo', c, r, w, h, x: pr.left - rect.left, y: pr.top - rect.top, pw: pr.width, ph: pr.height, ref: 'U0 · VICENTE AZNAR', side: 'photo', born: t0, hover: 0 })
     }
 
@@ -349,7 +348,6 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       ctx.font = '500 8px "Red Hat Mono", monospace'; ctx.fillStyle = `rgba(${C.silk},${.35 + p.hover * .4})`
       for (let i = 0; i < p.h - 3; i++) {
         ctx.textAlign = 'right'; ctx.fillText(ESP_PINS_L[i] ?? '', x - 11, y + (i + 3) * P + 14)
-        ctx.textAlign = 'left'; ctx.fillText(ESP_PINS_R[i] ?? '', x + w + 11, y + (i + 3) * P + 14)
       }
       ctx.font = '500 11px "Red Hat Mono", monospace'
       // the module's PCB antenna

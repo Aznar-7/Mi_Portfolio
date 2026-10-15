@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Segments } from './Segments'
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 
 // How long each scene holds the stage, in ms
-const HOLD = { mellon: 2700, order66: 2600, mph: 3000, placa: 2200, hire: 1500, mate: 6000 }
+const HOLD = { mellon: 3600, order66: 2600, mph: 6400, placa: 2200, hire: 2600, mate: 6000 }
 
 const pad = (n) => String(n).padStart(2, '0')
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -50,6 +51,61 @@ function Durin() {
   )
 }
 
+
+const DEST = { mon: 'OCT', day: '21', year: 2015, ampm: 'PM', hour: '04', min: '29' }
+const LAST = { mon: 'OCT', day: '26', year: 1985, ampm: 'AM', hour: '01', min: '21' }
+
+function Row({ label, d, kind, flip }) {
+  return (
+    <div className={`tc-row ${kind}${flip ? ' flip' : ''}`}>
+      <div className="tc-cells">
+        <span className="tc-cell"><small>MONTH</small><Segments text={d.mon} alpha /></span>
+        <span className="tc-cell"><small>DAY</small><Segments text={d.day} /></span>
+        <span className="tc-cell"><small>YEAR</small><Segments text={String(d.year)} /></span>
+        <span className="tc-ampm"><small>AM</small><i className={d.ampm === 'AM' ? 'on' : ''} /><small>PM</small><i className={d.ampm === 'PM' ? 'on' : ''} /></span>
+        <span className="tc-cell"><small>HOUR</small><Segments text={d.hour} /></span>
+        <span className="tc-colon"><i /><i /></span>
+        <span className="tc-cell"><small>MIN</small><Segments text={d.min} /></span>
+      </div>
+      <em>{label}</em>
+    </div>
+  )
+}
+
+// 88 mph: the speedo climbs, the car breaks through at 88, and the circuits show the jump:
+// present becomes 21 Oct 2015 and "last departed" becomes the visitor's real now.
+function MphScene({ T, now }) {
+  const [mph, setMph] = useState(0)
+  const [jumped, setJumped] = useState(false)
+  const raf = useRef(0)
+  useEffect(() => {
+    const t0 = performance.now()
+    const tick = (t) => {
+      const k = Math.min(1, (t - t0) / 1700)
+      setMph(Math.round(88 * (1 - (1 - k) ** 2.2)))
+      if (k < 1) raf.current = requestAnimationFrame(tick)
+      else setTimeout(() => setJumped(true), 120)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf.current)
+  }, [])
+  const present = stamp(now)
+  return (
+    <>
+      <div className={`speedo${jumped ? ' gone' : ''}`}>
+        <Segments text={String(mph).padStart(2, '0')} />
+        <b>MPH</b>
+      </div>
+      {jumped && <><span className="flash" /><span className="flame one" /><span className="flame two" /></>}
+      <div className={`circuits${jumped ? ' in' : ''}`}>
+        <Row label={T.dest} d={DEST} kind="dest" />
+        <Row label={T.pres} d={jumped ? DEST : present} kind="pres" flip={jumped} />
+        <Row label={T.last} d={jumped ? present : LAST} kind="last" flip={jumped} />
+      </div>
+    </>
+  )
+}
+
 export function EggStage() {
   const { lang } = useLang()
   const T = copy[lang].eggs
@@ -74,7 +130,7 @@ export function EggStage() {
   const { id, key, now } = scene
   return (
     <div key={key} className={`stage-egg egg-${id}`} aria-hidden="true">
-      {id === 'mellon' && (<><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
+      {id === 'mellon' && (<><span className="stars" /><span className="spill" /><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
 
       {id === 'order66' && (
         <>
@@ -100,32 +156,16 @@ export function EggStage() {
         </>
       )}
 
-      {id === 'mph' && (
-        <>
-          <span className="flame one" /><span className="flame two" />
-          <div className="circuits">
-            {[
-              ['dest', T.dest, { mon: 'OCT', day: '21', year: 2015, ampm: 'PM', hour: '04', min: '29' }],
-              ['pres', T.pres, stamp(now)],
-              ['last', T.last, { mon: 'OCT', day: '26', year: 1985, ampm: 'AM', hour: '01', min: '21' }],
-            ].map(([k, label, d]) => (
-              <div key={k} className={`row ${k}`}>
-                <div className="cells">
-                  {[['MONTH', d.mon], ['DAY', d.day], ['YEAR', d.year], ['', d.ampm], ['HOUR', d.hour], ['MIN', d.min]].map(([cap, v], i) => (
-                    <span key={i} className="cell"><small>{cap}</small><b>{v}</b></span>
-                  ))}
-                </div>
-                <em>{label}</em>
-              </div>
-            ))}
-          </div>
-          <span className="flash" />
-        </>
-      )}
+      {id === 'mph' && <MphScene T={T} now={now} />}
 
       {id === 'placa' && (<><span className="scan" /><div className="test"><small>{T.test}</small><b>TEST OK · 6/6</b></div></>)}
 
-      {id === 'hire' && <div className="granted"><small>sudo hire</small><b>{T.granted}</b></div>}
+      {id === 'hire' && (
+        <div className="granted">
+          {T.sudo.map((line, i) => <p key={line} style={{ '--d': `${i * 0.28}s` }}>{line}</p>)}
+          <b style={{ '--d': `${T.sudo.length * 0.28}s` }}>{T.granted}</b>
+        </div>
+      )}
 
       {id === 'mate' && (
         <div className="mate">
