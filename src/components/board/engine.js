@@ -318,7 +318,8 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     for (const p of parts) drawPart(p, now)
     if (mouse.x > 0) { ctx.strokeStyle = `rgba(${C.silk},.35)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 16, 0, 7); ctx.stroke() }
     // the board only animates while the hero is on screen
-    if (visible && !dead) raf = requestAnimationFrame(draw)
+    // when it stops, clear the handle so kick() can start it again
+    raf = visible && !dead ? requestAnimationFrame(draw) : 0
   }
 
   function drawPart(p, now) {

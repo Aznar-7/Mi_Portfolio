@@ -61,12 +61,18 @@ function Flow({ project, lang, label }) {
     layout()
     const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting })
     io.observe(board.current)
-    addEventListener('resize', layout)
+    // the board changes width with the inspector, not only the window
+    const ro = new ResizeObserver(layout); ro.observe(board.current)
     if (!reduced) raf = requestAnimationFrame(tick)
-    return () => { cancelAnimationFrame(raf); io.disconnect(); removeEventListener('resize', layout) }
+    return () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect() }
   }, [])
 
-  const pick = (i) => { pinned.current = true; setActive(i) }
+  // pinning parks the signal on that node, so the dot and the highlighted node always agree
+  const pick = (i) => {
+    pinned.current = true; setActive(i)
+    const n = board.current?.querySelectorAll('.node')[i], b = path.current?.ownerSVGElement.getBoundingClientRect()
+    if (n && b && dot.current) { const r = n.getBoundingClientRect(); dot.current.setAttribute('cx', r.left - b.left + r.width / 2); dot.current.style.opacity = 1 }
+  }
   const shared = nodes[1]?.host
   return (
     <div className="flow">
