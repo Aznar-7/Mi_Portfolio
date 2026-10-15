@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-// A dogfight in the distance: an X-wing with a TIE on its tail, small and unhurried, passing every ~26 s.
+// A chase in the distance: an X-wing with a TIE on its tail, small and unhurried, passing every ~26 s.
 // Loaded lazily with the galaxy (three.js never ships with the rest of the site).
 // Models: "T-65 X-Wing Starfighter" by Ti Kawamoto and "Tie Fighter 1 V1" by Joe Scalise,
 // both CC-BY 3.0 via Poly Pizza (credited on screen by the galaxy).
@@ -44,26 +44,24 @@ export default function Ships3D({ active = true }) {
     size(); addEventListener('resize', size)
 
     const ships = {}
-    const lasers = []
-    const laserGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.5, 6).rotateX(Math.PI / 2)
-    const laserMat = new THREE.MeshBasicMaterial({ color: 0x6dff7a })
     const loader = new GLTFLoader()
     let disposed = false
-    for (const [id, file, s] of [['xwing', '/models/x-wing.glb', 0.62], ['tie', '/models/tie-fighter.glb', 0.46]]) {
+    for (const [id, file, s] of [['xwing', '/models/x-wing.glb', 0.34], ['tie', '/models/tie-fighter.glb', 0.25]]) {
       loader.load(file, (g) => {
         if (disposed) return
         const model = fit(g.scene, s)
         model.children[0].rotation.y = NOSE[id]
         const ship = new THREE.Group(); ship.add(model); ship.visible = false
+        ship.rotation.y = Math.PI / 2 // a fixed heading: nose to the right, the way they fly
         scene.add(ship); ships[id] = ship
       })
     }
 
     // the flight path: a wide, slightly climbing S across the view, coming toward the camera
-    // high across the upper third, far back, a long gentle curve
-  const pathAt = (k) => new THREE.Vector3(-12 + k * 24, 2.4 + Math.sin(k * Math.PI) * 0.9, -6 + Math.sin(k * Math.PI) * 1.5)
+    // a straight run high across the chart, far back; only a slow bob, so nothing spins
+  const pathAt = (k, t) => new THREE.Vector3(-13 + k * 26, 3.1 + Math.sin(t * 1.3) * 0.08, -7)
     const clock = new THREE.Clock()
-    let raf, lastShot = 0
+    let raf
     const frame = () => {
       raf = requestAnimationFrame(frame)
       if (!on.current || document.hidden) return
@@ -73,26 +71,9 @@ export default function Ships3D({ active = true }) {
         const kk = k - lag
         ship.visible = kk > 0 && kk < 1
         if (!ship.visible) continue
-        const p = pathAt(kk), ahead = pathAt(kk + 0.01)
-        ship.position.copy(p)
-        ship.lookAt(ahead)
-        ship.rotateZ(Math.sin(kk * Math.PI * 2) * 0.18) // a slight bank, not acrobatics
+        ship.position.copy(pathAt(kk, t + lag * 10))
+        ship.rotation.x = Math.sin(t * 1.1 + lag * 20) * 0.06 // the faintest roll
       }
-      // the TIE fires short bursts while both are on screen
-      const tie = ships.tie
-      if (tie?.visible && ships.xwing?.visible && t - lastShot > 0.9) {
-        lastShot = t
-        const bolt = new THREE.Mesh(laserGeo, laserMat)
-        bolt.position.copy(tie.position); bolt.quaternion.copy(tie.quaternion)
-        bolt.userData.v = new THREE.Vector3(0, 0, 1).applyQuaternion(tie.quaternion).multiplyScalar(0.22)
-        bolt.userData.life = 50
-        scene.add(bolt); lasers.push(bolt)
-      }
-      for (let i = lasers.length - 1; i >= 0; i--) {
-        const b = lasers[i]; b.position.add(b.userData.v)
-        if (--b.userData.life <= 0) { scene.remove(b); lasers.splice(i, 1) }
-      }
-      if (t < 0.05) lastShot = 0
       renderer.render(scene, camera)
     }
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) frame()
@@ -101,7 +82,6 @@ export default function Ships3D({ active = true }) {
       disposed = true
       cancelAnimationFrame(raf); removeEventListener('resize', size)
       scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose() }) })
-      laserGeo.dispose(); laserMat.dispose()
       renderer.dispose(); renderer.domElement.remove()
     }
   }, [])

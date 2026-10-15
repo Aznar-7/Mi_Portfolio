@@ -107,8 +107,9 @@ function MphScene({ T, now, dest }) {
   const [start] = useState(() => performance.now())
   const raf = useRef(0)
   useEffect(() => {
-    const tick = (t) => {
-      const k = Math.min(1, (t - start) / 2600)
+    const tick = () => {
+      // performance.now, the same clock the 3D car reads
+      const k = Math.min(1, (performance.now() - start) / 2600)
       setMph(Math.round(88 * (1 - (1 - k) ** 2.2)))
       if (k < 1) raf.current = requestAnimationFrame(tick)
       else setTimeout(() => setJumped(true), 120)
@@ -144,6 +145,37 @@ function MphScene({ T, now, dest }) {
         <Row label={T.pres} d={jumped ? dest : present} kind="pres" flip={jumped} />
         <Row label={T.last} d={jumped ? present : LAST} kind="last" flip={jumped} />
       </div>
+    </>
+  )
+}
+
+// Order 66, staged like the film: an encrypted holo transmission gives the order, it cuts out, and
+// blaster fire crosses the screen while the board turns red. No drawn characters: light and type.
+function Order66({ T }) {
+  const [bolts] = useState(() => Array.from({ length: 16 }, (_, i) => {
+    const fromLeft = i % 2 === 0
+    const y1 = 10 + Math.random() * 80, y2 = Math.max(4, Math.min(96, y1 + (Math.random() - 0.5) * 50))
+    return { fromLeft, y1, y2, d: 3.3 + i * 0.17 + Math.random() * 0.12, hit: [18 + Math.random() * 64, 15 + Math.random() * 70] }
+  }))
+  const order = [...T.order66b]
+  return (
+    <>
+      <div className="o66-tx">
+        <p className="o66-from">{T.o66from}</p>
+        <p className="o66-order" aria-label={T.order66b}>
+          {order.map((ch, i) => <span key={i} style={{ '--i': i }}>{ch}</span>)}
+        </p>
+        <p className="o66-reply">{T.o66reply}</p>
+      </div>
+      <div className="o66-fire" aria-hidden="true">
+        {bolts.map((b, i) => (
+          <span key={i} className={`bolt${b.fromLeft ? '' : ' rev'}`} style={{ '--y1': `${b.y1}vh`, '--y2': `${b.y2}vh`, '--d': `${b.d}s` }} />
+        ))}
+        {bolts.filter((_, i) => i % 2).map((b, i) => (
+          <span key={'h' + i} className="hit" style={{ left: `${b.hit[0]}vw`, top: `${b.hit[1]}vh`, '--d': `${b.d + 0.22}s` }} />
+        ))}
+      </div>
+      <p className="egg-caption sith o66-end">{T.o66end}</p>
     </>
   )
 }
@@ -224,45 +256,7 @@ export function EggStage() {
     <div key={key} className={`stage-egg egg-${id}`} aria-hidden={id === 'mate' ? undefined : 'true'}>
       {id === 'mellon' && (<><span className="stars" /><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
 
-      {id === 'order66' && (
-        <>
-          {/* 1. an incoming transmission: a hooded figure in blue holo light gives the order */}
-          <div className="o66-holo">
-            <svg viewBox="0 0 300 380" aria-hidden="true">
-              <defs>
-                <linearGradient id="o66-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#7cc6ff" stopOpacity=".45" /><stop offset="1" stopColor="#7cc6ff" stopOpacity="0" /></linearGradient>
-                <pattern id="o66-scan" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="1.2" fill="#bfe4ff" /></pattern>
-                <clipPath id="o66-fig"><path d="M150 40 C124 40 110 60 110 88 C110 108 118 118 110 128 C88 134 68 148 62 172 C54 222 52 282 48 330 H252 C248 282 246 222 238 172 C232 148 212 134 190 128 C182 118 190 108 190 88 C190 60 176 40 150 40 Z" /></clipPath>
-              </defs>
-              <polygon points="150,350 40,30 260,30" fill="url(#o66-beam)" />
-              <g className="o66-figure">
-                <path d="M150 40 C124 40 110 60 110 88 C110 108 118 118 110 128 C88 134 68 148 62 172 C54 222 52 282 48 330 H252 C248 282 246 222 238 172 C232 148 212 134 190 128 C182 118 190 108 190 88 C190 60 176 40 150 40 Z" className="robe" />
-                <path d="M128 92 C134 78 166 78 172 92 C174 110 164 122 150 122 C136 122 126 110 128 92 Z" className="hood" />
-                <path d="M118 150 C134 160 166 160 182 150 M150 160 V330" className="fold" />
-                <rect x="40" y="30" width="220" height="320" fill="url(#o66-scan)" opacity=".35" clipPath="url(#o66-fig)" />
-              </g>
-              <ellipse cx="150" cy="352" rx="60" ry="10" className="o66-emitter" />
-            </svg>
-            <p className="o66-line one"><small>{T.o66from}</small>{T.order66b}</p>
-            <p className="o66-line two">{T.o66reply}</p>
-          </div>
-          {/* 2. the blade */}
-          <svg className="saber" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="-5" y1="8" x2="105" y2="92" pathLength="100" /><line className="core" x1="-5" y1="8" x2="105" y2="92" pathLength="100" /></svg>
-          {/* 3. the squad marches through */}
-          <div className="o66-squad">
-            {Array.from({ length: 7 }, (_, i) => (
-              <svg key={i} viewBox="0 0 40 90" style={{ '--i': i }} aria-hidden="true">
-                <path d="M20 4 C9 4 6 12 6 22 L7 32 C10 36 30 36 33 32 L34 22 C34 12 31 4 20 4 Z" className="helm" />
-                <path d="M11 18 H29 M20 18 V30" className="visor" />
-                <path d="M10 38 H30 L32 62 H8 Z" className="armor" />
-                <path d="M12 62 L10 86 M28 62 L30 86" className="legs" />
-                <path d="M30 42 L40 50" className="blaster" />
-              </svg>
-            ))}
-          </div>
-          <p className="egg-caption sith o66-end">{T.o66end}</p>
-        </>
-      )}
+      {id === 'order66' && <Order66 T={T} />}
 
       {id === 'mph' && <MphScene T={T} now={now} dest={PAST} />}
 

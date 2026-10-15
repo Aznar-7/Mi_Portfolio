@@ -164,35 +164,50 @@ function Inspector({ project, lang, T }) {
   const [shot, setShot] = useState(0)
   const st = statusOf(project), links = linksOf(project, T)
   const show = (i) => { playSelect(); setShot((i + shots.length) % shots.length) }
+  // a datasheet: name, state and links on top; what it is and its stack beside a moderate image
   return (
     <article className={`inspector ${layerOf(project)}`} aria-live="polite">
-      {shots.length > 0 && (
-        <div className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') show(shot + 1); if (e.key === 'ArrowLeft') show(shot - 1) }}>
-          <img key={shots[shot]} src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} />
-          {shots.length > 1 && (
-            <div className="shot-ctrl">
-              <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>
-              <span>{shot + 1} / {shots.length}</span>
-              <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>
-            </div>
+      <header className="ins-head">
+        <div>
+          <h3>{project.title}</h3>
+          <p className="ins-tag">{l(project.tagline, lang)}</p>
+        </div>
+        <span className="inline-state"><i className={`led ${st === 'done' || st === 'dev' ? 'done' : 'live'}`} />{T.status[st]}</span>
+        {links.length > 0 && <Links links={links} />}
+      </header>
+      <div className="ins-grid">
+        <div className="ins-text">
+          <p className="desc">{l(project.summary, lang)}</p>
+          <Stack tech={project.tech} />
+          {!project.flow && project.architecture && (
+            <dl className="stack">
+              {project.architecture.map((a) => <div key={l(a.layer, lang)}><dt>{l(a.layer, lang)}</dt><dd>{l(a.detail, lang)}</dd></div>)}
+            </dl>
           )}
         </div>
-      )}
-      <div className="ins-body">
-        <div className="ins-head">
-          <h3>{project.title}</h3>
-          <span className="inline-state"><i className={`led ${st === 'done' || st === 'dev' ? 'done' : 'live'}`} />{T.status[st]}</span>
-        </div>
-        <p className="desc">{l(project.summary, lang)}</p>
-        <Stack tech={project.tech} />
-        {links.length > 0 && <Links links={links} />}
-        {project.flow && <Flow project={project} lang={lang} label={T.flow} />}
-        {!project.flow && project.architecture && (
-          <dl className="stack">
-            {project.architecture.map((a) => <div key={l(a.layer, lang)}><dt>{l(a.layer, lang)}</dt><dd>{l(a.detail, lang)}</dd></div>)}
-          </dl>
+        {shots.length > 0 && (
+          <figure className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') show(shot + 1); if (e.key === 'ArrowLeft') show(shot - 1) }}>
+            <div className="ins-shot">
+              <img key={shots[shot]} src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} />
+              {shots.length > 1 && (
+                <div className="shot-ctrl">
+                  <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={16} aria-hidden="true" /></button>
+                  <span>{shot + 1} / {shots.length}</span>
+                  <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={16} aria-hidden="true" /></button>
+                </div>
+              )}
+            </div>
+            {shots.length > 1 && (
+              <div className="ins-thumbs" role="group" aria-label={T.screens}>
+                {shots.slice(0, 6).map((src, i) => (
+                  <button key={src} type="button" aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}><img src={src} alt="" loading="lazy" /></button>
+                ))}
+              </div>
+            )}
+          </figure>
         )}
       </div>
+      {project.flow && <div className="ins-flow"><Flow project={project} lang={lang} label={T.flow} /></div>}
     </article>
   )
 }

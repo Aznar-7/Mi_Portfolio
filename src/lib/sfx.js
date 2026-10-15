@@ -74,12 +74,14 @@ export const CUES = {
       voice(ctx, { type: 'sawtooth', f, at: 2.5, a: 1.0, d: 0.6, s: 0.8, hold: 0.6, r: 1.2, gain: 0.018, detune: i % 2 ? 7 : -7, filter: 'lowpass', ff: 900, lfo: [5, 2] })
     })
   },
-  // a blade ignites (noise snap and a rising hum), hums, then swings once
+  // the transmission crackles in, then blaster fire, timed to the bolts on screen
   order66(ctx) {
-    voice(ctx, { noise: true, a: 0.005, d: 0.25, gain: 0.12, filter: 'bandpass', ff: 3000, ff2: 600, q: 2 })
-    voice(ctx, { type: 'sawtooth', f: 50, f2: 92, glide: 0.25, a: 0.05, d: 0.2, s: 0.7, hold: 1.4, r: 0.4, gain: 0.07, filter: 'lowpass', ff: 380, q: 6, lfo: [7, 3], drive: 3 })
-    voice(ctx, { type: 'sawtooth', f: 92, a: 0.1, d: 0.2, s: 0.6, hold: 1.4, r: 0.4, gain: 0.04, detune: 12, filter: 'lowpass', ff: 600, lfo: [11, 2] })
-    voice(ctx, { type: 'sawtooth', f: 92, f2: 150, glide: 0.18, at: 1.0, a: 0.06, d: 0.35, gain: 0.08, filter: 'lowpass', ff: 500, ff2: 1600, q: 8, drive: 4 })
+    for (let i = 0; i < 6; i++) voice(ctx, { noise: true, at: 0.2 + i * 0.32 + Math.random() * 0.1, a: 0.01, d: 0.12, gain: 0.03, filter: 'bandpass', ff: 1800, q: 4 })
+    for (let i = 0; i < 16; i++) {
+      const at = 3.3 + i * 0.17 + Math.random() * 0.08
+      voice(ctx, { type: 'sawtooth', f: 1900, f2: 260, glide: 0.16, at, a: 0.002, d: 0.17, gain: 0.035, filter: 'lowpass', ff: 4200, ff2: 900 })
+      if (i % 2) voice(ctx, { noise: true, at: at + 0.22, a: 0.002, d: 0.18, gain: 0.06, filter: 'lowpass', ff: 1200, ff2: 200 })
+    }
   },
   // the DeLorean: an engine climbing through the gears, three sonic booms, electric crackle
   mph(ctx) {

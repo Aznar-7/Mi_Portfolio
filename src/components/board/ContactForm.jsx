@@ -5,10 +5,25 @@ import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
 
-// The form reads as a short letter you fill in: the blanks are the fields.
-// Web3Forms relays it to the inbox tied to this public access key; no backend needed.
-// Without a key (local dev, forks) it falls back to the visitor's mail app, prefilled.
+// The form reads as a short letter you fill in: the blanks are the fields. It is sent from the page,
+// no mail app involved: Web3Forms when a key is set, otherwise FormSubmit straight to the inbox
+// (FormSubmit asks the owner to confirm once, by a link in the first message it delivers).
 const KEY = import.meta.env.VITE_WEB3FORMS_KEY
+const FOLD = 900 // ms the letter takes to fold and fly off; the request runs meanwhile
+
+async function deliver({ subject, name, email, topic, message }) {
+  const res = KEY
+    ? await fetch('https://api.web3forms.com/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ access_key: KEY, subject, from_name: 'vicenteaznar.dev', name, email, topic, message }),
+    })
+    : await fetch(`https://formsubmit.co/ajax/${site.email}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ _subject: subject, _template: 'table', _captcha: 'false', _replyto: email, name, email, topic, message }),
+    })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok || json.success === false || json.success === 'false') throw new Error(json.message || 'send failed')
+}
 
 export function ContactForm() {
   const { lang } = useLang()
@@ -25,20 +40,13 @@ export function ContactForm() {
     if (data.botcheck) return // honeypot: bots fill every field
     playClick()
     const subject = `${T.subject(data.name)} · ${T.topics[topic]}`
-    if (!KEY) {
-      const body = `${data.message}\n\n${data.name} · ${data.email}`
-      location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-      return
-    }
     setState('sending')
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ access_key: KEY, subject, from_name: 'vicenteaznar.dev', name: data.name, email: data.email, topic: T.topics[topic], message: data.message }),
-      })
-      const json = await res.json()
-      if (!json.success) throw new Error(json.message)
+      // the fold plays in full even if the network is faster, so the moment reads
+      await Promise.all([
+        deliver({ subject, name: data.name, email: data.email, topic: T.topics[topic], message: data.message }),
+        new Promise((r) => setTimeout(r, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FOLD)),
+      ])
       setWho(data.name.split(' ')[0]); setState('sent'); playSuccess(); form.reset()
     } catch {
       setState('error')
@@ -58,7 +66,7 @@ export function ContactForm() {
 
   const type = (e) => { if (e.key.length === 1) playTyping() }
   return (
-    <form className="letter" onSubmit={submit}>
+    <form className={`letter${state === 'sending' ? ' folding' : ''}`} onSubmit={submit}>
       <p className="letter-line">
         {T.l1}{' '}
         <label className="sr-only" htmlFor="f-name">{T.name}</label>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLang } from '@/contexts/LanguageContext'
@@ -10,8 +10,8 @@ import { ToolIcon } from './ToolIcon'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// A vertical trace draws itself with the scroll and powers each role's pad as it arrives, while a
-// large sticky year keeps time on the left. Studies run in parallel, so they sit apart as their own block.
+// A vertical trace draws itself with the scroll and powers each role's pad as it arrives. Each role reads
+// in three columns: when, who and where, what got done. Studies run in parallel, so they sit apart.
 export function Path() {
   const { lang } = useLang()
   const T = copy[lang].path
@@ -19,16 +19,12 @@ export function Path() {
   const items = [
     ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), tech: e.tech, stats: e.stats?.map((st) => ({ value: st.value, label: l(st.label, lang) })) })),
   ]
-  const [active, setActive] = useState(0)
-  const year = items[active].span[0]
-
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     const ctx = gsap.context(() => {
-      gsap.utils.toArray('.tl-item').forEach((el, i) => {
+      gsap.utils.toArray('.tl-item').forEach((el) => {
         ScrollTrigger.create({
-          trigger: el, start: 'top 55%', end: 'bottom 55%',
-          onToggle: (st) => { if (st.isActive) setActive(i) },
+          trigger: el, start: 'top 60%',
           onEnter: () => el.classList.add('on'),
           onLeaveBack: () => el.classList.remove('on'),
         })
@@ -45,10 +41,6 @@ export function Path() {
       <PowerTitle text={T.title} />
       <p className="sec-intro">{T.intro}</p>
       <div className="tl">
-        <div className="tl-year" aria-hidden="true">
-          <span key={year} className={`yr ${items[active].kind}`}>{year}</span>
-          <small>{items[active].name}</small>
-        </div>
         <div className="tl-list">
           <span className="tl-line" aria-hidden="true"><span className="tl-fill" /></span>
           <ol className="tl-items">

@@ -739,30 +739,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @keyframes hv-in{from{opacity:0}}
 @keyframes hv-out{30%{filter:brightness(2.4)} to{opacity:0; filter:brightness(3)}}
 
-/* ── Order 66 v2: transmission, blade, squad ── */
-.egg-order66{animation:o66-bg 9.2s ease both}
-@keyframes o66-bg{0%{background:rgba(4,8,16,.96)} 30%{background:rgba(4,8,16,.96)} 36%{background:rgba(60,0,0,.9)} 100%{background:rgba(14,2,2,.92)}}
-.o66-holo{position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:10px; animation:o66-holo-out .5s 3.1s ease forwards}
-.o66-holo svg{width:min(44vh,70vw); height:auto; overflow:visible}
-.o66-figure{opacity:0; animation:o66-flicker 2.8s .25s steps(1) both}
-.o66-figure .robe{fill:rgba(124,198,255,.22); stroke:#bfe4ff; stroke-width:1.4}
-.o66-figure .hood{fill:rgba(10,24,40,.85); stroke:#bfe4ff; stroke-width:1}
-.o66-emitter{fill:#0b1a2a; stroke:#7cc6ff; stroke-width:2}
-@keyframes o66-flicker{0%{opacity:0} 6%{opacity:.9} 8%{opacity:.3} 11%,40%{opacity:.85} 42%{opacity:.4} 45%,100%{opacity:.85}}
-@keyframes o66-holo-out{to{opacity:0; filter:blur(4px)}}
-.o66-line{margin:0; text-align:center; font:500 clamp(18px,2vw,26px)/1.3 var(--display); color:#cfe9ff; text-shadow:0 0 18px rgba(124,198,255,.6); opacity:0}
-.o66-line small{display:block; margin-bottom:6px; font:500 11px/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:#7cc6ff}
-.o66-line.one{animation:fadeup .5s .7s ease both}
-.o66-line.two{color:#ffd9d9; text-shadow:0 0 18px rgba(255,80,80,.5); animation:fadeup .5s 2.2s ease both}
-.egg-order66 .saber line{animation-delay:3.3s, 4.3s}
-.o66-squad{position:absolute; left:0; right:0; bottom:12vh; display:flex; gap:clamp(14px,2vw,28px); justify-content:center; opacity:0; animation:o66-march 5.4s 3.6s linear both}
-.o66-squad svg{width:clamp(34px,3.6vw,52px); height:auto; animation:o66-step .5s calc(var(--i) * .07s) ease-in-out infinite alternate}
-.o66-squad .helm{fill:#eceef2; stroke:#1b1e25; stroke-width:1.2} .o66-squad .visor{stroke:#1b1e25; stroke-width:3.4; stroke-linecap:round}
-.o66-squad .armor{fill:#dfe2e8; stroke:#1b1e25; stroke-width:1.2} .o66-squad .legs{stroke:#dfe2e8; stroke-width:5; stroke-linecap:round} .o66-squad .blaster{stroke:#2b2f37; stroke-width:4; stroke-linecap:round}
-@keyframes o66-march{0%{opacity:0; transform:translateX(40vw)} 10%{opacity:1} 90%{opacity:1} to{opacity:0; transform:translateX(-40vw)}}
-@keyframes o66-step{to{transform:translateY(-3px)}}
-.o66-end{opacity:0; animation:fadeup .6s 4.4s ease both}
-@media (prefers-reduced-motion: reduce){ .o66-holo,.o66-figure,.o66-line,.o66-squad,.o66-squad svg,.o66-end{animation:none; opacity:1} }
 
 /* ── Mate v2: the thermos pours, the steam rises ── */
 .egg-mate{place-items:end; padding:0 clamp(20px,4vw,56px) 96px}
@@ -831,7 +807,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @keyframes intro-pop{to{opacity:1}}
 @keyframes intro-pad{50%{opacity:1; filter:drop-shadow(0 0 10px rgb(212,87,78))} to{opacity:1}}
 @keyframes intro-fade{to{opacity:0}}
-.o66-figure .fold{fill:none; stroke:rgba(191,228,255,.45); stroke-width:1}
 
 /* ── Work v4: the net list and the inspector ── */
 .bench{display:grid; grid-template-columns:minmax(260px,.8fr) minmax(0,2fr); gap:clamp(24px,3vw,44px); align-items:start}
@@ -854,14 +829,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .inspector{border-radius:18px; overflow:hidden; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); animation:ins-in .35s var(--ease)}
 .inspector.b{box-shadow:inset 0 0 0 1px rgba(var(--bcu),.35)}
 @keyframes ins-in{from{opacity:0; transform:translateY(8px)}}
-.ins-media{position:relative; aspect-ratio:16/9; max-height:58vh; width:100%; background:#0e1014}
-.ins-media img{display:block; width:100%; height:100%; object-fit:cover; animation:fadein .3s ease}
-.ins-media .shot-ctrl{opacity:1; transform:none}
-.ins-body{padding:clamp(20px,2.4vw,32px)}
-.ins-head{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px}
-.ins-head h3{margin:0; font:600 clamp(28px,3vw,42px)/1.05 var(--display); letter-spacing:-.02em}
-.inspector .desc{margin:14px 0 18px; max-width:68ch; color:var(--ink-2); font-size:17px; line-height:1.6}
-.inspector .links{margin-top:18px}
 @media (max-width:900px){
   .bench{grid-template-columns:1fr}
   .netlist{position:static; display:flex; overflow-x:auto; gap:8px; padding-bottom:6px; scroll-snap-type:x mandatory}
@@ -870,17 +837,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 }
 @media (prefers-reduced-motion: reduce){ .inspector,.ins-media img,.netlist button.on::after{animation:none} }
 
-/* ── Path v4: each role in two columns, so the timeline uses its width ── */
-.tl{grid-template-columns:minmax(120px,.38fr) minmax(0,3fr)}
-.tl-item{display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr); column-gap:clamp(28px,4vw,64px); align-items:start}
-.tl-item > .tl-when,.tl-item > .tl-head,.tl-item > .tl-stats{grid-column:1}
-.tl-item > ul:not(.tl-chips){grid-column:2; grid-row:1 / span 3; margin-top:0; max-width:none}
-.tl-item > .tl-chips{grid-column:2; grid-row:4}
-.tl-item .tl-stats{grid-template-columns:1fr; gap:8px; max-width:none; margin:20px 0 0}
-.tl-item .tl-stats div{display:flex; align-items:baseline; gap:12px; padding:12px 14px}
-.tl-item .tl-stats dt{font-size:clamp(24px,2.2vw,32px); flex:none}
-.tl-item .tl-stats dd{margin:0}
-@media (max-width:1100px){ .tl-item{grid-template-columns:1fr} .tl-item > *{grid-column:1 !important; grid-row:auto !important} .tl-item > ul:not(.tl-chips){margin-top:20px} }
 
 /* ── Contact v5: the form is a letter with blanks ── */
 .contact-right{padding:0; border-radius:0; background:none; box-shadow:none}
@@ -953,3 +909,103 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .speedo,.flux,.circuits{z-index:1}
 .egg-credit{position:absolute; z-index:2; left:clamp(16px,3vw,40px); bottom:12px; margin:0; font:400 11px/1.5 var(--mono); color:rgba(236,238,242,.45); pointer-events:auto}
 .egg-credit a{color:rgba(236,238,242,.65)}
+
+/* sending: the letter folds in half, becomes an envelope and flies off to the inbox */
+.letter{transform-origin:50% 0}
+.letter.folding{pointer-events:none; animation:letter-fold .9s cubic-bezier(.6,0,.3,1) forwards}
+.letter.folding > *{animation:fadeout-to .25s ease forwards}
+@keyframes letter-fold{
+  0%{transform:none; border-radius:0; background:transparent}
+  30%{transform:scaleY(.08); background:#f0dfb4; border-radius:6px}
+  55%{transform:scale(.35,.18); background:#f0dfb4; border-radius:6px; opacity:1}
+  100%{transform:translate(55vw,-60vh) scale(.12,.07) rotate(-18deg); background:#f0dfb4; opacity:0}
+}
+.letter-sent{animation:fadeup .5s ease both}
+@media (prefers-reduced-motion: reduce){ .letter.folding,.letter.folding > *{animation:none} }
+
+/* ── Path v5: one rail, each role in three columns (when · who · what) ── */
+.tl{display:block}
+.tl-list{padding-left:44px}
+.tl-item{display:grid; grid-template-columns:132px minmax(0,.9fr) minmax(0,1.5fr); column-gap:clamp(24px,3vw,56px); align-items:start; padding:34px 0; border-top:1px solid rgba(236,238,242,.07)}
+.tl-item:first-child{border-top:0; padding-top:6px}
+.tl-item:last-child{padding-bottom:0}
+.tl-pad{left:-44px; top:42px}
+.tl-item:first-child .tl-pad{top:14px}
+.tl-item > .tl-when{grid-column:1; grid-row:1; margin:6px 0 0; font:500 13px/1.4 var(--mono); color:var(--ink-2)}
+.tl-item > .tl-head{grid-column:2; grid-row:1}
+.tl-item > .tl-stats{grid-column:2; grid-row:2}
+.tl-item > ul:not(.tl-chips){grid-column:3; grid-row:1 / span 2; margin:4px 0 0; max-width:none}
+.tl-item > .tl-chips{grid-column:3; grid-row:3; margin-top:16px}
+.tl-head h3{font-size:clamp(26px,2.4vw,34px)}
+.tl-item .tl-stats{display:grid; grid-template-columns:1fr; gap:6px; margin:18px 0 0; max-width:300px}
+.tl-item .tl-stats div{display:flex; align-items:baseline; gap:12px; padding:10px 14px}
+.tl-item .tl-stats dt{flex:none; font-size:clamp(22px,2vw,28px)}
+.tl-item .tl-stats dd{margin:0}
+.tl-item ul li{font-size:16px}
+@media (max-width:1100px){
+  .tl-item{grid-template-columns:1fr; row-gap:10px}
+  .tl-item > *{grid-column:1 !important; grid-row:auto !important}
+  .tl-item > ul:not(.tl-chips){margin-top:12px}
+}
+
+/* ── Work v5: the inspector as a datasheet ── */
+.inspector{padding:clamp(20px,2.4vw,32px)}
+.ins-head{display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title state" "links links"; gap:10px 20px; align-items:start; padding-bottom:20px; border-bottom:1px solid rgba(236,238,242,.08)}
+.ins-head > div{grid-area:title}
+.ins-head h3{margin:0; font:600 clamp(28px,2.8vw,40px)/1.05 var(--display); letter-spacing:-.02em}
+.ins-tag{margin:6px 0 0; color:var(--ink-2); font-size:16px}
+.ins-head .inline-state{grid-area:state; margin-top:10px}
+.ins-head .links{grid-area:links; margin:4px 0 0}
+.ins-grid{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:clamp(20px,2.4vw,36px); padding-top:22px; align-items:start}
+.inspector .desc{margin:0 0 18px; font-size:16.5px}
+.ins-media{margin:0}
+.ins-shot{position:relative; aspect-ratio:4/3; border-radius:12px; overflow:hidden; background:#0e1014; box-shadow:0 0 0 1px rgba(236,238,242,.08)}
+.ins-shot img{display:block; width:100%; height:100%; object-fit:cover; animation:fadein .3s ease}
+.ins-shot .shot-ctrl{opacity:1; transform:none; right:8px; bottom:8px}
+.ins-shot .shot-ctrl button{width:28px; height:28px}
+.ins-thumbs{display:flex; gap:6px; margin-top:8px}
+.ins-thumbs button{flex:1; min-width:0; padding:0; border:0; border-radius:6px; overflow:hidden; aspect-ratio:4/3; cursor:pointer; opacity:.5; box-shadow:0 0 0 1px rgba(236,238,242,.1); transition:opacity .2s, box-shadow .2s}
+.ins-thumbs button:hover{opacity:.85}
+.ins-thumbs button[aria-pressed="true"]{opacity:1; box-shadow:0 0 0 2px rgb(var(--silk))}
+.ins-thumbs img{display:block; width:100%; height:100%; object-fit:cover}
+.ins-flow{margin-top:24px; padding-top:20px; border-top:1px solid rgba(236,238,242,.08)}
+.inspector .stack{margin-top:18px}
+@media (max-width:1100px){ .ins-grid{grid-template-columns:1fr} .ins-media{order:-1} }
+
+/* ── Order 66 v3: holo transmission, then blaster fire ── */
+.egg-order66{animation:o66-bg 9.2s ease both}
+@keyframes o66-bg{0%,32%{background:rgba(3,7,14,.95)} 36%{background:rgba(40,0,0,.9)} 100%{background:rgba(12,2,2,.93)}}
+.egg-order66 .saber{display:none}
+.o66-tx{position:absolute; left:50%; top:50%; translate:-50% -50%; width:min(640px,88vw); padding:34px 36px 30px; text-align:center;
+  background:repeating-linear-gradient(0deg, rgba(124,198,255,.10) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 40%, rgba(90,170,255,.22), rgba(90,170,255,.04) 70%);
+  box-shadow:inset 0 0 0 1px rgba(150,210,255,.35), 0 0 60px rgba(90,170,255,.18);
+  animation:o66-in .5s .2s steps(4) both, o66-flick 2.6s .7s infinite, o66-cut .45s 3s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes o66-in{from{opacity:0; transform:scaleY(.02)}}
+@keyframes o66-flick{0%,100%{opacity:1} 47%{opacity:1} 48%{opacity:.55} 49%{opacity:1} 82%{opacity:.85}}
+@keyframes o66-cut{40%{transform:scaleY(.02); filter:brightness(2.5)} to{transform:scale(0,.02); opacity:0}}
+.o66-from{margin:0 0 14px; font:500 12px/1 var(--mono); letter-spacing:.18em; color:#8fd0ff; text-shadow:0 0 10px rgba(124,198,255,.7)}
+.o66-order{margin:0; font:700 clamp(28px,4vw,52px)/1.1 var(--display); letter-spacing:.01em; color:#d8efff;
+  text-shadow:-2px 0 rgba(255,60,60,.45), 2px 0 rgba(60,200,255,.55), 0 0 22px rgba(124,198,255,.75)}
+.o66-order span{opacity:0; animation:o66-type .01s calc(.8s + var(--i) * .045s) forwards}
+@keyframes o66-type{to{opacity:1}}
+.o66-reply{margin:18px 0 0; font:500 clamp(16px,1.6vw,20px)/1.3 var(--display); color:#ffb3b3; text-shadow:0 0 14px rgba(255,80,80,.55); opacity:0; animation:o66-show .4s 2.15s ease forwards}
+/* blaster fire: short glowing bolts cross the screen, each strike flashes where it lands */
+.o66-fire{position:absolute; inset:0; overflow:hidden; animation:o66-shake .12s 3.3s steps(2) 22}
+@keyframes o66-shake{50%{transform:translate(2px,-1px)}}
+.bolt{position:absolute; left:0; top:var(--y1); width:120px; height:3px; border-radius:3px; background:linear-gradient(90deg, transparent, #ff3b2f 30%, #fff1ee 70%, #ff3b2f); box-shadow:0 0 10px #ff2a1a, 0 0 22px rgba(255,42,26,.6); opacity:0; animation:bolt .42s var(--d) linear forwards}
+.bolt.rev{animation-name:bolt-rev}
+@keyframes bolt{0%{opacity:1; transform:translate(-12vw,0) rotate(0)} 100%{opacity:1; transform:translate(110vw, calc(var(--y2) - var(--y1)))}}
+@keyframes bolt-rev{0%{opacity:1; transform:translate(110vw,0) scaleX(-1)} 100%{opacity:1; transform:translate(-12vw, calc(var(--y2) - var(--y1))) scaleX(-1)}}
+.hit{position:absolute; width:90px; height:90px; translate:-50% -50%; border-radius:50%; background:radial-gradient(circle, #fff 0 8%, #ff6a4a 22%, rgba(255,40,20,.35) 45%, transparent 70%); opacity:0; animation:hit .45s var(--d) ease-out forwards}
+@keyframes hit{0%{opacity:1; transform:scale(.3)} 100%{opacity:0; transform:scale(1.6)}}
+.o66-end{opacity:0; animation:o66-show .6s 6.6s ease forwards}
+@keyframes o66-show{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+@media (prefers-reduced-motion: reduce){ .o66-tx,.o66-order span,.o66-reply,.o66-fire,.bolt,.hit,.o66-end{animation:none; opacity:1} .bolt,.hit{display:none} }
+
+/* 88 mph v4: the road scene owns the centre; flux and speedo sit on top as a HUD */
+.egg-mph{place-items:start center}
+.egg-mph .flux{top:clamp(20px,5vh,48px); left:calc(50% - clamp(220px,22vw,320px)); width:clamp(90px,9vw,130px)}
+.egg-mph .speedo{top:clamp(28px,6vh,56px); left:calc(50% - 40px); height:clamp(64px,8vw,110px)}
+.egg-mph .circuits{position:absolute; top:50%; left:50%; translate:-50% -50%}
+.egg-mph .flame{display:none}
+.egg-mph .circuits{top:44%; transition-delay:1.1s}
