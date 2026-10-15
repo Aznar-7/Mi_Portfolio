@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Copy, FileDown, Mail, Power } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Check, Copy, FileDown, Mail, Power } from 'lucide-react'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { useLang } from '@/contexts/LanguageContext'
@@ -10,45 +10,54 @@ import { powerOn } from '@/lib/power'
 import { ContactForm } from './ContactForm'
 import { PowerTitle } from './PowerTitle'
 
-// J2: every way to reach me is a pin on one connector; copying the email solders it
+// Email first and large, the other channels as one clean list; the form sits in its own panel
 export function Contact() {
   const { lang } = useLang()
   const T = copy[lang].contact
   const { playSuccess, playHover } = useSoundEffects()
-  const [copied, setCopied] = useState(null) // null | 'ok' | 'fail'
+  const [copied, setCopied] = useState(false)
   const doCopy = async () => {
-    try { await navigator.clipboard.writeText(site.email); setCopied('ok'); playSuccess() } catch { setCopied('fail') }
-    setTimeout(() => setCopied((c) => (c === 'ok' ? 'done' : null)), 2200)
+    try { await navigator.clipboard.writeText(site.email); setCopied(true); playSuccess() } catch { /* the address stays selectable */ }
+    setTimeout(() => setCopied(false), 2200)
   }
+  const channels = [
+    { href: site.linkedin, Icon: LinkedInIcon, label: 'LinkedIn', value: site.linkedin.split('/in/')[1], ext: true },
+    { href: site.github, Icon: GitHubIcon, label: 'GitHub', value: site.github.split('github.com/')[1], ext: true },
+    { href: site.resumes.es.url, Icon: FileDown, label: `${T.cv} · ${T.es}`, value: 'PDF', download: site.resumes.es.filename },
+    { href: site.resumes.en.url, Icon: FileDown, label: `${T.cv} · ${T.en}`, value: 'PDF', download: site.resumes.en.filename },
+  ]
   return (
     <section className="contact" id="contacto">
       <h2 className="sr-only">{T.title}</h2>
-      <p className="big">{T.big}</p>
-      <p className="sec-intro">{T.intro}</p>
-      <div className="contact-grid">
-      <ContactForm />
-      <ul className="conn">
-        <li className="conn-silk" aria-hidden="true">{T.silk}</li>
-        <li onPointerEnter={playHover} className={`pin primary${copied === 'ok' || copied === 'done' ? ' done' : ''}`}>
-          <span className="pin-k"><Mail size={14} aria-hidden="true" />Email</span>
-          <a className="pin-v" href={`mailto:${site.email}`}>{site.email}</a>
-          <button className="copy-btn" onClick={doCopy} aria-live="polite">{copied === 'ok' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied === 'ok' ? T.copied : copied === 'fail' ? T.copyFail : T.copy}</button>
-        </li>
-        <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-k"><LinkedInIcon size={14} />LinkedIn</span>
-          <a className="pin-v" href={site.linkedin} target="_blank" rel="noopener noreferrer">{site.linkedin.split('/in/')[1]}</a>
-        </li>
-        <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-k"><GitHubIcon size={14} />GitHub</span>
-          <a className="pin-v" href={site.github} target="_blank" rel="noopener noreferrer">{site.github.split('github.com/')[1]}</a>
-        </li>
-        <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-k"><FileDown size={14} aria-hidden="true" />{T.cv}</span>
-          <span className="pin-v">
-            <a href={site.resumes.es.url} download={site.resumes.es.filename}>{T.es}</a> · <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.en}</a>
-          </span>
-        </li>
-      </ul>
+      <div className="contact-split">
+        <div className="contact-left">
+          <p className="big">{T.big}</p>
+          <p className="sec-intro">{T.intro}</p>
+          <div className="mail-line">
+            <Mail size={20} aria-hidden="true" />
+            <a className="mail-big" href={`mailto:${site.email}`}>{site.email}</a>
+            <button className="copy-btn" onClick={doCopy} aria-label={T.copy}>
+              {copied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
+              <span aria-live="polite">{copied ? T.copied : T.copy}</span>
+            </button>
+          </div>
+          <ul className="channels">
+            {channels.map(({ href, Icon, label, value, ext, download }) => (
+              <li key={label}>
+                <a href={href} onPointerEnter={playHover} {...(ext ? { target: '_blank', rel: 'noopener noreferrer' } : { download })}>
+                  <Icon size={17} aria-hidden="true" />
+                  <span className="ch-label">{label}</span>
+                  <span className="ch-value">{value}</span>
+                  {ext ? <ArrowUpRight size={17} aria-hidden="true" className="ch-go" /> : <ArrowDown size={17} aria-hidden="true" className="ch-go" />}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="contact-right">
+          <p className="form-title">{T.formTitle}</p>
+          <ContactForm />
+        </div>
       </div>
     </section>
   )

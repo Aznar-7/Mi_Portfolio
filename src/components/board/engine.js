@@ -4,9 +4,9 @@
 
 const P = 22 // grid pitch: the board's 0.1" raster
 const PARTS = [
-  { id: 'esp', w: 8, h: 11, at: [.677, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
-  { id: 'nfc', w: 9, h: 7, at: [.685, .62], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
-  { id: 'eth', w: 6, h: 5, at: [.554, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
+  { id: 'esp', w: 8, h: 11, at: [.635, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
+  { id: 'nfc', w: 9, h: 7, at: [.615, .66], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
+  { id: 'eth', w: 6, h: 5, at: [.495, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
 ]
 const ESP_PINS_L = ['3V3', 'EN', 'IO36', 'IO39', 'IO34', 'IO35', 'IO32', 'IO33']
 const key = (c, r) => c + ',' + r
@@ -21,20 +21,21 @@ const rnd = (a, b) => a + Math.random() * (b - a)
  * @param {HTMLElement} o.statusEl
  * @param {HTMLElement[]} o.keepOut   elements the copper must route around
  * @param {HTMLElement} [o.photo]     the portrait: placed on the board as part U0, with its own bus
+ * @param {HTMLElement} [o.frame]     the centered content box: parts sit inside it, copper fades outside it
  * @param {HTMLElement[]} o.letters   name letters that catch the signal
  * @param {object} o.text           { routing(done,total), hint(touch), hint2, complete, parts: {id: [tip, sub]} }
  * @param {() => void} o.onComplete fired once six chips are soldered
  * @param {() => void} [o.onSolder]   a chip lands (sound hook)
  * @param {() => void} [o.onPartHover] a part is hovered (sound hook)
  */
-export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, photo, letters, text, onComplete, onSolder, onPartHover }) {
+export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, photo, frame, letters, text, onComplete, onSolder, onPartHover }) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const touch = matchMedia('(pointer: coarse)').matches
   const ctx = canvas.getContext('2d')
   const tok = (n) => getComputedStyle(root).getPropertyValue(n).trim()
   const C = { f: tok('--fcu'), b: tok('--bcu'), silk: tok('--silk'), pad: tok('--pad') }
   let W, H, cols, rows, used, blocked, traces, parts, pulses, sparks, t0, booted, letterBoxes = []
-  let mouse = { x: -1e4, y: -1e4 }, chipN = 1, raf = 0, visible = true, dead = false
+  let mouse = { x: -1e4, y: -1e4 }, chipN = 1, raf = 0, visible = true, dead = false, fl = 0, fw = 0
   const timers = new Set()
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); fn() }, ms); timers.add(id) }
   const free = (c, r) => c > 0 && r > 0 && c < cols - 1 && r < rows && !used.has(key(c, r)) && !blocked.has(key(c, r))
@@ -49,7 +50,9 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       .map(p => ({ x: p.c * P + P / 2, y: p.r * P + P / 2 }))
     let len = 0; const seg = [0]
     for (let i = 1; i < pts.length; i++) { len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y); seg.push(len) }
-    const t = { pts, seg, len, layer, born: t0 + (reduced ? -1e5 : delay), heat: 0, cells, a: cells[0], b: cells[cells.length - 1], ...extra }
+    // copper outside the content frame recedes so the composition reads at any width
+    const out = Math.max(0, fl - pts[0].x, pts[0].x - (fl + fw))
+    const t = { pts, seg, len, layer, born: t0 + (reduced ? -1e5 : delay), heat: 0, fade: Math.max(0.22, 1 - out / 340), cells, a: cells[0], b: cells[cells.length - 1], ...extra }
     traces.push(t); return t
   }
   function pointAt(t, d) {
@@ -115,10 +118,20 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     letterBoxes = letters.map(l => { const b = l.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 + scrollY } }) // page coords
     W = rect.width; H = rect.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     cols = Math.ceil(W / P); rows = Math.ceil(H / P)
+    const fr = (frame ?? hero).getBoundingClientRect(); fl = fr.left - rect.left; fw = fr.width
     used = new Set(); blocked = new Set(); traces = []; parts = []; pulses = []; sparks = []; t0 = performance.now(); booted = false
     for (const el of keepOut) {
       const b = el.getBoundingClientRect()
       blockRect(Math.floor((b.left - rect.left) / P), Math.floor((b.top - rect.top) / P), Math.ceil(b.width / P) + 1, Math.ceil(b.height / P) + 1)
+    }
+
+    // the portrait sits on the board as U0: its footprint is blocked and a bus leaves its left edge
+    const pr = photo?.getBoundingClientRect()
+    if (pr && pr.width) {
+      const c = Math.floor((pr.left - rect.left) / P), r = Math.floor((pr.top - rect.top) / P)
+      const w = Math.ceil(pr.width / P), h = Math.ceil(pr.height / P)
+      blockRect(c - 1, r - 1, w + 1, h + 1)
+      parts.push({ id: 'photo', c, r, w, h, x: pr.left - rect.left, y: pr.top - rect.top, pw: pr.width, ph: pr.height, ref: 'U0 · VICENTE AZNAR', side: 'photo', born: t0, hover: 0 })
     }
 
     // place parts where they fit; on narrow screens some simply stay off the board
@@ -127,7 +140,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     for (const base of PARTS) {
       const at = narrow ? base.atM : base.at; if (!at) continue
       const def = narrow && base.hM ? { ...base, h: base.hM } : base
-      const c = Math.max(2, Math.round(cols * at[0] - def.w / 2)), r0 = Math.max(4, Math.round(rows * at[1] - def.h / 2))
+      const c = Math.max(2, Math.round((fl + fw * at[0]) / P - def.w / 2)), r0 = Math.max(4, Math.round(rows * at[1] - def.h / 2))
       // slide down a few rows if the header or the copy sits on the preferred spot
       const fitsAt = (r) => {
         if (c <= 1 || r <= 2 || c + def.w >= cols - 1 || r + def.h >= rows - 1) return false
@@ -149,15 +162,6 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       a.onpointerenter = a.onfocus = () => { p.over = true; onPartHover?.() }
       a.onpointerleave = a.onblur = () => { p.over = false }
       partsLayer.append(a)
-    }
-
-    // the portrait sits on the board as U0: its footprint is blocked and a bus leaves its left edge
-    const pr = photo?.getBoundingClientRect()
-    if (pr && pr.width) {
-      const c = Math.floor((pr.left - rect.left) / P), r = Math.floor((pr.top - rect.top) / P)
-      const w = Math.ceil(pr.width / P), h = Math.ceil(pr.height / P)
-      blockRect(c - 1, r - 1, w + 1, h + 1)
-      parts.push({ id: 'photo', c, r, w, h, x: pr.left - rect.left, y: pr.top - rect.top, pw: pr.width, ph: pr.height, ref: 'U0 · VICENTE AZNAR', side: 'photo', born: t0, hover: 0 })
     }
 
     // buses grow out of each part; the exit bus routes first so nothing cuts it
@@ -270,7 +274,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       const want = (near < 130 ? 1 - near / 130 : 0) + (t.hot || 0) + (t.part ? t.part.hover : 0)
       t.heat += (Math.min(1, want) - t.heat) * .08
       if (t.hot) t.hot *= .985
-      ctx.strokeStyle = `rgba(${C[layer]},${(layer === 'f' ? .34 : .22) + t.heat * .6})`
+      ctx.strokeStyle = `rgba(${C[layer]},${((layer === 'f' ? .34 : .22) + t.heat * .6) * t.fade})`
       ctx.lineWidth = layer === 'f' ? 2.2 : 1.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'
       ctx.beginPath(); ctx.moveTo(t.pts[0].x, t.pts[0].y)
       const upto = t.len * prog

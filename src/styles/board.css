@@ -42,7 +42,7 @@
 .status{position:absolute; z-index:3; right:clamp(20px,4vw,56px); bottom:clamp(40px,11vh,120px); font:500 12px/1.7 var(--mono); color:var(--ink-3); text-align:right; pointer-events:none; width:34ch; min-height:3.4em; margin:0}
 .status b{color:rgb(var(--silk)); font-weight:500}
 /* the bus leaves the hero and keeps going into the next section */
-.work{position:relative; padding:0 clamp(20px,4vw,56px) 20vh}
+.work{position:relative; padding:0 clamp(20px,4vw,56px) clamp(88px,11vh,140px)}
 .bus{position:absolute; top:0; left:0; width:100%; height:0; overflow:visible; pointer-events:none}
 .bus path{fill:none; stroke-width:2.2; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1}
 .bus circle{opacity:0}
@@ -127,7 +127,7 @@
 }
 @media (prefers-reduced-motion:reduce){ .led.live{animation:none} .net-body{transition:none} }
 /* ── Taller y Trayectoria ────────────────────────────────── */
-.shop,.path{position:relative; padding:0 clamp(20px,4vw,56px) clamp(120px,18vh,200px)}
+.shop,.path{position:relative; padding:0 clamp(20px,4vw,56px) clamp(88px,11vh,140px)}
 .shop h2,.path h2{margin:0; font:600 clamp(40px,5vw,72px)/1 var(--display); letter-spacing:-.03em}
 .sec-intro{margin:22px 0 56px; color:var(--ink-2); max-width:56ch; font-size:18px; line-height:1.55}
 .shop-grid{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr); gap:clamp(32px,6vw,96px); align-items:start}
@@ -157,7 +157,7 @@
 }
 @media (prefers-reduced-motion:reduce){ .rats line{animation:none; stroke-dashoffset:0} }
 /* ── Contacto, consola y cierre ──────────────────────────── */
-.contact{padding:0 clamp(20px,4vw,56px) clamp(100px,14vh,160px)}
+.contact{padding:0 clamp(20px,4vw,56px) clamp(80px,10vh,130px)}
 .contact h2,.power h2{margin:0; font:600 clamp(40px,5vw,72px)/1 var(--display); letter-spacing:-.03em}
 .big{margin:28px 0 0; font:600 clamp(36px,4.8vw,68px)/1.05 var(--display); letter-spacing:-.025em; max-width:22ch}
 .contact .sec-intro{margin-bottom:64px}
@@ -242,7 +242,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .tool:hover .ti,.tool[aria-pressed="true"] .ti,.chips li:hover .ti,.net:hover .net-icons .ti{color:var(--brand, currentColor)}
 
 /* about */
-.about{position:relative; padding:0 clamp(20px,4vw,56px) clamp(120px,18vh,200px)}
+.about{position:relative; padding:0 clamp(20px,4vw,56px) clamp(88px,11vh,140px)}
 .about h2{margin:0 0 48px; font:600 clamp(40px,5vw,72px)/1 var(--display); letter-spacing:-.03em}
 .about-grid{display:grid; grid-template-columns:minmax(220px,320px) minmax(0,1fr); gap:clamp(32px,5vw,80px); align-items:start}
 .portrait{margin:0; border-radius:14px; overflow:hidden; box-shadow:0 0 0 1px rgba(236,238,242,.1), 0 30px 60px -30px #000}
@@ -252,13 +252,10 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .about-body .about-lead{color:var(--ink); font:500 clamp(21px,2vw,26px)/1.4 var(--display); letter-spacing:-.01em}
 .facts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 32px; margin:34px 0 0; padding-top:26px; border-top:1px solid rgba(236,238,242,.08)}
 .facts dt{font:500 12px/1 var(--mono); color:var(--ink-3)} .facts dd{margin:8px 0 0; color:var(--ink)}
-.activity{margin:72px 0 0; padding:24px; border-radius:14px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); color:var(--ink-3); overflow-x:auto}
+.activity{width:fit-content; max-width:100%; margin:48px 0 0; padding:20px 22px; border-radius:14px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); color:var(--ink-3); overflow-x:auto}
 .activity figcaption{display:flex; justify-content:space-between; gap:16px; margin-bottom:18px; color:var(--ink)}
 .activity figcaption a{white-space:nowrap; display:inline-flex; align-items:center; gap:6px; color:var(--ink-2); font-size:14px; text-decoration:none}
 .activity figcaption a:hover{color:var(--ink)}
-/* the library sizes itself inline; stretch its SVG (it has a viewBox) to the card */
-.activity .react-activity-calendar{width:100% !important; max-width:none !important; min-width:720px}
-.activity .react-activity-calendar svg{width:100% !important; height:auto !important}
 
 /* work rows */
 .layers small{font:500 10px/1 var(--mono); color:var(--ink-3); margin-left:2px}
@@ -298,8 +295,6 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .cal-wait{height:150px}
 
 /* ── Hero portrait as board part U0, key facts ── */
-.hero-photo{position:absolute; z-index:2; right:clamp(24px,4vw,56px); top:52%; translate:0 -50%; width:clamp(220px,19vw,280px); aspect-ratio:4/5; margin:0; border-radius:12px; overflow:hidden; box-shadow:0 0 0 1px rgba(236,238,242,.12), 0 30px 60px -24px #000}
-.hero-photo img{width:100%; height:100%; object-fit:cover; object-position:50% 28%; display:block}
 .hero-facts{display:flex; flex-wrap:wrap; gap:14px 36px; margin:30px 0 0; padding-top:20px; border-top:1px solid rgba(236,238,242,.1)}
 .hero-facts dt{font:500 12px/1 var(--mono); color:var(--ink-3)}
 .hero-facts dd{margin:7px 0 0; font-size:15px; color:var(--ink)}
@@ -307,7 +302,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 @media (max-width:1023px){ .hero-photo{display:none} }
 
 /* ── Process: five stages on one trace, powered by the scroll ── */
-.process{position:relative; padding:0 clamp(20px,4vw,56px) clamp(120px,18vh,200px)}
+.process{position:relative; padding:0 clamp(20px,4vw,56px) clamp(88px,11vh,140px)}
 .process h2{margin:0; font:600 clamp(40px,5vw,72px)/1 var(--display); letter-spacing:-.03em}
 .pipe{position:relative; padding-top:34px}
 .stages{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:28px}
@@ -388,8 +383,12 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .durin .arcband{stroke-dasharray:.006 .012; animation:ithildin 1.2s .8s var(--ease) forwards; stroke-width:2.4}
 @keyframes ithildin{to{stroke-dashoffset:0}}
 .durin .leaf{transition:none; animation:part 1s 1.75s cubic-bezier(.7,0,.2,1) forwards}
-.durin .leaf.left{--dx:-38%} .durin .leaf.right{--dx:38%}
-@keyframes part{to{transform:translateX(var(--dx)); opacity:.35}}
+.durin .leaf.left{--dx:-62%} .durin .leaf.right{--dx:62%}
+@keyframes part{to{transform:translateX(var(--dx)); opacity:.2}}
+/* the emblem spans both leaves: it flares and dissolves as they part, so nothing floats in the gap */
+.durin .sigil{transform-origin:200px 290px; animation:sigil-go .6s 1.6s ease-in forwards}
+.durin .arcband{animation:ithildin 1.2s .8s var(--ease) forwards, sigil-go .6s 1.6s ease-in forwards}
+@keyframes sigil-go{30%{opacity:1; filter:drop-shadow(0 0 6px #fff)} to{opacity:0; transform:scale(1.08)}}
 /* Order 66: a red blade cuts the screen, then a flickering transmission */
 .egg-order66{animation:redflash 2.6s ease-out both}
 @keyframes redflash{0%,8%{background:rgba(8,9,12,.92)} 14%{background:rgba(120,10,10,.95)} 40%,100%{background:rgba(10,4,4,.94)}}
@@ -586,3 +585,61 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .tl-item ul.tl-chips{display:flex; flex-wrap:wrap; gap:6px}
 .tl-item ul.tl-chips li{padding:7px 10px; font-size:13px; line-height:1; color:var(--ink-2)}
 .tl-item ul.tl-chips li::before{display:none}
+
+/* ── Wide screens: one content measure for every section ── */
+.site{--measure:1440px; --gut:clamp(20px,4vw,56px)}
+.site-header{padding-inline:max(var(--gut), calc(50% - var(--measure) / 2 + var(--gut)))}
+.work,.process,.about,.shop,.path,.contact{max-width:var(--measure); margin-inline:auto; box-sizing:border-box}
+.power-in{max-width:calc(var(--measure) - 2 * var(--gut)); margin-inline:auto}
+.power-in > *{max-width:880px}
+.silk-foot{padding-inline:max(var(--gut), calc(50% - var(--measure) / 2 + var(--gut)))}
+
+/* ── Hero v3: everything composed inside the content frame ── */
+.hero-frame{position:absolute; inset:0; max-width:var(--measure); margin-inline:auto; z-index:3; pointer-events:none}
+.hero-frame > *{pointer-events:auto}
+.hero-photo{position:absolute; z-index:2; right:var(--gut); top:50%; translate:0 -50%; width:clamp(240px,21vw,320px); aspect-ratio:4/5; margin:0; border-radius:10px; overflow:hidden; cursor:pointer; box-shadow:0 0 0 1px rgba(var(--silk),.25), 0 30px 60px -24px #000}
+.hero-photo canvas,.hero-photo img{position:absolute; inset:0; width:100%; height:100%; display:block}
+.hero-photo img{object-fit:cover; object-position:50% 28%; opacity:0; transition:opacity .6s var(--ease)}
+.hero-photo canvas{transition:opacity .6s var(--ease), filter .6s}
+.hero-photo:hover img,.hero-photo:focus-visible img{opacity:1}
+.hero-photo:hover canvas,.hero-photo:focus-visible canvas{opacity:0}
+.cta-sub{display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin:18px 0 0}
+.cta-sub a,.cta-sub button{display:inline-flex; align-items:center; gap:7px; padding:6px 0; border:0; background:none; font:500 14px/1 var(--text); color:var(--ink-2); text-decoration:none; cursor:pointer; transition:color .2s}
+.cta-sub a:hover,.cta-sub button:hover{color:var(--ink)}
+@media (max-width:1023px){ .hero-photo{display:none} }
+
+/* ── Contact v3: email first, channels as a list, the form in its own panel ── */
+.contact-split{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.95fr); gap:clamp(36px,6vw,96px); align-items:start}
+.contact .big{margin:0}
+.contact .sec-intro{margin:18px 0 36px}
+.mail-line{display:flex; align-items:center; flex-wrap:wrap; gap:12px 16px; padding:20px 0; border-top:1px solid rgba(236,238,242,.1); color:rgb(var(--silk))}
+.mail-big{font:500 clamp(22px,2.2vw,32px)/1.2 var(--display); letter-spacing:-.015em; color:var(--ink); text-decoration:none; overflow-wrap:anywhere; background:linear-gradient(rgb(var(--silk)),rgb(var(--silk))) 0 100%/0 2px no-repeat; transition:background-size .4s var(--ease)}
+.mail-big:hover,.mail-big:focus-visible{background-size:100% 2px}
+.mail-line .copy-btn{margin:0}
+.channels{list-style:none; margin:0; padding:0; border-top:1px solid rgba(236,238,242,.1)}
+.channels a{display:grid; grid-template-columns:20px minmax(0,1fr) auto 20px; align-items:center; gap:14px; padding:17px 4px; border-bottom:1px solid rgba(236,238,242,.1); color:var(--ink-2); text-decoration:none; transition:color .2s, background .2s}
+.channels .ch-label{color:var(--ink); font:500 17px/1.2 var(--text); transition:transform .35s var(--ease)}
+.channels .ch-value{font:500 13px/1 var(--mono); color:var(--ink-3)}
+.channels .ch-go{color:var(--ink-3); transition:transform .35s var(--ease), color .2s}
+.channels a:hover,.channels a:focus-visible{background:rgba(236,238,242,.03); color:var(--ink)}
+.channels a:hover .ch-label{transform:translateX(6px)}
+.channels a:hover .ch-go{color:rgb(var(--silk)); transform:translate(2px,-2px)}
+.contact-right{padding:clamp(22px,2.6vw,36px); border-radius:18px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08)}
+.form-title{margin:0 0 22px; font:600 22px/1.2 var(--display); letter-spacing:-.01em; color:var(--ink)}
+.contact-right .mail-form{grid-template-columns:1fr 1fr; margin:0; max-width:none}
+@media (max-width:900px){ .contact-split{grid-template-columns:1fr} }
+@media (max-width:520px){ .contact-right .mail-form{grid-template-columns:1fr} }
+
+/* ── Path: studies apart from the job timeline ── */
+.edu{margin-top:clamp(64px,9vh,104px); padding-top:40px; border-top:1px solid rgba(236,238,242,.08)}
+.edu-title{margin:0 0 28px; font:600 clamp(26px,2.6vw,36px)/1.1 var(--display); letter-spacing:-.02em}
+.edu-title .tl-silk{font:500 13px/1 var(--mono); color:rgb(var(--silk)); vertical-align:middle}
+.edu-grid{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); gap:16px}
+.edu-card{position:relative; padding:24px 26px; border-radius:16px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); transition:box-shadow .3s var(--ease), transform .3s var(--ease)}
+.edu-card::before{content:""; position:absolute; left:0; top:24px; bottom:24px; width:3px; border-radius:0 3px 3px 0; background:rgba(var(--bcu),.9)}
+.edu-card:hover{transform:translateY(-2px); box-shadow:inset 0 0 0 1px rgba(var(--bcu),.45)}
+.edu-card h4{margin:0; font:600 clamp(20px,1.8vw,24px)/1.2 var(--display); letter-spacing:-.01em; color:var(--ink)}
+.edu-card ul{margin:16px 0 0; padding:0; list-style:none; display:grid; gap:10px}
+.edu-card ul li{position:relative; padding-left:20px; color:var(--ink-2); font-size:15.5px; line-height:1.55}
+.edu-card ul li::before{content:""; position:absolute; left:0; top:.75em; width:10px; height:2px; background:rgba(var(--bcu),.9)}
+@media (prefers-reduced-motion: reduce){ .edu-card{transition:none} .edu-card:hover{transform:none} }

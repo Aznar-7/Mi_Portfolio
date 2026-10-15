@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Segments } from './Segments'
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
+import { useSoundEffects } from '@/contexts/SoundContext'
 
 // How long each scene holds the stage, in ms
-const HOLD = { mellon: 3600, order66: 2600, mph: 6400, placa: 2200, hire: 2600, mate: 6000 }
+const HOLD = { mellon: 3600, order66: 2600, mph: 6400, past: 5000, placa: 2200, hire: 2600, mate: 6000 }
 
 const pad = (n) => String(n).padStart(2, '0')
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -54,6 +55,8 @@ function Durin() {
 
 const DEST = { mon: 'OCT', day: '21', year: 2015, ampm: 'PM', hour: '04', min: '29' }
 const LAST = { mon: 'OCT', day: '26', year: 1985, ampm: 'AM', hour: '01', min: '21' }
+// "Volver al pasado": the day Windows 95 shipped
+const PAST = { mon: 'AUG', day: '24', year: 1995, ampm: 'AM', hour: '09', min: '00' }
 
 function Row({ label, d, kind, flip }) {
   return (
@@ -74,7 +77,7 @@ function Row({ label, d, kind, flip }) {
 
 // 88 mph: the speedo climbs, the car breaks through at 88, and the circuits show the jump:
 // present becomes 21 Oct 2015 and "last departed" becomes the visitor's real now.
-function MphScene({ T, now }) {
+function MphScene({ T, now, dest = DEST }) {
   const [mph, setMph] = useState(0)
   const [jumped, setJumped] = useState(false)
   const raf = useRef(0)
@@ -98,8 +101,8 @@ function MphScene({ T, now }) {
       </div>
       {jumped && <><span className="flash" /><span className="flame one" /><span className="flame two" /></>}
       <div className={`circuits${jumped ? ' in' : ''}`}>
-        <Row label={T.dest} d={DEST} kind="dest" />
-        <Row label={T.pres} d={jumped ? DEST : present} kind="pres" flip={jumped} />
+        <Row label={T.dest} d={dest} kind="dest" />
+        <Row label={T.pres} d={jumped ? dest : present} kind="pres" flip={jumped} />
         <Row label={T.last} d={jumped ? present : LAST} kind="last" flip={jumped} />
       </div>
     </>
@@ -110,12 +113,26 @@ export function EggStage() {
   const { lang } = useLang()
   const T = copy[lang].eggs
   const [scene, setScene] = useState(null) // { id, key }
+  const { playEgg } = useSoundEffects()
+  const sound = useRef(playEgg)
+  useEffect(() => { sound.current = playEgg })
 
   useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     let t
+    // the time machine to 1995 always lands on the Win95 desktop; the drive there is skipped with reduced motion
+    const past = () => {
+      const land = () => document.dispatchEvent(new CustomEvent('open-retro'))
+      sound.current('past')
+      if (reduced) return land()
+      setScene({ id: 'past', key: Date.now(), now: new Date() })
+      clearTimeout(t); t = setTimeout(() => { setScene(null); land() }, HOLD.past)
+    }
+    document.addEventListener('board:past', past)
+    if (reduced) return () => document.removeEventListener('board:past', past)
     const on = (e) => {
       const id = e.detail.id
+      sound.current(id)
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
       const site = document.querySelector('.site')
@@ -123,13 +140,13 @@ export function EggStage() {
       clearTimeout(t); t = setTimeout(() => setScene(null), HOLD[id])
     }
     document.addEventListener('secret', on)
-    return () => { document.removeEventListener('secret', on); clearTimeout(t) }
+    return () => { document.removeEventListener('secret', on); document.removeEventListener('board:past', past); clearTimeout(t) }
   }, [])
 
   if (!scene) return null
   const { id, key, now } = scene
   return (
-    <div key={key} className={`stage-egg egg-${id}`} aria-hidden="true">
+    <div key={key} className={`stage-egg egg-${id === 'past' ? 'mph' : id}`} aria-hidden="true">
       {id === 'mellon' && (<><span className="stars" /><span className="spill" /><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
 
       {id === 'order66' && (
@@ -157,6 +174,7 @@ export function EggStage() {
       )}
 
       {id === 'mph' && <MphScene T={T} now={now} />}
+      {id === 'past' && <MphScene T={T} now={now} dest={PAST} />}
 
       {id === 'placa' && (<><span className="scan" /><div className="test"><small>{T.test}</small><b>TEST OK · 6/6</b></div></>)}
 

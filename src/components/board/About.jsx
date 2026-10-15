@@ -87,8 +87,8 @@ export function About() {
               username={githubUser}
               colorScheme="dark"
               theme={CALENDAR_THEME}
-              blockSize={12}
-              blockMargin={4}
+              blockSize={11}
+              blockMargin={3}
               blockRadius={2}
               fontSize={12}
               labels={{ totalCount: T.total, legend: { less: T.less, more: T.more }, ...(T.months && { months: T.months }) }}

@@ -116,8 +116,8 @@ export function Process() {
       gsap.to(el, {
         x: () => -distance(), ease: 'none',
         scrollTrigger: {
-          trigger: '.ps-pin', start: 'top top', end: () => `+=${distance() * 1.2}`, pin: true, scrub: 0.8, invalidateOnRefresh: true,
-          snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, delay: 0.08, ease: 'power2.inOut' },
+          // no snap: it fought the reader's own scroll and yanked the page back to the start
+          trigger: '.ps-pin', start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.4, invalidateOnRefresh: true,
           onUpdate: (st) => setActive(Math.round(st.progress * (n - 1))),
         },
       })

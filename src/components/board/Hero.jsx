@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Download, TerminalSquare, Volume2, VolumeX } from 'lucide-react'
+import { Download, History, TerminalSquare, Volume2, VolumeX } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -61,12 +61,56 @@ function Header({ copyRef }) {
   )
 }
 
+// The portrait is printed on the board as a halftone in copper and silkscreen; hovering reveals the
+// photo. The dot screen also keeps the 400px source from looking soft at this size.
+function Portrait({ alt }) {
+  const fig = useRef(null), cv = useRef(null)
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/port.jpg'
+    const draw = () => {
+      const f = fig.current, c = cv.current
+      if (!f || !c) return
+      const w = f.clientWidth, h = f.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2)
+      c.width = w * dpr; c.height = h * dpr
+      const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // sample the photo cover-cropped (object-position 50% 28%) on a coarse grid
+      const step = 5, gw = Math.ceil(w / step), gh = Math.ceil(h / step)
+      const off = document.createElement('canvas'); off.width = gw; off.height = gh
+      const o = off.getContext('2d', { willReadFrequently: true })
+      // frame tighter on the face (it sits right of center, upper third) so the dots carry a likeness
+      const s = Math.max(gw / img.width, gh / img.height) * 1.35, sw = img.width * s, sh = img.height * s
+      o.drawImage(img, gw / 2 - sw * 0.6, gh * 0.4 - sh * 0.36, sw, sh)
+      const px = o.getImageData(0, 0, gw, gh).data
+      x.fillStyle = '#0e1014'; x.fillRect(0, 0, w, h)
+      for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
+        const k = (j * gw + i) * 4, raw = (0.299 * px[k] + 0.587 * px[k + 1] + 0.114 * px[k + 2]) / 255
+        // lift the midtones so the face reads; deep shadows stay bare board
+        const dx = i / gw - 0.5, dy = j / gh - 0.42, focus = Math.max(0, 1 - (dx * dx + dy * dy) * 2.6) // dim the busy background
+        const lum = Math.min(1, Math.pow(raw, 0.75) * 1.15 * (0.35 + 0.65 * focus))
+        if (lum < 0.16) continue
+        x.fillStyle = lum > 0.55 ? '#efe9c4' : '#b8994e'
+        x.beginPath(); x.arc(i * step + step / 2, j * step + step / 2, lum * step * 0.56, 0, 7); x.fill()
+      }
+    }
+    img.onload = draw
+    addEventListener('resize', draw)
+    return () => removeEventListener('resize', draw)
+  }, [])
+  return (
+    <figure className="hero-photo" ref={fig} tabIndex={0}>
+      <canvas ref={cv} aria-hidden="true" />
+      <img src="/port.jpg" alt={alt} width="400" height="400" fetchPriority="high" />
+    </figure>
+  )
+}
+
 export function Hero() {
   const { lang } = useLang()
   const { playClick, playHover, playSuccess } = useSoundEffects()
   const T = copy[lang].hero
   const push = useLatestPush(githubUser)
-  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null), photoRef = useRef(null)
+  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null), frameRef = useRef(null)
   // the engine lives outside React; it reads the latest sound callbacks through a ref
   const sounds = useRef({})
   useEffect(() => { sounds.current = { playClick, playHover, playSuccess } })
@@ -84,7 +128,8 @@ export function Hero() {
         partsLayer: partsRef.current,
         statusEl: statusRef.current,
         keepOut: [copyRef.current, statusRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
-        photo: photoRef.current,
+        photo: frameRef.current.querySelector('.hero-photo'),
+        frame: frameRef.current,
         letters: [...hero.querySelectorAll('h1 .l')],
         text: T,
         onComplete: () => { sounds.current.playSuccess?.(); findSecret('placa') },
@@ -102,9 +147,8 @@ export function Hero() {
       <canvas ref={canvasRef} aria-hidden="true" />
       <Header copyRef={copyRef} />
       <div ref={partsRef} />
-      <figure className="hero-photo" ref={photoRef}>
-        <img src="/port.jpg" alt={T.portrait} width="400" height="400" fetchPriority="high" />
-      </figure>
+      <div className="hero-frame" ref={frameRef}>
+      <Portrait alt={T.portrait} />
       <div className="hero-copy" ref={copyRef}>
         <div className="hero-meta">
           <img src="/port.jpg" alt={T.portrait} width="44" height="44" />
@@ -120,15 +164,13 @@ export function Hero() {
         <div className="cta">
           <a className="btn" href="#trabajo" onClick={playClick}>{T.ctaWork}</a>
           <a className="btn ghost" href={`mailto:${site.email}`} onClick={playClick}>{T.ctaMail}</a>
-          <details className="cv">
-            <summary className="btn ghost" onClick={playClick}><Download size={15} aria-hidden="true" />{T.cv}<ChevronDown size={14} aria-hidden="true" className="chev" /></summary>
-            <div className="cv-menu">
-              <a href={site.resumes.es.url} download={site.resumes.es.filename}>{T.cvEs}</a>
-              <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.cvEn}</a>
-            </div>
-          </details>
-          <button className="btn ghost" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={15} aria-hidden="true" />{T.os}</button>
         </div>
+        <p className="cta-sub">
+          <a href={site.resumes.es.url} download={site.resumes.es.filename}><Download size={14} aria-hidden="true" />{T.cvEs}</a>
+          <a href={site.resumes.en.url} download={site.resumes.en.filename}><Download size={14} aria-hidden="true" />{T.cvEn}</a>
+          <button type="button" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={14} aria-hidden="true" />{T.os}</button>
+          <button type="button" className="past" onClick={() => { playClick(); document.dispatchEvent(new CustomEvent('board:past')) }}><History size={14} aria-hidden="true" />{T.past}</button>
+        </p>
         <dl className="hero-facts">
           {T.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
         </dl>
@@ -143,6 +185,7 @@ export function Hero() {
       </div>
       {/* visual hint only: the parts are reachable as links and the counter would spam screen readers */}
       <p className="status" ref={statusRef} aria-hidden="true" />
+      </div>
     </section>
   )
 }

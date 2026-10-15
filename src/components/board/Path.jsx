@@ -11,14 +11,13 @@ import { ToolIcon } from './ToolIcon'
 gsap.registerPlugin(ScrollTrigger)
 
 // A vertical trace draws itself with the scroll and powers each role's pad as it arrives, while a
-// large sticky year keeps time on the left. Everything stays readable without hovering.
+// large sticky year keeps time on the left. Studies run in parallel, so they sit apart as their own block.
 export function Path() {
   const { lang } = useLang()
   const T = copy[lang].path
   const root = useRef(null)
   const items = [
     ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), tech: e.tech, stats: e.stats?.map((st) => ({ value: st.value, label: l(st.label, lang) })) })),
-    ...academic.map((a) => ({ kind: 'study', name: l(a.degree, lang), role: a.institution.replace(' — ', ' · '), span: a.span, bullets: l(a.highlights, lang) })),
   ]
   const [active, setActive] = useState(0)
   const year = items[active].span[0]
@@ -48,7 +47,7 @@ export function Path() {
       <div className="tl">
         <div className="tl-year" aria-hidden="true">
           <span key={year} className={`yr ${items[active].kind}`}>{year}</span>
-          <small>{items[active].kind === 'job' ? items[active].name : 'UTN'}</small>
+          <small>{items[active].name}</small>
         </div>
         <div className="tl-list">
           <span className="tl-line" aria-hidden="true"><span className="tl-fill" /></span>
@@ -74,6 +73,19 @@ export function Path() {
           ))}
           </ol>
         </div>
+      </div>
+      <div className="edu">
+        <h3 className="edu-title"><span className="tl-silk" aria-hidden="true">U9 · </span>{T.study}</h3>
+        <ul className="edu-grid">
+          {academic.map((a) => (
+            <li key={a.degree.es} className="edu-card">
+              <p className="tl-when">{a.span[1] == null ? T.ongoing(a.span[0]) : a.span.join(' – ')}</p>
+              <h4>{l(a.degree, lang)}</h4>
+              <p className="tl-role">{a.institution.replace(' — ', ' · ')}</p>
+              <ul>{l(a.highlights, lang).map((b) => <li key={b}>{b}</li>)}</ul>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

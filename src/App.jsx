@@ -15,6 +15,7 @@ import { initMotion } from '@/lib/motion'
 import { EggStage } from '@/components/board/EggStage'
 import TargetCursor from '@/components/common/TargetCursor'
 
+const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
 function Board() {
@@ -46,8 +47,14 @@ function Board() {
   )
 }
 
+function Retro({ onExit }) {
+  const { lang } = useLang()
+  return <Suspense fallback={<div className="fixed inset-0 bg-black" />}><Win95 lang={lang} onExit={onExit} /></Suspense>
+}
+
 export default function App() {
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
+  const [retro, setRetro] = useState(false)
 
   useEffect(() => {
     const open = () => setUbuntuOpen(true)
@@ -58,11 +65,14 @@ export default function App() {
         setUbuntuOpen((o) => !o)
       }
     }
+    const toRetro = () => { setRetro(true); scrollTo(0, 0) }
     document.addEventListener('open-ubuntu', open)
+    document.addEventListener('open-retro', toRetro)
     document.addEventListener('keydown', onKey)
     const uninstall = installEggs()
     return () => {
       document.removeEventListener('open-ubuntu', open)
+      document.removeEventListener('open-retro', toRetro)
       document.removeEventListener('keydown', onKey)
       uninstall()
     }
@@ -83,7 +93,8 @@ export default function App() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
-        {!ubuntuOpen && (
+        {retro && !ubuntuOpen && <Retro onExit={() => setRetro(false)} />}
+        {!ubuntuOpen && !retro && (
           <>
             <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />
             <Board />
