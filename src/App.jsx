@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect, useRef } from 'react'
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { LanguageProvider, useLang } from '@/contexts/LanguageContext'
@@ -16,6 +16,11 @@ import { EggStage } from '@/components/board/EggStage'
 import TargetCursor from '@/components/common/TargetCursor'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
+// full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
+const OVERLAYS = {
+  middle: lazy(() => import('@/components/retro/MiddleEarth').then((m) => ({ default: m.MiddleEarth }))),
+  galaxy: lazy(() => import('@/components/retro/Galaxy').then((m) => ({ default: m.Galaxy }))),
+}
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
 function Board() {
@@ -52,9 +57,17 @@ function Retro({ onExit }) {
   return <Suspense fallback={<div className="fixed inset-0 bg-black" />}><Win95 lang={lang} onExit={onExit} /></Suspense>
 }
 
+function Overlay({ id, onExit }) {
+  const { lang } = useLang()
+  const View = OVERLAYS[id]
+  return <Suspense fallback={<div className="fixed inset-0 z-[9000] bg-black" />}><View lang={lang} onExit={onExit} /></Suspense>
+}
+
 export default function App() {
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
   const [retro, setRetro] = useState(false)
+  const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy'
+  const closeOverlay = useCallback(() => setOverlay(null), [])
 
   useEffect(() => {
     const open = () => setUbuntuOpen(true)
@@ -65,7 +78,10 @@ export default function App() {
         setUbuntuOpen((o) => !o)
       }
     }
-    const toRetro = () => { setRetro(true); scrollTo(0, 0) }
+    const toRetro = () => { setRetro(true); scrollTo({ top: 0, behavior: 'instant' }) }
+    const toMap = () => setOverlay('middle'), toGalaxy = () => setOverlay('galaxy')
+    document.addEventListener('open-middle-earth', toMap)
+    document.addEventListener('open-galaxy', toGalaxy)
     document.addEventListener('open-ubuntu', open)
     document.addEventListener('open-retro', toRetro)
     document.addEventListener('keydown', onKey)
@@ -73,6 +89,8 @@ export default function App() {
     return () => {
       document.removeEventListener('open-ubuntu', open)
       document.removeEventListener('open-retro', toRetro)
+      document.removeEventListener('open-middle-earth', toMap)
+      document.removeEventListener('open-galaxy', toGalaxy)
       document.removeEventListener('keydown', onKey)
       uninstall()
     }
@@ -80,6 +98,8 @@ export default function App() {
 
   // the page powered down to open the OS (lib/power); bring it back when the OS closes
   useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
+  // the eggs bring their own cursors; the board's TargetCursor steps aside
+  useEffect(() => { document.body.classList.toggle('native-cursor', retro || !!overlay) }, [retro, overlay])
 
   return (
     <SoundProvider>
@@ -96,8 +116,9 @@ export default function App() {
         {retro && !ubuntuOpen && <Retro onExit={() => setRetro(false)} />}
         {!ubuntuOpen && !retro && (
           <>
-            <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />
+            {!overlay && <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />}
             <Board />
+            {overlay && <Overlay id={overlay} onExit={closeOverlay} />}
           </>
         )}
       </LanguageProvider>

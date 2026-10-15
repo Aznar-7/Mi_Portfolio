@@ -83,10 +83,10 @@
       background-size: 200px 200px;
     }
 
-    /* TargetCursor replaces the system cursor outside the Ubuntu simulator */
-    body:not(.ubuntu-mode) *,
-    body:not(.ubuntu-mode) *::before,
-    body:not(.ubuntu-mode) *::after {
+    /* TargetCursor replaces the system cursor outside the Ubuntu simulator and the full-screen eggs */
+    body:not(.ubuntu-mode):not(.native-cursor) *,
+    body:not(.ubuntu-mode):not(.native-cursor) *::before,
+    body:not(.ubuntu-mode):not(.native-cursor) *::after {
       cursor: none !important;
     }
   }

@@ -61,45 +61,11 @@ function Header({ copyRef }) {
   )
 }
 
-// The portrait is printed on the board as a halftone in copper and silkscreen; hovering reveals the
-// photo. The dot screen also keeps the 400px source from looking soft at this size.
+// The portrait sits on the board as part U0: a calm duotone in the board's silkscreen tones that
+// turns to full colour on hover, so the face reads first and the effect stays quiet.
 function Portrait({ alt }) {
-  const fig = useRef(null), cv = useRef(null)
-  useEffect(() => {
-    const img = new Image()
-    img.src = '/port.jpg'
-    const draw = () => {
-      const f = fig.current, c = cv.current
-      if (!f || !c) return
-      const w = f.clientWidth, h = f.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2)
-      c.width = w * dpr; c.height = h * dpr
-      const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0)
-      // sample the photo cover-cropped (object-position 50% 28%) on a coarse grid
-      const step = 5, gw = Math.ceil(w / step), gh = Math.ceil(h / step)
-      const off = document.createElement('canvas'); off.width = gw; off.height = gh
-      const o = off.getContext('2d', { willReadFrequently: true })
-      // frame tighter on the face (it sits right of center, upper third) so the dots carry a likeness
-      const s = Math.max(gw / img.width, gh / img.height) * 1.35, sw = img.width * s, sh = img.height * s
-      o.drawImage(img, gw / 2 - sw * 0.6, gh * 0.4 - sh * 0.36, sw, sh)
-      const px = o.getImageData(0, 0, gw, gh).data
-      x.fillStyle = '#0e1014'; x.fillRect(0, 0, w, h)
-      for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
-        const k = (j * gw + i) * 4, raw = (0.299 * px[k] + 0.587 * px[k + 1] + 0.114 * px[k + 2]) / 255
-        // lift the midtones so the face reads; deep shadows stay bare board
-        const dx = i / gw - 0.5, dy = j / gh - 0.42, focus = Math.max(0, 1 - (dx * dx + dy * dy) * 2.6) // dim the busy background
-        const lum = Math.min(1, Math.pow(raw, 0.75) * 1.15 * (0.35 + 0.65 * focus))
-        if (lum < 0.16) continue
-        x.fillStyle = lum > 0.55 ? '#efe9c4' : '#b8994e'
-        x.beginPath(); x.arc(i * step + step / 2, j * step + step / 2, lum * step * 0.56, 0, 7); x.fill()
-      }
-    }
-    img.onload = draw
-    addEventListener('resize', draw)
-    return () => removeEventListener('resize', draw)
-  }, [])
   return (
-    <figure className="hero-photo" ref={fig} tabIndex={0}>
-      <canvas ref={cv} aria-hidden="true" />
+    <figure className="hero-photo" tabIndex={0}>
       <img src="/port.jpg" alt={alt} width="400" height="400" fetchPriority="high" />
     </figure>
   )
@@ -169,7 +135,7 @@ export function Hero() {
           <a href={site.resumes.es.url} download={site.resumes.es.filename}><Download size={14} aria-hidden="true" />{T.cvEs}</a>
           <a href={site.resumes.en.url} download={site.resumes.en.filename}><Download size={14} aria-hidden="true" />{T.cvEn}</a>
           <button type="button" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={14} aria-hidden="true" />{T.os}</button>
-          <button type="button" className="past" onClick={() => { playClick(); document.dispatchEvent(new CustomEvent('board:past')) }}><History size={14} aria-hidden="true" />{T.past}</button>
+          <button type="button" className="past" onClick={() => { playClick(); findSecret('mph') }}><History size={14} aria-hidden="true" />{T.past}</button>
         </p>
         <dl className="hero-facts">
           {T.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}

@@ -42,7 +42,7 @@
 .status{position:absolute; z-index:3; right:clamp(20px,4vw,56px); bottom:clamp(40px,11vh,120px); font:500 12px/1.7 var(--mono); color:var(--ink-3); text-align:right; pointer-events:none; width:34ch; min-height:3.4em; margin:0}
 .status b{color:rgb(var(--silk)); font-weight:500}
 /* the bus leaves the hero and keeps going into the next section */
-.work{position:relative; padding:0 clamp(20px,4vw,56px) clamp(88px,11vh,140px)}
+.work{position:relative; padding:0 clamp(20px,4vw,56px) clamp(40px,5vh,72px)}
 .bus{position:absolute; top:0; left:0; width:100%; height:0; overflow:visible; pointer-events:none}
 .bus path{fill:none; stroke-width:2.2; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1}
 .bus circle{opacity:0}
@@ -376,19 +376,28 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 /* Durin: ithildin lines draw, then the leaves part */
 .egg-mellon{background:radial-gradient(ellipse at 50% 60%, #10141f 0%, #05060a 70%); animation:fadein .4s both}
 @keyframes fadein{from{opacity:0}}
-.durin{width:min(46vh,72vw)}
-.durin svg{width:100%; height:auto; overflow:visible; filter:drop-shadow(0 0 1px #fff)}
+.durin{position:relative; width:min(46vh,72vw); aspect-ratio:400/520; perspective:1100px; transform-style:preserve-3d; animation:dolly 1.7s 2.5s cubic-bezier(.55,0,.35,1) forwards}
+.durin .leaf{position:absolute; inset:0; backface-visibility:hidden}
+.durin .leaf.left{transform-origin:15% 50%; animation:swing-l 1.5s 2.05s cubic-bezier(.6,0,.25,1) forwards}
+.durin .leaf.right{transform-origin:85% 50%; animation:swing-r 1.5s 2.05s cubic-bezier(.6,0,.25,1) forwards}
+.durin svg{display:block; width:100%; height:100%; overflow:visible; filter:drop-shadow(0 0 1px #fff)}
 .durin path,.durin circle,.durin polygon{fill:none; stroke:#dfe6ff; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; animation:ithildin 1.5s var(--ease) forwards}
+.durin .slab{fill:#141a26; stroke:none; stroke-dasharray:none; animation:none}
 .durin .sigil *{animation-delay:.45s}
 .durin .arcband{stroke-dasharray:.006 .012; animation:ithildin 1.2s .8s var(--ease) forwards; stroke-width:2.4}
+/* the emblem flares once, as the password is accepted, before the doors move */
+.durin .leaf svg{animation:flare .9s 1.6s ease-out}
+@keyframes flare{40%{filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 14px #b9c8ff)}}
 @keyframes ithildin{to{stroke-dashoffset:0}}
-.durin .leaf{transition:none; animation:part 1s 1.75s cubic-bezier(.7,0,.2,1) forwards}
-.durin .leaf.left{--dx:-62%} .durin .leaf.right{--dx:62%}
-@keyframes part{to{transform:translateX(var(--dx)); opacity:.2}}
-/* the emblem spans both leaves: it flares and dissolves as they part, so nothing floats in the gap */
-.durin .sigil{transform-origin:200px 290px; animation:sigil-go .6s 1.6s ease-in forwards}
-.durin .arcband{animation:ithildin 1.2s .8s var(--ease) forwards, sigil-go .6s 1.6s ease-in forwards}
-@keyframes sigil-go{30%{opacity:1; filter:drop-shadow(0 0 6px #fff)} to{opacity:0; transform:scale(1.08)}}
+@keyframes swing-l{to{transform:rotateY(96deg)}}
+@keyframes swing-r{to{transform:rotateY(-96deg)}}
+/* warm light waiting behind the doors, then we walk into it */
+.durin .beyond{position:absolute; left:15%; right:15%; top:27%; bottom:4%; border-radius:50% 50% 0 0 / 30% 30% 0 0; background:radial-gradient(ellipse at 50% 70%, #fff6dc 0%, #f3d79a 40%, #c9893a 100%); opacity:0; transform:translateZ(-170px) scale(1.16); animation:fadein-to 1s 2.2s ease forwards}
+.egg-mellon .egg-caption{animation:fadeup .8s .9s var(--ease) both, fadeout-to .4s 2.3s ease forwards}
+@keyframes fadeout-to{to{opacity:0}}
+@keyframes fadein-to{to{opacity:1}}
+@keyframes dolly{to{transform:scale(4.2) translateY(6%)}}
+.egg-mellon::after{content:""; position:absolute; inset:0; background:#f3e6c4; opacity:0; animation:fadein-to .6s 3.55s ease-in forwards; pointer-events:none}
 /* Order 66: a red blade cuts the screen, then a flickering transmission */
 .egg-order66{animation:redflash 2.6s ease-out both}
 @keyframes redflash{0%,8%{background:rgba(8,9,12,.92)} 14%{background:rgba(120,10,10,.95)} 40%,100%{background:rgba(10,4,4,.94)}}
@@ -479,7 +488,9 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 @media (max-width:700px){ .about-top{grid-template-columns:1fr} .about-top .portrait{order:-1; width:140px} .about-cols{grid-template-columns:1fr} }
 
 /* ── Process v2: pinned horizontal run of five panels, one authored diagram each ── */
-.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:44px; padding-top:64px; box-sizing:border-box}
+.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:clamp(18px,3vh,32px); padding-top:72px; box-sizing:border-box}
+.ps-head{display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:8px 48px}
+.ps-head .sec-intro{margin:0; max-width:46ch}
 .ps-bus{position:relative; height:52px; margin:0 6px}
 .ps-line{position:absolute; left:0; right:0; top:9px; height:2px; background:rgba(var(--fcu),.22)}
 .ps-fill{position:absolute; inset:0; transform-origin:left; background:linear-gradient(90deg, rgba(var(--fcu),.95), #fff4ec); transition:transform .6s var(--ease)}
@@ -490,7 +501,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .ps-pad.on::before{background:rgb(var(--pad)); box-shadow:inset 0 0 0 3px rgb(var(--pad)), 0 0 0 6px rgba(var(--pad),.14)}
 .ps-pad.on b{color:var(--ink)}
 .ps-track{--pw:min(1080px,78vw); display:flex; gap:40px; list-style:none; margin:0; padding:0 calc(50% - var(--pw) / 2); will-change:transform}
-.panel{flex:none; width:var(--pw, min(1080px,80vw)); height:min(62vh,560px); display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:clamp(28px,4vw,56px); align-items:center; padding:clamp(28px,3vw,44px); border-radius:20px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); transition:opacity .6s var(--ease)}
+.panel{flex:none; width:var(--pw, min(1080px,80vw)); height:min(60vh,600px); display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:clamp(28px,4vw,56px); align-items:center; padding:clamp(28px,3vw,44px); border-radius:20px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); transition:opacity .6s var(--ease)}
 .panel:not(.on){opacity:.35}
 .panel-n{font:500 13px/1 var(--mono); color:rgb(var(--silk))}
 .panel h3{margin:14px 0 16px; font:600 clamp(34px,3.8vw,56px)/1 var(--display); letter-spacing:-.03em}
@@ -587,7 +598,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .tl-item ul.tl-chips li::before{display:none}
 
 /* ── Wide screens: one content measure for every section ── */
-.site{--measure:1440px; --gut:clamp(20px,4vw,56px)}
+.site{--measure:clamp(1440px,86vw,1840px); --gut:clamp(20px,4vw,56px)}
 .site-header{padding-inline:max(var(--gut), calc(50% - var(--measure) / 2 + var(--gut)))}
 .work,.process,.about,.shop,.path,.contact{max-width:var(--measure); margin-inline:auto; box-sizing:border-box}
 .power-in{max-width:calc(var(--measure) - 2 * var(--gut)); margin-inline:auto}
@@ -598,11 +609,11 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .hero-frame{position:absolute; inset:0; max-width:var(--measure); margin-inline:auto; z-index:3; pointer-events:none}
 .hero-frame > *{pointer-events:auto}
 .hero-photo{position:absolute; z-index:2; right:var(--gut); top:50%; translate:0 -50%; width:clamp(240px,21vw,320px); aspect-ratio:4/5; margin:0; border-radius:10px; overflow:hidden; cursor:pointer; box-shadow:0 0 0 1px rgba(var(--silk),.25), 0 30px 60px -24px #000}
-.hero-photo canvas,.hero-photo img{position:absolute; inset:0; width:100%; height:100%; display:block}
-.hero-photo img{object-fit:cover; object-position:50% 28%; opacity:0; transition:opacity .6s var(--ease)}
-.hero-photo canvas{transition:opacity .6s var(--ease), filter .6s}
-.hero-photo:hover img,.hero-photo:focus-visible img{opacity:1}
-.hero-photo:hover canvas,.hero-photo:focus-visible canvas{opacity:0}
+.hero-photo img{position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; object-position:50% 28%; filter:grayscale(1) contrast(1.08) brightness(.92); transition:filter .7s var(--ease), transform .9s var(--ease)}
+/* silkscreen duotone: the gray photo is tinted cream-gold, and the tint lifts on hover */
+.hero-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(160deg, rgba(232,226,176,.55), rgba(176,140,70,.55)); mix-blend-mode:color; transition:opacity .7s var(--ease); pointer-events:none}
+.hero-photo:hover img,.hero-photo:focus-visible img{filter:none; transform:scale(1.02)}
+.hero-photo:hover::after,.hero-photo:focus-visible::after{opacity:0}
 .cta-sub{display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin:18px 0 0}
 .cta-sub a,.cta-sub button{display:inline-flex; align-items:center; gap:7px; padding:6px 0; border:0; background:none; font:500 14px/1 var(--text); color:var(--ink-2); text-decoration:none; cursor:pointer; transition:color .2s}
 .cta-sub a:hover,.cta-sub button:hover{color:var(--ink)}
@@ -643,3 +654,25 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .edu-card ul li{position:relative; padding-left:20px; color:var(--ink-2); font-size:15.5px; line-height:1.55}
 .edu-card ul li::before{content:""; position:absolute; left:0; top:.75em; width:10px; height:2px; background:rgba(var(--bcu),.9)}
 @media (prefers-reduced-motion: reduce){ .edu-card{transition:none} .edu-card:hover{transform:none} }
+
+/* ── secrets popover: what you found, hints for the rest ── */
+.silk-foot .eggs{padding:6px 10px; margin:-6px -10px; border:0; border-radius:8px; background:none; font:inherit; letter-spacing:inherit; color:rgba(var(--silk),.85); cursor:pointer; transition:background .2s, color .2s}
+.silk-foot .eggs:hover,.silk-foot .eggs:focus-visible{background:rgba(var(--silk),.1); color:rgb(var(--silk))}
+.eggs-pop{position:fixed; inset:auto auto 64px 50%; translate:-50% 0; margin:0; width:min(420px, calc(100vw - 32px)); padding:18px 20px; border:0; border-radius:14px; background:#16181d; color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.5), inset 0 0 0 1px rgba(var(--silk),.25); font:400 14px/1.45 var(--text)}
+.eggs-pop:popover-open{animation:fadeup .3s var(--ease)}
+.eggs-head{margin:0 0 12px; font:500 12px/1 var(--mono); color:rgb(var(--silk)); letter-spacing:.06em; text-transform:uppercase}
+.eggs-pop ul{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+.eggs-pop li{display:grid; gap:2px; padding-left:16px; position:relative; color:var(--ink-3)}
+.eggs-pop li::before{content:""; position:absolute; left:0; top:.5em; width:7px; height:7px; border-radius:50%; box-shadow:inset 0 0 0 1.5px rgba(var(--pad),.6)}
+.eggs-pop li.got::before{background:rgb(var(--pad))}
+.eggs-pop li b{font:500 13px/1.3 var(--mono); color:var(--ink-2)}
+.eggs-pop li.got b{color:var(--ink)}
+/* press feedback: everything clickable gives a little under the finger */
+.site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button,.net-head,.channels a,.mail-form button){transition-property:transform,background,color,box-shadow,border-color; transition-duration:.15s}
+.site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button,.mail-form button):active{transform:translateY(1px) scale(.97)}
+.site :is(.net-head,.channels a):active{transform:scale(.995)}
+@media (prefers-reduced-motion: reduce){ .site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button,.net-head,.channels a,.mail-form button):active{transform:none} }
+
+/* overlays lock scroll with overflow:hidden; keep the gutter so the width never changes and
+   ScrollTrigger never refreshes (a refresh restores the old scroll and kills any travel) */
+html{scrollbar-gutter:stable}

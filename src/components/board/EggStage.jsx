@@ -5,7 +5,9 @@ import { copy } from '@/i18n/site'
 import { useSoundEffects } from '@/contexts/SoundContext'
 
 // How long each scene holds the stage, in ms
-const HOLD = { mellon: 3600, order66: 2600, mph: 6400, past: 5000, placa: 2200, hire: 2600, mate: 6000 }
+// scenes that lead somewhere when they end
+const NEXT = { mellon: 'open-middle-earth', mph: 'open-retro' }
+const HOLD = { mellon: 4200, order66: 2600, mph: 5000, placa: 2200, hire: 2600, mate: 6000 }
 
 const pad = (n) => String(n).padStart(2, '0')
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -14,46 +16,63 @@ function stamp(d) {
   return { mon: MONTHS[d.getMonth()], day: pad(d.getDate()), year: d.getFullYear(), ampm: d.getHours() < 12 ? 'AM' : 'PM', hour: pad(h), min: pad(d.getMinutes()) }
 }
 
-// The Doors of Durin, drawn line by line in ithildin, then opening
+// The Doors of Durin, drawn line by line in ithildin. Each leaf is its own layer carrying its half of
+// the emblem, so the doors swing open on their hinges in 3D and we walk through into the light.
 function Durin() {
   const star8 = (cx, cy, r) => Array.from({ length: 16 }, (_, i) => {
     const a = (Math.PI / 8) * i - Math.PI / 2, rr = i % 2 ? r * .42 : r
     return `${cx + Math.cos(a) * rr},${cy + Math.sin(a) * rr}`
   }).join(' ')
   const small = (cx, cy) => star8(cx, cy, 5)
+  const emblem = (
+    <>
+      <g className="sigil">
+        <circle pathLength="1" cx="200" cy="290" r="46" />
+        <polygon pathLength="1" points={star8(200, 290, 40)} />
+        {/* crown and the seven stars */}
+        <path pathLength="1" d="M176 214 l8 -16 l8 12 l8 -18 l8 18 l8 -12 l8 16 z" />
+        {[[150, 220], [160, 196], [178, 180], [200, 174], [222, 180], [240, 196], [250, 220]].map(([x, y]) => <polygon key={x} pathLength="1" points={small(x, y)} />)}
+        {/* hammer and anvil */}
+        <path pathLength="1" d="M180 384 h40 l-8 10 h-24 z M194 394 v14 h12 v-14 M206 370 l12 -12 M214 354 l10 10" />
+      </g>
+      <path className="arcband" pathLength="1" d="M70 250 A132 132 0 0 1 330 250" />
+    </>
+  )
+  const leaf = (side) => (
+    <div className={`leaf ${side}`}>
+      <svg viewBox="0 0 400 520" aria-hidden="true">
+        <defs><clipPath id={`durin-${side}`}><rect x={side === 'left' ? 0 : 200} width="200" height="520" /></clipPath></defs>
+        <path className="slab" d={side === 'left' ? 'M200 500 V140 A140 140 0 0 0 60 260 V500 Z' : 'M200 500 V140 A140 140 0 0 1 340 260 V500 Z'} />
+        {side === 'left' ? (
+          <>
+            <path pathLength="1" d="M200 500 V140 A140 140 0 0 0 60 260 V500" />
+            <path pathLength="1" d="M84 500 V262 A116 116 0 0 1 200 162" />
+            {/* holly tree climbing the pillar */}
+            <path pathLength="1" d="M72 500 V300 M72 330 q-14 -20 -6 -40 M72 360 q16 -18 10 -40 M72 300 q-6 -22 6 -40 q12 -14 30 -24" />
+            <path pathLength="1" d="M60 500 h40 M60 492 h40" />
+          </>
+        ) : (
+          <>
+            <path pathLength="1" d="M200 500 V140 A140 140 0 0 1 340 260 V500" />
+            <path pathLength="1" d="M316 500 V262 A116 116 0 0 0 200 162" />
+            <path pathLength="1" d="M328 500 V300 M328 330 q14 -20 6 -40 M328 360 q-16 -18 -10 -40 M328 300 q6 -22 -6 -40 q-12 -14 -30 -24" />
+            <path pathLength="1" d="M300 500 h40 M300 492 h40" />
+          </>
+        )}
+        <g clipPath={`url(#durin-${side})`}>{emblem}</g>
+      </svg>
+    </div>
+  )
   return (
     <div className="durin">
-      <svg viewBox="0 0 400 520" aria-hidden="true">
-        <g className="leaf left">
-          <path pathLength="1" d="M200 500 V140 A140 140 0 0 0 60 260 V500" />
-          <path pathLength="1" d="M84 500 V262 A116 116 0 0 1 200 162" />
-          {/* holly tree climbing the pillar */}
-          <path pathLength="1" d="M72 500 V300 M72 330 q-14 -20 -6 -40 M72 360 q16 -18 10 -40 M72 300 q-6 -22 6 -40 q12 -14 30 -24" />
-          <path pathLength="1" d="M60 500 h40 M60 492 h40" />
-        </g>
-        <g className="leaf right">
-          <path pathLength="1" d="M200 500 V140 A140 140 0 0 1 340 260 V500" />
-          <path pathLength="1" d="M316 500 V262 A116 116 0 0 0 200 162" />
-          <path pathLength="1" d="M328 500 V300 M328 330 q14 -20 6 -40 M328 360 q-16 -18 -10 -40 M328 300 q6 -22 -6 -40 q-12 -14 -30 -24" />
-          <path pathLength="1" d="M300 500 h40 M300 492 h40" />
-        </g>
-        <g className="sigil">
-          <circle pathLength="1" cx="200" cy="290" r="46" />
-          <polygon pathLength="1" points={star8(200, 290, 40)} />
-          {/* crown and the seven stars */}
-          <path pathLength="1" d="M176 214 l8 -16 l8 12 l8 -18 l8 18 l8 -12 l8 16 z" />
-          {[[150, 220], [160, 196], [178, 180], [200, 174], [222, 180], [240, 196], [250, 220]].map(([x, y]) => <polygon key={x} pathLength="1" points={small(x, y)} />)}
-          {/* hammer and anvil */}
-          <path pathLength="1" d="M180 384 h40 l-8 10 h-24 z M194 394 v14 h12 v-14 M206 370 l12 -12 M214 354 l10 10" />
-        </g>
-        <path className="arcband" pathLength="1" d="M70 250 A132 132 0 0 1 330 250" />
-      </svg>
+      <span className="beyond" />
+      {leaf('left')}
+      {leaf('right')}
     </div>
   )
 }
 
 
-const DEST = { mon: 'OCT', day: '21', year: 2015, ampm: 'PM', hour: '04', min: '29' }
 const LAST = { mon: 'OCT', day: '26', year: 1985, ampm: 'AM', hour: '01', min: '21' }
 // "Volver al pasado": the day Windows 95 shipped
 const PAST = { mon: 'AUG', day: '24', year: 1995, ampm: 'AM', hour: '09', min: '00' }
@@ -76,8 +95,8 @@ function Row({ label, d, kind, flip }) {
 }
 
 // 88 mph: the speedo climbs, the car breaks through at 88, and the circuits show the jump:
-// present becomes 21 Oct 2015 and "last departed" becomes the visitor's real now.
-function MphScene({ T, now, dest = DEST }) {
+// present becomes 24 Aug 1995 (the day Windows 95 shipped) and "last departed" the visitor's real now.
+function MphScene({ T, now, dest }) {
   const [mph, setMph] = useState(0)
   const [jumped, setJumped] = useState(false)
   const raf = useRef(0)
@@ -120,34 +139,26 @@ export function EggStage() {
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     let t
-    // the time machine to 1995 always lands on the Win95 desktop; the drive there is skipped with reduced motion
-    const past = () => {
-      const land = () => document.dispatchEvent(new CustomEvent('open-retro'))
-      sound.current('past')
-      if (reduced) return land()
-      setScene({ id: 'past', key: Date.now(), now: new Date() })
-      clearTimeout(t); t = setTimeout(() => { setScene(null); land() }, HOLD.past)
-    }
-    document.addEventListener('board:past', past)
-    if (reduced) return () => document.removeEventListener('board:past', past)
+    const go = (id) => NEXT[id] && document.dispatchEvent(new CustomEvent(NEXT[id]))
     const on = (e) => {
       const id = e.detail.id
       sound.current(id)
+      if (reduced) return go(id)
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
       const site = document.querySelector('.site')
       if (id === 'order66') { site?.classList.add('sith'); setTimeout(() => site?.classList.remove('sith'), 7000) }
-      clearTimeout(t); t = setTimeout(() => setScene(null), HOLD[id])
+      clearTimeout(t); t = setTimeout(() => { setScene(null); go(id) }, HOLD[id])
     }
     document.addEventListener('secret', on)
-    return () => { document.removeEventListener('secret', on); document.removeEventListener('board:past', past); clearTimeout(t) }
+    return () => { document.removeEventListener('secret', on); clearTimeout(t) }
   }, [])
 
   if (!scene) return null
   const { id, key, now } = scene
   return (
-    <div key={key} className={`stage-egg egg-${id === 'past' ? 'mph' : id}`} aria-hidden="true">
-      {id === 'mellon' && (<><span className="stars" /><span className="spill" /><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
+    <div key={key} className={`stage-egg egg-${id}`} aria-hidden="true">
+      {id === 'mellon' && (<><span className="stars" /><Durin /><p className="egg-caption elvish">{T.mellon}</p></>)}
 
       {id === 'order66' && (
         <>
@@ -173,8 +184,7 @@ export function EggStage() {
         </>
       )}
 
-      {id === 'mph' && <MphScene T={T} now={now} />}
-      {id === 'past' && <MphScene T={T} now={now} dest={PAST} />}
+      {id === 'mph' && <MphScene T={T} now={now} dest={PAST} />}
 
       {id === 'placa' && (<><span className="scan" /><div className="test"><small>{T.test}</small><b>TEST OK · 6/6</b></div></>)}
 

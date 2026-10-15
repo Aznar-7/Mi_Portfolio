@@ -20,3 +20,5 @@ export function findSecret(id) {
 
 const subscribe = (l) => { listeners.add(l); return () => listeners.delete(l) }
 export const useSecretCount = () => useSyncExternalStore(subscribe, () => found.size)
+// the set is replaced on every change, so it is a stable snapshot
+export const useSecretsFound = () => useSyncExternalStore(subscribe, () => found)

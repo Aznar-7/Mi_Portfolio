@@ -8,6 +8,29 @@ const CASCADE = ['.net', '.bin', '.pin', '.facts > div', '.chips li', '.mail-for
 // Media that is uncovered rather than faded
 const UNCOVER = ['.feature-media .shot', '.portrait', '.activity']
 
+// Smooth travel to an element. The target is re-measured every frame, so rows opening or a
+// ScrollTrigger refresh mid-flight can't leave us short; 'instant' sidesteps html{scroll-behavior:smooth}.
+export function travel(el, offset = 80) {
+  if (!el) return
+  const dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1000
+  const from = scrollY, t0 = performance.now()
+  const step = (now) => {
+    const k = dur ? Math.min(1, (now - t0) / dur) : 1
+    const e = k < 0.5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2
+    const to = el.getBoundingClientRect().top + scrollY - offset
+    scrollTo({ top: from + (to - from) * e, behavior: 'instant' })
+    if (k < 1) requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
+
+// Where the map overlays send you: 'p:<id>' opens that project row, anything else is a selector.
+// Called after the overlay closes, so the page is free to scroll.
+export function goTo(target) {
+  if (target.startsWith('p:')) document.dispatchEvent(new CustomEvent('board:open-project', { detail: target.slice(2) }))
+  else travel(document.querySelector(target))
+}
+
 // The page powers on as the signal reaches it: titles light up letter by letter, lists cascade,
 // photos are uncovered. Content is visible by default; this only runs with motion allowed.
 export function initMotion(root) {

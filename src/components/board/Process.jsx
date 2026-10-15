@@ -115,10 +115,11 @@ export function Process() {
       const n = processSteps.length
       gsap.to(el, {
         x: () => -distance(), ease: 'none',
+        // follow the tween, not the scroll: with scrub they differ and the lit pad lagged the panel on screen
+        onUpdate() { setActive(Math.round(this.progress() * (n - 1))) },
         scrollTrigger: {
           // no snap: it fought the reader's own scroll and yanked the page back to the start
           trigger: '.ps-pin', start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.4, invalidateOnRefresh: true,
-          onUpdate: (st) => setActive(Math.round(st.progress * (n - 1))),
         },
       })
     }, root)
@@ -127,9 +128,12 @@ export function Process() {
 
   return (
     <section className={`process${flat ? ' flat' : ''}`} id="proceso" ref={root}>
-      <PowerTitle text={T.title} />
-      <p className="sec-intro">{T.intro}</p>
+      {/* the heading rides inside the pin so the section keeps its name while the track moves */}
       <div className="ps-pin">
+        <header className="ps-head">
+          <PowerTitle text={T.title} />
+          <p className="sec-intro">{T.intro}</p>
+        </header>
         <div className="ps-bus" aria-hidden="true">
           <span className="ps-line"><span className="ps-fill" style={{ transform: `scaleX(${active / (processSteps.length - 1)})` }} /></span>
           {processSteps.map((s, i) => (

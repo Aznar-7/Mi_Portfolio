@@ -320,8 +320,12 @@ export function SoundProvider({ children }) {
       placa: () => [0, 0.14, 0.28].forEach((t, i) => note(c, i === 2 ? 1320 : 990, 'square', 0.03, 0.002, 0.08, null, t)),
       hire: () => [392, 523, 659, 784].forEach((f, i) => note(c, f, 'triangle', 0.05, 0.003, 0.35, null, 0.9 + i * 0.07)),
       mate: () => Array.from({ length: 7 }, (_, i) => note(c, 300 + Math.random() * 300, 'sine', 0.04, 0.002, 0.07, 900, i * 0.11 + Math.random() * 0.05)),
+      // the map unrolls: a slow open fifth swelling under a high bell
+      middle: () => {
+        ;[147, 220, 294].forEach((f) => note(c, f, 'triangle', 0.035, 0.6, 2.4))
+        note(c, 1175, 'sine', 0.025, 0.01, 1.6, null, 0.5)
+      },
     }
-    cues.past = cues.mph
     cues[id]?.()
   }, [ok])
 

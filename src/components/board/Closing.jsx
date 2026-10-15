@@ -5,7 +5,7 @@ import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
-import { findSecret, useSecretCount, SECRETS } from '@/lib/secrets'
+import { findSecret, useSecretsFound, SECRETS } from '@/lib/secrets'
 import { powerOn } from '@/lib/power'
 import { ContactForm } from './ContactForm'
 import { PowerTitle } from './PowerTitle'
@@ -76,7 +76,8 @@ export function Console() {
   const COMMANDS = {
     '': () => { say(T.booting); powerOn() },
     'ssh vicente': () => { say(T.booting); powerOn() },
-    mellon: () => { findSecret('mellon'); say(T.mellon, true); setTimeout(powerOn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 3300) },
+    // EggStage opens the doors, then the map of Middle-earth
+    mellon: () => { findSecret('mellon'); say(T.mellon, true) },
     'sudo hire': () => { findSecret('hire'); say(T.hire); setTimeout(() => { location.href = `mailto:${site.email}?subject=Hola%20Vicente` }, 900) },
     help: () => say(T.help),
     ls: () => say(T.ls),
@@ -113,11 +114,25 @@ export function Console() {
 export function Footer() {
   const { lang } = useLang()
   const T = copy[lang].footer
-  const count = useSecretCount()
+  const S = copy[lang].secrets
+  const found = useSecretsFound()
+  const { playClick } = useSoundEffects()
   return (
     <footer className="silk-foot">
       <span>{T.rev}</span>
-      <span className="eggs">{T.secrets(count, SECRETS.length)}</span>
+      {/* native popover: Esc and click-outside close it for free */}
+      <button type="button" className="eggs" popoverTarget="eggs-pop" onClick={playClick}>{T.secrets(found.size, SECRETS.length)}</button>
+      <div id="eggs-pop" className="eggs-pop" popover="auto">
+        <p className="eggs-head">{T.secrets(found.size, SECRETS.length)}</p>
+        <ul>
+          {SECRETS.map((id) => (
+            <li key={id} className={found.has(id) ? 'got' : ''}>
+              <b>{found.has(id) ? S.names[id] : '???'}</b>
+              <span>{found.has(id) ? S.lines[id] : S.hints[id]}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
       <span>{T.made}</span>
     </footer>
   )

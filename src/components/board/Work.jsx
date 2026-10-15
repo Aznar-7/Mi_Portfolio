@@ -8,6 +8,7 @@ import { l } from '@/lib/utils'
 import { GitHubIcon } from '@/components/common/SocialIcons'
 import { ToolIcon } from './ToolIcon'
 import { PowerTitle } from './PowerTitle'
+import { travel } from '@/lib/motion'
 
 const layerOf = (p) => (p.category === 'iot' ? 'b' : 'f')
 const statusOf = (p) => (p.liveUrl ? (p.featured ? 'prod' : 'live') : p.status === 'completed' ? 'done' : 'dev')
@@ -92,7 +93,7 @@ function Feature({ project, lang, T }) {
   const [fade, setFade] = useState(false)
   const show = (i) => { playSelect(); setFade(true); setTimeout(() => { setShot(i); setFade(false) }, 180) }
   return (
-    <article className="feature" data-on={layerOf(project)}>
+    <article className="feature" id={`p-${project.id}`} data-on={layerOf(project)}>
       <div className="feature-media">
         <a className="shot" href={project.liveUrl} target="_blank" rel="noopener noreferrer">
           <img src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} style={{ opacity: fade ? 0 : 1 }} loading="lazy" />
@@ -144,6 +145,16 @@ export function Work() {
     return () => removeEventListener('scroll', onScroll)
   }, [])
 
+  // other parts of the page (the Middle-earth map) can open a project row and bring it into view
+  useEffect(() => {
+    const go = (e) => {
+      const id = e.detail
+      if (id !== featured.id) setOpen((o) => new Set(o).add(id))
+      requestAnimationFrame(() => travel(document.getElementById(`p-${id}`), 120))
+    }
+    document.addEventListener('board:open-project', go)
+    return () => document.removeEventListener('board:open-project', go)
+  }, [featured.id])
   const toggle = (id) => { playClick(); setOpen((o) => { const n = new Set(o); n.has(id) ? n.delete(id) : n.add(id); return n }) }
 
   return (
@@ -168,7 +179,7 @@ export function Work() {
           {rest.map((p) => {
             const st = statusOf(p), isOpen = open.has(p.id), links = linksOf(p, T)
             return (
-              <li key={p.id} className="net" data-on={layerOf(p)} onPointerEnter={playHover}>
+              <li key={p.id} id={`p-${p.id}`} className="net" data-on={layerOf(p)} onPointerEnter={playHover}>
                 <button className="net-head" aria-expanded={isOpen} onClick={() => toggle(p.id)}>
                   <span className="net-thumb">
                     {p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech.find((t) => t === 'ESP32') ?? p.tech[0]} size={26} />}

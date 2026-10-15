@@ -120,6 +120,9 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     cols = Math.ceil(W / P); rows = Math.ceil(H / P)
     const fr = (frame ?? hero).getBoundingClientRect(); fl = fr.left - rect.left; fw = fr.width
     used = new Set(); blocked = new Set(); traces = []; parts = []; pulses = []; sparks = []; t0 = performance.now(); booted = false
+    // keep the header band clean
+    const head = hero.querySelector('.site-header')?.getBoundingClientRect()
+    if (head) blockRect(0, 0, cols, Math.ceil((head.bottom - rect.top) / P) + 1)
     for (const el of keepOut) {
       const b = el.getBoundingClientRect()
       blockRect(Math.floor((b.left - rect.left) / P), Math.floor((b.top - rect.top) / P), Math.ceil(b.width / P) + 1, Math.ceil(b.height / P) + 1)
@@ -186,7 +189,8 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     }
 
     // filler traces, born outward from the parts
-    const target = Math.round(cols * rows / 40)
+    // sparse on purpose: the board should frame the content, not compete with it
+    const target = Math.round(cols * rows / 72)
     for (let n = 0, made = 0; n < target * 4 && made < target; n++) {
       const a = freeCell(); if (!a) continue
       const b = freeCell(a, 3, 11); if (!b) continue
@@ -274,7 +278,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       const want = (near < 130 ? 1 - near / 130 : 0) + (t.hot || 0) + (t.part ? t.part.hover : 0)
       t.heat += (Math.min(1, want) - t.heat) * .08
       if (t.hot) t.hot *= .985
-      ctx.strokeStyle = `rgba(${C[layer]},${((layer === 'f' ? .34 : .22) + t.heat * .6) * t.fade})`
+      ctx.strokeStyle = `rgba(${C[layer]},${((layer === 'f' ? .24 : .14) + t.heat * .6) * t.fade})`
       ctx.lineWidth = layer === 'f' ? 2.2 : 1.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'
       ctx.beginPath(); ctx.moveTo(t.pts[0].x, t.pts[0].y)
       const upto = t.len * prog

@@ -1,15 +1,15 @@
 import { findSecret } from '@/lib/secrets'
-import { powerOn } from '@/lib/power'
 import { site } from '@/data/site'
 
-// Page-wide secrets that don't belong to one section: Konami, 88 mph, the devtools note and the mate.
+// Page-wide secrets that don't belong to one section: Konami, the devtools note and the mate.
 // The others live where they happen (board chips, console commands). Returns a cleanup.
 export function installEggs() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const offs = []
   const on = (target, ev, fn, opts) => { target.addEventListener(ev, fn, opts); offs.push(() => target.removeEventListener(ev, fn, opts)) }
 
-  // Konami: jump to hyperspace and land inside the computer
+  // Konami: jump to hyperspace and come out over a galaxy map of the portfolio
+  const land = () => document.dispatchEvent(new CustomEvent('open-galaxy'))
   const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a']
   let k = 0
   on(window, 'keydown', (e) => {
@@ -20,7 +20,7 @@ export function installEggs() {
   })
   function hyperspace() {
     findSecret('hyperspace')
-    if (reduced) return powerOn()
+    if (reduced) return land()
     const c = Object.assign(document.createElement('canvas'), { className: 'hyper', width: innerWidth, height: innerHeight })
     document.body.append(c)
     const x = c.getContext('2d'), t0 = performance.now()
@@ -35,24 +35,9 @@ export function installEggs() {
         s.r = r1 * .9
       }
       if (p < 1) requestAnimationFrame(frame)
-      else { powerOn(); setTimeout(() => c.remove(), 700) }
+      else { land(); setTimeout(() => c.remove(), 700) }
     })(t0)
   }
-
-  // 88 mph: a sustained fast scroll
-  // only a hand on the wheel or the screen counts: anchor jumps and smooth scrolls never do
-  let lastY = scrollY, lastT = performance.now(), fast = 0, mphDone = false, handAt = 0
-  for (const ev of ['wheel', 'touchmove']) on(window, ev, () => { handAt = performance.now() }, { passive: true })
-  on(window, 'scroll', () => {
-    const now = performance.now(), v = Math.abs(scrollY - lastY) / Math.max(1, now - lastT)
-    if (now - handAt > 150) { lastY = scrollY; lastT = now; fast = 0; return }
-    lastY = scrollY; lastT = now
-    fast = v > 7 ? fast + 1 : 0
-    if (fast > 4 && !mphDone) {
-      mphDone = true
-      findSecret('mph') // EggStage plays the time circuits
-    }
-  }, { passive: true })
 
   // Devtools: a note for whoever reads the console
   const mark = ['  o           o', '  |           |', '   \\         /', '    \\       /', '     \\     /', '      \\ _ /', '      ( o )'].join('\n')
