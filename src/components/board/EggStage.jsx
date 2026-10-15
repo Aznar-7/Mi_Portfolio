@@ -175,12 +175,13 @@ export function EggStage() {
               <defs>
                 <linearGradient id="o66-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#7cc6ff" stopOpacity=".45" /><stop offset="1" stopColor="#7cc6ff" stopOpacity="0" /></linearGradient>
                 <pattern id="o66-scan" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="1.2" fill="#bfe4ff" /></pattern>
-                <clipPath id="o66-fig"><path d="M150 40 C112 40 96 74 98 108 C100 128 88 140 76 170 C58 214 54 280 50 330 H250 C246 280 242 214 224 170 C212 140 200 128 202 108 C204 74 188 40 150 40 Z" /></clipPath>
+                <clipPath id="o66-fig"><path d="M150 40 C124 40 110 60 110 88 C110 108 118 118 110 128 C88 134 68 148 62 172 C54 222 52 282 48 330 H252 C248 282 246 222 238 172 C232 148 212 134 190 128 C182 118 190 108 190 88 C190 60 176 40 150 40 Z" /></clipPath>
               </defs>
               <polygon points="150,350 40,30 260,30" fill="url(#o66-beam)" />
               <g className="o66-figure">
-                <path d="M150 40 C112 40 96 74 98 108 C100 128 88 140 76 170 C58 214 54 280 50 330 H250 C246 280 242 214 224 170 C212 140 200 128 202 108 C204 74 188 40 150 40 Z" className="robe" />
-                <path d="M122 92 C130 80 170 80 178 92 C180 112 168 126 150 126 C132 126 120 112 122 92 Z" className="hood" />
+                <path d="M150 40 C124 40 110 60 110 88 C110 108 118 118 110 128 C88 134 68 148 62 172 C54 222 52 282 48 330 H252 C248 282 246 222 238 172 C232 148 212 134 190 128 C182 118 190 108 190 88 C190 60 176 40 150 40 Z" className="robe" />
+                <path d="M128 92 C134 78 166 78 172 92 C174 110 164 122 150 122 C136 122 126 110 128 92 Z" className="hood" />
+                <path d="M118 150 C134 160 166 160 182 150 M150 160 V330" className="fold" />
                 <rect x="40" y="30" width="220" height="320" fill="url(#o66-scan)" opacity=".35" clipPath="url(#o66-fig)" />
               </g>
               <ellipse cx="150" cy="352" rx="60" ry="10" className="o66-emitter" />
@@ -189,7 +190,7 @@ export function EggStage() {
             <p className="o66-line two">{T.o66reply}</p>
           </div>
           {/* 2. the blade */}
-          <svg className="saber" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="-5" y1="8" x2="105" y2="92" /><line className="core" x1="-5" y1="8" x2="105" y2="92" /></svg>
+          <svg className="saber" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="-5" y1="8" x2="105" y2="92" pathLength="100" /><line className="core" x1="-5" y1="8" x2="105" y2="92" pathLength="100" /></svg>
           {/* 3. the squad marches through */}
           <div className="o66-squad">
             {Array.from({ length: 7 }, (_, i) => (

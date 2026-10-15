@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Send, Check } from 'lucide-react'
+import { Send, Check, RotateCcw } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -14,6 +14,9 @@ export function ContactForm() {
   const T = copy[lang].form
   const { playClick, playSuccess } = useSoundEffects()
   const [state, setState] = useState('idle') // idle | sending | sent | error
+  const [topic, setTopic] = useState(0)
+  const [len, setLen] = useState(0)
+  const [who, setWho] = useState('')
 
   const submit = async (e) => {
     e.preventDefault()
@@ -21,9 +24,10 @@ export function ContactForm() {
     const data = Object.fromEntries(new FormData(form))
     if (data.botcheck) return // honeypot: bots fill every field
     playClick()
+    const subject = `${T.subject(data.name)} · ${T.topics[topic]}`
     if (!KEY) {
       const body = `${data.message}\n\n${data.name} · ${data.email}`
-      location.href = `mailto:${site.email}?subject=${encodeURIComponent(T.subject(data.name))}&body=${encodeURIComponent(body)}`
+      location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
       return
     }
     setState('sending')
@@ -31,18 +35,37 @@ export function ContactForm() {
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ access_key: KEY, subject: T.subject(data.name), from_name: 'vicenteaznar.dev', name: data.name, email: data.email, message: data.message }),
+        body: JSON.stringify({ access_key: KEY, subject, from_name: 'vicenteaznar.dev', name: data.name, email: data.email, topic: T.topics[topic], message: data.message }),
       })
       const json = await res.json()
       if (!json.success) throw new Error(json.message)
-      setState('sent'); playSuccess(); form.reset()
+      setWho(data.name.split(' ')[0]); setState('sent'); playSuccess(); form.reset(); setLen(0)
     } catch {
       setState('error')
     }
   }
 
+  if (state === 'sent') {
+    return (
+      <div className="form-sent" role="status">
+        <span className="sent-plane" aria-hidden="true"><Send size={26} /></span>
+        <p className="sent-title">{T.sentTitle(who)}</p>
+        <p>{T.okLine}</p>
+        <button type="button" className="btn ghost" onClick={() => setState('idle')}><RotateCcw size={15} aria-hidden="true" />{T.another}</button>
+      </div>
+    )
+  }
+
   return (
     <form className="mail-form" onSubmit={submit} noValidate={false}>
+      <fieldset className="topics wide">
+        <legend>{T.about}</legend>
+        {T.topics.map((tp, i) => (
+          <label key={tp} className={topic === i ? 'on' : ''}>
+            <input type="radio" name="topic" value={tp} checked={topic === i} onChange={() => { playClick(); setTopic(i) }} />{tp}
+          </label>
+        ))}
+      </fieldset>
       <div className="field">
         <label htmlFor="f-name">{T.name}</label>
         <input id="f-name" name="name" autoComplete="name" required maxLength={80} />
@@ -53,7 +76,8 @@ export function ContactForm() {
       </div>
       <div className="field wide">
         <label htmlFor="f-msg">{T.message}</label>
-        <textarea id="f-msg" name="message" rows={4} required minLength={10} maxLength={4000} placeholder={T.placeholder} />
+        <textarea id="f-msg" name="message" rows={4} required minLength={10} maxLength={4000} placeholder={T.placeholders[topic]} onChange={(e) => setLen(e.target.value.length)} />
+        <small className={`count${len > 0 && len < 10 ? ' short' : ''}`} aria-live="polite">{len > 0 && len < 10 ? T.tooShort : `${len} / 4000`}</small>
       </div>
       <input type="checkbox" name="botcheck" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div className="form-foot wide">

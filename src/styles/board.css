@@ -61,7 +61,11 @@
 .layers button[aria-pressed="true"]{background:rgba(236,238,242,.1); color:var(--ink)}
 .sw{width:10px; height:10px; border-radius:2px} .sw.f{background:rgb(var(--fcu))} .sw.b{background:rgb(var(--bcu))}
 [data-on]{transition:opacity .5s var(--ease), filter .5s var(--ease)}
-.work[data-layer="f"] [data-on="b"], .work[data-layer="b"] [data-on="f"]{opacity:.22; filter:saturate(.2)}
+/* filtering folds the other layer away instead of greying it */
+.work .net,.work .feature{transition:max-height .55s var(--ease), opacity .35s, margin .55s var(--ease)}
+.work .net{max-height:1400px}
+.work .feature{max-height:2400px}
+.work[data-layer="f"] [data-on="b"], .work[data-layer="b"] [data-on="f"]{max-height:0; opacity:0; margin:0; overflow:hidden; border-color:transparent; pointer-events:none}
 .led{display:inline-block; width:7px; height:7px; border-radius:1px; margin-right:9px; vertical-align:1px}
 .led.live{background:#78dc8c; animation:blink 2.4s steps(1) infinite} .led.done{background:rgb(var(--silk))}
 @keyframes blink{0%,92%{opacity:1} 93%,100%{opacity:.25}}
@@ -401,7 +405,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 /* Order 66: a red blade cuts the screen, then a flickering transmission */
 @keyframes redflash{0%,8%{background:rgba(8,9,12,.92)} 14%{background:rgba(120,10,10,.95)} 40%,100%{background:rgba(10,4,4,.94)}}
 .saber{position:absolute; inset:0; width:100%; height:100%}
-.saber line{stroke:#ff2a2a; stroke-width:1.4; stroke-linecap:round; vector-effect:non-scaling-stroke; stroke-dasharray:160; stroke-dashoffset:160; animation:slash .28s .1s cubic-bezier(.6,0,.2,1) forwards, fade .5s 1s forwards}
+.saber line{stroke:#ff2a2a; stroke-width:1.4; stroke-linecap:round; vector-effect:non-scaling-stroke; stroke-dasharray:100 101; stroke-dashoffset:101; animation:slash .28s .1s cubic-bezier(.6,0,.2,1) forwards, fade .5s 1s forwards}
 .saber .core{stroke:#fff3f3; stroke-width:.5}
 .saber line{stroke-width:10px} .saber .core{stroke-width:3px}
 @keyframes slash{to{stroke-dashoffset:0}} @keyframes fade{to{opacity:0}}
@@ -787,3 +791,71 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (max-width:560px){ .mate{grid-template-columns:1fr; justify-items:center; text-align:center} }
 @media (prefers-reduced-motion: reduce){ .mate .termo,.mate .water,.mate .steam{animation:none} }
 @keyframes rise{from{opacity:0; transform:translateY(24px)}}
+
+/* ── Work v3: sticky feature media, counts, quick links, a cursor preview ── */
+.feature-media{position:sticky; top:92px}
+.shot-wrap{position:relative}
+.shot-ctrl{position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:rgba(14,16,20,.78); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(236,238,242,.12); opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s var(--ease)}
+.shot-wrap:hover .shot-ctrl,.shot-wrap:focus-within .shot-ctrl{opacity:1; transform:none}
+.shot-ctrl button{display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%; background:none; color:var(--ink); cursor:pointer; transition:background .2s}
+.shot-ctrl button:hover,.shot-ctrl button:focus-visible{background:rgba(236,238,242,.14); outline:none}
+.shot-ctrl span{min-width:44px; text-align:center; font:500 12px/1 var(--mono); color:var(--ink-2)}
+.feature-media .shot img{transition:opacity .18s, transform .8s var(--ease)}
+.shot-wrap:hover .shot img{transform:scale(1.015)}
+.layers .n{min-width:20px; padding:3px 6px; border-radius:999px; background:rgba(236,238,242,.08); font:500 11px/1 var(--mono); color:var(--ink-2); text-align:center}
+.layers button[aria-pressed="true"] .n{background:rgba(var(--silk),.2); color:rgb(var(--silk))}
+
+.net-quick{position:absolute; right:190px; top:0; height:118px; display:flex; align-items:center; gap:16px; margin:0; opacity:0; pointer-events:none; transform:translateX(8px); transition:opacity .25s, transform .3s var(--ease)}
+.net:hover .net-quick,.net:focus-within .net-quick{opacity:1; pointer-events:auto; transform:none}
+.net:hover .net-icons,.net:focus-within .net-icons{opacity:0}
+.net-icons{transition:opacity .2s}
+.net-quick a{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; background:#16181d; color:var(--ink); font:500 14px/1 var(--text); text-decoration:none; box-shadow:inset 0 0 0 1px rgba(236,238,242,.14); transition:background .2s, color .2s}
+.net-quick a:hover,.net-quick a:focus-visible{background:rgb(var(--silk)); color:#16181d; outline:none}
+.net-head[aria-expanded="true"] ~ .net-quick{display:none}
+
+.net-peek{position:fixed; z-index:40; left:0; top:0; width:260px; aspect-ratio:3/2; object-fit:cover; border-radius:12px; box-shadow:0 0 0 1px rgba(236,238,242,.16), 0 30px 60px -20px #000; pointer-events:none; opacity:0; scale:.85; transition:opacity .25s, scale .3s var(--ease)}
+.net-peek.on{opacity:1; scale:1}
+@media (hover:none),(max-width:900px){ .net-peek{display:none} .net-quick{position:static; height:auto; opacity:1; pointer-events:auto; transform:none; padding:0 0 16px} }
+.strip{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px}
+.strip img{flex:none; height:clamp(150px,16vw,210px); width:auto; border-radius:10px; scroll-snap-align:start; box-shadow:0 0 0 1px rgba(236,238,242,.1)}
+@media (prefers-reduced-motion: reduce){ .work .net,.work .feature,.net-peek,.net-quick,.shot-ctrl{transition:none} }
+
+/* ── Contact v4: availability, topics, a live count and a real "sent" moment ── */
+.avail{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px; padding:0; list-style:none}
+.avail li{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#14161b; box-shadow:inset 0 0 0 1px rgba(236,238,242,.1); font:500 14px/1 var(--text); color:var(--ink-2)}
+.avail li:first-child{color:var(--ink)}
+.avail time{font:500 14px/1 var(--mono); color:rgb(var(--silk))}
+.topics{display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; border:0}
+.topics legend{width:100%; margin-bottom:10px; font:500 13px/1 var(--mono); color:var(--ink-2)}
+.topics label{position:relative; padding:9px 14px; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(236,238,242,.16); font:500 14px/1 var(--text); color:var(--ink-2); cursor:pointer; transition:background .2s, color .2s, box-shadow .2s, transform .15s}
+.topics label:hover{color:var(--ink)}
+.topics label.on{background:rgba(var(--silk),.14); color:rgb(var(--silk)); box-shadow:inset 0 0 0 1px rgba(var(--silk),.6)}
+.topics label:active{transform:scale(.97)}
+.topics input{position:absolute; opacity:0; inset:0; margin:0; cursor:pointer}
+.topics label:has(input:focus-visible){outline:2px solid rgb(var(--silk)); outline-offset:3px}
+.field .count{align-self:flex-end; font:500 12px/1 var(--mono); color:var(--ink-3)}
+.field .count.short{color:rgb(var(--silk))}
+.form-sent{display:grid; justify-items:start; gap:10px; padding:12px 0}
+.form-sent .sent-title{margin:0; font:600 24px/1.2 var(--display); color:var(--ink)}
+.form-sent p{margin:0; color:var(--ink-2)}
+.form-sent .btn{margin-top:10px}
+.sent-plane{display:grid; place-items:center; width:56px; height:56px; border-radius:50%; background:rgba(120,220,140,.12); color:#78dc8c; animation:plane .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes plane{0%{transform:translate(-30px,30px) rotate(-20deg) scale(.6); opacity:0} 60%{transform:translate(6px,-6px) rotate(6deg); opacity:1} 100%{transform:none}}
+@media (prefers-reduced-motion: reduce){ .sent-plane{animation:none} }
+
+/* ── First-load power on: traces meet at the mark, its pad lights, the screen opens from the line ── */
+.intro{position:fixed; inset:0; z-index:9800; pointer-events:none}
+.intro-half{position:absolute; left:0; right:0; height:50%; background:#0b0c0f; animation:intro-open .55s .85s cubic-bezier(.7,0,.2,1) forwards}
+.intro-half.top{top:0} .intro-half.bottom{bottom:0; --dir:1}
+@keyframes intro-open{to{transform:translateY(calc(var(--dir,-1) * 100%))}}
+.intro-trace{position:absolute; left:0; top:50%; width:100%; height:2px; translate:0 -1px; overflow:visible; animation:intro-fade .3s .9s ease forwards}
+.intro-trace path{fill:none; stroke:rgb(var(--fcu, 212,87,78)); stroke-width:2; stroke-dasharray:1; stroke-dashoffset:1; animation:intro-draw .5s .05s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes intro-draw{to{stroke-dashoffset:0}}
+.intro-mark{position:absolute; left:50%; top:50%; width:56px; height:56px; translate:-50% -58%; overflow:visible; animation:intro-fade .3s 1s ease forwards}
+.intro-mark .v{fill:none; stroke:#eceef2; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; animation:intro-draw .35s .45s ease forwards}
+.intro-mark .pin{fill:#eceef2; opacity:0; animation:intro-pop .2s .4s ease forwards}
+.intro-mark .pad{fill:none; stroke:rgb(212,87,78); stroke-width:4.5; opacity:0; animation:intro-pad .4s .62s ease forwards}
+@keyframes intro-pop{to{opacity:1}}
+@keyframes intro-pad{50%{opacity:1; filter:drop-shadow(0 0 10px rgb(212,87,78))} to{opacity:1}}
+@keyframes intro-fade{to{opacity:0}}
+.o66-figure .fold{fill:none; stroke:rgba(191,228,255,.45); stroke-width:1}

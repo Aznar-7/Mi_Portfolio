@@ -14,6 +14,7 @@ import { installEggs } from '@/lib/eggs'
 import { initMotion } from '@/lib/motion'
 import { EggStage } from '@/components/board/EggStage'
 import TargetCursor from '@/components/common/TargetCursor'
+import { Intro } from '@/components/board/Intro'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
 // full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
@@ -135,6 +136,7 @@ export default function App() {
           <>
             {!overlay && <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />}
             <Board />
+            <Intro />
             {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
           </>
         )}

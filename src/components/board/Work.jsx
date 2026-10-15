@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChevronDown } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -91,13 +91,24 @@ function Feature({ project, lang, T }) {
   const shots = [...new Set([project.image, ...project.gallery].filter(Boolean))]
   const [shot, setShot] = useState(0)
   const [fade, setFade] = useState(false)
-  const show = (i) => { playSelect(); setFade(true); setTimeout(() => { setShot(i); setFade(false) }, 180) }
+  const show = (i) => { playSelect(); setFade(true); setTimeout(() => { setShot((i + shots.length) % shots.length); setFade(false) }, 180) }
+  const onKey = (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(shot + 1) }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(shot - 1) }
+  }
   return (
     <article className="feature" id={`p-${project.id}`} data-on={layerOf(project)}>
-      <div className="feature-media">
-        <a className="shot" href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-          <img src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} style={{ opacity: fade ? 0 : 1 }} loading="lazy" />
-        </a>
+      <div className="feature-media" onKeyDown={onKey}>
+        <div className="shot-wrap">
+          <a className="shot" href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+            <img src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} style={{ opacity: fade ? 0 : 1 }} loading="lazy" />
+          </a>
+          <div className="shot-ctrl">
+            <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>
+            <span aria-live="polite">{shot + 1} / {shots.length}</span>
+            <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>
+          </div>
+        </div>
         <div className="thumbs" role="group" aria-label={T.screens}>
           {shots.map((src, i) => (
             <button key={src} aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}>
@@ -126,6 +137,11 @@ export function Work() {
   const spine = useRef(null), dot = useRef(null)
   const featured = projects.find((p) => p.featured)
   const rest = projects.filter((p) => !p.featured)
+  const count = { all: projects.length, f: projects.filter((p) => layerOf(p) === 'f').length, b: projects.filter((p) => layerOf(p) === 'b').length }
+  // a small preview of the project follows the cursor over its row (mouse only)
+  const preview = useRef(null)
+  const [peek, setPeek] = useState(null)
+  const movePeek = (e) => { preview.current?.style.setProperty('transform', `translate(${e.clientX + 24}px, ${e.clientY - 70}px) rotate(${Math.max(-6, Math.min(6, e.movementX * 0.6))}deg)`) }
 
   // a pulse rides the spine with the scroll and lights each branch it reaches
   useEffect(() => {
@@ -166,7 +182,7 @@ export function Work() {
         <div className="layers" role="group" aria-label={T.layers}>
           {[['all', T.all], ['f', T.web, 'F.Cu'], ['b', T.hw, 'B.Cu']].map(([id, label, silk]) => (
             <button key={id} aria-pressed={layer === id} onClick={() => { playToggle(); setLayer(id) }}>
-              {silk && <i className={`sw ${id}`} />}{label}{silk && <small>{silk}</small>}
+              {silk && <i className={`sw ${id}`} />}{label}<span className="n">{count[id]}</span>
             </button>
           ))}
         </div>
@@ -179,8 +195,9 @@ export function Work() {
           {rest.map((p) => {
             const st = statusOf(p), isOpen = open.has(p.id), links = linksOf(p, T)
             return (
-              <li key={p.id} id={`p-${p.id}`} className="net" data-on={layerOf(p)} onPointerEnter={playHover}>
-                <button className="net-head" aria-expanded={isOpen} onClick={() => toggle(p.id)}>
+              <li key={p.id} id={`p-${p.id}`} className="net" data-on={layerOf(p)} onPointerEnter={(e) => { playHover(); if (p.image && e.pointerType === 'mouse' && !isOpen) setPeek(p.image) }}
+                onPointerMove={movePeek} onPointerLeave={() => setPeek(null)} aria-hidden={layer !== 'all' && layerOf(p) !== layer ? 'true' : undefined}>
+                <button className="net-head" aria-expanded={isOpen} onClick={() => { setPeek(null); toggle(p.id) }}>
                   <span className="net-thumb">
                     {p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech.find((t) => t === 'ESP32') ?? p.tech[0]} size={26} />}
                   </span>
@@ -192,6 +209,15 @@ export function Work() {
                   <span className="net-state"><i className={`led ${st === 'live' ? 'live' : 'done'}`} />{T.status[st]}</span>
                   <ChevronDown size={18} aria-hidden="true" className="chev" />
                 </button>
+                {links.length > 0 && (
+                  <p className="net-quick">
+                    {links.map((k) => (
+                      <a key={k.url} href={k.url} target="_blank" rel="noopener noreferrer" aria-label={`${k.label}: ${p.title}`} onClick={playClick}>
+                        {k.live ? <ArrowUpRight size={15} aria-hidden="true" /> : <GitHubIcon size={14} />}{k.label}
+                      </a>
+                    ))}
+                  </p>
+                )}
                 <div className="net-body"><div>
                   <p>{l(p.summary, lang)}</p>
                   <Stack tech={p.tech} />
@@ -210,6 +236,7 @@ export function Work() {
             )
           })}
         </ol>
+        <img ref={preview} className={`net-peek${peek ? ' on' : ''}`} src={peek ?? undefined} alt="" aria-hidden="true" />
       </div>
     </section>
   )

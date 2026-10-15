@@ -11,6 +11,20 @@ import { ContactForm } from './ContactForm'
 import { PowerTitle } from './PowerTitle'
 import { Mascot } from './Mascot'
 
+// Open to work, and what time it is in Córdoba right now (updates each minute)
+function Availability({ T, lang }) {
+  const fmt = () => new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Cordoba' }).format(new Date())
+  const [time, setTime] = useState(fmt)
+  useEffect(() => { const t = setInterval(() => setTime(fmt()), 30000); return () => clearInterval(t) })
+  return (
+    <ul className="avail">
+      <li><i className="led live" aria-hidden="true" />{T.avail}</li>
+      <li>{T.reply}</li>
+      <li><time>{time}</time> {T.inCba}</li>
+    </ul>
+  )
+}
+
 // Email first and large, the other channels as one clean list; the form sits in its own panel
 export function Contact() {
   const { lang } = useLang()
@@ -34,6 +48,7 @@ export function Contact() {
         <div className="contact-left">
           <p className="big">{T.big}</p>
           <p className="sec-intro">{T.intro}</p>
+          <Availability T={T} lang={lang} />
           <div className="mail-line">
             <Mail size={20} aria-hidden="true" />
             <a className="mail-big" href={`mailto:${site.email}`}>{site.email}</a>

@@ -24,9 +24,9 @@ function Understand({ D }) {
       ))}
       {D.states.map((s, i) => (
         <g key={s} className="state" style={{ '--d': `${0.9 + i * 0.35}s` }}>
-          <circle cx={204 + i * 66} cy="130" r="20" className="node-c" />
-          <text x={204 + i * 66} y="170" className="t sm">{s}</text>
-          {i < 2 && <path d={`M${224 + i * 66} 130 H${250 + i * 66}`} className="wire draw" pathLength="1" style={{ '--d': `${1.1 + i * 0.35}s` }} />}
+          <circle cx={198 + i * 78} cy="130" r="20" className="node-c" />
+          <text x={198 + i * 78} y="170" className="t sm">{s}</text>
+          {i < 2 && <path d={`M${218 + i * 78} 130 H${256 + i * 78}`} className="wire draw" pathLength="1" style={{ '--d': `${1.1 + i * 0.35}s` }} />}
         </g>
       ))}
     </svg>
@@ -37,15 +37,17 @@ function Design({ D }) {
   const layers = D.layers
   return (
     <svg viewBox="0 0 380 260" className="dia">
-      <path d="M190 26 V234" className="wire draw" pathLength="1" />
+      {/* the bus runs beside the layers, so the packet never crosses their labels */}
+      <path d="M44 36 V216" className="wire draw" pathLength="1" />
       {layers.map(([a, b], i) => (
         <g key={a} className="slide" style={{ '--d': `${i * 0.14}s` }}>
-          <rect x="70" y={14 + i * 60} width="240" height="44" rx="8" className={`card ${i ? 'hosted' : ''}`} />
-          <text x="86" y={41 + i * 60} className="t l">{a}</text>
-          <text x="294" y={41 + i * 60} className="t r dim">{b}</text>
+          <path d={`M44 ${36 + i * 60} H72`} className="wire" />
+          <rect x="72" y={14 + i * 60} width="264" height="44" rx="8" className={`card ${i ? 'hosted' : ''}`} />
+          <text x="88" y={41 + i * 60} className="t l">{a}</text>
+          <text x="320" y={41 + i * 60} className="t r dim">{b}</text>
         </g>
       ))}
-      <circle r="5" className="packet"><animateMotion dur="2.4s" repeatCount="indefinite" path="M190 26 V234" /></circle>
+      <circle r="5" className="packet"><animateMotion dur="2.4s" repeatCount="indefinite" path="M44 36 V216" /></circle>
     </svg>
   )
 }
@@ -84,7 +86,8 @@ function Iterate({ D }) {
   const ticks = Array.from({ length: 8 }, (_, i) => i)
   return (
     <svg viewBox="0 0 380 260" className="dia">
-      <path d="M190 38 A92 92 0 1 1 189.9 38" className="loop draw" pathLength="1" />
+      {/* a full circle drawn from 12 o'clock (an arc that closes on itself rendered empty) */}
+      <circle cx="190" cy="130" r="92" transform="rotate(-90 190 130)" className="loop draw" pathLength="1" />
       {ticks.map((i) => {
         const a = (i / ticks.length) * Math.PI * 2 - Math.PI / 2
         return <circle key={i} cx={190 + Math.cos(a) * 92} cy={130 + Math.sin(a) * 92} r="5" className="tick" style={{ '--d': `${0.4 + i * 0.1}s` }} />
