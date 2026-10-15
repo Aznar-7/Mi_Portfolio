@@ -4,9 +4,9 @@
 
 const P = 22 // grid pitch: the board's 0.1" raster
 const PARTS = [
-  { id: 'esp', w: 8, h: 11, at: [.78, .24], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
-  { id: 'nfc', w: 9, h: 7, at: [.88, .62], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
-  { id: 'eth', w: 6, h: 5, at: [.60, .10], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
+  { id: 'esp', w: 8, h: 11, at: [.677, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
+  { id: 'nfc', w: 9, h: 7, at: [.685, .62], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
+  { id: 'eth', w: 6, h: 5, at: [.554, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
 ]
 const ESP_PINS_L = ['3V3', 'EN', 'IO36', 'IO39', 'IO34', 'IO35', 'IO32', 'IO33']
 const ESP_PINS_R = ['GND', 'IO23', 'IO22', 'TX0', 'RX0', 'IO21', 'IO19', 'IO18']
@@ -21,13 +21,14 @@ const rnd = (a, b) => a + Math.random() * (b - a)
  * @param {HTMLElement} o.partsLayer  receives one link per part
  * @param {HTMLElement} o.statusEl
  * @param {HTMLElement[]} o.keepOut   elements the copper must route around
+ * @param {HTMLElement} [o.photo]     the portrait: placed on the board as part U0, with its own bus
  * @param {HTMLElement[]} o.letters   name letters that catch the signal
  * @param {object} o.text           { routing(done,total), hint(touch), hint2, complete, parts: {id: [tip, sub]} }
  * @param {() => void} o.onComplete fired once six chips are soldered
  * @param {() => void} [o.onSolder]   a chip lands (sound hook)
  * @param {() => void} [o.onPartHover] a part is hovered (sound hook)
  */
-export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, letters, text, onComplete, onSolder, onPartHover }) {
+export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, photo, letters, text, onComplete, onSolder, onPartHover }) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const touch = matchMedia('(pointer: coarse)').matches
   const ctx = canvas.getContext('2d')
@@ -151,6 +152,15 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       partsLayer.append(a)
     }
 
+    // the portrait sits on the board as U0: its footprint is blocked and a bus leaves its left edge
+    const pr = photo?.getBoundingClientRect()
+    if (pr && pr.width) {
+      const c = Math.floor((pr.left - rect.left) / P), r = Math.floor((pr.top - rect.top) / P)
+      const w = Math.ceil(pr.width / P), h = Math.ceil(pr.height / P)
+      blockRect(c, r, w, h)
+      parts.push({ id: 'photo', c, r, w, h, x: pr.left - rect.left, y: pr.top - rect.top, pw: pr.width, ph: pr.height, ref: 'U0 · VICENTE AZNAR', side: 'photo', born: t0, hover: 0 })
+    }
+
     // buses grow out of each part; the exit bus routes first so nothing cuts it
     for (const p of [...parts].sort((a, b) => (b.side === 'down') - (a.side === 'down'))) {
       const extra = { part: p }
@@ -161,6 +171,10 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
         const right = Array.from({ length: Math.min(4, p.h - 4) }, (_, i) => ({ c: p.c + p.w + 1, r: p.r + 3 + i }))
         right.forEach(s => blocked.delete(key(s.c, s.r)))
         bus(right, 'x', 1, 8, 500, 'b', extra)
+      } else if (p.side === 'photo') {
+        const pins = Array.from({ length: Math.min(7, p.h - 4) }, (_, i) => ({ c: p.c - 2, r: p.r + 2 + i * 2 }))
+        pins.forEach(s => blocked.delete(key(s.c, s.r)))
+        bus(pins, 'x', -1, Math.floor(rnd(10, 18)), 200, 'f', extra)
       } else {
         const pins = Array.from({ length: Math.min(5, p.w - 1) }, (_, i) => ({ c: p.c + 1 + i, r: p.r + p.h + 1 }))
         pins.forEach(s => blocked.delete(key(s.c, s.r)))
@@ -311,6 +325,19 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       ctx.fillStyle = '#16181d'; ctx.strokeStyle = silk; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2, w, h, 3); ctx.fill(); ctx.stroke()
       ctx.fillStyle = silk; ctx.beginPath(); ctx.arc(x - w / 2 + 9, y - h / 2 + 9, 2.6, 0, 7); ctx.fill()
       ctx.textAlign = 'center'; ctx.fillText(p.name, x, y + 4)
+      ctx.restore(); return
+    }
+    if (p.id === 'photo') {
+      // silkscreen courtyard with corner marks and pin-1 dot around the real photo, plus its pads
+      const x = p.x - 8, y = p.y - 8, w = p.pw + 16, h = p.ph + 16, m = 16
+      ctx.strokeStyle = silk; ctx.lineWidth = 1.4; ctx.beginPath()
+      for (const [cx, cy, dx, dy] of [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]]) {
+        ctx.moveTo(cx + dx * m, cy); ctx.lineTo(cx, cy); ctx.lineTo(cx, cy + dy * m)
+      }
+      ctx.stroke()
+      ctx.fillStyle = silk; ctx.beginPath(); ctx.arc(x - 8, y + 8, 2.6, 0, 7); ctx.fill()
+      for (let i = 0; i < Math.min(7, p.h - 4); i++) { ctx.fillStyle = `rgba(${C.pad},.9)`; ctx.fillRect(x - 12, (p.r + 2 + i * 2) * P + 4, 10, 14) }
+      ctx.fillStyle = silk; ctx.textAlign = 'left'; ctx.fillText(p.ref, x, y - 10)
       ctx.restore(); return
     }
     const x = p.c * P, y = p.r * P - (1 - e) * 10, w = p.w * P, h = p.h * P

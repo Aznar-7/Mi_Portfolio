@@ -1,55 +1,78 @@
+import { useEffect, useRef, useState } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 import { experience, academic } from '@/data/experience'
 import { l } from '@/lib/utils'
+import { PowerTitle } from './PowerTitle'
 
-const START = 2023
-const now = new Date()
-const NOW = now.getFullYear() + now.getMonth() / 12
-const pct = (y) => ((y - START) / (NOW - START)) * 100
-const YEARS = Array.from({ length: now.getFullYear() - START + 1 }, (_, i) => START + i)
+gsap.registerPlugin(ScrollTrigger)
 
-// Reads like a CV: every role open, newest first. Each row carries its own trace on a shared
-// 2023 → today scale, so the overlap between work and study shows without hovering anything.
-function Row({ name, role, span, items, kind, T }) {
-  const [from, to] = span
-  const end = to == null ? NOW : to + 1
-  return (
-    <li className={`role ${kind}`}>
-      <div className="role-when">
-        <span className="role-period">{to == null ? T.ongoing(from) : from}</span>
-        <span className="role-track" aria-hidden="true">
-          <i className={to == null ? 'open' : undefined} style={{ left: pct(from) + '%', width: Math.max(4, pct(end) - pct(from)) + '%' }} />
-        </span>
-      </div>
-      <div className="role-what">
-        <h3>{name}</h3>
-        <p className="role-title">{role}</p>
-        <ul>{items.map((it) => <li key={it}>{it}</li>)}</ul>
-      </div>
-    </li>
-  )
-}
+const LOGOS = { Gavia: '/images/projects/gavia/logo.webp' }
 
+// A vertical trace draws itself with the scroll and powers each role's pad as it arrives, while a
+// large sticky year keeps time on the left. Everything stays readable without hovering.
 export function Path() {
   const { lang } = useLang()
   const T = copy[lang].path
+  const root = useRef(null)
+  const items = [
+    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), logo: LOGOS[e.company] })),
+    ...academic.map((a) => ({ kind: 'study', name: l(a.degree, lang), role: a.institution.replace(' — ', ' · '), span: a.span, bullets: l(a.highlights, lang) })),
+  ]
+  const [active, setActive] = useState(0)
+  const year = items[active].span[0]
+
+  useEffect(() => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray('.tl-item').forEach((el, i) => {
+        ScrollTrigger.create({
+          trigger: el, start: 'top 55%', end: 'bottom 55%',
+          onToggle: (st) => { if (st.isActive) setActive(i) },
+          onEnter: () => el.classList.add('on'),
+          onLeaveBack: () => el.classList.remove('on'),
+        })
+      })
+      if (!reduced) {
+        gsap.fromTo('.tl-fill', { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '.tl-list', start: 'top 55%', end: 'bottom 55%', scrub: 0.5 } })
+      }
+    }, root)
+    return () => ctx.revert()
+  }, [lang])
+
   return (
-    <section className="path" id="trayectoria">
-      <h2>{T.title}</h2>
+    <section className="path" id="trayectoria" ref={root}>
+      <PowerTitle text={T.title} />
       <p className="sec-intro">{T.intro}</p>
-      <div className="scale" aria-hidden="true">
-        {YEARS.map((y) => <span key={y} style={{ left: pct(y) + '%' }}>{y}</span>)}
-        <span className="now" style={{ left: '100%' }}>{T.now}</span>
+      <div className="tl">
+        <div className="tl-year" aria-hidden="true">
+          <span key={year} className={`yr ${items[active].kind}`}>{year}</span>
+          <small>{items[active].kind === 'job' ? items[active].name : 'UTN'}</small>
+        </div>
+        <div className="tl-list">
+          <span className="tl-line" aria-hidden="true"><span className="tl-fill" /></span>
+          <ol className="tl-items">
+          {items.map((it, i) => (
+            <li key={it.name} className={`tl-item ${it.kind}`}>
+              {i === experience.length && <p className="tl-via">{T.study}</p>}
+              {i === 0 && <p className="tl-via">{T.work}</p>}
+              <span className="tl-pad" aria-hidden="true" />
+              <p className="tl-when">{it.span[1] == null ? T.ongoing(it.span[0]) : it.span[0]}</p>
+              <div className="tl-head">
+                {it.logo && <img src={it.logo} alt="" width="40" height="40" loading="lazy" />}
+                <div>
+                  <h3>{it.name}</h3>
+                  <p className="tl-role">{it.role}</p>
+                </div>
+              </div>
+              <ul>{it.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
+            </li>
+          ))}
+          </ol>
+        </div>
       </div>
-      <h3 className="group">{T.work}</h3>
-      <ol className="roles">
-        {experience.map((e) => <Row key={e.company} name={e.company} role={l(e.role, lang)} span={e.span} items={l(e.impact, lang)} kind="job" T={T} />)}
-      </ol>
-      <h3 className="group">{T.study}</h3>
-      <ol className="roles">
-        {academic.map((a) => <Row key={l(a.short, lang)} name={l(a.degree, lang)} role={a.institution.replace(' — ', ' · ')} span={a.span} items={l(a.highlights, lang)} kind="study" T={T} />)}
-      </ol>
     </section>
   )
 }

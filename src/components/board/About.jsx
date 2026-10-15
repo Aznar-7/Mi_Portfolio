@@ -5,6 +5,7 @@ import { copy } from '@/i18n/site'
 import { about } from '@/data/about'
 import { site } from '@/data/site'
 import { l } from '@/lib/utils'
+import { PowerTitle } from './PowerTitle'
 
 // Solder-mask ground to bright pad: the busiest days shine like fresh solder
 const CALENDAR_THEME = { dark: ['#16181d', '#3a3224', '#66552f', '#a3884a', '#e8e2b0'] }
@@ -19,7 +20,7 @@ export function About() {
 
   return (
     <section className="about" id="sobre">
-      <h2>{T.title}</h2>
+      <PowerTitle text={T.title} />
       <div className="about-grid">
         <figure className="portrait">
           <img src="/port.jpg" alt="Vicente Aznar" width="400" height="400" loading="lazy" />

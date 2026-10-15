@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { LanguageProvider, useLang } from '@/contexts/LanguageContext'
@@ -6,21 +6,33 @@ import { SoundProvider } from '@/contexts/SoundContext'
 import { Hero } from '@/components/board/Hero'
 import { Work } from '@/components/board/Work'
 import { About } from '@/components/board/About'
+import { Process } from '@/components/board/Process'
 import { Shop } from '@/components/board/Shop'
 import { Path } from '@/components/board/Path'
 import { Contact, Console, Footer, SecretToast } from '@/components/board/Closing'
 import { installEggs } from '@/lib/eggs'
+import { initMotion } from '@/lib/motion'
+import { EggStage } from '@/components/board/EggStage'
+import TargetCursor from '@/components/common/TargetCursor'
 
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
 function Board() {
   const { lang } = useLang()
+  const root = useRef(null)
+  // re-run per language: the titles are re-split into new letters
+  useEffect(() => {
+    let undo = () => {}, cancelled = false
+    document.fonts.ready.then(() => { if (!cancelled) undo = initMotion(root.current) })
+    return () => { cancelled = true; undo() }
+  }, [lang])
   return (
-    <div className="site">
+    <div className="site" ref={root}>
       <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
       <Hero />
       <main>
         <Work />
+        <Process />
         <About />
         <Shop />
         <Path />
@@ -29,6 +41,7 @@ function Board() {
       </main>
       <Footer />
       <SecretToast />
+      <EggStage />
     </div>
   )
 }
@@ -70,7 +83,12 @@ export default function App() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
-        {!ubuntuOpen && <Board />}
+        {!ubuntuOpen && (
+          <>
+            <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />
+            <Board />
+          </>
+        )}
       </LanguageProvider>
     </SoundProvider>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Download, Volume2, VolumeX } from 'lucide-react'
+import { ChevronDown, Download, TerminalSquare, Volume2, VolumeX } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -7,6 +7,7 @@ import { site } from '@/data/site'
 import { findSecret } from '@/lib/secrets'
 import { useLatestPush, timeAgo } from '@/hooks/useLatestPush'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
+import { powerOn } from '@/lib/power'
 import { createBoard } from './engine'
 
 const SECTIONS = ['trabajo', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
@@ -65,7 +66,7 @@ export function Hero() {
   const { playClick, playHover, playSuccess } = useSoundEffects()
   const T = copy[lang].hero
   const push = useLatestPush(githubUser)
-  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null)
+  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null), photoRef = useRef(null)
   // the engine lives outside React; it reads the latest sound callbacks through a ref
   const sounds = useRef({})
   useEffect(() => { sounds.current = { playClick, playHover, playSuccess } })
@@ -83,6 +84,7 @@ export function Hero() {
         partsLayer: partsRef.current,
         statusEl: statusRef.current,
         keepOut: [copyRef.current, statusRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
+        photo: photoRef.current,
         letters: [...hero.querySelectorAll('h1 .l')],
         text: T,
         onComplete: () => { sounds.current.playSuccess?.(); findSecret('placa') },
@@ -100,6 +102,9 @@ export function Hero() {
       <canvas ref={canvasRef} aria-hidden="true" />
       <Header copyRef={copyRef} />
       <div ref={partsRef} />
+      <figure className="hero-photo" ref={photoRef}>
+        <img src="/port.jpg" alt={T.portrait} width="400" height="400" fetchPriority="high" />
+      </figure>
       <div className="hero-copy" ref={copyRef}>
         <div className="hero-meta">
           <img src="/port.jpg" alt={T.portrait} width="44" height="44" />
@@ -122,7 +127,11 @@ export function Hero() {
               <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.cvEn}</a>
             </div>
           </details>
+          <button className="btn ghost" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={15} aria-hidden="true" />{T.os}</button>
         </div>
+        <dl className="hero-facts">
+          {T.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
         {/* the row keeps its height while GitHub answers, so the board routes around it from the start */}
         <p className="push">
           {push && (

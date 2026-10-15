@@ -7,6 +7,8 @@ import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
 import { findSecret, useSecretCount, SECRETS } from '@/lib/secrets'
 import { powerOn } from '@/lib/power'
+import { ContactForm } from './ContactForm'
+import { PowerTitle } from './PowerTitle'
 
 // J2: every way to reach me is a pin on one connector; copying the email solders it
 export function Contact() {
@@ -20,9 +22,11 @@ export function Contact() {
   }
   return (
     <section className="contact" id="contacto">
-      <h2>{T.title}</h2>
+      <PowerTitle text={T.title} />
       <p className="big">{T.big}</p>
       <p className="sec-intro">{T.intro}</p>
+      <div className="contact-grid">
+      <ContactForm />
       <ul className="conn">
         <li className="conn-silk" aria-hidden="true">{T.silk}</li>
         <li onPointerEnter={playHover} className={`pin primary${copied === 'ok' || copied === 'done' ? ' done' : ''}`}>
@@ -49,6 +53,7 @@ export function Contact() {
           </span>
         </li>
       </ul>
+      </div>
     </section>
   )
 }
@@ -66,7 +71,7 @@ export function Console() {
   const COMMANDS = {
     '': () => { say(T.booting); powerOn() },
     'ssh vicente': () => { say(T.booting); powerOn() },
-    mellon: () => { findSecret('mellon'); say(T.mellon, true); setTimeout(powerOn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1400) },
+    mellon: () => { findSecret('mellon'); say(T.mellon, true); setTimeout(powerOn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 2600) },
     'sudo hire': () => { findSecret('hire'); say(T.hire); setTimeout(() => { location.href = `mailto:${site.email}?subject=Hola%20Vicente` }, 900) },
     help: () => say(T.help),
     ls: () => say(T.ls),
@@ -87,7 +92,7 @@ export function Console() {
     <section className="power" id="consola">
       <div className="power-in">
         <span className="conn-silk" aria-hidden="true">{T.silk}</span>
-        <h2>{T.title}</h2>
+        <PowerTitle text={T.title} />
         <p className="sec-intro">{T.intro}</p>
         <form className="term" onSubmit={submit} autoComplete="off">
           <label htmlFor="cmd" className="prompt">{T.prompt}</label>

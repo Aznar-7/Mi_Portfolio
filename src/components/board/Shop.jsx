@@ -6,6 +6,7 @@ import { projects } from '@/data/projects'
 import { l } from '@/lib/utils'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { ToolIcon } from './ToolIcon'
+import { PowerTitle } from './PowerTitle'
 
 // Everywhere a tool can point: the projects plus the day job
 const PLACES = [
@@ -39,7 +40,7 @@ export function Shop() {
       <svg className="rats" aria-hidden="true">
         {wires.map((w) => <line key={w.id} x1={w.x1} y1={w.y1} x2={w.x2} y2={w.y2} style={{ '--len': w.len }} />)}
       </svg>
-      <h2>{T.title}</h2>
+      <PowerTitle text={T.title} />
       <p className="sec-intro">{T.intro}</p>
       <div className="shop-grid">
         <div>

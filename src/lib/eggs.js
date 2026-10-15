@@ -47,17 +47,16 @@ export function installEggs() {
     fast = v > 7 ? fast + 1 : 0
     if (fast > 4 && !mphDone) {
       mphDone = true
-      findSecret('mph')
-      if (reduced) return
-      const m = Object.assign(document.createElement('div'), { className: 'mph' })
-      m.append(Object.assign(document.createElement('span'), { textContent: '88 MPH' }))
-      ;(document.querySelector('.site') ?? document.body).append(m)
-      setTimeout(() => m.remove(), 1400)
+      findSecret('mph') // EggStage plays the time circuits
     }
   }, { passive: true })
 
   // Devtools: a note for whoever reads the console
-  console.info('%c¿Mirando el código? Somos de la misma especie.%c\nEscribí hire() y te paso el contacto.', 'font:600 14px system-ui; color:#e8e2b0', 'color:#a9aeb9')
+  const mark = ['  o           o', '  |           |', '   \\         /', '    \\       /', '     \\     /', '      \\ _ /', '      ( o )'].join('\n')
+  console.info(
+    `%c${mark}%c\n\n¿Mirando el código? Somos de la misma especie.\nEscribí hire() y te paso el contacto.`,
+    'color:#d4574e; font:600 12px ui-monospace, monospace', 'font:600 13px system-ui; color:#e8e2b0',
+  )
   window.hire = () => { findSecret('devtools'); return site.email }
   offs.push(() => { delete window.hire })
 

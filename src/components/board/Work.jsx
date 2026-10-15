@@ -7,6 +7,7 @@ import { projects } from '@/data/projects'
 import { l } from '@/lib/utils'
 import { GitHubIcon } from '@/components/common/SocialIcons'
 import { ToolIcon } from './ToolIcon'
+import { PowerTitle } from './PowerTitle'
 
 const layerOf = (p) => (p.category === 'iot' ? 'b' : 'f')
 const statusOf = (p) => (p.liveUrl ? (p.featured ? 'prod' : 'live') : p.status === 'completed' ? 'done' : 'dev')
@@ -149,7 +150,7 @@ export function Work() {
   return (
     <section className="work" id="trabajo" data-layer={layer}>
       <svg className="bus" data-bus aria-hidden="true" />
-      <h2>{T.title}</h2>
+      <PowerTitle text={T.title} />
       <div className="work-intro">
         <p>{T.intro}</p>
         <div className="layers" role="group" aria-label={T.layers}>
