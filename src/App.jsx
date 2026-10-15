@@ -13,6 +13,7 @@ import { Contact, Console, Footer, SecretToast } from '@/components/board/Closin
 import { installEggs } from '@/lib/eggs'
 import { initMotion } from '@/lib/motion'
 import { EggStage } from '@/components/board/EggStage'
+import { Mascot } from '@/components/board/Mascot'
 import TargetCursor from '@/components/common/TargetCursor'
 import { Intro } from '@/components/board/Intro'
 
@@ -49,6 +50,7 @@ function Board() {
       <Footer />
       <SecretToast />
       <EggStage />
+      <Mascot />
     </div>
   )
 }

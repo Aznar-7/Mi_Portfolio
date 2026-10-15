@@ -9,7 +9,6 @@ import { findSecret, useSecretsFound, SECRETS } from '@/lib/secrets'
 import { powerOn } from '@/lib/power'
 import { ContactForm } from './ContactForm'
 import { PowerTitle } from './PowerTitle'
-import { Mascot } from './Mascot'
 
 // Open to work, and what time it is in Córdoba right now (updates each minute)
 function Availability({ T, lang }) {
@@ -71,7 +70,6 @@ export function Contact() {
           </ul>
         </div>
         <div className="contact-right">
-          <p className="form-title">{T.formTitle}</p>
           <ContactForm />
         </div>
       </div>
@@ -132,7 +130,6 @@ export function Console() {
           <button type="button" onClick={() => { playClick(); findSecret('mph') }}><History size={15} aria-hidden="true" />{T.past}</button>
         </p>
         </div>
-        <Mascot lang={lang} />
         </div>
       </div>
     </section>

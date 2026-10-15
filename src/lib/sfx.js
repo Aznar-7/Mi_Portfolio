@@ -83,13 +83,13 @@ export const CUES = {
   },
   // the DeLorean: an engine climbing through the gears, three sonic booms, electric crackle
   mph(ctx) {
-    ;[[0, 70, 180], [0.55, 110, 260], [1.1, 150, 420]].forEach(([at, f, f2]) =>
-      voice(ctx, { type: 'sawtooth', f, f2, glide: 0.5, at, a: 0.05, d: 0.5, s: 0.6, r: 0.1, gain: 0.05, filter: 'lowpass', ff: 700, ff2: 2200, drive: 6 }))
-    ;[1.75, 1.9, 2.05].forEach((at) => {
+    ;[[0, 70, 180], [0.85, 110, 260], [1.7, 150, 420]].forEach(([at, f, f2]) =>
+      voice(ctx, { type: 'sawtooth', f, f2, glide: 0.8, at, a: 0.05, d: 0.8, s: 0.6, r: 0.1, gain: 0.05, filter: 'lowpass', ff: 700, ff2: 2200, drive: 6 }))
+    ;[2.7, 2.85, 3.0].forEach((at) => {
       voice(ctx, { type: 'sine', f: 120, f2: 30, glide: 0.4, at, a: 0.003, d: 0.45, gain: 0.25 })
       voice(ctx, { noise: true, at, a: 0.002, d: 0.3, gain: 0.14, filter: 'lowpass', ff: 1400, ff2: 200 })
     })
-    for (let i = 0; i < 10; i++) voice(ctx, { noise: true, at: 1.7 + Math.random() * 0.8, a: 0.001, d: 0.04, gain: 0.06, filter: 'highpass', ff: 4000 })
+    for (let i = 0; i < 14; i++) voice(ctx, { noise: true, at: 1.9 + Math.random() * 1.2, a: 0.001, d: 0.04, gain: 0.06, filter: 'highpass', ff: 4000 })
   },
   // engines spool, the stars stretch, and the jump lands with a thump
   hyperspace(ctx) {

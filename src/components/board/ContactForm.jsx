@@ -1,21 +1,21 @@
 import { useState } from 'react'
-import { Send, Check, RotateCcw } from 'lucide-react'
+import { Send, RotateCcw } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
 
-// Web3Forms relays the message to the inbox tied to this public access key; no backend needed.
-// Without a key (local dev, forks) the form falls back to the visitor's mail app, prefilled.
+// The form reads as a short letter you fill in: the blanks are the fields.
+// Web3Forms relays it to the inbox tied to this public access key; no backend needed.
+// Without a key (local dev, forks) it falls back to the visitor's mail app, prefilled.
 const KEY = import.meta.env.VITE_WEB3FORMS_KEY
 
 export function ContactForm() {
   const { lang } = useLang()
   const T = copy[lang].form
-  const { playClick, playSuccess } = useSoundEffects()
+  const { playClick, playSuccess, playTyping } = useSoundEffects()
   const [state, setState] = useState('idle') // idle | sending | sent | error
   const [topic, setTopic] = useState(0)
-  const [len, setLen] = useState(0)
   const [who, setWho] = useState('')
 
   const submit = async (e) => {
@@ -39,7 +39,7 @@ export function ContactForm() {
       })
       const json = await res.json()
       if (!json.success) throw new Error(json.message)
-      setWho(data.name.split(' ')[0]); setState('sent'); playSuccess(); form.reset(); setLen(0)
+      setWho(data.name.split(' ')[0]); setState('sent'); playSuccess(); form.reset()
     } catch {
       setState('error')
     }
@@ -47,7 +47,7 @@ export function ContactForm() {
 
   if (state === 'sent') {
     return (
-      <div className="form-sent" role="status">
+      <div className="letter-sent" role="status">
         <span className="sent-plane" aria-hidden="true"><Send size={26} /></span>
         <p className="sent-title">{T.sentTitle(who)}</p>
         <p>{T.okLine}</p>
@@ -56,38 +56,30 @@ export function ContactForm() {
     )
   }
 
+  const type = (e) => { if (e.key.length === 1) playTyping() }
   return (
-    <form className="mail-form" onSubmit={submit} noValidate={false}>
-      <fieldset className="topics wide">
-        <legend>{T.about}</legend>
-        {T.topics.map((tp, i) => (
-          <label key={tp} className={topic === i ? 'on' : ''}>
-            <input type="radio" name="topic" value={tp} checked={topic === i} onChange={() => { playClick(); setTopic(i) }} />{tp}
-          </label>
-        ))}
-      </fieldset>
-      <div className="field">
-        <label htmlFor="f-name">{T.name}</label>
-        <input id="f-name" name="name" autoComplete="name" required maxLength={80} />
-      </div>
-      <div className="field">
-        <label htmlFor="f-email">{T.email}</label>
-        <input id="f-email" name="email" type="email" autoComplete="email" required maxLength={120} />
-      </div>
-      <div className="field wide">
-        <label htmlFor="f-msg">{T.message}</label>
-        <textarea id="f-msg" name="message" rows={4} required minLength={10} maxLength={4000} placeholder={T.placeholders[topic]} onChange={(e) => setLen(e.target.value.length)} />
-        <small className={`count${len > 0 && len < 10 ? ' short' : ''}`} aria-live="polite">{len > 0 && len < 10 ? T.tooShort : `${len} / 4000`}</small>
-      </div>
+    <form className="letter" onSubmit={submit}>
+      <p className="letter-line">
+        {T.l1}{' '}
+        <label className="sr-only" htmlFor="f-name">{T.name}</label>
+        <input id="f-name" name="name" autoComplete="name" required maxLength={80} placeholder={T.namePh} onKeyDown={type} />
+        {T.l2}{' '}
+        <label className="sr-only" htmlFor="f-email">{T.email}</label>
+        <input id="f-email" name="email" type="email" autoComplete="email" required maxLength={120} placeholder={T.emailPh} onKeyDown={type} />
+        {T.l3}{' '}
+        <label className="sr-only" htmlFor="f-topic">{T.about}</label>
+        <select id="f-topic" value={topic} onChange={(e) => { playClick(); setTopic(Number(e.target.value)) }}>
+          {T.topics.map((tp, i) => <option key={tp} value={i}>{tp.toLowerCase()}</option>)}
+        </select>.
+      </p>
+      <label className="sr-only" htmlFor="f-msg">{T.message}</label>
+      <textarea id="f-msg" name="message" rows={3} required minLength={10} maxLength={4000} placeholder={T.placeholders[topic]} onKeyDown={type} />
       <input type="checkbox" name="botcheck" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-      <div className="form-foot wide">
+      <div className="letter-foot">
         <button type="submit" className="btn" disabled={state === 'sending'}>
-          {state === 'sent' ? <Check size={16} aria-hidden="true" /> : <Send size={16} aria-hidden="true" />}
-          {state === 'sending' ? T.sending : state === 'sent' ? T.sent : T.send}
+          <Send size={16} aria-hidden="true" />{state === 'sending' ? T.sending : T.send}
         </button>
-        <p className={`form-msg ${state}`} role="status" aria-live="polite">
-          {state === 'sent' ? T.okLine : state === 'error' ? T.errLine(site.email) : ''}
-        </p>
+        <p className={`form-msg ${state}`} role="status" aria-live="polite">{state === 'error' ? T.errLine(site.email) : T.note}</p>
       </div>
     </form>
   )

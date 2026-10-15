@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-// A dogfight across the star chart: an X-wing with a TIE on its tail, flying through every ~14 s.
+// A dogfight in the distance: an X-wing with a TIE on its tail, small and unhurried, passing every ~26 s.
 // Loaded lazily with the galaxy (three.js never ships with the rest of the site).
 // Models: "T-65 X-Wing Starfighter" by Ti Kawamoto and "Tie Fighter 1 V1" by Joe Scalise,
 // both CC-BY 3.0 via Poly Pizza (credited on screen by the galaxy).
 
-const LAP = 14 // seconds per pass, ships on screen for about the first half
+const LAP = 26 // seconds per pass; they are on screen for under half of it
 // per-model turn so each nose leads the flight (both models already face +Z, which lookAt aims)
 const NOSE = { xwing: 0, tie: 0 }
 
@@ -45,11 +45,11 @@ export default function Ships3D({ active = true }) {
 
     const ships = {}
     const lasers = []
-    const laserGeo = new THREE.CylinderGeometry(0.025, 0.025, 1.1, 6).rotateX(Math.PI / 2)
+    const laserGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.5, 6).rotateX(Math.PI / 2)
     const laserMat = new THREE.MeshBasicMaterial({ color: 0x6dff7a })
     const loader = new GLTFLoader()
     let disposed = false
-    for (const [id, file, s] of [['xwing', '/models/x-wing.glb', 1.6], ['tie', '/models/tie-fighter.glb', 1.15]]) {
+    for (const [id, file, s] of [['xwing', '/models/x-wing.glb', 0.62], ['tie', '/models/tie-fighter.glb', 0.46]]) {
       loader.load(file, (g) => {
         if (disposed) return
         const model = fit(g.scene, s)
@@ -60,14 +60,15 @@ export default function Ships3D({ active = true }) {
     }
 
     // the flight path: a wide, slightly climbing S across the view, coming toward the camera
-    const pathAt = (k) => new THREE.Vector3(-11 + k * 22, -2.4 + Math.sin(k * Math.PI * 1.4) * 1.6 + k * 2.6, -3 + Math.sin(k * Math.PI) * 4)
+    // high across the upper third, far back, a long gentle curve
+  const pathAt = (k) => new THREE.Vector3(-12 + k * 24, 2.4 + Math.sin(k * Math.PI) * 0.9, -6 + Math.sin(k * Math.PI) * 1.5)
     const clock = new THREE.Clock()
     let raf, lastShot = 0
     const frame = () => {
       raf = requestAnimationFrame(frame)
       if (!on.current || document.hidden) return
-      const t = clock.getElapsedTime() % LAP, k = t / (LAP * 0.55)
-      for (const [id, lag] of [['xwing', 0], ['tie', 0.09]]) {
+      const t = clock.getElapsedTime() % LAP, k = t / (LAP * 0.42)
+      for (const [id, lag] of [['xwing', 0], ['tie', 0.06]]) {
         const ship = ships[id]; if (!ship) continue
         const kk = k - lag
         ship.visible = kk > 0 && kk < 1
@@ -75,16 +76,16 @@ export default function Ships3D({ active = true }) {
         const p = pathAt(kk), ahead = pathAt(kk + 0.01)
         ship.position.copy(p)
         ship.lookAt(ahead)
-        ship.rotateZ(Math.sin(kk * Math.PI * 2.8) * 0.5) // bank through the turns
+        ship.rotateZ(Math.sin(kk * Math.PI * 2) * 0.18) // a slight bank, not acrobatics
       }
       // the TIE fires short bursts while both are on screen
       const tie = ships.tie
-      if (tie?.visible && ships.xwing?.visible && t - lastShot > 0.35) {
+      if (tie?.visible && ships.xwing?.visible && t - lastShot > 0.9) {
         lastShot = t
         const bolt = new THREE.Mesh(laserGeo, laserMat)
         bolt.position.copy(tie.position); bolt.quaternion.copy(tie.quaternion)
-        bolt.userData.v = new THREE.Vector3(0, 0, 1).applyQuaternion(tie.quaternion).multiplyScalar(0.55)
-        bolt.userData.life = 40
+        bolt.userData.v = new THREE.Vector3(0, 0, 1).applyQuaternion(tie.quaternion).multiplyScalar(0.22)
+        bolt.userData.life = 50
         scene.add(bolt); lasers.push(bolt)
       }
       for (let i = lasers.length - 1; i >= 0; i--) {

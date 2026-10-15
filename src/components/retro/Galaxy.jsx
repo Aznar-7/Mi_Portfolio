@@ -102,11 +102,11 @@ function paintGalaxy(size) {
 
 export function Galaxy({ lang = 'es', onExit, leaving }) {
   const t = T[lang] ?? T.es
-  const { playClick, isMuted } = useSoundEffects()
+  const { playClick, playEgg, isMuted } = useSoundEffects()
   const [sel, setSel] = useState(null) // the system we are visiting
   const [warp, setWarp] = useState(null) // { x, y } while jumping toward a system
   const [music, setMusic] = useState(!isMuted)
-  const audioRef = useRef(null), travelRef = useRef(null)
+  const audioRef = useRef(null), travelRef = useRef(null), jumped = useRef(false)
   const rootRef = useRef(null), canvasRef = useRef(null), backRef = useRef(null), marks = useRef({})
   const sys = SYSTEMS.find((p) => p.id === sel)
   const proj = sys?.project && P[sys.project]
@@ -171,7 +171,10 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
   const travelTo = (id) => {
     const b = marks.current[id]?.getBoundingClientRect()
     setWarp(b && !sel ? { x: b.left + 8, y: b.top + 8 } : { x: innerWidth / 2, y: innerHeight / 2 })
-    jump({ from: 4.25, to: 5.9, onPeak: () => { setSel(id); setWarp(null) } })
+    // the full jump plays once; after that a short streak is enough and does not get in the way
+    if (!jumped.current) { jumped.current = true; jump({ from: 4.25, to: 5.9, onPeak: () => { setSel(id); setWarp(null) } }); return }
+    playEgg('warp')
+    setTimeout(() => { setSel(id); setWarp(null) }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 420)
   }
   useEffect(() => { travelRef.current = travelTo })
   const pick = (id) => travelTo(id)

@@ -61,11 +61,6 @@
 .layers button[aria-pressed="true"]{background:rgba(236,238,242,.1); color:var(--ink)}
 .sw{width:10px; height:10px; border-radius:2px} .sw.f{background:rgb(var(--fcu))} .sw.b{background:rgb(var(--bcu))}
 [data-on]{transition:opacity .5s var(--ease), filter .5s var(--ease)}
-/* filtering folds the other layer away instead of greying it */
-.work .net,.work .feature{transition:max-height .55s var(--ease), opacity .35s, margin .55s var(--ease)}
-.work .net{max-height:1400px}
-.work .feature{max-height:2400px}
-.work[data-layer="f"] [data-on="b"], .work[data-layer="b"] [data-on="f"]{max-height:0; opacity:0; margin:0; overflow:hidden; border-color:transparent; pointer-events:none}
 .led{display:inline-block; width:7px; height:7px; border-radius:1px; margin-right:9px; vertical-align:1px}
 .led.live{background:#78dc8c; animation:blink 2.4s steps(1) infinite} .led.done{background:rgb(var(--silk))}
 @keyframes blink{0%,92%{opacity:1} 93%,100%{opacity:.25}}
@@ -792,33 +787,11 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (prefers-reduced-motion: reduce){ .mate .termo,.mate .water,.mate .steam{animation:none} }
 @keyframes rise{from{opacity:0; transform:translateY(24px)}}
 
-/* ── Work v3: sticky feature media, counts, quick links, a cursor preview ── */
-.feature-media{position:sticky; top:92px}
-.shot-wrap{position:relative}
 .shot-ctrl{position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:rgba(14,16,20,.78); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(236,238,242,.12); opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s var(--ease)}
-.shot-wrap:hover .shot-ctrl,.shot-wrap:focus-within .shot-ctrl{opacity:1; transform:none}
 .shot-ctrl button{display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%; background:none; color:var(--ink); cursor:pointer; transition:background .2s}
 .shot-ctrl button:hover,.shot-ctrl button:focus-visible{background:rgba(236,238,242,.14); outline:none}
 .shot-ctrl span{min-width:44px; text-align:center; font:500 12px/1 var(--mono); color:var(--ink-2)}
-.feature-media .shot img{transition:opacity .18s, transform .8s var(--ease)}
-.shot-wrap:hover .shot img{transform:scale(1.015)}
 .layers .n{min-width:20px; padding:3px 6px; border-radius:999px; background:rgba(236,238,242,.08); font:500 11px/1 var(--mono); color:var(--ink-2); text-align:center}
-.layers button[aria-pressed="true"] .n{background:rgba(var(--silk),.2); color:rgb(var(--silk))}
-
-.net-quick{position:absolute; right:190px; top:0; height:118px; display:flex; align-items:center; gap:16px; margin:0; opacity:0; pointer-events:none; transform:translateX(8px); transition:opacity .25s, transform .3s var(--ease)}
-.net:hover .net-quick,.net:focus-within .net-quick{opacity:1; pointer-events:auto; transform:none}
-.net:hover .net-icons,.net:focus-within .net-icons{opacity:0}
-.net-icons{transition:opacity .2s}
-.net-quick a{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; background:#16181d; color:var(--ink); font:500 14px/1 var(--text); text-decoration:none; box-shadow:inset 0 0 0 1px rgba(236,238,242,.14); transition:background .2s, color .2s}
-.net-quick a:hover,.net-quick a:focus-visible{background:rgb(var(--silk)); color:#16181d; outline:none}
-.net-head[aria-expanded="true"] ~ .net-quick{display:none}
-
-.net-peek{position:fixed; z-index:40; left:0; top:0; width:260px; aspect-ratio:3/2; object-fit:cover; border-radius:12px; box-shadow:0 0 0 1px rgba(236,238,242,.16), 0 30px 60px -20px #000; pointer-events:none; opacity:0; scale:.85; transition:opacity .25s, scale .3s var(--ease)}
-.net-peek.on{opacity:1; scale:1}
-@media (hover:none),(max-width:900px){ .net-peek{display:none} .net-quick{position:static; height:auto; opacity:1; pointer-events:auto; transform:none; padding:0 0 16px} }
-.strip{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px}
-.strip img{flex:none; height:clamp(150px,16vw,210px); width:auto; border-radius:10px; scroll-snap-align:start; box-shadow:0 0 0 1px rgba(236,238,242,.1)}
-@media (prefers-reduced-motion: reduce){ .work .net,.work .feature,.net-peek,.net-quick,.shot-ctrl{transition:none} }
 
 /* ── Contact v4: availability, topics, a live count and a real "sent" moment ── */
 .avail{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px; padding:0; list-style:none}
@@ -859,3 +832,117 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @keyframes intro-pad{50%{opacity:1; filter:drop-shadow(0 0 10px rgb(212,87,78))} to{opacity:1}}
 @keyframes intro-fade{to{opacity:0}}
 .o66-figure .fold{fill:none; stroke:rgba(191,228,255,.45); stroke-width:1}
+
+/* ── Work v4: the net list and the inspector ── */
+.bench{display:grid; grid-template-columns:minmax(260px,.8fr) minmax(0,2fr); gap:clamp(24px,3vw,44px); align-items:start}
+.netlist{list-style:none; margin:0; padding:0; position:sticky; top:88px; display:grid; gap:4px}
+.netlist button{all:unset; box-sizing:border-box; position:relative; width:100%; display:grid; grid-template-columns:64px minmax(0,1fr) 8px; gap:14px; align-items:center; padding:10px 12px; border-radius:12px; cursor:pointer; transition:background .2s, box-shadow .2s}
+.netlist button:hover{background:rgba(236,238,242,.04)}
+.netlist button.on{background:#14161b; box-shadow:inset 0 0 0 1px rgba(var(--silk),.4)}
+.netlist button:focus-visible{outline:2px solid rgb(var(--silk)); outline-offset:2px}
+/* the selected net is routed to the inspector */
+.netlist button.on::after{content:""; position:absolute; left:100%; top:50%; width:clamp(24px,3vw,44px); height:2px; background:rgb(var(--fcu)); transform-origin:left; animation:route-in .3s var(--ease)}
+.netlist button.on::before{content:""; position:absolute; left:calc(100% + clamp(24px,3vw,44px) - 4px); top:calc(50% - 4px); width:8px; height:8px; border-radius:50%; background:rgb(var(--pad))}
+@keyframes route-in{from{transform:scaleX(0)}}
+.nl-thumb{width:64px; aspect-ratio:3/2; border-radius:6px; overflow:hidden; background:#16181d; display:grid; place-items:center; color:var(--ink-2); box-shadow:0 0 0 1px rgba(236,238,242,.08)}
+.nl-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+.nl-main{min-width:0}
+.nl-title{display:block; font:600 18px/1.2 var(--display); letter-spacing:-.01em; color:var(--ink)}
+.nl-line{display:block; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13.5px; line-height:1.35; color:var(--ink-2)}
+.nl-led{width:8px; height:8px; border-radius:50%; background:rgb(var(--silk))}
+.nl-led.live,.nl-led.prod{background:#78dc8c; box-shadow:0 0 8px rgba(120,220,140,.7)}
+.inspector{border-radius:18px; overflow:hidden; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08); animation:ins-in .35s var(--ease)}
+.inspector.b{box-shadow:inset 0 0 0 1px rgba(var(--bcu),.35)}
+@keyframes ins-in{from{opacity:0; transform:translateY(8px)}}
+.ins-media{position:relative; aspect-ratio:16/9; max-height:58vh; width:100%; background:#0e1014}
+.ins-media img{display:block; width:100%; height:100%; object-fit:cover; animation:fadein .3s ease}
+.ins-media .shot-ctrl{opacity:1; transform:none}
+.ins-body{padding:clamp(20px,2.4vw,32px)}
+.ins-head{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px}
+.ins-head h3{margin:0; font:600 clamp(28px,3vw,42px)/1.05 var(--display); letter-spacing:-.02em}
+.inspector .desc{margin:14px 0 18px; max-width:68ch; color:var(--ink-2); font-size:17px; line-height:1.6}
+.inspector .links{margin-top:18px}
+@media (max-width:900px){
+  .bench{grid-template-columns:1fr}
+  .netlist{position:static; display:flex; overflow-x:auto; gap:8px; padding-bottom:6px; scroll-snap-type:x mandatory}
+  .netlist li{flex:none; width:min(260px,78vw); scroll-snap-align:start}
+  .netlist button.on::after,.netlist button.on::before{display:none}
+}
+@media (prefers-reduced-motion: reduce){ .inspector,.ins-media img,.netlist button.on::after{animation:none} }
+
+/* ── Path v4: each role in two columns, so the timeline uses its width ── */
+.tl{grid-template-columns:minmax(120px,.38fr) minmax(0,3fr)}
+.tl-item{display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr); column-gap:clamp(28px,4vw,64px); align-items:start}
+.tl-item > .tl-when,.tl-item > .tl-head,.tl-item > .tl-stats{grid-column:1}
+.tl-item > ul:not(.tl-chips){grid-column:2; grid-row:1 / span 3; margin-top:0; max-width:none}
+.tl-item > .tl-chips{grid-column:2; grid-row:4}
+.tl-item .tl-stats{grid-template-columns:1fr; gap:8px; max-width:none; margin:20px 0 0}
+.tl-item .tl-stats div{display:flex; align-items:baseline; gap:12px; padding:12px 14px}
+.tl-item .tl-stats dt{font-size:clamp(24px,2.2vw,32px); flex:none}
+.tl-item .tl-stats dd{margin:0}
+@media (max-width:1100px){ .tl-item{grid-template-columns:1fr} .tl-item > *{grid-column:1 !important; grid-row:auto !important} .tl-item > ul:not(.tl-chips){margin-top:20px} }
+
+/* ── Contact v5: the form is a letter with blanks ── */
+.contact-right{padding:0; border-radius:0; background:none; box-shadow:none}
+.contact-split{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+.letter{display:grid; gap:18px}
+.letter-line{margin:0; font:500 clamp(22px,2.1vw,30px)/1.65 var(--display); letter-spacing:-.01em; color:var(--ink-2)}
+.letter input,.letter select{field-sizing:content; min-width:7ch; max-width:100%; margin:0 .15em; padding:0 .1em 2px; border:0; border-bottom:2px solid rgba(var(--silk),.45); border-radius:0; background:none; color:var(--ink); font:inherit; line-height:1.3; outline:none; transition:border-color .2s, background .2s}
+.letter input::placeholder{color:rgba(236,238,242,.28)}
+.letter input:focus,.letter select:focus{border-bottom-color:rgb(var(--silk)); background:rgba(var(--silk),.06)}
+.letter input:user-invalid{border-bottom-color:rgb(var(--fcu))}
+.letter select{appearance:none; cursor:pointer; padding-right:.3em; color:rgb(var(--silk))}
+.letter select option{background:#16181d; color:var(--ink); font-size:16px}
+.letter textarea{field-sizing:content; min-height:5.4em; width:100%; box-sizing:border-box; padding:14px 0 14px 18px; border:0; border-left:2px solid rgba(var(--silk),.45); background:none; color:var(--ink); font:400 18px/1.6 var(--text); resize:none; outline:none; transition:border-color .2s}
+.letter textarea::placeholder{color:rgba(236,238,242,.3)}
+.letter textarea:focus{border-left-color:rgb(var(--silk))}
+.letter-foot{display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px}
+.letter-foot .form-msg{margin:0; font-size:14px; color:var(--ink-3)}
+.letter-foot .form-msg.error{color:rgb(var(--fcu))}
+.letter-sent{display:grid; justify-items:start; gap:10px; padding:12px 0}
+.letter-sent .sent-title{margin:0; font:600 26px/1.2 var(--display); color:var(--ink)}
+.letter-sent p{margin:0; color:var(--ink-2)}
+.letter-sent .btn{margin-top:10px}
+
+/* ── Chip v3: a floating assistant in the corner ── */
+.chip-pet{position:fixed; z-index:60; right:clamp(12px,2vw,28px); bottom:clamp(12px,2vw,28px); width:clamp(64px,5.4vw,84px); margin:0; opacity:0; transform:translateY(24px) scale(.8); pointer-events:none; transition:opacity .35s var(--ease), transform .45s cubic-bezier(.2,.9,.3,1.3)}
+.chip-pet.shown{opacity:1; transform:none; pointer-events:auto}
+.chip-say{width:min(340px, calc(100vw - 32px)); max-width:none}
+.chip-label{margin:12px 0 0 !important; font:500 12px/1 var(--mono); color:rgba(22,24,29,.6)}
+.chip-menu .strong{background:#16181d; color:#f0dfb4}
+.chip-step{align-self:center; margin-right:4px; font:500 12px/1 var(--mono); color:rgba(22,24,29,.6)}
+.chip-foot{display:flex; align-items:center; justify-content:space-between; margin:12px 0 0 !important; padding-top:10px; border-top:1px solid rgba(22,24,29,.15); font:500 12px/1 var(--mono); color:rgba(22,24,29,.7)}
+.chip-foot .x{padding:4px 10px; border:0; border-radius:999px; background:rgba(22,24,29,.1); color:#16181d; font:500 16px/1 var(--text); cursor:pointer}
+.chip-foot .x:hover{background:#16181d; color:#f0dfb4}
+@media (prefers-reduced-motion: reduce){ .chip-pet{transition:none} }
+
+/* ── 88 mph v3: flux capacitor, arcs, fire trails and the plate ── */
+.flux{position:absolute; top:clamp(40px,10vh,110px); width:clamp(120px,14vw,180px); height:auto; overflow:visible; transition:opacity .3s, transform .4s var(--ease)}
+.flux.gone{opacity:0; transform:scale(1.4)}
+.flux-box{fill:#15171c; stroke:#3a3d45; stroke-width:3}
+.flux-tube{stroke:#2a2c33; stroke-width:16; stroke-linecap:round}
+.flux-glow{fill:none; stroke:#fff6c9; stroke-width:5; stroke-linecap:round; stroke-dasharray:.16 .2; filter:drop-shadow(0 0 6px #ffd76a); animation:flux var(--flux) linear infinite}
+@keyframes flux{to{stroke-dashoffset:-.36}}
+.flux-core{fill:#fff6c9; filter:drop-shadow(0 0 12px #ffd76a)}
+.arcs{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+.arcs path{fill:none; stroke:#bfe6ff; stroke-width:.5; vector-effect:non-scaling-stroke; filter:drop-shadow(0 0 4px #7cc6ff); animation:arc .12s steps(2) infinite}
+.arcs path:nth-child(2){animation-delay:.05s} .arcs path:nth-child(3){animation-delay:.09s}
+.arcs path{stroke-width:2px}
+@keyframes arc{50%{opacity:.15; transform:translate(.6px,-.6px)}}
+.egg-mph .flame{height:9px; filter:drop-shadow(0 0 10px #ff6a00); animation-duration:1.4s}
+.egg-mph .plate{position:absolute; left:-20vw; bottom:16vh; padding:8px 14px; border-radius:6px; background:#f4f1e6; color:#1c3f8f; font:700 clamp(18px,2vw,26px)/1 var(--mono); letter-spacing:.14em; box-shadow:inset 0 0 0 3px #1c3f8f, 0 10px 30px rgba(0,0,0,.5); animation:plate 2.2s .2s cubic-bezier(.3,.1,.3,1) forwards}
+@keyframes plate{0%{transform:translateX(0) rotate(0)} 100%{transform:translateX(130vw) rotate(1080deg)}}
+@media (prefers-reduced-motion: reduce){ .flux-glow,.arcs path,.egg-mph .plate{animation:none} }
+
+/* ── Mate v3: a round you can keep going ── */
+.egg-mate .mate{pointer-events:auto; grid-template-columns:auto minmax(0,300px)}
+.mate .band{fill:#4a2f1c; stroke:#e8e2b0; stroke-width:1.2}
+.mate .foam{fill:#d8e6b0; opacity:0; animation:fadein-to .4s ease forwards}
+.mate .bombilla{stroke:#d8dce4}
+.mate .bombilla-tip{fill:none; stroke:#d9b45a; stroke-width:5; stroke-linecap:round}
+.mate-copy{display:grid; gap:8px}
+.mate-copy p{margin:0}
+.mate-title{font:600 20px/1.2 var(--display); color:var(--ink)}
+.mate-copy p:not(.mate-title){font-size:15px; line-height:1.5; color:var(--ink-2)}
+.mate-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.mate-actions .btn{padding:11px 16px; font-size:14px}

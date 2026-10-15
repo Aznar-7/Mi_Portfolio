@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 // Lists that arrive as lists: one batch per scroll position, capped stagger
-const CASCADE = ['.net', '.bin', '.pin', '.facts > div', '.chips li', '.mail-form .field', '.form-foot', '.ev-list li']
+const CASCADE = ['.bin', '.facts > div', '.ev-list li']
 // Media that is uncovered rather than faded
 const UNCOVER = ['.feature-media .shot', '.portrait', '.activity']
 

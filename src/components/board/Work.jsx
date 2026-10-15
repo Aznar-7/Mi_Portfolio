@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -86,95 +86,40 @@ function Flow({ project, lang, label }) {
   )
 }
 
-function Feature({ project, lang, T }) {
-  const { playSelect } = useSoundEffects()
-  const shots = [...new Set([project.image, ...project.gallery].filter(Boolean))]
-  const [shot, setShot] = useState(0)
-  const [fade, setFade] = useState(false)
-  const show = (i) => { playSelect(); setFade(true); setTimeout(() => { setShot((i + shots.length) % shots.length); setFade(false) }, 180) }
-  const onKey = (e) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); show(shot + 1) }
-    if (e.key === 'ArrowLeft') { e.preventDefault(); show(shot - 1) }
-  }
-  return (
-    <article className="feature" id={`p-${project.id}`} data-on={layerOf(project)}>
-      <div className="feature-media" onKeyDown={onKey}>
-        <div className="shot-wrap">
-          <a className="shot" href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-            <img src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} style={{ opacity: fade ? 0 : 1 }} loading="lazy" />
-          </a>
-          <div className="shot-ctrl">
-            <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>
-            <span aria-live="polite">{shot + 1} / {shots.length}</span>
-            <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>
-          </div>
-        </div>
-        <div className="thumbs" role="group" aria-label={T.screens}>
-          {shots.map((src, i) => (
-            <button key={src} aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}>
-              <img src={src} alt="" loading="lazy" />
-            </button>
-          ))}
-        </div>
-      </div>
-      <div>
-        <h3>{project.title}<span className="inline-state"><i className="led live" />{T.status.prod}</span></h3>
-        <p className="desc">{l(project.summary, lang)}</p>
-        <Stack tech={project.tech} />
-        <Links links={linksOf(project, T)} />
-        <Flow project={project} lang={lang} label={T.flow} />
-      </div>
-    </article>
-  )
-}
-
+// Every project in one list you can read at a glance; the inspector beside it shows the selected
+// one in full. Arrow keys walk the list, the filter narrows it, links are always visible.
 export function Work() {
   const { lang } = useLang()
-  const { playHover, playClick, playToggle } = useSoundEffects()
+  const { playToggle, playSelect } = useSoundEffects()
   const T = copy[lang].work
   const [layer, setLayer] = useState('all')
-  const [open, setOpen] = useState(() => new Set())
-  const spine = useRef(null), dot = useRef(null)
-  const featured = projects.find((p) => p.featured)
-  const rest = projects.filter((p) => !p.featured)
+  const [selId, setSelId] = useState(projects.find((p) => p.featured)?.id ?? projects[0].id)
+  const list = projects.filter((p) => layer === 'all' || layerOf(p) === layer)
+  const sel = list.find((p) => p.id === selId) ?? list[0]
   const count = { all: projects.length, f: projects.filter((p) => layerOf(p) === 'f').length, b: projects.filter((p) => layerOf(p) === 'b').length }
-  // a small preview of the project follows the cursor over its row (mouse only)
-  const preview = useRef(null)
-  const [peek, setPeek] = useState(null)
-  const movePeek = (e) => { preview.current?.style.setProperty('transform', `translate(${e.clientX + 24}px, ${e.clientY - 70}px) rotate(${Math.max(-6, Math.min(6, e.movementX * 0.6))}deg)`) }
+  const listRef = useRef(null)
 
-  // a pulse rides the spine with the scroll and lights each branch it reaches
-  useEffect(() => {
-    let queued = false
-    const tick = () => {
-      queued = false
-      const s = spine.current, r = s.getBoundingClientRect(), y = Math.max(0, Math.min(r.height - 70, innerHeight * .55 - r.top))
-      dot.current.style.setProperty('--y', y + 'px')
-      for (const el of s.querySelectorAll(':scope > .feature, .net')) {
-        const top = el.getBoundingClientRect().top - r.top + (el.classList.contains('net') ? 48 : 24)
-        el.classList.toggle('lit', y + 28 >= top)
-      }
-    }
-    const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(tick) } }
-    addEventListener('scroll', onScroll, { passive: true })
-    tick()
-    return () => removeEventListener('scroll', onScroll)
-  }, [])
+  const choose = (id) => { if (id !== sel.id) { playSelect(); setSelId(id) } }
+  const onKey = (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+    e.preventDefault()
+    const i = list.findIndex((p) => p.id === sel.id), next = list[(i + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length]
+    choose(next.id)
+    listRef.current?.querySelector(`[data-id="${next.id}"]`)?.focus()
+  }
 
-  // other parts of the page (the Middle-earth map) can open a project row and bring it into view
+  // other parts of the page (the Middle-earth map, the galaxy) can select a project and bring it into view
   useEffect(() => {
     const go = (e) => {
-      const id = e.detail
-      if (id !== featured.id) setOpen((o) => new Set(o).add(id))
-      requestAnimationFrame(() => travel(document.getElementById(`p-${id}`), 120))
+      setLayer('all'); setSelId(e.detail)
+      requestAnimationFrame(() => travel(document.getElementById('trabajo'), 70))
     }
     document.addEventListener('board:open-project', go)
     return () => document.removeEventListener('board:open-project', go)
-  }, [featured.id])
-  const toggle = (id) => { playClick(); setOpen((o) => { const n = new Set(o); n.has(id) ? n.delete(id) : n.add(id); return n }) }
+  }, [])
 
   return (
-    <section className="work" id="trabajo" data-layer={layer}>
+    <section className="work" id="trabajo">
       <svg className="bus" data-bus aria-hidden="true" />
       <PowerTitle text={T.title} />
       <div className="work-intro">
@@ -188,56 +133,66 @@ export function Work() {
         </div>
       </div>
 
-      <div className="spine" ref={spine}>
-        <span className="spine-dot" ref={dot} aria-hidden="true" />
-        <Feature project={featured} lang={lang} T={T} />
-        <ol className="nets">
-          {rest.map((p) => {
-            const st = statusOf(p), isOpen = open.has(p.id), links = linksOf(p, T)
+      <div className="bench">
+        <ol className="netlist" ref={listRef} onKeyDown={onKey} aria-label={T.title}>
+          {list.map((p) => {
+            const st = statusOf(p)
             return (
-              <li key={p.id} id={`p-${p.id}`} className="net" data-on={layerOf(p)} onPointerEnter={(e) => { playHover(); if (p.image && e.pointerType === 'mouse' && !isOpen) setPeek(p.image) }}
-                onPointerMove={movePeek} onPointerLeave={() => setPeek(null)} aria-hidden={layer !== 'all' && layerOf(p) !== layer ? 'true' : undefined}>
-                <button className="net-head" aria-expanded={isOpen} onClick={() => { setPeek(null); toggle(p.id) }}>
-                  <span className="net-thumb">
-                    {p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech.find((t) => t === 'ESP32') ?? p.tech[0]} size={26} />}
+              <li key={p.id}>
+                <button type="button" data-id={p.id} id={`p-${p.id}`} className={p.id === sel.id ? 'on' : ''} aria-current={p.id === sel.id ? 'true' : undefined}
+                  onClick={() => choose(p.id)} tabIndex={p.id === sel.id ? 0 : -1}>
+                  <span className="nl-thumb">{p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech[0]} size={20} />}</span>
+                  <span className="nl-main">
+                    <span className="nl-title">{p.title}</span>
+                    <span className="nl-line">{l(p.tagline, lang)}</span>
                   </span>
-                  <span className="net-main">
-                    <span className="net-title">{p.title}</span>
-                    <span className="net-line">{l(p.tagline, lang)}</span>
-                  </span>
-                  <span className="net-icons" aria-hidden="true">{p.tech.slice(0, 5).map((t) => <ToolIcon key={t} name={t} size={16} />)}</span>
-                  <span className="net-state"><i className={`led ${st === 'live' ? 'live' : 'done'}`} />{T.status[st]}</span>
-                  <ChevronDown size={18} aria-hidden="true" className="chev" />
+                  <span className={`nl-led ${st}`} title={T.status[st]} />
                 </button>
-                {links.length > 0 && (
-                  <p className="net-quick">
-                    {links.map((k) => (
-                      <a key={k.url} href={k.url} target="_blank" rel="noopener noreferrer" aria-label={`${k.label}: ${p.title}`} onClick={playClick}>
-                        {k.live ? <ArrowUpRight size={15} aria-hidden="true" /> : <GitHubIcon size={14} />}{k.label}
-                      </a>
-                    ))}
-                  </p>
-                )}
-                <div className="net-body"><div>
-                  <p>{l(p.summary, lang)}</p>
-                  <Stack tech={p.tech} />
-                  {p.gallery.length > 0 ? (
-                    <div className="strip">
-                      {p.gallery.slice(0, 5).map((src, i) => <img key={src} src={src} alt={`${p.title}, ${i + 1}`} loading="lazy" />)}
-                    </div>
-                  ) : p.architecture && (
-                    <dl className="stack">
-                      {p.architecture.map((a) => <div key={l(a.layer, lang)}><dt>{l(a.layer, lang)}</dt><dd>{l(a.detail, lang)}</dd></div>)}
-                    </dl>
-                  )}
-                  {links.length > 0 && <Links links={links} />}
-                </div></div>
               </li>
             )
           })}
         </ol>
-        <img ref={preview} className={`net-peek${peek ? ' on' : ''}`} src={peek ?? undefined} alt="" aria-hidden="true" />
+        <Inspector key={sel.id} project={sel} lang={lang} T={T} />
       </div>
     </section>
+  )
+}
+
+function Inspector({ project, lang, T }) {
+  const { playSelect } = useSoundEffects()
+  const shots = [...new Set([project.image, ...(project.gallery ?? [])].filter(Boolean))]
+  const [shot, setShot] = useState(0)
+  const st = statusOf(project), links = linksOf(project, T)
+  const show = (i) => { playSelect(); setShot((i + shots.length) % shots.length) }
+  return (
+    <article className={`inspector ${layerOf(project)}`} aria-live="polite">
+      {shots.length > 0 && (
+        <div className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') show(shot + 1); if (e.key === 'ArrowLeft') show(shot - 1) }}>
+          <img key={shots[shot]} src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} />
+          {shots.length > 1 && (
+            <div className="shot-ctrl">
+              <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>
+              <span>{shot + 1} / {shots.length}</span>
+              <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>
+            </div>
+          )}
+        </div>
+      )}
+      <div className="ins-body">
+        <div className="ins-head">
+          <h3>{project.title}</h3>
+          <span className="inline-state"><i className={`led ${st === 'done' || st === 'dev' ? 'done' : 'live'}`} />{T.status[st]}</span>
+        </div>
+        <p className="desc">{l(project.summary, lang)}</p>
+        <Stack tech={project.tech} />
+        {links.length > 0 && <Links links={links} />}
+        {project.flow && <Flow project={project} lang={lang} label={T.flow} />}
+        {!project.flow && project.architecture && (
+          <dl className="stack">
+            {project.architecture.map((a) => <div key={l(a.layer, lang)}><dt>{l(a.layer, lang)}</dt><dd>{l(a.detail, lang)}</dd></div>)}
+          </dl>
+        )}
+      </div>
+    </article>
   )
 }
