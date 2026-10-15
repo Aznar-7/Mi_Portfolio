@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -97,7 +97,25 @@ export function Work() {
   const list = projects.filter((p) => layer === 'all' || layerOf(p) === layer)
   const sel = list.find((p) => p.id === selId) ?? list[0]
   const count = { all: projects.length, f: projects.filter((p) => layerOf(p) === 'f').length, b: projects.filter((p) => layerOf(p) === 'b').length }
-  const listRef = useRef(null)
+  const listRef = useRef(null), benchRef = useRef(null), inspRef = useRef(null)
+  const [hover, setHover] = useState(null)
+  // the wiring between the list and the datasheet: one trace per row, measured from the layout
+  const [wires, setWires] = useState({ x1: 0, x2: 0, rows: [] })
+  useLayoutEffect(() => {
+    const measure = () => {
+      const b = benchRef.current?.getBoundingClientRect(), ins = inspRef.current?.getBoundingClientRect()
+      if (!b || !ins) return
+      const rows = [...listRef.current.querySelectorAll('button[data-id]')].map((el) => {
+        const r = el.getBoundingClientRect()
+        return { id: el.dataset.id, y: r.top - b.top + r.height / 2, x: r.right - b.left }
+      })
+      setWires({ x1: Math.max(...rows.map((w) => w.x), 0), x2: ins.left - b.left, rows })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(benchRef.current)
+    return () => ro.disconnect()
+  }, [layer, sel.id, lang])
 
   const choose = (id) => { if (id !== sel.id) { playSelect(); setSelId(id) } }
   const onKey = (e) => {
@@ -133,14 +151,16 @@ export function Work() {
         </div>
       </div>
 
-      <div className="bench">
+      <div className="bench" ref={benchRef}>
         <ol className="netlist" ref={listRef} onKeyDown={onKey} aria-label={T.title}>
           {list.map((p) => {
-            const st = statusOf(p)
+            const st = statusOf(p), ref = `U${projects.indexOf(p) + 1}`
             return (
               <li key={p.id}>
                 <button type="button" data-id={p.id} id={`p-${p.id}`} className={p.id === sel.id ? 'on' : ''} aria-current={p.id === sel.id ? 'true' : undefined}
-                  onClick={() => choose(p.id)} tabIndex={p.id === sel.id ? 0 : -1}>
+                  onClick={() => choose(p.id)} tabIndex={p.id === sel.id ? 0 : -1}
+                  onPointerEnter={() => setHover(p.id)} onPointerLeave={() => setHover(null)}>
+                  <span className="nl-ref" aria-hidden="true">{ref}</span>
                   <span className="nl-thumb">{p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech[0]} size={20} />}</span>
                   <span className="nl-main">
                     <span className="nl-title">{p.title}</span>
@@ -152,13 +172,29 @@ export function Work() {
             )
           })}
         </ol>
-        <Inspector key={sel.id} project={sel} lang={lang} T={T} />
+        {/* each row is wired to a pin on the datasheet; the selected net carries signal */}
+        <svg className="bench-wires" aria-hidden="true">
+          {wires.rows.map((w) => {
+            const on = w.id === sel.id, near = w.id === hover && !on
+            const mid = wires.x1 + (wires.x2 - wires.x1) * 0.5
+            return (
+              <g key={w.id} className={on ? 'on' : near ? 'near' : ''}>
+                <path d={`M${w.x} ${w.y} H${wires.x2}`} className="wire" />
+                {on && <path d={`M${w.x} ${w.y} H${wires.x2}`} className="signal" />}
+                <circle cx={w.x + 1} cy={w.y} r="3.5" className="pad" />
+                <rect x={wires.x2 - 4} y={w.y - 5} width="8" height="10" rx="1.5" className="pin" />
+                {on && <circle cx={mid} cy={w.y} r="2" className="via" />}
+              </g>
+            )
+          })}
+        </svg>
+        <div className="ins-slot" ref={inspRef}><Inspector key={sel.id} project={sel} lang={lang} T={T} refDes={`U${projects.indexOf(sel) + 1}`} /></div>
       </div>
     </section>
   )
 }
 
-function Inspector({ project, lang, T }) {
+function Inspector({ project, lang, T, refDes }) {
   const { playSelect } = useSoundEffects()
   const shots = [...new Set([project.image, ...(project.gallery ?? [])].filter(Boolean))]
   const [shot, setShot] = useState(0)
@@ -167,8 +203,11 @@ function Inspector({ project, lang, T }) {
   // a datasheet: name, state and links on top; what it is and its stack beside a moderate image
   return (
     <article className={`inspector ${layerOf(project)}`} aria-live="polite">
+      <span className="ins-corner tl" aria-hidden="true" /><span className="ins-corner tr" aria-hidden="true" />
+      <span className="ins-corner bl" aria-hidden="true" /><span className="ins-corner br" aria-hidden="true" />
       <header className="ins-head">
         <div>
+          <p className="ins-ref" aria-hidden="true">{refDes}</p>
           <h3>{project.title}</h3>
           <p className="ins-tag">{l(project.tagline, lang)}</p>
         </div>

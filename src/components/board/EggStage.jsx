@@ -12,7 +12,8 @@ import { useSoundEffects } from '@/contexts/SoundContext'
 const NEXT = { mellon: 'open-middle-earth', mph: 'open-retro' }
 const HOLD = { mellon: 4200, order66: 9200, mph: 6800, placa: 2200, hire: 2600, mate: 45000 }
 // scenes with a soundtrack (the visitor's sound setting still applies)
-const MUSIC = { order66: '/audio/imperial-march.mp3' }
+// mph uses a recorded time-travel effect: its boom sits at 10.6 s, so starting at 7.8 s lands it on 88
+const MUSIC = { order66: { src: '/audio/imperial-march.mp3', vol: 0.55 }, mph: { src: '/audio/bttf-travel.mp3', from: 7.8, vol: 0.75 } }
 
 const pad = (n) => String(n).padStart(2, '0')
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -196,7 +197,7 @@ function MateScene({ T, onClose }) {
           <path d="M128 30 h-10 v8 h10" className="termo-spout" />
           <rect x="136" y="40" width="4" height="50" rx="2" className="termo-shine" />
         </g>
-        <path d="M118 36 C108 60 96 84 92 108" className="water" />
+        <path d="M74 70 C78 84 88 98 92 110" className="water" />
         <path d="M54 116 C36 152 52 192 92 192 C132 192 148 152 130 116 Z" className="gourd" />
         <path d="M44 156 C60 164 124 164 140 156 L136 170 C120 178 64 178 48 170 Z" className="band" />
         <ellipse cx="92" cy="114" rx="40" ry="9" className="virola" />
@@ -233,14 +234,14 @@ export function EggStage() {
     const go = (id) => NEXT[id] && document.dispatchEvent(new CustomEvent(NEXT[id]))
     const on = (e) => {
       const id = e.detail.id
-      sound.current(id)
+      if (!MUSIC[id]?.from) sound.current(id) // a recorded effect replaces the synth cue
       if (reduced) return go(id)
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
       const site = document.querySelector('.site')
       if (id === 'order66') { site?.classList.add('sith'); setTimeout(() => site?.classList.remove('sith'), HOLD.order66 + 4000) }
       if (MUSIC[id] && !muted.current) {
-        const a = new Audio(MUSIC[id]); a.volume = 0.55; a.play().catch(() => {})
+        const m = MUSIC[id], a = new Audio(m.src); a.volume = m.vol; if (m.from) a.currentTime = m.from; a.play().catch(() => {})
         // fade out over the last second of the scene
         setTimeout(() => { const f = setInterval(() => { a.volume = Math.max(0, a.volume - 0.05); if (a.volume === 0) { clearInterval(f); a.pause() } }, 80) }, HOLD[id] - 900)
       }

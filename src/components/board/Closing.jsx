@@ -43,11 +43,19 @@ export function Contact() {
   return (
     <section className="contact" id="contacto">
       <PowerTitle text={T.title} />
-      <div className="contact-split">
-        <div className="contact-left">
-          <p className="big">{T.big}</p>
+      {/* the headline and availability across the top; below, the letter leads and the other ways sit beside it */}
+      <div className="contact-top">
+        <p className="big">{T.big}</p>
+        <div>
           <p className="sec-intro">{T.intro}</p>
           <Availability T={T} lang={lang} />
+        </div>
+      </div>
+      <div className="contact-split">
+        <div className="contact-right">
+          <ContactForm />
+        </div>
+        <div className="contact-left">
           <div className="mail-line">
             <Mail size={20} aria-hidden="true" />
             <a className="mail-big" href={`mailto:${site.email}`}>{site.email}</a>
@@ -68,9 +76,6 @@ export function Contact() {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="contact-right">
-          <ContactForm />
         </div>
       </div>
     </section>
@@ -130,6 +135,16 @@ export function Console() {
           <button type="button" onClick={() => { playClick(); findSecret('mph') }}><History size={15} aria-hidden="true" />{T.past}</button>
         </p>
         </div>
+        {/* a quiet cheat sheet: click a command and it is typed into the prompt */}
+        <aside className="term-help" aria-label={T.cheat}>
+          <p>{T.cheat}</p>
+          <ul>
+            {['help', 'ls', 'ssh vicente', 'cat .secretos'].map((c) => (
+              <li key={c}><button type="button" onClick={() => { playTyping(); input.current.value = c; input.current.focus() }}><code>{c}</code><span>{T.cheatWhat[c]}</span></button></li>
+            ))}
+          </ul>
+          <p className="more">{T.cheatMore}</p>
+        </aside>
         </div>
       </div>
     </section>

@@ -126,7 +126,8 @@ export function Mascot() {
         const id = e.target.id
         if (!e.isIntersecting || seen.current.has(id)) continue
         seen.current.add(id)
-        if (!quiet && !busy.current && t.tips[id]) speak(t.tips[id], 'idle', 4200)
+        // on phones a tip would sit on top of what you are reading; the menu still has everything
+        if (!quiet && !busy.current && innerWidth > 700 && t.tips[id]) speak(t.tips[id], 'idle', 4200)
       }
     }, { threshold: 0.35 })
     for (const id of Object.keys(C.es.tips)) { const el = document.getElementById(id); if (el) ioSec.observe(el) }
