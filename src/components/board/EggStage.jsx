@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Segments } from './Segments'
+
+// three.js and the car only load when someone actually hits 88 mph
+const DeLorean3D = lazy(() => import('./DeLorean3D'))
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -101,18 +104,18 @@ function Row({ label, d, kind, flip }) {
 function MphScene({ T, now, dest }) {
   const [mph, setMph] = useState(0)
   const [jumped, setJumped] = useState(false)
+  const [start] = useState(() => performance.now())
   const raf = useRef(0)
   useEffect(() => {
-    const t0 = performance.now()
     const tick = (t) => {
-      const k = Math.min(1, (t - t0) / 2600)
+      const k = Math.min(1, (t - start) / 2600)
       setMph(Math.round(88 * (1 - (1 - k) ** 2.2)))
       if (k < 1) raf.current = requestAnimationFrame(tick)
       else setTimeout(() => setJumped(true), 120)
     }
     raf.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf.current)
-  }, [])
+  }, [start])
   const present = stamp(now)
   const charge = mph / 88 // the flux capacitor and the arcs build with the speed
   return (
@@ -129,6 +132,8 @@ function MphScene({ T, now, dest }) {
           <path d="M2 30 L8 34 L5 40 L11 46 L7 52" /><path d="M98 62 L92 66 L95 72 L89 77 L93 84" /><path d="M30 98 L34 92 L40 95 L45 89 L52 93" />
         </svg>
       )}
+      <Suspense fallback={null}><DeLorean3D start={start} /></Suspense>
+      <p className="egg-credit">DeLorean 3D: <a href="https://poly.pizza/m/1uZKezeldGG" target="_blank" rel="noopener noreferrer">DeLorean DMC-12</a> · David Sirera, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>, vía Poly Pizza</p>
       <div className={`speedo${jumped ? ' gone' : ''}`}>
         <Segments text={String(mph).padStart(2, '0')} />
         <b>MPH</b>
