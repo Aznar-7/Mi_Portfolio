@@ -1,10 +1,10 @@
 import { findSecret } from '@/lib/secrets'
+import { jump } from '@/lib/hyperspace'
 import { site } from '@/data/site'
 
 // Page-wide secrets that don't belong to one section: Konami, the devtools note and the mate.
 // The others live where they happen (board chips, console commands). Returns a cleanup.
 export function installEggs() {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const offs = []
   const on = (target, ev, fn, opts) => { target.addEventListener(ev, fn, opts); offs.push(() => target.removeEventListener(ev, fn, opts)) }
 
@@ -20,23 +20,8 @@ export function installEggs() {
   })
   function hyperspace() {
     findSecret('hyperspace')
-    if (reduced) return land()
-    const c = Object.assign(document.createElement('canvas'), { className: 'hyper', width: innerWidth, height: innerHeight })
-    document.body.append(c)
-    const x = c.getContext('2d'), t0 = performance.now()
-    const stars = Array.from({ length: 260 }, () => ({ a: Math.random() * Math.PI * 2, r: Math.random() * 40, v: 1 + Math.random() * 3 }))
-    ;(function frame(now) {
-      const p = (now - t0) / 1200, cx = c.width / 2, cy = c.height / 2
-      x.fillStyle = 'rgba(0,0,0,.35)'; x.fillRect(0, 0, c.width, c.height)
-      x.strokeStyle = '#dfe9ff'; x.lineWidth = 1.2
-      for (const s of stars) {
-        const r1 = s.r + s.v * (4 + p * p * 120)
-        x.beginPath(); x.moveTo(cx + Math.cos(s.a) * s.r, cy + Math.sin(s.a) * s.r); x.lineTo(cx + Math.cos(s.a) * r1, cy + Math.sin(s.a) * r1); x.stroke()
-        s.r = r1 * .9
-      }
-      if (p < 1) requestAnimationFrame(frame)
-      else { land(); setTimeout(() => c.remove(), 700) }
-    })(t0)
+    // the long cut: stars stretch, the jump, a moment of tunnel; the galaxy mounts underneath before it fades
+    jump({ from: 1.4, to: 7.6, peakAt: 7.2, onPeak: land })
   }
 
   // Devtools: a note for whoever reads the console

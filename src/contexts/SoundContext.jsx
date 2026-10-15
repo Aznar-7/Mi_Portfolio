@@ -93,7 +93,8 @@ export function SoundProvider({ children }) {
   // UI sounds are opt-in: muted unless the visitor explicitly turned them on.
   // New key on purpose: an older version wrote 'site_muted=false' on every visit.
   const [isMuted, setIsMuted] = useState(() => {
-    try { return localStorage.getItem(SOUND_KEY) !== 'on' } catch { return true }
+    // sound is on by default; only an explicit 'off' from the visitor mutes it
+    try { return localStorage.getItem(SOUND_KEY) === 'off' } catch { return false }
   })
   const ctx = useRef(null)
 

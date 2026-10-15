@@ -7,7 +7,9 @@ import { useSoundEffects } from '@/contexts/SoundContext'
 // How long each scene holds the stage, in ms
 // scenes that lead somewhere when they end
 const NEXT = { mellon: 'open-middle-earth', mph: 'open-retro' }
-const HOLD = { mellon: 4200, order66: 2600, mph: 5000, placa: 2200, hire: 2600, mate: 6000 }
+const HOLD = { mellon: 4200, order66: 9200, mph: 5000, placa: 2200, hire: 2600, mate: 7600 }
+// scenes with a soundtrack (the visitor's sound setting still applies)
+const MUSIC = { order66: '/audio/imperial-march.mp3' }
 
 const pad = (n) => String(n).padStart(2, '0')
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -132,9 +134,9 @@ export function EggStage() {
   const { lang } = useLang()
   const T = copy[lang].eggs
   const [scene, setScene] = useState(null) // { id, key }
-  const { playEgg } = useSoundEffects()
-  const sound = useRef(playEgg)
-  useEffect(() => { sound.current = playEgg })
+  const { playEgg, isMuted } = useSoundEffects()
+  const sound = useRef(playEgg), muted = useRef(isMuted)
+  useEffect(() => { sound.current = playEgg; muted.current = isMuted })
 
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -147,7 +149,12 @@ export function EggStage() {
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
       const site = document.querySelector('.site')
-      if (id === 'order66') { site?.classList.add('sith'); setTimeout(() => site?.classList.remove('sith'), 7000) }
+      if (id === 'order66') { site?.classList.add('sith'); setTimeout(() => site?.classList.remove('sith'), HOLD.order66 + 4000) }
+      if (MUSIC[id] && !muted.current) {
+        const a = new Audio(MUSIC[id]); a.volume = 0.55; a.play().catch(() => {})
+        // fade out over the last second of the scene
+        setTimeout(() => { const f = setInterval(() => { a.volume = Math.max(0, a.volume - 0.05); if (a.volume === 0) { clearInterval(f); a.pause() } }, 80) }, HOLD[id] - 900)
+      }
       clearTimeout(t); t = setTimeout(() => { setScene(null); go(id) }, HOLD[id])
     }
     document.addEventListener('secret', on)
@@ -162,25 +169,40 @@ export function EggStage() {
 
       {id === 'order66' && (
         <>
+          {/* 1. an incoming transmission: a hooded figure in blue holo light gives the order */}
+          <div className="o66-holo">
+            <svg viewBox="0 0 300 380" aria-hidden="true">
+              <defs>
+                <linearGradient id="o66-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#7cc6ff" stopOpacity=".45" /><stop offset="1" stopColor="#7cc6ff" stopOpacity="0" /></linearGradient>
+                <pattern id="o66-scan" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="1.2" fill="#bfe4ff" /></pattern>
+                <clipPath id="o66-fig"><path d="M150 40 C112 40 96 74 98 108 C100 128 88 140 76 170 C58 214 54 280 50 330 H250 C246 280 242 214 224 170 C212 140 200 128 202 108 C204 74 188 40 150 40 Z" /></clipPath>
+              </defs>
+              <polygon points="150,350 40,30 260,30" fill="url(#o66-beam)" />
+              <g className="o66-figure">
+                <path d="M150 40 C112 40 96 74 98 108 C100 128 88 140 76 170 C58 214 54 280 50 330 H250 C246 280 242 214 224 170 C212 140 200 128 202 108 C204 74 188 40 150 40 Z" className="robe" />
+                <path d="M122 92 C130 80 170 80 178 92 C180 112 168 126 150 126 C132 126 120 112 122 92 Z" className="hood" />
+                <rect x="40" y="30" width="220" height="320" fill="url(#o66-scan)" opacity=".35" clipPath="url(#o66-fig)" />
+              </g>
+              <ellipse cx="150" cy="352" rx="60" ry="10" className="o66-emitter" />
+            </svg>
+            <p className="o66-line one"><small>{T.o66from}</small>{T.order66b}</p>
+            <p className="o66-line two">{T.o66reply}</p>
+          </div>
+          {/* 2. the blade */}
           <svg className="saber" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="-5" y1="8" x2="105" y2="92" /><line className="core" x1="-5" y1="8" x2="105" y2="92" /></svg>
-          <svg className="projector" viewBox="0 0 400 420" aria-hidden="true">
-            <defs>
-              <linearGradient id="cone" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0" stopColor="#ff3b3b" stopOpacity=".55" />
-                <stop offset="1" stopColor="#ff3b3b" stopOpacity="0" />
-              </linearGradient>
-              <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#ff5a5a" /></pattern>
-              <clipPath id="beam"><polygon points="200,380 40,40 360,40" /></clipPath>
-            </defs>
-            <polygon className="cone" points="200,380 40,40 360,40" fill="url(#cone)" />
-            <g className="hologram">
-              <text x="200" y="190" textAnchor="middle" className="h66">66</text>
-              <rect x="40" y="40" width="320" height="340" fill="url(#scan)" opacity=".16" clipPath="url(#beam)" />
-            </g>
-            <ellipse cx="200" cy="384" rx="70" ry="12" className="emitter" />
-            <ellipse cx="200" cy="384" rx="34" ry="5" fill="#ff8080" />
-          </svg>
-          <p className="egg-caption sith">{T.order66b}</p>
+          {/* 3. the squad marches through */}
+          <div className="o66-squad">
+            {Array.from({ length: 7 }, (_, i) => (
+              <svg key={i} viewBox="0 0 40 90" style={{ '--i': i }} aria-hidden="true">
+                <path d="M20 4 C9 4 6 12 6 22 L7 32 C10 36 30 36 33 32 L34 22 C34 12 31 4 20 4 Z" className="helm" />
+                <path d="M11 18 H29 M20 18 V30" className="visor" />
+                <path d="M10 38 H30 L32 62 H8 Z" className="armor" />
+                <path d="M12 62 L10 86 M28 62 L30 86" className="legs" />
+                <path d="M30 42 L40 50" className="blaster" />
+              </svg>
+            ))}
+          </div>
+          <p className="egg-caption sith o66-end">{T.o66end}</p>
         </>
       )}
 
@@ -197,14 +219,25 @@ export function EggStage() {
 
       {id === 'mate' && (
         <div className="mate">
-          <svg viewBox="0 0 120 150">
-            <path className="steam s1" d="M52 40 q-8 -12 0 -22 q8 -10 0 -20" />
-            <path className="steam s2" d="M66 42 q-8 -12 0 -22 q8 -10 0 -20" />
-            <path className="gourd" d="M30 62 q-14 40 6 66 q24 22 48 0 q20 -26 6 -66 z" />
-            <path className="rim" d="M30 62 q30 -10 60 0" />
-            <path className="bombilla" d="M64 64 l18 -44 l8 -4" />
+          <svg viewBox="0 0 220 200" aria-hidden="true">
+            {/* the thermos tips over the gourd and pours */}
+            <g className="termo">
+              <rect x="128" y="10" width="34" height="96" rx="9" className="termo-body" />
+              <rect x="131" y="2" width="28" height="14" rx="4" className="termo-cap" />
+              <path d="M128 30 h-10 v8 h10" className="termo-spout" />
+              <rect x="136" y="40" width="4" height="50" rx="2" className="termo-shine" />
+            </g>
+            <path d="M118 36 C108 60 96 84 92 108" className="water" />
+            {/* the gourd, the yerba, the bombilla */}
+            <path d="M52 112 C34 150 50 192 92 192 C134 192 150 150 132 112 Z" className="gourd" />
+            <ellipse cx="92" cy="112" rx="40" ry="9" className="virola" />
+            <ellipse cx="92" cy="112" rx="34" ry="6" className="yerba" />
+            {[[78, 110], [88, 113], [100, 110], [106, 114], [84, 115]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="1.6" className="leaf" />)}
+            <path d="M100 112 L124 60 M120 58 h10" className="bombilla" />
+            <path className="steam s1" d="M80 100 q-8 -12 0 -22 q8 -10 0 -20" />
+            <path className="steam s2" d="M96 100 q-8 -12 0 -22 q8 -10 0 -20" />
           </svg>
-          <p>{T.mate}</p>
+          <p><b>{T.mate}</b><span>{T.mate2}</span></p>
         </div>
       )}
     </div>

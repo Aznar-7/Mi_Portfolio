@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { Volume2, VolumeX } from 'lucide-react'
 import { projects } from '@/data/projects'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { l } from '@/lib/utils'
 import { goTo } from '@/lib/motion'
+import { jump, preloadJump } from '@/lib/hyperspace'
 import { Planet } from './Planet'
 import '@/styles/galaxy.css'
 
@@ -10,8 +12,8 @@ import '@/styles/galaxy.css'
 // as star systems. Pick one for a holo readout; "set course" drops you at that part of the page.
 
 const T = {
-  es: { title: 'Una galaxia muy, muy lejana', sub: 'Carta estelar del portfolio', back: 'Salir de la galaxia', pick: 'Tocá un sistema para viajar hasta él. Cada planeta es una parte del portfolio.', go: 'Fijar rumbo a esta sección', galaxy: 'Volver a la galaxia', prev: 'Sistema anterior', next: 'Sistema siguiente', sector: 'Sistema' },
-  en: { title: 'A galaxy far, far away', sub: 'A star chart of the portfolio', back: 'Leave the galaxy', pick: 'Tap a system to travel there. Every planet is a part of the portfolio.', go: 'Set course for this section', galaxy: 'Back to the galaxy', prev: 'Previous system', next: 'Next system', sector: 'System' },
+  es: { title: 'Una galaxia muy, muy lejana', sub: 'Hace mucho tiempo… carta estelar del portfolio', music: 'Música', back: 'Salir de la galaxia', pick: 'Tocá un sistema para viajar hasta él. Cada planeta es una parte del portfolio.', go: 'Fijar rumbo a esta sección', galaxy: 'Volver a la galaxia', prev: 'Sistema anterior', next: 'Sistema siguiente', sector: 'Sistema' },
+  en: { title: 'A galaxy far, far away', sub: 'A long time ago… a star chart of the portfolio', music: 'Music', back: 'Leave the galaxy', pick: 'Tap a system to travel there. Every planet is a part of the portfolio.', go: 'Set course for this section', galaxy: 'Back to the galaxy', prev: 'Previous system', next: 'Next system', sector: 'System' },
 }
 
 const P = Object.fromEntries(projects.map((p) => [p.id, p]))
@@ -19,6 +21,7 @@ const P = Object.fromEntries(projects.map((p) => [p.id, p]))
 // a: angle in the disc (radians), r: distance from the core (0..1)
 const SYSTEMS = [
   { id: 'tatooine', a: 0.4, r: 0.78, name: 'Tatooine', real: { es: 'Sobre mí', en: 'About me' }, to: '#sobre',
+    more: { es: 'Full stack en Porta Hnos, estudiante de Sistemas e IA en la UTN y cofundador de Gavia. Del frontend al hardware, siempre hasta que funcione en producción.', en: 'Full stack at Porta Hnos, Systems and AI student at UTN and co-founder of Gavia. From the frontend to the hardware, always until it works in production.' },
     text: { es: 'Un planeta en el borde, lejos del centro. Así empiezan las buenas historias: en Córdoba.', en: 'A planet on the rim, far from the core. That is how good stories start: in Córdoba.' } },
   { id: 'bespin', a: 1.5, r: 0.55, project: 'utn-hub', name: 'Bespin',
     text: { es: 'Una ciudad en las nubes. Este proyecto también vive en la nube, en mi VM de Oracle.', en: 'A city in the clouds. This project lives in the cloud too, on my Oracle VM.' } },
@@ -33,10 +36,13 @@ const SYSTEMS = [
   { id: 'naboo', a: 5.8, r: 0.7, project: 'camisetas-agv', name: 'Naboo',
     text: { es: 'El planeta con más estilo de la galaxia.', en: 'The most stylish planet in the galaxy.' } },
   { id: 'dagobah', a: 0.95, r: 0.32, name: 'Dagobah', real: { es: 'Formación', en: 'Education' }, to: '#trayectoria .edu',
+    more: { es: 'Dos carreras en paralelo en la UTN: Ingeniería en Sistemas de Información y la Licenciatura en Inteligencia Artificial.', en: 'Two degrees in parallel at UTN: Information Systems Engineering and the Bachelor in Artificial Intelligence.' },
     text: { es: 'Entrenando con maestros: Sistemas e IA en la UTN.', en: 'Training with masters: Systems and AI at UTN.' } },
   { id: 'corellia', a: 2.1, r: 0.88, name: 'Corellia', real: { es: 'Trayectoria', en: 'Experience' }, to: '#trayectoria',
+    more: { es: 'Gavia, el estudio que cofundé; Porta Hnos, donde hice sistemas internos completos; y un producto en equipo con Globant.', en: 'Gavia, the studio I co-founded; Porta Hnos, where I built complete internal systems; and a team product with Globant.' },
     text: { es: 'Astilleros y comercio: donde trabajé y para quién.', en: 'Shipyards and trade: where I have worked, and for whom.' } },
   { id: 'takodana', a: 3.95, r: 0.3, name: 'Takodana', real: { es: 'Contacto', en: 'Contact' }, to: '#contacto',
+    more: { es: 'Mail, LinkedIn, GitHub o el formulario de la página. Contesto rápido.', en: 'Email, LinkedIn, GitHub or the form on the page. I reply fast.' },
     text: { es: 'El castillo donde todos se cruzan. Pasá y escribime.', en: 'The castle where everyone crosses paths. Stop by and write to me.' } },
 ]
 
@@ -91,11 +97,13 @@ function paintGalaxy(size) {
   return c
 }
 
-export function Galaxy({ lang = 'es', onExit }) {
+export function Galaxy({ lang = 'es', onExit, leaving }) {
   const t = T[lang] ?? T.es
-  const { playClick, playEgg } = useSoundEffects()
+  const { playClick, isMuted } = useSoundEffects()
   const [sel, setSel] = useState(null) // the system we are visiting
   const [warp, setWarp] = useState(null) // { x, y } while jumping toward a system
+  const [music, setMusic] = useState(!isMuted)
+  const audioRef = useRef(null), travelRef = useRef(null)
   const rootRef = useRef(null), canvasRef = useRef(null), backRef = useRef(null), marks = useRef({})
   const sys = SYSTEMS.find((p) => p.id === sel)
   const proj = sys?.project && P[sys.project]
@@ -149,35 +157,70 @@ export function Galaxy({ lang = 'es', onExit }) {
       if (e.key === 'Escape') { if (sel) setSel(null); else onExit() }
       if (sel && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
         const n = SYSTEMS.length, i = SYSTEMS.findIndex((x) => x.id === sel)
-        playEgg('warp'); setSel(SYSTEMS[(i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n].id)
+        travelRef.current(SYSTEMS[(i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n].id)
       }
     }
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
-  }, [sel, onExit, playEgg])
+  }, [sel, onExit])
 
-  // jump: the galaxy rushes toward the system, then the planet view takes over
-  const pick = (id) => {
+  // travel: the galaxy rushes toward the system, the hyperspace jump plays, and we come out at the planet
+  const travelTo = (id) => {
     const b = marks.current[id]?.getBoundingClientRect()
-    playEgg('warp')
-    setWarp(b ? { x: b.left + 8, y: b.top + 8 } : { x: innerWidth / 2, y: innerHeight / 2 })
-    setTimeout(() => { setSel(id); setWarp(null) }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650)
+    setWarp(b && !sel ? { x: b.left + 8, y: b.top + 8 } : { x: innerWidth / 2, y: innerHeight / 2 })
+    jump({ from: 4.25, to: 5.9, onPeak: () => { setSel(id); setWarp(null) } })
   }
+  useEffect(() => { travelRef.current = travelTo })
+  const pick = (id) => travelTo(id)
   const hop = (dir) => {
     const i = SYSTEMS.findIndex((x) => x.id === sel)
-    playEgg('warp'); setSel(SYSTEMS[(i + dir + SYSTEMS.length) % SYSTEMS.length].id)
+    travelTo(SYSTEMS[(i + dir + SYSTEMS.length) % SYSTEMS.length].id)
   }
+
+  // the Force theme plays while we are out here, fading in and out
+  useEffect(() => { preloadJump() }, [])
+  useEffect(() => {
+    const a = audioRef.current
+    if (!a) return
+    let raf
+    const fade = (to, then) => {
+      cancelAnimationFrame(raf)
+      const step = () => {
+        a.volume = Math.max(0, Math.min(1, a.volume + (to > a.volume ? 0.012 : -0.03)))
+        if (Math.abs(a.volume - to) > 0.03) raf = requestAnimationFrame(step)
+        else { a.volume = to; then?.() }
+      }
+      step()
+    }
+    if (music && !leaving) { a.volume = 0; a.play().then(() => fade(0.45)).catch(() => setMusic(false)) }
+    else fade(0, () => a.pause())
+    return () => cancelAnimationFrame(raf)
+  }, [music, leaving])
   const go = () => {
     playClick()
-    const to = sys.project ? `p:${sys.project}` : sys.to
+    const to = sys?.project ? `p:${sys.project}` : sys?.to
     onExit()
     setTimeout(() => goTo(to), 80)
   }
 
   return (
-    <div className={`gx${warp ? ' warping' : ''}${sel ? ' visiting' : ''}`} ref={rootRef} role="dialog" aria-modal="true" aria-labelledby="gx-title"
+    <div className={`gx${warp ? ' warping' : ''}${sel ? ' visiting' : ''}${leaving ? ' leaving' : ''}`} ref={rootRef} role="dialog" aria-modal="true" aria-labelledby="gx-title"
       style={warp ? { '--wx': `${warp.x}px`, '--wy': `${warp.y}px` } : undefined}>
+      <audio ref={audioRef} src="/audio/force-theme.mp3" loop preload="auto" />
       <canvas ref={canvasRef} className="gx-sky" aria-hidden="true" />
+      {/* a dogfight crossing the chart now and then */}
+      <svg className="gx-ships" viewBox="0 0 120 40" aria-hidden="true">
+        <g className="xwing">
+          <path d="M20 20 L52 18.6 L60 20 L52 21.4 Z" className="hull" />
+          <path d="M28 20 L22 6 L26 6 L36 18.5 Z M28 20 L22 34 L26 34 L36 21.5 Z" className="wing" />
+          <circle cx="21" cy="7" r="1.6" className="burn" /><circle cx="21" cy="33" r="1.6" className="burn" />
+        </g>
+        <g className="tie" transform="translate(0 4)">
+          <rect x="0" y="6" width="2.4" height="20" rx="1" className="panel" /><rect x="13.6" y="6" width="2.4" height="20" rx="1" className="panel" />
+          <path d="M2.4 16 H13.6" className="strut" /><circle cx="8" cy="16" r="3.6" className="pod" />
+          <path d="M17 15 H40 M17 17 H40" className="laser" />
+        </g>
+      </svg>
       <ul className="gx-systems">
         {SYSTEMS.map((s, i) => (
           <li key={s.id} ref={(el) => { marks.current[s.id] = el }} style={{ '--d': `${0.9 + i * 0.07}s` }}>
@@ -193,7 +236,12 @@ export function Galaxy({ lang = 'es', onExit }) {
         <h2 id="gx-title">{t.title}</h2>
         <p>{t.sub}</p>
       </header>
-      <button ref={backRef} type="button" className="gx-back" onClick={() => { playClick(); onExit() }}>{t.back}</button>
+      <div className="gx-tools">
+        <button type="button" className="gx-back" aria-pressed={music} onClick={() => setMusic((m) => !m)}>
+          {music ? <Volume2 size={15} aria-hidden="true" /> : <VolumeX size={15} aria-hidden="true" />}{t.music}
+        </button>
+        <button ref={backRef} type="button" className="gx-back" onClick={() => { playClick(); onExit() }}>{t.back}</button>
+      </div>
 
       <p className="gx-hint">{t.pick}</p>
 
@@ -204,7 +252,8 @@ export function Galaxy({ lang = 'es', onExit }) {
             <small>{t.sector} · {sys.name}</small>
             <h3>{proj ? proj.title : l(sys.real, lang)}</h3>
             <p className="flavor">{l(sys.text, lang)}</p>
-            {proj && <p>{l(proj.tagline, lang)}</p>}
+            <p className="desc">{proj ? l(proj.summary, lang) : l(sys.more, lang)}</p>
+            {proj && <ul className="gx-tech">{proj.tech.slice(0, 6).map((x) => <li key={x}>{x}</li>)}</ul>}
             <div className="gx-actions">
               <button type="button" className="go" onClick={go}>{t.go}</button>
               <button type="button" onClick={() => { playClick(); setSel(null) }}>{t.galaxy}</button>

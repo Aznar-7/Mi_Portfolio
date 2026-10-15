@@ -52,22 +52,39 @@ function Board() {
   )
 }
 
-function Retro({ onExit }) {
+function Retro({ onExit, leaving }) {
   const { lang } = useLang()
-  return <Suspense fallback={<div className="fixed inset-0 bg-black" />}><Win95 lang={lang} onExit={onExit} /></Suspense>
+  return (
+    <div className={`w95-wrap${leaving ? ' leaving' : ''}`}>
+      <Suspense fallback={<div className="fixed inset-0 bg-black" />}><Win95 lang={lang} onExit={onExit} /></Suspense>
+    </div>
+  )
 }
 
-function Overlay({ id, onExit }) {
+function Overlay({ id, onExit, leaving }) {
   const { lang } = useLang()
   const View = OVERLAYS[id]
-  return <Suspense fallback={<div className="fixed inset-0 z-[9000] bg-black" />}><View lang={lang} onExit={onExit} /></Suspense>
+  return <Suspense fallback={<div className="fixed inset-0 z-[9000] bg-black" />}><View lang={lang} onExit={onExit} leaving={leaving} /></Suspense>
 }
 
 export default function App() {
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
   const [retro, setRetro] = useState(false)
   const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy'
-  const closeOverlay = useCallback(() => setOverlay(null), [])
+  // leaving an egg is a scene too: it plays its exit, then the board powers back on
+  const [leaving, setLeaving] = useState(false)
+  const leave = useCallback((after) => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    setLeaving(true)
+    setTimeout(() => {
+      after(); setLeaving(false)
+      if (reduced) return
+      document.body.classList.add('returning')
+      setTimeout(() => document.body.classList.remove('returning'), 1000)
+    }, reduced ? 0 : 680)
+  }, [])
+  const closeOverlay = useCallback(() => leave(() => setOverlay(null)), [leave])
+  const closeRetro = useCallback(() => leave(() => setRetro(false)), [leave])
 
   useEffect(() => {
     const open = () => setUbuntuOpen(true)
@@ -113,12 +130,12 @@ export default function App() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
-        {retro && !ubuntuOpen && <Retro onExit={() => setRetro(false)} />}
+        {retro && !ubuntuOpen && <Retro onExit={closeRetro} leaving={leaving} />}
         {!ubuntuOpen && !retro && (
           <>
             {!overlay && <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />}
             <Board />
-            {overlay && <Overlay id={overlay} onExit={closeOverlay} />}
+            {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
           </>
         )}
       </LanguageProvider>

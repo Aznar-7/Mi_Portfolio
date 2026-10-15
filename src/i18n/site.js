@@ -54,6 +54,7 @@ export const copy = {
       silk: 'J3 · CONSOLA',
       title: 'Hay una computadora adentro de esta placa.',
       intro: 'Un Ubuntu con terminal, archivos, juegos y mis proyectos adentro. Entrá por ssh o encendela.',
+      openOs: 'Abrir el OS', past: 'Volver al pasado',
       prompt: 'visitante@placa:~$', button: 'Encender',
       hint: 'Probá help para ver los comandos, o cat .secretos para las pistas.',
       help: 'ssh vicente    entrar a la computadora\nsudo hire      escribirme\ncat .secretos  pistas de los 8 secretos\nhay más, pero no están en la ayuda',
@@ -67,7 +68,7 @@ export const copy = {
     },
     footer: { rev: 'VA-PORTFOLIO · REV 3.0 · CÓRDOBA AR · 2026', made: 'Diseño y código: Vicente Aznar', secrets: (n, t) => `secretos ${n}/${t}` },
     form: { name: 'Nombre', email: 'Tu email', message: 'Mensaje', placeholder: 'Contame qué querés construir o qué rol buscás.', send: 'Enviar mensaje', sending: 'Enviando…', sent: 'Enviado', okLine: 'Te llegó a mi bandeja. Te respondo a ese mail.', errLine: (m) => `No se pudo enviar. Escribime directo a ${m}.`, subject: (n) => `Portfolio: mensaje de ${n}`, or: 'O por otro lado' },
-    eggs: { mellon: 'Hablá, amigo, y entrá.', order66b: 'Ejecutar la orden 66', dest: 'DESTINO', pres: 'PRESENTE', last: 'ÚLTIMA SALIDA', test: 'Banco de pruebas', granted: 'ACCESO CONCEDIDO', sudo: ['$ sudo hire', '[sudo] contraseña para visitante: ****', 'Verificando referencias… ok', 'Abriendo canal con Vicente… ok'], mate: '¿Te cebo uno?' },
+    eggs: { mellon: 'Hablá, amigo, y entrá.', order66b: 'Ejecutar la orden 66.', o66from: 'Transmisión entrante · Coruscant', o66reply: 'Sí, mi señor.', o66end: 'Orden 66 ejecutada. El cobre vuelve en unos segundos.', mate2: 'Estuviste un rato quieto: la placa siguió andando y el agua ya está a 80°.', dest: 'DESTINO', pres: 'PRESENTE', last: 'ÚLTIMA SALIDA', test: 'Banco de pruebas', granted: 'ACCESO CONCEDIDO', sudo: ['$ sudo hire', '[sudo] contraseña para visitante: ****', 'Verificando referencias… ok', 'Abriendo canal con Vicente… ok'], mate: '¿Te cebo uno?' },
     process: { title: 'Del problema a producción', intro: 'Me ocupo del ciclo completo. Así trabajo, con un caso real en cada etapa.', dia: { layers: [['Navegador', 'React · Vercel'], ['Nginx', 'TLS · proxy'], ['API', 'Django REST · JWT'], ['PostgreSQL', 'migraciones']], rules: ['Cupo diario', 'Roles', 'Stock'], states: ['Pedido', 'Confirmado', 'Entregado'], log: [['git pull origin main', ''], ['pip install -r requirements.txt', 'ok'], ['python manage.py migrate', 'ok'], ['sudo nginx -t', 'ok'], ['systemctl restart gunicorn', 'ok'], ['curl -I utnhub.com.ar', '200']], loop: 'Legacy → moderno', sprint: 'Sprints de dos semanas' } },
     about: { now: 'Ahora mismo', local: 'Hora local', building: 'Construyendo', buildingWhat: 'Flety con Gavia: camiones que vuelven vacíos y cargas que van en su camino', lastPush: 'Último push', langs: 'Lenguajes en mis repos públicos', title: 'Sobre mí', github: 'Actividad en GitHub', profile: 'Ver perfil', total: '{{count}} contribuciones en el último año', less: 'Menos', more: 'Más', months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] },
     secrets: {
@@ -140,6 +141,7 @@ export const copy = {
       silk: 'J3 · CONSOLE',
       title: 'There is a computer inside this board.',
       intro: 'An Ubuntu desktop with a terminal, files, games and my projects. Get in over ssh or switch it on.',
+      openOs: 'Open the OS', past: 'Back to the past',
       prompt: 'visitor@board:~$', button: 'Power on',
       hint: 'Try help for the commands, or cat .secrets for hints.',
       help: 'ssh vicente    get into the computer\nsudo hire      email me\ncat .secrets   hints for the 8 secrets\nthere is more, just not in the help',
@@ -153,7 +155,7 @@ export const copy = {
     },
     footer: { rev: 'VA-PORTFOLIO · REV 3.0 · CÓRDOBA AR · 2026', made: 'Design and code: Vicente Aznar', secrets: (n, t) => `secrets ${n}/${t}` },
     form: { name: 'Name', email: 'Your email', message: 'Message', placeholder: 'Tell me what you want to build or which role you are hiring for.', send: 'Send message', sending: 'Sending…', sent: 'Sent', okLine: 'It is in my inbox. I will reply to that address.', errLine: (m) => `Could not send it. Write to me at ${m}.`, subject: (n) => `Portfolio: message from ${n}`, or: 'Or reach me elsewhere' },
-    eggs: { mellon: 'Speak, friend, and enter.', order66b: 'Execute order 66', dest: 'DESTINATION TIME', pres: 'PRESENT TIME', last: 'LAST TIME DEPARTED', test: 'Test jig', granted: 'ACCESS GRANTED', sudo: ['$ sudo hire', '[sudo] password for visitor: ****', 'Checking references… ok', 'Opening a channel to Vicente… ok'], mate: 'Fancy a mate?' },
+    eggs: { mellon: 'Speak, friend, and enter.', order66b: 'Execute order 66.', o66from: 'Incoming transmission · Coruscant', o66reply: 'Yes, my lord.', o66end: 'Order 66 executed. The copper comes back in a few seconds.', mate2: 'You were away for a bit: the board kept running and the water is at 80°.', dest: 'DESTINATION TIME', pres: 'PRESENT TIME', last: 'LAST TIME DEPARTED', test: 'Test jig', granted: 'ACCESS GRANTED', sudo: ['$ sudo hire', '[sudo] password for visitor: ****', 'Checking references… ok', 'Opening a channel to Vicente… ok'], mate: 'Fancy a mate?' },
     process: { title: 'From problem to production', intro: 'I own the whole cycle. This is how I work, with a real case at every stage.', dia: { layers: [['Browser', 'React · Vercel'], ['Nginx', 'TLS · proxy'], ['API', 'Django REST · JWT'], ['PostgreSQL', 'migrations']], rules: ['Daily quota', 'Roles', 'Stock'], states: ['Ordered', 'Confirmed', 'Delivered'], log: [['git pull origin main', ''], ['pip install -r requirements.txt', 'ok'], ['python manage.py migrate', 'ok'], ['sudo nginx -t', 'ok'], ['systemctl restart gunicorn', 'ok'], ['curl -I utnhub.com.ar', '200']], loop: 'Legacy → modern', sprint: 'Two-week sprints' } },
     about: { now: 'Right now', local: 'Local time', building: 'Building', buildingWhat: 'Flety with Gavia: trucks returning empty matched with cargo along their route', lastPush: 'Last push', langs: 'Languages across my public repos', title: 'About', github: 'GitHub activity', profile: 'See profile', total: '{{count}} contributions in the last year', less: 'Less', more: 'More', months: null },
     secrets: {

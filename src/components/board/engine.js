@@ -293,7 +293,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       }
       if (t.spark && prog >= 1) { t.spark = false; const e = t.pts[t.pts.length - 1]; for (let s = 0; s < 9; s++) sparks.push({ x: e.x, y: e.y, vx: rnd(-2, 2), vy: rnd(-2.6, .6), life: 1 }) }
       // signals are born on the parts' buses far more often than on filler copper
-      if (!reduced && prog >= 1 && Math.random() < (t.part ? .006 : .0008) + t.heat * .03) pulses.push({ t, d: 0, v: rnd(1.4, 2.6) })
+      if (!reduced && prog >= 1 && Math.random() < (t.part ? .004 : .0005) + t.heat * .03) pulses.push({ t, d: 0, v: rnd(0.55, 1.1) }) // slow, so the signals read as current, not sparks
     }
     if (!booted) {
       statusEl.textContent = text.routing(done, traces.length)

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowUpRight, Check, Copy, FileDown, Mail, Power } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Check, Copy, FileDown, History, Mail, Power, TerminalSquare } from 'lucide-react'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { useLang } from '@/contexts/LanguageContext'
@@ -111,6 +111,11 @@ export function Console() {
           <button type="submit" className="power-btn"><Power size={15} aria-hidden="true" />{T.button}</button>
         </form>
         <p className={`term-out${shown.elvish ? ' elvish' : ''}`} id="term-out" aria-live="polite">{shown.text}</p>
+        {/* the two doors from the hero, again at the end of the page */}
+        <p className="power-links">
+          <button type="button" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={15} aria-hidden="true" />{T.openOs}</button>
+          <button type="button" onClick={() => { playClick(); findSecret('mph') }}><History size={15} aria-hidden="true" />{T.past}</button>
+        </p>
         </div>
         <Mascot lang={lang} />
         </div>

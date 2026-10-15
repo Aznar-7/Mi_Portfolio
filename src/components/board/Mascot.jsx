@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSoundEffects } from '@/contexts/SoundContext'
+import { site } from '@/data/site'
+import { travel } from '@/lib/motion'
 
 // Chip: the board's little resident, sitting by the console. A chip package with copper legs and two
 // LED eyes that follow the pointer. Listening for 'chip' events from the console, it watches you type, cheers a known command, tilts at an unknown
@@ -8,6 +10,10 @@ import { useSoundEffects } from '@/contexts/SoundContext'
 const LINES = {
   es: ['¡Hola! Soy Chip. Vivo en esta placa.', 'Probá escribir help acá al lado.', 'Dicen que una palabra élfica abre una puerta…', 'Si tocás los seis chips de arriba, pasa algo.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'Arriba hay un botón que vuelve al pasado.', 'Las pistas completas están en «secretos», al pie.'],
   en: ['Hi! I am Chip. I live on this board.', 'Try typing help right next to me.', 'They say an Elvish word opens a door…', 'Click the six chips up top and something happens.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'There is a button up top that goes back in time.', 'Full hints live in "secrets", down in the footer.'],
+}
+const ACTIONS = {
+  es: { hint: 'Otra pista', mail: 'Copiar su mail', copied: '¡Copiado! Te espera.', cv: 'Bajar su CV', top: 'Volver arriba', close: 'Cerrar' },
+  en: { hint: 'Another hint', mail: 'Copy his email', copied: 'Copied! He is waiting.', cv: 'Get his CV', top: 'Back to top', close: 'Close' },
 }
 const MOODS = { happy: { es: '¡Eso!', en: 'Nice!' }, confused: { es: '¿Eh? Probá help.', en: 'Huh? Try help.' }, secret: { es: '¡Encontraste un secreto!', en: 'You found a secret!' } }
 
@@ -18,12 +24,14 @@ export function Mascot({ lang }) {
   const [blink, setBlink] = useState(false)
   const [say, setSay] = useState(null)
   const [state, setState] = useState('idle') // idle | typing | happy | confused
-  const line = useRef(0), timer = useRef(0)
+  const [menu, setMenu] = useState(false)
+  const line = useRef(0), timer = useRef(0), menuRef = useRef(false)
+  useEffect(() => { menuRef.current = menu }, [menu])
 
   const speak = (text, st = 'idle', ms = 3200) => {
     setSay(text); setState(st)
     clearTimeout(timer.current)
-    timer.current = setTimeout(() => { setSay(null); setState('idle') }, ms)
+    timer.current = setTimeout(() => { setSay((v) => (menuRef.current ? v : null)); setState('idle') }, ms)
   }
 
   // eyes follow the pointer, a few pixels at most
@@ -64,18 +72,37 @@ export function Mascot({ lang }) {
   }, [lang])
   useEffect(() => () => clearTimeout(timer.current), [])
 
-  const poke = () => {
-    playSelect()
+  // a poke opens a little menu: a hint plus the things people come to a portfolio for
+  const A = ACTIONS[lang] ?? ACTIONS.es
+  const hint = () => {
     const lines = LINES[lang] ?? LINES.es
-    speak(lines[line.current % lines.length], 'happy', 3800)
-    line.current++
+    setSay(lines[line.current % lines.length]); setState('happy'); line.current++
+    clearTimeout(timer.current); timer.current = setTimeout(() => setState('idle'), 1200)
   }
+  const poke = () => { playSelect(); if (menu) { setMenu(false); setSay(null) } else { setMenu(true); hint() } }
+  const copyMail = async () => {
+    try { await navigator.clipboard.writeText(site.email); setSay(A.copied); setState('happy') } catch { setSay(site.email) }
+  }
+  const close = () => { setMenu(false); setSay(null); setState('idle') }
 
   const [lx, ly] = state === 'typing' ? [-2.6, 2.2] : look
   return (
     <div className={`chip-pet ${state}`} ref={ref}>
-      {say && <p className="chip-say" role="status">{say}</p>}
-      <button type="button" className="chip-body" onClick={poke} aria-label={lang === 'es' ? 'Chip, la mascota. Tocá para una pista.' : 'Chip, the mascot. Click for a hint.'}>
+      {(say || menu) && (
+        <div className="chip-say" role="status">
+          {say && <p>{say}</p>}
+          {menu && (
+            <div className="chip-menu">
+              <button type="button" onClick={hint}>{A.hint}</button>
+              <button type="button" onClick={copyMail}>{A.mail}</button>
+              <a href={site.resumes[lang === 'en' ? 'en' : 'es'].url} download={site.resumes[lang === 'en' ? 'en' : 'es'].filename}>{A.cv}</a>
+              <button type="button" onClick={() => { close(); travel(document.getElementById('top'), 0) }}>{A.top}</button>
+              <button type="button" className="x" onClick={close} aria-label={A.close}>×</button>
+            </div>
+          )}
+        </div>
+      )}
+      <button type="button" className="chip-body" onClick={poke} aria-expanded={menu} aria-label={lang === 'es' ? 'Chip, la mascota. Tocá para una pista.' : 'Chip, the mascot. Click for a hint.'}>
         <svg viewBox="0 0 120 120" aria-hidden="true">
           {/* antenna with a status LED */}
           <path d="M60 22 V10" className="ant" /><circle cx="60" cy="8" r="4" className="led" />

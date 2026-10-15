@@ -19,9 +19,10 @@
 .gx-head{position:absolute; left:clamp(16px,4vw,48px); top:clamp(16px,4vh,40px)}
 .gx-head h2{margin:0; font:600 clamp(22px,2.6vw,36px)/1.05 'Funnel Display', system-ui, sans-serif; letter-spacing:-.01em}
 .gx-head p{margin:8px 0 0; font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; letter-spacing:.14em; text-transform:uppercase; color:rgba(var(--holo),.8)}
-.gx-back{position:absolute; right:clamp(16px,4vw,48px); top:clamp(16px,4vh,40px); padding:10px 16px; border:0; border-radius:999px; background:rgba(232,242,255,.08); color:#e8f2ff; font:500 14px/1 'Funnel Sans', system-ui, sans-serif; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(232,242,255,.18); transition:background .2s}
+.gx-tools{position:absolute; z-index:3; right:clamp(16px,4vw,48px); top:clamp(16px,4vh,40px); display:flex; gap:8px}
+.gx-back{display:inline-flex; align-items:center; gap:6px; padding:10px 16px; border:0; border-radius:999px; background:rgba(232,242,255,.08); color:#e8f2ff; font:500 14px/1 'Funnel Sans', system-ui, sans-serif; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(232,242,255,.18); transition:background .2s}
 .gx-back:hover,.gx-back:focus-visible{background:rgba(232,242,255,.16); outline:none}
-.gx-head,.gx-back{z-index:3}
+.gx-head{z-index:3}
 
 .gx-hint{position:absolute; left:50%; bottom:clamp(16px,4vh,36px); translate:-50% 0; margin:0; width:max-content; max-width:calc(100% - 32px); padding:10px 18px; border-radius:999px; background:rgba(6,10,20,.7); box-shadow:inset 0 0 0 1px rgba(var(--holo),.25); font:400 14px/1.4 'Funnel Sans', system-ui, sans-serif; color:rgba(232,242,255,.82); text-align:center; transition:opacity .3s}
 
@@ -66,3 +67,37 @@
 @media (max-width:640px){ .gx-head{max-width:calc(100% - 150px)} .gx-head h2{font-size:20px} .gx-back{padding:9px 12px; font-size:13px} .gx-systems span{font-size:10px; padding:2px 4px} }
 @media (prefers-reduced-motion: reduce){ .gx,.gx-systems li,.gx-visit,.gx-card{animation:none} .gx-sky,.gx-systems{transition:none} .gx-systems li{opacity:1} .gx-systems button.on i::before{animation:none} }
 
+
+/* leaving: everything streaks away into a point, as if we jumped back out */
+.gx.leaving{animation:gx-out .68s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes gx-out{to{transform:scale(.15); filter:blur(6px) brightness(2.5); opacity:0}}
+@media (prefers-reduced-motion: reduce){ .gx.leaving{animation:none} }
+
+/* arrival: the planet swims up out of the jump, the readout streams out of it line by line */
+.gx-world{animation:planet-in 1.4s cubic-bezier(.16,1,.3,1) both}
+@keyframes planet-in{from{transform:scale(.12) rotate(-30deg); filter:blur(14px) brightness(3); opacity:0} 60%{opacity:1}}
+.gx-card{animation:none}
+.gx-card::before{content:""; position:absolute; right:100%; top:46px; width:clamp(20px,5vw,80px); height:1px; background:linear-gradient(90deg, rgba(var(--holo),0), rgb(var(--holo))); transform-origin:left; animation:gx-wire .5s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gx-wire{from{transform:scaleX(0)}}
+.gx-card{background:none; box-shadow:none; backdrop-filter:none}
+.gx-card::after{content:""; position:absolute; inset:0; z-index:-1; border-radius:16px; background:linear-gradient(rgba(var(--holo),.07), rgba(var(--holo),.02)), rgba(6,10,20,.82); box-shadow:inset 0 0 0 1px rgba(var(--holo),.35), 0 0 50px rgba(var(--holo),.08); animation:gx-panel .45s .85s ease-out both}
+@keyframes gx-panel{from{clip-path:inset(0 100% 0 0); opacity:.4}}
+.gx-card > *{animation:gx-line .55s cubic-bezier(.2,.8,.2,1) both}
+.gx-card > :nth-child(1){animation-delay:1s} .gx-card > :nth-child(2){animation-delay:1.08s} .gx-card > :nth-child(3){animation-delay:1.16s}
+.gx-card > :nth-child(4){animation-delay:1.24s} .gx-card > :nth-child(5){animation-delay:1.32s} .gx-card > :nth-child(6){animation-delay:1.4s} .gx-card > :nth-child(7){animation-delay:1.48s}
+@keyframes gx-line{from{opacity:0; transform:translateX(-28px); filter:blur(4px)}}
+.gx-card{isolation:isolate}
+.gx-card .desc{color:rgba(232,242,255,.66); font-size:14.5px}
+.gx-tech{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; padding:0; list-style:none}
+.gx-tech li{padding:5px 9px; border-radius:999px; font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; color:rgb(var(--holo)); box-shadow:inset 0 0 0 1px rgba(var(--holo),.3)}
+
+/* ships: an X-wing with a TIE on its tail, crossing every so often */
+.gx-ships{position:absolute; z-index:1; left:0; top:0; width:clamp(90px,9vw,140px); pointer-events:none; opacity:0; animation:gx-dogfight 22s 3s linear infinite}
+.gx.visiting .gx-ships{display:none}
+@keyframes gx-dogfight{0%{opacity:0; transform:translate(-15vw,78vh) rotate(-18deg)} 2%{opacity:1} 22%{opacity:1; transform:translate(110vw,18vh) rotate(-18deg)} 23%,100%{opacity:0; transform:translate(110vw,18vh) rotate(-18deg)}}
+.gx-ships .hull{fill:#d9dde4} .gx-ships .wing{fill:#c3c8d0; stroke:#8a909a; stroke-width:.4}
+.gx-ships .burn{fill:#ff8a5c; filter:drop-shadow(0 0 2px #ff6a3a)}
+.gx-ships .panel{fill:#2f343c; stroke:#9aa1ab; stroke-width:.4} .gx-ships .strut{stroke:#9aa1ab; stroke-width:1.2} .gx-ships .pod{fill:#59606b; stroke:#c9ced6; stroke-width:.5}
+.gx-ships .laser{stroke:#6dff7a; stroke-width:.8; stroke-linecap:round; filter:drop-shadow(0 0 2px #6dff7a); stroke-dasharray:8 30; animation:gx-pew .5s linear infinite}
+@keyframes gx-pew{to{stroke-dashoffset:-38}}
+@media (prefers-reduced-motion: reduce){ .gx-world,.gx-card::before,.gx-card::after,.gx-card > *{animation:none} .gx-ships{display:none} }
