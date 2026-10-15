@@ -4,7 +4,7 @@
 
 const P = 22 // grid pitch: the board's 0.1" raster
 const PARTS = [
-  { id: 'esp', w: 8, h: 11, at: [.677, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
+  { id: 'esp', w: 8, h: 11, at: [.655, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
   { id: 'nfc', w: 9, h: 7, at: [.685, .62], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
   { id: 'eth', w: 6, h: 5, at: [.554, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
 ]
@@ -157,7 +157,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     if (pr && pr.width) {
       const c = Math.floor((pr.left - rect.left) / P), r = Math.floor((pr.top - rect.top) / P)
       const w = Math.ceil(pr.width / P), h = Math.ceil(pr.height / P)
-      blockRect(c, r, w, h)
+      blockRect(c - 2, r - 1, w + 2, h + 1) // extra clearance so neighbouring pin labels stay off the frame
       parts.push({ id: 'photo', c, r, w, h, x: pr.left - rect.left, y: pr.top - rect.top, pw: pr.width, ph: pr.height, ref: 'U0 · VICENTE AZNAR', side: 'photo', born: t0, hover: 0 })
     }
 

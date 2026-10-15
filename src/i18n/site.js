@@ -67,7 +67,7 @@ export const copy = {
     },
     footer: { rev: 'VA-PORTFOLIO · REV 3.0 · CÓRDOBA AR · 2026', made: 'Diseño y código: Vicente Aznar', secrets: (n, t) => `secretos ${n}/${t}` },
     form: { name: 'Nombre', email: 'Tu email', message: 'Mensaje', placeholder: 'Contame qué querés construir o qué rol buscás.', send: 'Enviar mensaje', sending: 'Enviando…', sent: 'Enviado', okLine: 'Te llegó a mi bandeja. Te respondo a ese mail.', errLine: (m) => `No se pudo enviar. Escribime directo a ${m}.`, subject: (n) => `Portfolio: mensaje de ${n}`, or: 'O por otro lado' },
-    eggs: { mellon: 'Hablá, amigo, y entrá.', order66a: 'Transmisión entrante', order66b: 'Ejecutar la orden 66', dest: 'DESTINO', pres: 'PRESENTE', last: 'ÚLTIMA SALIDA', test: 'Banco de pruebas', granted: 'ACCESO CONCEDIDO', mate: '¿Te cebo uno?' },
+    eggs: { mellon: 'Hablá, amigo, y entrá.', order66b: 'Ejecutar la orden 66', dest: 'DESTINO', pres: 'PRESENTE', last: 'ÚLTIMA SALIDA', test: 'Banco de pruebas', granted: 'ACCESO CONCEDIDO', mate: '¿Te cebo uno?' },
     process: { title: 'Del problema a producción', intro: 'Me ocupo del ciclo completo. Así trabajo, con un caso real en cada etapa.' },
     about: { title: 'Sobre mí', github: 'Actividad en GitHub', profile: 'Ver perfil', total: '{{count}} contribuciones en el último año', less: 'Menos', more: 'Más', months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] },
     secrets: {
@@ -152,7 +152,7 @@ export const copy = {
     },
     footer: { rev: 'VA-PORTFOLIO · REV 3.0 · CÓRDOBA AR · 2026', made: 'Design and code: Vicente Aznar', secrets: (n, t) => `secrets ${n}/${t}` },
     form: { name: 'Name', email: 'Your email', message: 'Message', placeholder: 'Tell me what you want to build or which role you are hiring for.', send: 'Send message', sending: 'Sending…', sent: 'Sent', okLine: 'It is in my inbox. I will reply to that address.', errLine: (m) => `Could not send it. Write to me at ${m}.`, subject: (n) => `Portfolio: message from ${n}`, or: 'Or reach me elsewhere' },
-    eggs: { mellon: 'Speak, friend, and enter.', order66a: 'Incoming transmission', order66b: 'Execute order 66', dest: 'DESTINATION TIME', pres: 'PRESENT TIME', last: 'LAST TIME DEPARTED', test: 'Test jig', granted: 'ACCESS GRANTED', mate: 'Fancy a mate?' },
+    eggs: { mellon: 'Speak, friend, and enter.', order66b: 'Execute order 66', dest: 'DESTINATION TIME', pres: 'PRESENT TIME', last: 'LAST TIME DEPARTED', test: 'Test jig', granted: 'ACCESS GRANTED', mate: 'Fancy a mate?' },
     process: { title: 'From problem to production', intro: 'I own the whole cycle. This is how I work, with a real case at every stage.' },
     about: { title: 'About', github: 'GitHub activity', profile: 'See profile', total: '{{count}} contributions in the last year', less: 'Less', more: 'More', months: null },
     secrets: {

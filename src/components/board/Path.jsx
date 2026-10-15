@@ -9,8 +9,6 @@ import { PowerTitle } from './PowerTitle'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const LOGOS = { Gavia: '/images/projects/gavia/logo.webp' }
-
 // A vertical trace draws itself with the scroll and powers each role's pad as it arrives, while a
 // large sticky year keeps time on the left. Everything stays readable without hovering.
 export function Path() {
@@ -18,7 +16,7 @@ export function Path() {
   const T = copy[lang].path
   const root = useRef(null)
   const items = [
-    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), logo: LOGOS[e.company] })),
+    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang) })),
     ...academic.map((a) => ({ kind: 'study', name: l(a.degree, lang), role: a.institution.replace(' — ', ' · '), span: a.span, bullets: l(a.highlights, lang) })),
   ]
   const [active, setActive] = useState(0)
@@ -54,14 +52,11 @@ export function Path() {
         <div className="tl-list">
           <span className="tl-line" aria-hidden="true"><span className="tl-fill" /></span>
           <ol className="tl-items">
-          {items.map((it, i) => (
+          {items.map((it) => (
             <li key={it.name} className={`tl-item ${it.kind}`}>
-              {i === experience.length && <p className="tl-via">{T.study}</p>}
-              {i === 0 && <p className="tl-via">{T.work}</p>}
               <span className="tl-pad" aria-hidden="true" />
               <p className="tl-when">{it.span[1] == null ? T.ongoing(it.span[0]) : it.span[0]}</p>
               <div className="tl-head">
-                {it.logo && <img src={it.logo} alt="" width="40" height="40" loading="lazy" />}
                 <div>
                   <h3>{it.name}</h3>
                   <p className="tl-role">{it.role}</p>

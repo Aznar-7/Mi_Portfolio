@@ -79,7 +79,24 @@ export function EggStage() {
       {id === 'order66' && (
         <>
           <svg className="saber" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="-5" y1="8" x2="105" y2="92" /><line className="core" x1="-5" y1="8" x2="105" y2="92" /></svg>
-          <div className="holo"><span>{T.order66a}</span><b>{T.order66b}</b></div>
+          <svg className="projector" viewBox="0 0 400 420" aria-hidden="true">
+            <defs>
+              <linearGradient id="cone" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stopColor="#ff3b3b" stopOpacity=".55" />
+                <stop offset="1" stopColor="#ff3b3b" stopOpacity="0" />
+              </linearGradient>
+              <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#ff5a5a" /></pattern>
+              <clipPath id="beam"><polygon points="200,380 40,40 360,40" /></clipPath>
+            </defs>
+            <polygon className="cone" points="200,380 40,40 360,40" fill="url(#cone)" />
+            <g className="hologram">
+              <text x="200" y="190" textAnchor="middle" className="h66">66</text>
+              <rect x="40" y="40" width="320" height="340" fill="url(#scan)" opacity=".16" clipPath="url(#beam)" />
+            </g>
+            <ellipse cx="200" cy="384" rx="70" ry="12" className="emitter" />
+            <ellipse cx="200" cy="384" rx="34" ry="5" fill="#ff8080" />
+          </svg>
+          <p className="egg-caption sith">{T.order66b}</p>
         </>
       )}
 

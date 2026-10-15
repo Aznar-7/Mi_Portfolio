@@ -22,7 +22,7 @@ export function Contact() {
   }
   return (
     <section className="contact" id="contacto">
-      <PowerTitle text={T.title} />
+      <h2 className="sr-only">{T.title}</h2>
       <p className="big">{T.big}</p>
       <p className="sec-intro">{T.intro}</p>
       <div className="contact-grid">
@@ -30,23 +30,19 @@ export function Contact() {
       <ul className="conn">
         <li className="conn-silk" aria-hidden="true">{T.silk}</li>
         <li onPointerEnter={playHover} className={`pin primary${copied === 'ok' || copied === 'done' ? ' done' : ''}`}>
-          <span className="pin-n" aria-hidden="true">1</span>
           <span className="pin-k"><Mail size={14} aria-hidden="true" />Email</span>
           <a className="pin-v" href={`mailto:${site.email}`}>{site.email}</a>
           <button className="copy-btn" onClick={doCopy} aria-live="polite">{copied === 'ok' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied === 'ok' ? T.copied : copied === 'fail' ? T.copyFail : T.copy}</button>
         </li>
         <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-n" aria-hidden="true">2</span>
           <span className="pin-k"><LinkedInIcon size={14} />LinkedIn</span>
           <a className="pin-v" href={site.linkedin} target="_blank" rel="noopener noreferrer">{site.linkedin.split('/in/')[1]}</a>
         </li>
         <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-n" aria-hidden="true">3</span>
           <span className="pin-k"><GitHubIcon size={14} />GitHub</span>
           <a className="pin-v" href={site.github} target="_blank" rel="noopener noreferrer">{site.github.split('github.com/')[1]}</a>
         </li>
         <li className="pin" onPointerEnter={playHover}>
-          <span className="pin-n" aria-hidden="true">4</span>
           <span className="pin-k"><FileDown size={14} aria-hidden="true" />{T.cv}</span>
           <span className="pin-v">
             <a href={site.resumes.es.url} download={site.resumes.es.filename}>{T.es}</a> · <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.en}</a>

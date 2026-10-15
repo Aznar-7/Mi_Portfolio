@@ -106,8 +106,7 @@ function Feature({ project, lang, T }) {
         </div>
       </div>
       <div>
-        <p className="state"><i className="led live" />{T.status.prod}</p>
-        <h3>{project.title}</h3>
+        <h3>{project.title}<span className="inline-state"><i className="led live" />{T.status.prod}</span></h3>
         <p className="desc">{l(project.summary, lang)}</p>
         <Stack tech={project.tech} />
         <Links links={linksOf(project, T)} />
