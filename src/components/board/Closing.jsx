@@ -14,9 +14,9 @@ import { PowerTitle } from './PowerTitle'
 function Availability({ T, lang }) {
   const fmt = () => new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Cordoba' }).format(new Date())
   const [time, setTime] = useState(fmt)
-  useEffect(() => { const t = setInterval(() => setTime(fmt()), 30000); return () => clearInterval(t) })
+  useEffect(() => { const t = setInterval(() => setTime(fmt()), 30000); return () => clearInterval(t) }, [lang]) // eslint-disable-line react-hooks/exhaustive-deps -- fmt reads lang
   return (
-    <ul className="avail">
+    <ul className="avail-list">
       <li><i className="led live" aria-hidden="true" />{T.avail}</li>
       <li>{T.reply}</li>
       <li><time>{time}</time> {T.inCba}</li>
@@ -59,7 +59,7 @@ export function Contact() {
           <div className="mail-line">
             <Mail size={20} aria-hidden="true" />
             <a className="mail-big" href={`mailto:${site.email}`}>{site.email}</a>
-            <button className="copy-btn" onClick={doCopy} aria-label={T.copy}>
+            <button className="copy-btn" onClick={doCopy}>
               {copied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
               <span aria-live="polite">{copied ? T.copied : T.copy}</span>
             </button>

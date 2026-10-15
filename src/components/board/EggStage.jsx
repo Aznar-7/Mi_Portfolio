@@ -173,7 +173,7 @@ function Order66({ T }) {
           <span key={i} className={`bolt${b.fromLeft ? '' : ' rev'}`} style={{ '--y1': `${b.y1}vh`, '--y2': `${b.y2}vh`, '--d': `${b.d}s` }} />
         ))}
         {bolts.filter((_, i) => i % 2).map((b, i) => (
-          <span key={'h' + i} className="hit" style={{ left: `${b.hit[0]}vw`, top: `${b.hit[1]}vh`, '--d': `${b.d + 0.22}s` }} />
+          <span key={'h' + i} className="o66-hit" style={{ left: `${b.hit[0]}vw`, top: `${b.hit[1]}vh`, '--d': `${b.d + 0.22}s` }} />
         ))}
       </div>
       <p className="egg-caption sith o66-end">{T.o66end}</p>

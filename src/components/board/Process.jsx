@@ -107,7 +107,13 @@ export function Process() {
   const root = useRef(null), track = useRef(null)
   const [active, setActive] = useState(0)
   // phones and reduced motion get a plain vertical stack with every diagram drawn
-  const [flat] = useState(() => matchMedia('(prefers-reduced-motion: reduce), (max-width: 900px)').matches)
+  const [flat, setFlat] = useState(() => matchMedia('(prefers-reduced-motion: reduce), (max-width: 900px)').matches)
+  useEffect(() => {
+    const mq = matchMedia('(prefers-reduced-motion: reduce), (max-width: 900px)')
+    const on = () => setFlat(mq.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
 
   useEffect(() => {
     if (flat) return

@@ -10,7 +10,7 @@ import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { powerOn } from '@/lib/power'
 import { createBoard } from './engine'
 
-const SECTIONS = ['trabajo', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
+const SECTIONS = ['trabajo', 'proceso', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
 const githubUser = site.github.split('github.com/')[1]
 
 function Mark() {
@@ -72,7 +72,7 @@ function Portrait({ alt }) {
   }
   const rest = (e) => { e.currentTarget.style.removeProperty('--rx'); e.currentTarget.style.removeProperty('--ry') }
   return (
-    <figure className="hero-photo" tabIndex={0} onPointerMove={lean} onPointerLeave={rest}>
+    <figure className="hero-photo" onPointerMove={lean} onPointerLeave={rest}>
       <img src="/port.jpg" alt={alt} width="400" height="400" fetchPriority="high" />
     </figure>
   )

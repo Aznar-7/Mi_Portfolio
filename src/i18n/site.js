@@ -1,7 +1,7 @@
 // Copy for the board site. translations.js stays for the Ubuntu simulator.
 export const copy = {
   es: {
-    nav: { label: 'Secciones', trabajo: 'Trabajo', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Trayectoria', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
+    nav: { label: 'Secciones', trabajo: 'Trabajo', proceso: 'Proceso', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Trayectoria', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
     hero: {
       first: 'Vicente', last: 'Aznar',
       ledeStrong: 'Desarrollador full stack e IoT.',
@@ -88,7 +88,7 @@ export const copy = {
     },
   },
   en: {
-    nav: { label: 'Sections', trabajo: 'Work', sobre: 'About', taller: 'Stack', trayectoria: 'Experience', contacto: 'Contact', consola: 'Console', lang: 'Ver en español', langShort: 'ES', soundOn: 'Turn sound off', soundOff: 'Turn sound on' },
+    nav: { label: 'Sections', trabajo: 'Work', proceso: 'Process', sobre: 'About', taller: 'Stack', trayectoria: 'Experience', contacto: 'Contact', consola: 'Console', lang: 'Ver en español', langShort: 'ES', soundOn: 'Turn sound off', soundOff: 'Turn sound on' },
     hero: {
       first: 'Vicente', last: 'Aznar',
       ledeStrong: 'Full stack and IoT developer.',

@@ -75,13 +75,13 @@ function Flow({ project, lang, label }) {
         {shared && <span className="host">{shared}</span>}
         {nodes.map((n, i) => (
           <button key={n.id} className={`node${n.host === shared ? ' hosted' : ''}`} aria-pressed={active === i}
-            onClick={() => pick(i)} onPointerEnter={() => { playHover(); pick(i) }}>
+            onClick={() => pick(i)} onFocus={() => pick(i)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i) }}>
             <b>{l(n.name, lang)}</b><small>{n.host === shared ? n.tech : `${n.tech.split(',')[0]} · ${n.host}`}</small>
           </button>
         ))}
         <svg className="flow-trace" aria-hidden="true"><path ref={path} /><circle ref={dot} r="4" /></svg>
       </div>
-      <p className="flow-detail" aria-live="polite">{l(nodes[active].detail, lang)}</p>
+      <p className="flow-detail" id="flow-detail">{l(nodes[active].detail, lang)}</p>
     </div>
   )
 }
@@ -119,9 +119,10 @@ export function Work() {
 
   const choose = (id) => { if (id !== sel.id) { playSelect(); setSelId(id) } }
   const onKey = (e) => {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+    const dir = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key]
+    if (!dir) return
     e.preventDefault()
-    const i = list.findIndex((p) => p.id === sel.id), next = list[(i + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length]
+    const i = list.findIndex((p) => p.id === sel.id), next = list[(i + dir + list.length) % list.length]
     choose(next.id)
     listRef.current?.querySelector(`[data-id="${next.id}"]`)?.focus()
   }
@@ -158,7 +159,7 @@ export function Work() {
             return (
               <li key={p.id}>
                 <button type="button" data-id={p.id} id={`p-${p.id}`} className={p.id === sel.id ? 'on' : ''} aria-current={p.id === sel.id ? 'true' : undefined}
-                  onClick={() => choose(p.id)} tabIndex={p.id === sel.id ? 0 : -1}
+                  onClick={() => choose(p.id)} tabIndex={p.id === sel.id ? 0 : -1} aria-controls="inspector"
                   onPointerEnter={() => setHover(p.id)} onPointerLeave={() => setHover(null)}>
                   <span className="nl-ref" aria-hidden="true">{ref}</span>
                   <span className="nl-thumb">{p.image ? <img src={p.image} alt="" loading="lazy" /> : <ToolIcon name={p.tech[0]} size={20} />}</span>
@@ -166,7 +167,7 @@ export function Work() {
                     <span className="nl-title">{p.title}</span>
                     <span className="nl-line">{l(p.tagline, lang)}</span>
                   </span>
-                  <span className={`nl-led ${st}`} title={T.status[st]} />
+                  <span className={`nl-led ${st}`} /><span className="sr-only">{T.status[st]}</span>
                 </button>
               </li>
             )
@@ -202,7 +203,7 @@ function Inspector({ project, lang, T, refDes }) {
   const show = (i) => { playSelect(); setShot((i + shots.length) % shots.length) }
   // a datasheet: name, state and links on top; what it is and its stack beside a moderate image
   return (
-    <article className={`inspector ${layerOf(project)}`} aria-live="polite">
+    <article className={`inspector ${layerOf(project)}`} id="inspector">
       <span className="ins-corner tl" aria-hidden="true" /><span className="ins-corner tr" aria-hidden="true" />
       <span className="ins-corner bl" aria-hidden="true" /><span className="ins-corner br" aria-hidden="true" />
       <header className="ins-head">
