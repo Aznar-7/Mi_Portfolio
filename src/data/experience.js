@@ -69,14 +69,12 @@ export const academic = [
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
-        'Formación orientada al diseño, implementación, organización y control de sistemas de información para organizaciones.',
-        'Programación en distintos lenguajes y paradigmas (funcional, lógico y orientado a objetos) para modelar y resolver problemas.',
-        'Análisis y diseño de sistemas: requerimientos, modelado, arquitectura, ciclo de vida, testing y criterios para llevar una solución a producción.',
+        'Análisis y diseño de sistemas: requerimientos, modelado, arquitectura y pruebas.',
+        'Programación en paradigmas funcional (Haskell), lógico (Prolog) y orientado a objetos.',
       ],
       en: [
-        'Education focused on designing, implementing, organizing, and controlling information systems for organizations.',
-        'Programming across languages and paradigms (functional, logic and object-oriented) to model and solve problems.',
-        'Systems analysis and design: requirements, modeling, architecture, lifecycle, testing, and criteria for taking a solution to production.',
+        'Systems analysis and design: requirements, modeling, architecture and testing.',
+        'Programming across paradigms: functional (Haskell), logic (Prolog) and object-oriented.',
       ],
     },
   },
@@ -92,14 +90,12 @@ export const academic = [
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
-        'Implementación de modelos de lenguaje, aprendizaje automático y redes neuronales para resolver problemas complejos en diversos dominios.',
-        'Automatización de procesos mediante el uso de inteligencia artificial, mejorando la eficiencia y reduciendo errores en tareas repetitivas.',
-        'Manejo de herramientas y frameworks de IA como TensorFlow, PyTorch, y scikit-learn para desarrollar soluciones innovadoras.',
+        'Aprendizaje automático y redes neuronales con TensorFlow, PyTorch y scikit-learn.',
+        'Modelos de lenguaje aplicados a casos reales, como el RAG sobre las tarjetas de Jira que armé en Porta.',
       ],
       en: [
-        'Implementation of language models, machine learning, and neural networks to solve complex problems in various domains.',
-        'Automation of processes using artificial intelligence, improving efficiency and reducing errors in repetitive tasks.',
-        'Proficiency with AI tools and frameworks such as TensorFlow, PyTorch, and scikit-learn to develop innovative solutions.',
+        'Machine learning and neural networks with TensorFlow, PyTorch and scikit-learn.',
+        'Language models applied to real cases, like the RAG over Jira cards I built at Porta.',
       ],
     },
   },

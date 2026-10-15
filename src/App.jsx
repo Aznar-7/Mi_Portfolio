@@ -5,6 +5,7 @@ import { LanguageProvider, useLang } from '@/contexts/LanguageContext'
 import { SoundProvider } from '@/contexts/SoundContext'
 import { Hero } from '@/components/board/Hero'
 import { Work } from '@/components/board/Work'
+import { About } from '@/components/board/About'
 import { Shop } from '@/components/board/Shop'
 import { Path } from '@/components/board/Path'
 import { Contact, Console, Footer, SecretToast } from '@/components/board/Closing'
@@ -20,6 +21,7 @@ function Board() {
       <Hero />
       <main>
         <Work />
+        <About />
         <Shop />
         <Path />
         <Contact />

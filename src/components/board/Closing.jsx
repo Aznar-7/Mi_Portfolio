@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { Check, Copy, FileDown, Mail, Power } from 'lucide-react'
+import { useSoundEffects } from '@/contexts/SoundContext'
+import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
@@ -9,9 +12,10 @@ import { powerOn } from '@/lib/power'
 export function Contact() {
   const { lang } = useLang()
   const T = copy[lang].contact
+  const { playSuccess, playHover } = useSoundEffects()
   const [copied, setCopied] = useState(null) // null | 'ok' | 'fail'
   const doCopy = async () => {
-    try { await navigator.clipboard.writeText(site.email); setCopied('ok') } catch { setCopied('fail') }
+    try { await navigator.clipboard.writeText(site.email); setCopied('ok'); playSuccess() } catch { setCopied('fail') }
     setTimeout(() => setCopied((c) => (c === 'ok' ? 'done' : null)), 2200)
   }
   return (
@@ -21,25 +25,25 @@ export function Contact() {
       <p className="sec-intro">{T.intro}</p>
       <ul className="conn">
         <li className="conn-silk" aria-hidden="true">{T.silk}</li>
-        <li className={`pin primary${copied === 'ok' || copied === 'done' ? ' done' : ''}`}>
+        <li onPointerEnter={playHover} className={`pin primary${copied === 'ok' || copied === 'done' ? ' done' : ''}`}>
           <span className="pin-n" aria-hidden="true">1</span>
-          <span className="pin-k">Email</span>
+          <span className="pin-k"><Mail size={14} aria-hidden="true" />Email</span>
           <a className="pin-v" href={`mailto:${site.email}`}>{site.email}</a>
-          <button className="copy-btn" onClick={doCopy} aria-live="polite">{copied === 'ok' ? T.copied : copied === 'fail' ? T.copyFail : T.copy}</button>
+          <button className="copy-btn" onClick={doCopy} aria-live="polite">{copied === 'ok' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied === 'ok' ? T.copied : copied === 'fail' ? T.copyFail : T.copy}</button>
         </li>
-        <li className="pin">
+        <li className="pin" onPointerEnter={playHover}>
           <span className="pin-n" aria-hidden="true">2</span>
-          <span className="pin-k">LinkedIn</span>
+          <span className="pin-k"><LinkedInIcon size={14} />LinkedIn</span>
           <a className="pin-v" href={site.linkedin} target="_blank" rel="noopener noreferrer">{site.linkedin.split('/in/')[1]}</a>
         </li>
-        <li className="pin">
+        <li className="pin" onPointerEnter={playHover}>
           <span className="pin-n" aria-hidden="true">3</span>
-          <span className="pin-k">GitHub</span>
+          <span className="pin-k"><GitHubIcon size={14} />GitHub</span>
           <a className="pin-v" href={site.github} target="_blank" rel="noopener noreferrer">{site.github.split('github.com/')[1]}</a>
         </li>
-        <li className="pin">
+        <li className="pin" onPointerEnter={playHover}>
           <span className="pin-n" aria-hidden="true">4</span>
-          <span className="pin-k">{T.cv}</span>
+          <span className="pin-k"><FileDown size={14} aria-hidden="true" />{T.cv}</span>
           <span className="pin-v">
             <a href={site.resumes.es.url} download={site.resumes.es.filename}>{T.es}</a> · <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.en}</a>
           </span>
@@ -53,6 +57,7 @@ export function Contact() {
 export function Console() {
   const { lang } = useLang()
   const T = copy[lang].console
+  const { playTyping, playClick } = useSoundEffects()
   // the last reply belongs to the language it was written in; switching language shows the hint again
   const [out, setOut] = useState(null)
   const input = useRef(null)
@@ -74,6 +79,7 @@ export function Console() {
     e.preventDefault()
     const cmd = input.current.value.trim().toLowerCase().replace(/\s+/g, ' ')
     const run = COMMANDS[cmd]
+    playClick()
     run ? run() : say(T.notFound(cmd.split(' ')[0]))
   }
 
@@ -85,8 +91,8 @@ export function Console() {
         <p className="sec-intro">{T.intro}</p>
         <form className="term" onSubmit={submit} autoComplete="off">
           <label htmlFor="cmd" className="prompt">{T.prompt}</label>
-          <input id="cmd" ref={input} spellCheck="false" placeholder="ssh vicente" aria-describedby="term-out" autoCapitalize="off" />
-          <button type="submit" className="power-btn">{T.button}</button>
+          <input id="cmd" ref={input} spellCheck="false" placeholder="ssh vicente" aria-describedby="term-out" autoCapitalize="off" onKeyDown={(e) => e.key.length === 1 && playTyping()} />
+          <button type="submit" className="power-btn"><Power size={15} aria-hidden="true" />{T.button}</button>
         </form>
         <p className={`term-out${shown.elvish ? ' elvish' : ''}`} id="term-out" aria-live="polite">{shown.text}</p>
       </div>
@@ -111,10 +117,13 @@ export function Footer() {
 export function SecretToast() {
   const { lang } = useLang()
   const T = copy[lang].secrets
+  const { playUnlock } = useSoundEffects()
   const [msg, setMsg] = useState(null)
+  const unlock = useRef(playUnlock)
+  useEffect(() => { unlock.current = playUnlock })
   useEffect(() => {
     let t
-    const on = (e) => { setMsg(e.detail); clearTimeout(t); t = setTimeout(() => setMsg((m) => m && { ...m, hide: true }), 4200) }
+    const on = (e) => { if (e.detail.fresh) unlock.current(); setMsg(e.detail); clearTimeout(t); t = setTimeout(() => setMsg((m) => m && { ...m, hide: true }), 4200) }
     document.addEventListener('secret', on)
     return () => { document.removeEventListener('secret', on); clearTimeout(t) }
   }, [])

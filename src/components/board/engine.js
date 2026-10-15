@@ -24,8 +24,10 @@ const rnd = (a, b) => a + Math.random() * (b - a)
  * @param {HTMLElement[]} o.letters   name letters that catch the signal
  * @param {object} o.text           { routing(done,total), hint(touch), hint2, complete, parts: {id: [tip, sub]} }
  * @param {() => void} o.onComplete fired once six chips are soldered
+ * @param {() => void} [o.onSolder]   a chip lands (sound hook)
+ * @param {() => void} [o.onPartHover] a part is hovered (sound hook)
  */
-export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, letters, text, onComplete }) {
+export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, letters, text, onComplete, onSolder, onPartHover }) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const touch = matchMedia('(pointer: coarse)').matches
   const ctx = canvas.getContext('2d')
@@ -103,7 +105,9 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   }
 
   function setHint() {
-    statusEl.replaceChildren(text.hint(touch), Object.assign(document.createElement('b'), { textContent: 'U' + chipN }), document.createElement('br'), text.hint2)
+    statusEl.replaceChildren(text.hint(touch), Object.assign(document.createElement('b'), { textContent: 'U' + chipN }))
+    // only point at the parts when at least one fit on this screen
+    if (parts.some(p => !p.chip)) statusEl.append(document.createElement('br'), text.hint2)
   }
 
   function build() {
@@ -142,7 +146,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       const label = document.createElement('span')
       label.append(tip, Object.assign(document.createElement('small'), { textContent: sub }))
       a.append(label)
-      a.onpointerenter = a.onfocus = () => { p.over = true }
+      a.onpointerenter = a.onfocus = () => { p.over = true; onPartHover?.() }
       a.onpointerleave = a.onblur = () => { p.over = false }
       partsLayer.append(a)
     }
@@ -176,25 +180,28 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     drawBusBelow()
   }
 
-  // The exit bus continues in SVG under the hero: it keeps its spacing, turns 45° toward the page
-  // gutter and lands on pads right above the Work heading. Drawn by scroll in CSS.
+  // The exit bus continues in SVG under the hero: it drops, turns 45° into a horizontal run toward the
+  // page gutter (leftmost line turns first so none cross), then drops onto pads above the Work heading.
   function drawBusBelow() {
     const svg = root.querySelector('[data-bus]'), h2 = root.querySelector('#trabajo h2'), eth = parts.find(p => p.exit)
     if (!svg || !h2) return
     svg.replaceChildren()
     const lines = eth ? eth.exit.filter(t => t.b.r >= rows - 1).map(t => t.pts[t.pts.length - 1].x).sort((a, b) => a - b) : []
     if (!lines.length) { svg.style.height = ''; h2.style.paddingTop = ''; return }
-    const dx = lines[0] - (h2.getBoundingClientRect().left + 5), y1 = 60, yEnd = y1 + Math.max(0, dx) + 140
-    svg.style.height = yEnd + 'px'; h2.style.paddingTop = yEnd + 36 + 'px'
+    const gutter = h2.getBoundingClientRect().left + 5, c = P / 2, y0 = 36, yEnd = y0 + lines.length * P + 70
+    svg.style.height = yEnd + 'px'; h2.style.paddingTop = yEnd + 30 + 'px'
     const NS = 'http://www.w3.org/2000/svg'
-    for (const x of lines) {
-      const tx = x - dx
+    lines.forEach((x, i) => {
+      const tx = gutter + i * P, y = y0 + i * P
+      const d = x - tx > 2 * c
+        ? `M${x} 0 V${y - c} L${x - c} ${y} H${tx + c} L${tx} ${y + c} V${yEnd}`
+        : `M${x} 0 V${yEnd}`
       const path = document.createElementNS(NS, 'path')
-      path.setAttribute('pathLength', '1'); path.setAttribute('d', `M${x} 0 V${y1} L${tx} ${y1 + dx} V${yEnd}`); path.setAttribute('stroke', `rgba(${C.f},.55)`)
+      path.setAttribute('pathLength', '1'); path.setAttribute('d', d); path.setAttribute('stroke', `rgba(${C.f},.55)`)
       const pad = document.createElementNS(NS, 'circle')
       pad.setAttribute('cx', tx); pad.setAttribute('cy', yEnd); pad.setAttribute('r', '3.4'); pad.setAttribute('fill', `rgb(${C.pad})`)
       svg.append(path, pad)
-    }
+    })
   }
 
   function sweep() { letters.forEach((l, i) => { l.classList.remove('hit'); void l.offsetWidth; l.style.animationDelay = i * 45 + 'ms'; l.classList.add('hit') }) }
@@ -223,6 +230,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       if (cells) Object.assign(addTrace(cells, side < 0 ? 'f' : 'b', 0), { born: performance.now() + 140 + i++ * 70, hot: 1, spark: true })
     }
     chipN++
+    onSolder?.()
     if (!reduced) later(sweep, 600)
     if (chipN === 7) {
       statusEl.replaceChildren(Object.assign(document.createElement('b'), { textContent: text.complete }))

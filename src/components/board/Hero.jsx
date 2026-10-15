@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
+import { ChevronDown, Download, Volume2, VolumeX } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
+import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
 import { findSecret } from '@/lib/secrets'
+import { useLatestPush, timeAgo } from '@/hooks/useLatestPush'
+import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { createBoard } from './engine'
 
-const SECTIONS = ['trabajo', 'taller', 'trayectoria', 'contacto', 'consola']
+const SECTIONS = ['trabajo', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
+const githubUser = site.github.split('github.com/')[1]
 
 function Mark() {
   return (
@@ -21,35 +26,49 @@ function Mark() {
 // Sticks once the hero copy scrolls away and marks the section in view
 function Header({ copyRef }) {
   const { lang, toggle } = useLang()
+  const { isMuted, toggleMute, playHover, playNavigation, playToggle } = useSoundEffects()
   const T = copy[lang].nav
   const [stuck, setStuck] = useState(false)
   const [current, setCurrent] = useState(null)
 
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' })
+    // back on the hero nothing is current
+    const io = new IntersectionObserver(([e]) => { setStuck(!e.isIntersecting); if (e.isIntersecting) setCurrent(null) }, { rootMargin: '-80px 0px 0px 0px' })
     io.observe(copyRef.current)
-    const spy = new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && setCurrent(e.target.id)), { rootMargin: '-45% 0px -50% 0px' })
+    const spy = new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && setCurrent(e.target.id)), { rootMargin: '-40% 0px -55% 0px' })
     SECTIONS.forEach((id) => { const el = document.getElementById(id); if (el) spy.observe(el) })
     return () => { io.disconnect(); spy.disconnect() }
   }, [copyRef])
 
   return (
     <header className={`site-header${stuck ? ' stuck' : ''}`}>
-      <a href="#top" aria-label="Vicente Aznar"><Mark /></a>
+      <a href="#top" aria-label="Vicente Aznar" onClick={playNavigation}><Mark /></a>
       <nav aria-label={T.label}>
         {SECTIONS.map((id) => (
-          <a key={id} href={`#${id}`} aria-current={current === id}>{T[id]}</a>
+          <a key={id} href={`#${id}`} aria-current={current === id} onPointerEnter={playHover} onClick={playNavigation}>{T[id]}</a>
         ))}
       </nav>
-      <button className="lang" onClick={toggle} aria-label={T.lang} lang={lang === 'es' ? 'en' : 'es'}>{T.langShort}</button>
+      <div className="tools-bar">
+        <a className="icon-btn" href={site.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" onPointerEnter={playHover}><GitHubIcon size={17} /></a>
+        <a className="icon-btn" href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" onPointerEnter={playHover}><LinkedInIcon size={17} /></a>
+        <button className={`icon-btn${isMuted ? '' : ' on'}`} onClick={toggleMute} aria-pressed={!isMuted} aria-label={isMuted ? T.soundOff : T.soundOn}>
+          {isMuted ? <VolumeX size={17} aria-hidden="true" /> : <Volume2 size={17} aria-hidden="true" />}
+        </button>
+        <button className="icon-btn lang" onClick={() => { playToggle(); toggle() }} aria-label={T.lang}>{T.langShort}</button>
+      </div>
     </header>
   )
 }
 
 export function Hero() {
   const { lang } = useLang()
+  const { playClick, playHover, playSuccess } = useSoundEffects()
   const T = copy[lang].hero
+  const push = useLatestPush(githubUser)
   const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null)
+  // the engine lives outside React; it reads the latest sound callbacks through a ref
+  const sounds = useRef({})
+  useEffect(() => { sounds.current = { playClick, playHover, playSuccess } })
 
   // the board is rebuilt per language so its labels follow it
   useEffect(() => {
@@ -63,10 +82,12 @@ export function Hero() {
         canvas: canvasRef.current,
         partsLayer: partsRef.current,
         statusEl: statusRef.current,
-        keepOut: [copyRef.current, statusRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .lang')],
+        keepOut: [copyRef.current, statusRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
         letters: [...hero.querySelectorAll('h1 .l')],
         text: T,
-        onComplete: () => findSecret('placa'),
+        onComplete: () => { sounds.current.playSuccess?.(); findSecret('placa') },
+        onSolder: () => sounds.current.playClick?.(),
+        onPartHover: () => sounds.current.playHover?.(),
       })
     })
     return () => { cancelled = true; board?.destroy() }
@@ -80,14 +101,36 @@ export function Hero() {
       <Header copyRef={copyRef} />
       <div ref={partsRef} />
       <div className="hero-copy" ref={copyRef}>
+        <div className="hero-meta">
+          <img src="/port.jpg" alt={T.portrait} width="44" height="44" />
+          <p>
+            <span className="avail"><i className="led live" />{T.available}</span>
+            <span>{T.place}</span>
+          </p>
+        </div>
         <h1 aria-label={`${T.first} ${T.last}`}>
           {letters(T.first, 0)}<br />{letters(T.last, 100)}
         </h1>
         <p className="lede"><strong>{T.ledeStrong}</strong> {T.lede}</p>
         <div className="cta">
-          <a className="btn" href="#trabajo">{T.ctaWork}</a>
-          <a className="btn ghost" href={`mailto:${site.email}`}>{T.ctaMail}</a>
+          <a className="btn" href="#trabajo" onClick={playClick}>{T.ctaWork}</a>
+          <a className="btn ghost" href={`mailto:${site.email}`} onClick={playClick}>{T.ctaMail}</a>
+          <details className="cv">
+            <summary className="btn ghost" onClick={playClick}><Download size={15} aria-hidden="true" />{T.cv}<ChevronDown size={14} aria-hidden="true" className="chev" /></summary>
+            <div className="cv-menu">
+              <a href={site.resumes.es.url} download={site.resumes.es.filename}>{T.cvEs}</a>
+              <a href={site.resumes.en.url} download={site.resumes.en.filename}>{T.cvEn}</a>
+            </div>
+          </details>
         </div>
+        {/* the row keeps its height while GitHub answers, so the board routes around it from the start */}
+        <p className="push">
+          {push && (
+            <a href={`${site.github}/${push.repo}`} target="_blank" rel="noopener noreferrer">
+              <GitHubIcon size={13} />{T.lastPush(timeAgo(push.at, lang), push.repo)}
+            </a>
+          )}
+        </p>
       </div>
       {/* visual hint only: the parts are reachable as links and the counter would spam screen readers */}
       <p className="status" ref={statusRef} aria-hidden="true" />

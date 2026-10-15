@@ -4,6 +4,8 @@ import { copy } from '@/i18n/site'
 import { skillGroups } from '@/data/skills'
 import { projects } from '@/data/projects'
 import { l } from '@/lib/utils'
+import { useSoundEffects } from '@/contexts/SoundContext'
+import { ToolIcon } from './ToolIcon'
 
 // Everywhere a tool can point: the projects plus the day job
 const PLACES = [
@@ -15,11 +17,13 @@ const PLACES = [
 export function Shop() {
   const { lang } = useLang()
   const T = copy[lang].shop
+  const { playHover } = useSoundEffects()
   const [pick, setPick] = useState(null) // { tool, used }
   const [wires, setWires] = useState([])
   const section = useRef(null), places = useRef({})
 
   const choose = (tool, used, btn) => {
+    if (pick?.tool !== tool) playHover()
     setPick({ tool, used })
     if (matchMedia('(max-width: 900px)').matches) return setWires([])
     const s = section.current.getBoundingClientRect(), a = btn.getBoundingClientRect()
@@ -49,7 +53,7 @@ export function Shop() {
                   return (
                     <button key={tool} className={`tool${used.length ? '' : ' idle'}`} aria-pressed={pick?.tool === tool}
                       onPointerEnter={go} onFocus={go} onClick={go}>
-                      {tool === '3D Modeling' && lang === 'es' ? 'Modelado 3D' : tool}
+                      <ToolIcon name={tool} />{tool === '3D Modeling' && lang === 'es' ? 'Modelado 3D' : tool}
                     </button>
                   )
                 })}
@@ -61,7 +65,7 @@ export function Shop() {
           <p className="ev-label" aria-live="polite">
             {!pick ? T.pick : pick.used.length ? T.count(pick.tool, pick.used.length) : T.none(pick.tool)}
           </p>
-          <ul className="ev-list">
+          <ul className={`ev-list${pick ? '' : ' rest'}`}>
             {PLACES.map((p) => (
               <li key={p.id} ref={(el) => { places.current[p.id] = el }} className={pick?.used.includes(p.id) ? 'on' : undefined}>
                 {p.name}<small>{T.kind[p.kind]}</small>
