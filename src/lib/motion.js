@@ -62,9 +62,14 @@ export function initMotion(root) {
     }
   }, root)
 
-  // images and the lazy calendar change heights after load
-  const refresh = () => ScrollTrigger.refresh()
-  addEventListener('load', refresh)
-  const t = setTimeout(refresh, 1500)
-  return () => { ctx.revert(); removeEventListener('load', refresh); clearTimeout(t) }
+  // Any height change (a project row opening, images, the lazy calendar) moves every trigger below
+  // it; without a refresh the Process pin fires early and lands on top of Work.
+  let t, lastH = root.offsetHeight
+  const ro = new ResizeObserver(() => {
+    if (Math.abs(root.offsetHeight - lastH) < 2) return
+    lastH = root.offsetHeight
+    clearTimeout(t); t = setTimeout(() => ScrollTrigger.refresh(), 150)
+  })
+  ro.observe(root)
+  return () => { ctx.revert(); ro.disconnect(); clearTimeout(t) }
 }

@@ -3,14 +3,15 @@ import { projects } from '@/data/projects'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { l } from '@/lib/utils'
 import { goTo } from '@/lib/motion'
+import { Planet } from './Planet'
 import '@/styles/galaxy.css'
 
 // Where the hyperspace jump comes out: a spiral galaxy turning slowly, with the portfolio charted
 // as star systems. Pick one for a holo readout; "set course" drops you at that part of the page.
 
 const T = {
-  es: { title: 'Una galaxia muy, muy lejana', sub: 'Carta estelar del portfolio', back: 'Volver al hiperespacio', pick: 'Elegí un sistema.', go: 'Fijar rumbo', close: 'Cerrar', sector: 'Sector' },
-  en: { title: 'A galaxy far, far away', sub: 'A star chart of the portfolio', back: 'Back through hyperspace', pick: 'Pick a system.', go: 'Set course', close: 'Close', sector: 'Sector' },
+  es: { title: 'Una galaxia muy, muy lejana', sub: 'Carta estelar del portfolio', back: 'Salir de la galaxia', pick: 'Tocá un sistema para viajar hasta él. Cada planeta es una parte del portfolio.', go: 'Fijar rumbo a esta sección', galaxy: 'Volver a la galaxia', prev: 'Sistema anterior', next: 'Sistema siguiente', sector: 'Sistema' },
+  en: { title: 'A galaxy far, far away', sub: 'A star chart of the portfolio', back: 'Leave the galaxy', pick: 'Tap a system to travel there. Every planet is a part of the portfolio.', go: 'Set course for this section', galaxy: 'Back to the galaxy', prev: 'Previous system', next: 'Next system', sector: 'System' },
 }
 
 const P = Object.fromEntries(projects.map((p) => [p.id, p]))
@@ -92,8 +93,9 @@ function paintGalaxy(size) {
 
 export function Galaxy({ lang = 'es', onExit }) {
   const t = T[lang] ?? T.es
-  const { playSelect, playClick } = useSoundEffects()
-  const [sel, setSel] = useState(null)
+  const { playClick, playEgg } = useSoundEffects()
+  const [sel, setSel] = useState(null) // the system we are visiting
+  const [warp, setWarp] = useState(null) // { x, y } while jumping toward a system
   const rootRef = useRef(null), canvasRef = useRef(null), backRef = useRef(null), marks = useRef({})
   const sys = SYSTEMS.find((p) => p.id === sel)
   const proj = sys?.project && P[sys.project]
@@ -143,12 +145,28 @@ export function Galaxy({ lang = 'es', onExit }) {
   }, [])
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') { if (sel) setSel(null); else onExit() } }
+    const onKey = (e) => {
+      if (e.key === 'Escape') { if (sel) setSel(null); else onExit() }
+      if (sel && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        const n = SYSTEMS.length, i = SYSTEMS.findIndex((x) => x.id === sel)
+        playEgg('warp'); setSel(SYSTEMS[(i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n].id)
+      }
+    }
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
-  }, [sel, onExit])
+  }, [sel, onExit, playEgg])
 
-  const pick = (id) => { playSelect(); setSel((s) => (s === id ? null : id)) }
+  // jump: the galaxy rushes toward the system, then the planet view takes over
+  const pick = (id) => {
+    const b = marks.current[id]?.getBoundingClientRect()
+    playEgg('warp')
+    setWarp(b ? { x: b.left + 8, y: b.top + 8 } : { x: innerWidth / 2, y: innerHeight / 2 })
+    setTimeout(() => { setSel(id); setWarp(null) }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650)
+  }
+  const hop = (dir) => {
+    const i = SYSTEMS.findIndex((x) => x.id === sel)
+    playEgg('warp'); setSel(SYSTEMS[(i + dir + SYSTEMS.length) % SYSTEMS.length].id)
+  }
   const go = () => {
     playClick()
     const to = sys.project ? `p:${sys.project}` : sys.to
@@ -157,7 +175,8 @@ export function Galaxy({ lang = 'es', onExit }) {
   }
 
   return (
-    <div className="gx" ref={rootRef} role="dialog" aria-modal="true" aria-labelledby="gx-title">
+    <div className={`gx${warp ? ' warping' : ''}${sel ? ' visiting' : ''}`} ref={rootRef} role="dialog" aria-modal="true" aria-labelledby="gx-title"
+      style={warp ? { '--wx': `${warp.x}px`, '--wy': `${warp.y}px` } : undefined}>
       <canvas ref={canvasRef} className="gx-sky" aria-hidden="true" />
       <ul className="gx-systems">
         {SYSTEMS.map((s, i) => (
@@ -176,20 +195,28 @@ export function Galaxy({ lang = 'es', onExit }) {
       </header>
       <button ref={backRef} type="button" className="gx-back" onClick={() => { playClick(); onExit() }}>{t.back}</button>
 
-      <div className={`gx-card${sys ? ' on' : ''}`} aria-live="polite" key={sel ?? 'none'}>
-        {sys ? (
-          <>
+      <p className="gx-hint">{t.pick}</p>
+
+      {sys && (
+        <section className="gx-visit" key={sys.id} aria-live="polite">
+          <Planet world={sys.id} className="gx-world" />
+          <div className="gx-card">
             <small>{t.sector} · {sys.name}</small>
             <h3>{proj ? proj.title : l(sys.real, lang)}</h3>
             <p className="flavor">{l(sys.text, lang)}</p>
             {proj && <p>{l(proj.tagline, lang)}</p>}
             <div className="gx-actions">
               <button type="button" className="go" onClick={go}>{t.go}</button>
-              <button type="button" onClick={() => setSel(null)}>{t.close}</button>
+              <button type="button" onClick={() => { playClick(); setSel(null) }}>{t.galaxy}</button>
             </div>
-          </>
-        ) : <p className="hint">{t.pick}</p>}
-      </div>
+            <div className="gx-hop">
+              <button type="button" onClick={() => hop(-1)} aria-label={t.prev}>←</button>
+              <span>{SYSTEMS.findIndex((x) => x.id === sys.id) + 1} / {SYSTEMS.length}</span>
+              <button type="button" onClick={() => hop(1)} aria-label={t.next}>→</button>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }

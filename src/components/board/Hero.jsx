@@ -64,8 +64,15 @@ function Header({ copyRef }) {
 // The portrait sits on the board as part U0: a calm duotone in the board's silkscreen tones that
 // turns to full colour on hover, so the face reads first and the effect stays quiet.
 function Portrait({ alt }) {
+  // a gentle lean toward the pointer, at most a few degrees
+  const lean = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--rx', `${((e.clientX - r.left) / r.width - 0.5) * 8}deg`)
+    e.currentTarget.style.setProperty('--ry', `${(0.5 - (e.clientY - r.top) / r.height) * 8}deg`)
+  }
+  const rest = (e) => { e.currentTarget.style.removeProperty('--rx'); e.currentTarget.style.removeProperty('--ry') }
   return (
-    <figure className="hero-photo" tabIndex={0}>
+    <figure className="hero-photo" tabIndex={0} onPointerMove={lean} onPointerLeave={rest}>
       <img src="/port.jpg" alt={alt} width="400" height="400" fetchPriority="high" />
     </figure>
   )
@@ -106,7 +113,7 @@ export function Hero() {
     return () => { cancelled = true; board?.destroy() }
   }, [T])
 
-  const letters = (word, offset) => [...word].map((ch, i) => <span key={offset + i} className="l" aria-hidden="true">{ch}</span>)
+  const letters = (word, offset, cls = 'l') => [...word].map((ch, i) => <span key={offset + i} className={cls} aria-hidden="true">{ch}</span>)
 
   return (
     <section className="hero" id="top" ref={heroRef}>
@@ -124,7 +131,7 @@ export function Hero() {
           </p>
         </div>
         <h1 aria-label={`${T.first} ${T.last}`}>
-          {letters(T.first, 0)}<br />{letters(T.last, 100)}
+          {letters(T.first, 0)}<br />{letters(T.last, 100, 'l last')}
         </h1>
         <p className="lede"><strong>{T.ledeStrong}</strong> {T.lede}</p>
         <div className="cta">

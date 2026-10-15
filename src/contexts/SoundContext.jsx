@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { CUES } from '@/lib/sfx'
 
 const SoundContext = createContext(null)
 const SOUND_KEY = 'site_sound'
@@ -295,38 +296,10 @@ export function SoundProvider({ children }) {
     note(ctx.current, 360, 'sine', 0.055, 0.002, 0.060, 480)
   }, [ok])
 
-  /**
-   * Easter egg cues, all synthesized (no film audio): a harp run for the doors of Durin, a saber
-   * ignition, an engine rev that breaks into the time jump, a hyperspace whoosh, test beeps,
-   * an access chime and mate bubbles.
-   */
+  // Easter egg cues live in lib/sfx (filters, noise and a shared echo); this only gates them on mute
   const playEgg = useCallback((id) => {
     if (!ok()) return
-    const c = ctx.current
-    const cues = {
-      mellon: () => [523, 659, 784, 988, 1175, 1568].forEach((f, i) => note(c, f, 'sine', 0.05, 0.004, 1.4, null, i * 0.09)),
-      order66: () => {
-        note(c, 70, 'sawtooth', 0.05, 0.02, 0.5, 140)
-        note(c, 110, 'triangle', 0.06, 0.05, 1.6)
-        noise(c, 0.05, 0.35, 2400, 300)
-      },
-      mph: () => {
-        note(c, 55, 'sawtooth', 0.045, 0.3, 1.5, 420)
-        note(c, 110, 'square', 0.015, 0.3, 1.5, 840)
-        noise(c, 0.18, 0.9, 900, null, 1.8)
-        ;[1.8, 1.95, 2.08].forEach((t) => note(c, 90, 'sine', 0.14, 0.003, 0.25, 30, t))
-      },
-      hyperspace: () => { noise(c, 0.12, 1.2, 4000, 200); note(c, 180, 'sawtooth', 0.03, 0.2, 1, 1400) },
-      placa: () => [0, 0.14, 0.28].forEach((t, i) => note(c, i === 2 ? 1320 : 990, 'square', 0.03, 0.002, 0.08, null, t)),
-      hire: () => [392, 523, 659, 784].forEach((f, i) => note(c, f, 'triangle', 0.05, 0.003, 0.35, null, 0.9 + i * 0.07)),
-      mate: () => Array.from({ length: 7 }, (_, i) => note(c, 300 + Math.random() * 300, 'sine', 0.04, 0.002, 0.07, 900, i * 0.11 + Math.random() * 0.05)),
-      // the map unrolls: a slow open fifth swelling under a high bell
-      middle: () => {
-        ;[147, 220, 294].forEach((f) => note(c, f, 'triangle', 0.035, 0.6, 2.4))
-        note(c, 1175, 'sine', 0.025, 0.01, 1.6, null, 0.5)
-      },
-    }
-    cues[id]?.()
+    CUES[id]?.(ctx.current)
   }, [ok])
 
   const value = {

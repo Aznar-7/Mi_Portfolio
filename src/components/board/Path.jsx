@@ -75,17 +75,19 @@ export function Path() {
         </div>
       </div>
       <div className="edu">
-        <h3 className="edu-title"><span className="tl-silk" aria-hidden="true">U9 · </span>{T.study}</h3>
-        <ul className="edu-grid">
+        <h3 className="edu-title">{T.study}</h3>
+        <ol className="edu-list">
           {academic.map((a) => (
-            <li key={a.degree.es} className="edu-card">
-              <p className="tl-when">{a.span[1] == null ? T.ongoing(a.span[0]) : a.span.join(' – ')}</p>
-              <h4>{l(a.degree, lang)}</h4>
-              <p className="tl-role">{a.institution.replace(' — ', ' · ')}</p>
-              <ul>{l(a.highlights, lang).map((b) => <li key={b}>{b}</li>)}</ul>
+            <li key={a.degree.es}>
+              <p className="edu-when">{a.span[1] == null ? T.ongoing(a.span[0]) : a.span.join(' – ')}</p>
+              <div className="edu-what">
+                <h4>{l(a.degree, lang)}</h4>
+                <p className="edu-where">{a.institution.replace(' — ', ' · ')}</p>
+              </div>
+              <p className="edu-note">{l(a.highlights, lang).join(' ')}</p>
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </section>
   )

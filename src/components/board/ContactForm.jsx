@@ -53,7 +53,7 @@ export function ContactForm() {
       </div>
       <div className="field wide">
         <label htmlFor="f-msg">{T.message}</label>
-        <textarea id="f-msg" name="message" rows={5} required minLength={10} maxLength={4000} placeholder={T.placeholder} />
+        <textarea id="f-msg" name="message" rows={4} required minLength={10} maxLength={4000} placeholder={T.placeholder} />
       </div>
       <input type="checkbox" name="botcheck" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div className="form-foot wide">

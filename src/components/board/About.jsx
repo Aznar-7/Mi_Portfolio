@@ -60,22 +60,23 @@ export function About() {
   return (
     <section className="about" id="sobre">
       <PowerTitle text={T.title} />
-      <div className="about-top">
-        <p className="about-lead">{lead}</p>
+      {/* the portrait beside the words, then the facts in one line, then what is live right now */}
+      <div className="about-intro">
         <figure className="portrait">
           <img src="/port.jpg" alt="Vicente Aznar" width="400" height="400" loading="lazy" />
           <figcaption>Vicente Aznar · Córdoba</figcaption>
         </figure>
+        <div className="about-text">
+          <p className="about-lead">{lead}</p>
+          <div className="about-body">{rest.map((p) => <p key={p}>{p}</p>)}</div>
+        </div>
       </div>
-      <div className="about-cols">
-        <div className="about-body">{rest.map((p) => <p key={p}>{p}</p>)}</div>
-        <dl className="facts">
-          {about.quickFacts.map((f) => (
-            <div key={l(f.label, lang)}><dt>{l(f.label, lang)}</dt><dd>{l(f.value, lang)}</dd></div>
-          ))}
-        </dl>
-        <Now T={T} lang={lang} />
-      </div>
+      <dl className="facts">
+        {about.quickFacts.map((f) => (
+          <div key={l(f.label, lang)}><dt>{l(f.label, lang)}</dt><dd>{l(f.value, lang)}</dd></div>
+        ))}
+      </dl>
+      <div className="about-live">
       <figure className="activity">
         <figcaption>
           <span><GitHubIcon size={15} />{T.github}</span>
@@ -96,6 +97,8 @@ export function About() {
           </Suspense>
         </div>
       </figure>
+      <Now T={T} lang={lang} />
+      </div>
     </section>
   )
 }

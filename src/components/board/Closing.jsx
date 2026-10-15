@@ -9,6 +9,7 @@ import { findSecret, useSecretsFound, SECRETS } from '@/lib/secrets'
 import { powerOn } from '@/lib/power'
 import { ContactForm } from './ContactForm'
 import { PowerTitle } from './PowerTitle'
+import { Mascot } from './Mascot'
 
 // Email first and large, the other channels as one clean list; the form sits in its own panel
 export function Contact() {
@@ -28,7 +29,7 @@ export function Contact() {
   ]
   return (
     <section className="contact" id="contacto">
-      <h2 className="sr-only">{T.title}</h2>
+      <PowerTitle text={T.title} />
       <div className="contact-split">
         <div className="contact-left">
           <p className="big">{T.big}</p>
@@ -70,6 +71,7 @@ export function Console() {
   const { playTyping, playClick } = useSoundEffects()
   // the last reply belongs to the language it was written in; switching language shows the hint again
   const [out, setOut] = useState(null)
+  const chip = (kind) => document.dispatchEvent(new CustomEvent('chip', { detail: kind })) // the mascot listens
   const input = useRef(null)
   const shown = out?.lang === lang ? out : { text: T.hint }
   const say = (text, elvish = false) => setOut({ text, elvish, lang })
@@ -92,6 +94,7 @@ export function Console() {
     const run = COMMANDS[cmd]
     playClick()
     run ? run() : say(T.notFound(cmd.split(' ')[0]))
+    chip(run ? 'happy' : 'confused')
   }
 
   return (
@@ -100,12 +103,17 @@ export function Console() {
         <span className="conn-silk" aria-hidden="true">{T.silk}</span>
         <PowerTitle text={T.title} />
         <p className="sec-intro">{T.intro}</p>
+        <div className="power-row">
+        <div className="power-term">
         <form className="term" onSubmit={submit} autoComplete="off">
           <label htmlFor="cmd" className="prompt">{T.prompt}</label>
-          <input id="cmd" ref={input} spellCheck="false" placeholder="ssh vicente" aria-describedby="term-out" autoCapitalize="off" onKeyDown={(e) => e.key.length === 1 && playTyping()} />
+          <input id="cmd" ref={input} spellCheck="false" placeholder="ssh vicente" aria-describedby="term-out" autoCapitalize="off" onKeyDown={(e) => { if (e.key.length === 1) { playTyping(); chip('typing') } }} />
           <button type="submit" className="power-btn"><Power size={15} aria-hidden="true" />{T.button}</button>
         </form>
         <p className={`term-out${shown.elvish ? ' elvish' : ''}`} id="term-out" aria-live="polite">{shown.text}</p>
+        </div>
+        <Mascot lang={lang} />
+        </div>
       </div>
     </section>
   )

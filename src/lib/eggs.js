@@ -48,9 +48,9 @@ export function installEggs() {
   window.hire = () => { findSecret('devtools'); return site.email }
   offs.push(() => { delete window.hire })
 
-  // Mate: three quiet minutes
+  // Mate: a quiet minute
   let idle
-  const reset = () => { clearTimeout(idle); idle = setTimeout(() => findSecret('mate'), 180000) }
+  const reset = () => { clearTimeout(idle); idle = setTimeout(() => findSecret('mate'), 60000) }
   for (const ev of ['pointermove', 'keydown', 'scroll', 'touchstart']) on(window, ev, reset, { passive: true })
   reset()
   offs.push(() => clearTimeout(idle))
