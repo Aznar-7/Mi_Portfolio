@@ -21,31 +21,67 @@ export const experience = [
   },
   {
     type: 'work',
-    role: { es: 'Full Stack Developer', en: 'Full Stack Developer' },
+    role: {
+      es: 'Full Stack Developer',
+      en: 'Full Stack Developer'
+    },
     company: 'Porta Hnos',
-    period: { es: '2025 — hoy', en: '2025 — now' },
-    span: [2025, null], // [from, to]; null means ongoing
-    tech: ['React', 'Django', 'PostgreSQL', 'Kotlin', 'Gradle', 'Jira'],
-    // figures already stated in the impact lines below
+    period: {
+      es: '2025 — actualidad',
+      en: '2025 — Present'
+    },
+    span: [2025, null],
+    tech: [
+      'React',
+      'Django',
+      'Python',
+      'PostgreSQL',
+      'Kotlin',
+      'Gradle',
+      'Azure AI Search',
+      'Azure Blob Storage',
+      'Jira',
+      'Industrial IoT'
+    ],
     stats: [
-      { value: '4', label: { es: 'sistemas internos completos', en: 'complete internal systems' } },
-      { value: '−40%', label: { es: 'tiempo de gestión interna', en: 'internal management time' } },
-      { value: '+30%', label: { es: 'velocidad para sacar features', en: 'faster feature delivery' } },
+      {
+        value: '10+',
+        label: {
+          es: 'sistemas empresariales desarrollados',
+          en: 'business systems developed'
+        }
+      },
+      {
+        value: 'E2E',
+        label: {
+          es: 'integración de IA e infraestructura cloud',
+          en: 'AI and cloud infrastructure integration'
+        }
+      },
+      {
+        value: 'Web + Mobile',
+        label: {
+          es: 'software conectado con operaciones industriales',
+          en: 'software connected to industrial operations'
+        }
+      }
     ],
     impact: {
       es: [
-        'Desarrollé cuatro sistemas internos completos con React, Django y PostgreSQL que reemplazaron procesos manuales. El tiempo de gestión interna bajó un 40%.',
-        'Armé la librería de componentes React que el equipo adoptó como estándar. Las features nuevas salen un 30% más rápido.',
-        'Construí un sistema RAG sobre las tarjetas de Jira: los supervisores preguntan en lenguaje natural cómo viene cada proyecto.',
-        'Integré APIs externas y migré herramientas legacy a un stack moderno, en sprints de dos semanas.',
+        'Diseñé y desarrollé más de diez sistemas internos para distintas áreas de la empresa, incluyendo Capital Humano, Higiene y Seguridad, gestión de pañol, pallets e inventario, y herramientas de gestión operativa para stock, lotes y sorteos.',
+        'Desarrollé aplicaciones móviles integradas con equipos industriales, incluyendo PLCs y dispositivos basados en Raspberry Pi, conectando el software con procesos y operaciones físicas.',
+        'Implementé una solución de búsqueda y consulta inteligente basada en RAG para información de proyectos en Jira. Desarrollé el pipeline en Python para extraer datos, transformarlos en Markdown y publicarlos en Azure Blob Storage, además de configurar la indexación y el agente para consultas en lenguaje natural.',
+        'Construí una librería compartida de componentes React para estandarizar interfaces y facilitar el desarrollo y mantenimiento de aplicaciones internas.',
+        'Integré APIs y modernicé herramientas existentes, trabajando de extremo a extremo en el desarrollo de soluciones full stack y en su integración con servicios e infraestructura.'
       ],
       en: [
-        'Built four complete internal systems with React, Django and PostgreSQL that replaced manual processes. Internal management time dropped 40%.',
-        'Built the React component library the team adopted as its standard. New features ship 30% faster.',
-        'Built a RAG system over the Jira cards: supervisors ask in plain language how each project is going.',
-        'Integrated external APIs and migrated legacy tools to a modern stack, in two-week sprints.',
-      ],
-    },
+        'Designed and developed 10+ internal business systems across multiple departments, including Human Resources, Health and Safety, storeroom operations, pallet and inventory management, and operational tools for stock, batch tracking and prize draws.',
+        'Developed mobile applications integrated with industrial equipment, including PLCs and Raspberry Pi-based devices, connecting software with physical processes and industrial operations.',
+        'Implemented a RAG-based intelligent search and query solution for Jira project data. Built the Python pipeline to extract data, transform it into Markdown and publish it to Azure Blob Storage, while configuring indexing and the agent for natural-language queries.',
+        'Built a shared React component library to standardize interfaces and streamline the development and maintenance of internal applications.',
+        'Integrated external APIs and modernized legacy tools, contributing end to end to full-stack solutions and their integration with services and infrastructure.'
+      ]
+    }
   },
   {
     type: 'work',
