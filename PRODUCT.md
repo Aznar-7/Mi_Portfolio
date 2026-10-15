@@ -30,17 +30,18 @@ Visitors arrive from LinkedIn, GitHub, the CV PDF, job applications and shared l
 
 ## Capabilities and Constraints
 
-- Stack in daily use: React, Django, PostgreSQL, Linux, Nginx, Oracle Cloud; also Node/Express, Flask, Astro, TypeScript, React Native, C/C++ on Arduino/ESP32, Raspberry Pi.
+- Stack in daily use: React, Django, PostgreSQL, Linux, Nginx, Oracle Cloud; mobile with React Native, Kotlin and Gradle (Kotlin and Gradle at Porta Hnos); also Node/Express, Flask, Astro, TypeScript, C/C++ on Arduino/ESP32, Raspberry Pi.
 - Work: Full Stack Developer at Porta Hnos (2025 to now); Globant internship (2023); co-founder of Gavia (2026 to now).
 - Education: Systems Engineering and Artificial Intelligence at UTN, in progress.
 - Languages: native Spanish, C1 English.
-- Built with React 19, Vite, Tailwind v4, motion/react; deployed on Vercel.
+- Built with React 19, Vite, a canvas board engine (src/components/board/engine.js) and plain CSS (src/styles/board.css); Tailwind v4 and motion/react remain for the Ubuntu simulator; deployed on Vercel.
 
 ## Brand Commitments
 
 - No "AI slop": no generic copy, no decoration without function, no unverifiable claims.
 - No emojis in the interface.
-- Keep the custom target cursor (owner's explicit choice), the intro name reveal, the Ubuntu simulator and the hero circuit background.
+- The site is one live routed PCB (redesign v3, Oct 2026): self-routing hero board with real parts as project links, layered Work, ratsnest Workshop, to-scale Path, connector Contact and a console that powers the page down into the Ubuntu simulator. The old target cursor, intro reveal and circuit background were retired with it.
+- Personality lives in eight integrated secrets (Tolkien, Star Wars, Back to the Future, devtools, mate), never in the visitor's way.
 - Git: no Claude attribution in commits, PRs or branch names.
 - The portfolio is the source of truth for experience and claims (the CV PDFs are older).
 
