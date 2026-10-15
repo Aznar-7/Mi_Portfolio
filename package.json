@@ -21,6 +21,7 @@
     "react-error-boundary": "^6.1.1",
     "react-github-calendar": "^5.0.6",
     "tailwindcss": "^4.2.2",
+    "three": "^0.169.0",
     "vite-plugin-pwa": "^1.2.0"
   },
   "devDependencies": {

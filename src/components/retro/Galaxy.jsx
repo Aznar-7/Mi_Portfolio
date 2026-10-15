@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
 import { projects } from '@/data/projects'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -6,14 +6,17 @@ import { l } from '@/lib/utils'
 import { goTo } from '@/lib/motion'
 import { jump, preloadJump } from '@/lib/hyperspace'
 import { Planet } from './Planet'
+
+// three.js and the ship models load only when someone actually reaches the galaxy
+const Ships3D = lazy(() => import('./Ships3D'))
 import '@/styles/galaxy.css'
 
 // Where the hyperspace jump comes out: a spiral galaxy turning slowly, with the portfolio charted
 // as star systems. Pick one for a holo readout; "set course" drops you at that part of the page.
 
 const T = {
-  es: { title: 'Una galaxia muy, muy lejana', sub: 'Hace mucho tiempo… carta estelar del portfolio', music: 'Música', back: 'Salir de la galaxia', pick: 'Tocá un sistema para viajar hasta él. Cada planeta es una parte del portfolio.', go: 'Fijar rumbo a esta sección', galaxy: 'Volver a la galaxia', prev: 'Sistema anterior', next: 'Sistema siguiente', sector: 'Sistema' },
-  en: { title: 'A galaxy far, far away', sub: 'A long time ago… a star chart of the portfolio', music: 'Music', back: 'Leave the galaxy', pick: 'Tap a system to travel there. Every planet is a part of the portfolio.', go: 'Set course for this section', galaxy: 'Back to the galaxy', prev: 'Previous system', next: 'Next system', sector: 'System' },
+  es: { title: 'Una galaxia muy, muy lejana', sub: 'Hace mucho tiempo… carta estelar del portfolio', music: 'Música', back: 'Salir de la galaxia', pick: 'Tocá un sistema para viajar hasta él. Cada planeta es una parte del portfolio.', credit: 'Naves 3D:', go: 'Fijar rumbo a esta sección', galaxy: 'Volver a la galaxia', prev: 'Sistema anterior', next: 'Sistema siguiente', sector: 'Sistema' },
+  en: { title: 'A galaxy far, far away', sub: 'A long time ago… a star chart of the portfolio', music: 'Music', back: 'Leave the galaxy', pick: 'Tap a system to travel there. Every planet is a part of the portfolio.', credit: '3D ships:', go: 'Set course for this section', galaxy: 'Back to the galaxy', prev: 'Previous system', next: 'Next system', sector: 'System' },
 }
 
 const P = Object.fromEntries(projects.map((p) => [p.id, p]))
@@ -208,19 +211,8 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
       style={warp ? { '--wx': `${warp.x}px`, '--wy': `${warp.y}px` } : undefined}>
       <audio ref={audioRef} src="/audio/force-theme.mp3" loop preload="auto" />
       <canvas ref={canvasRef} className="gx-sky" aria-hidden="true" />
-      {/* a dogfight crossing the chart now and then */}
-      <svg className="gx-ships" viewBox="0 0 120 40" aria-hidden="true">
-        <g className="xwing">
-          <path d="M20 20 L52 18.6 L60 20 L52 21.4 Z" className="hull" />
-          <path d="M28 20 L22 6 L26 6 L36 18.5 Z M28 20 L22 34 L26 34 L36 21.5 Z" className="wing" />
-          <circle cx="21" cy="7" r="1.6" className="burn" /><circle cx="21" cy="33" r="1.6" className="burn" />
-        </g>
-        <g className="tie" transform="translate(0 4)">
-          <rect x="0" y="6" width="2.4" height="20" rx="1" className="panel" /><rect x="13.6" y="6" width="2.4" height="20" rx="1" className="panel" />
-          <path d="M2.4 16 H13.6" className="strut" /><circle cx="8" cy="16" r="3.6" className="pod" />
-          <path d="M17 15 H40 M17 17 H40" className="laser" />
-        </g>
-      </svg>
+      {/* a dogfight crossing the chart now and then: real 3D ships, rendered while the chart is on screen */}
+      <Suspense fallback={null}><Ships3D active={!sel && !warp && !leaving} /></Suspense>
       <ul className="gx-systems">
         {SYSTEMS.map((s, i) => (
           <li key={s.id} ref={(el) => { marks.current[s.id] = el }} style={{ '--d': `${0.9 + i * 0.07}s` }}>
@@ -244,6 +236,11 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
       </div>
 
       <p className="gx-hint">{t.pick}</p>
+      <p className="gx-credit">
+        {t.credit} <a href="https://poly.pizza/m/100p3RNw-5Q" target="_blank" rel="noopener noreferrer">T-65 X-Wing Starfighter</a> · Ti Kawamoto,{' '}
+        <a href="https://poly.pizza/m/97m_4VkXpmo" target="_blank" rel="noopener noreferrer">Tie Fighter 1 V1</a> · Joe Scalise.{' '}
+        <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>, via Poly Pizza.
+      </p>
 
       {sys && (
         <section className="gx-visit" key={sys.id} aria-live="polite">

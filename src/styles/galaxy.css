@@ -91,13 +91,13 @@
 .gx-tech{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; padding:0; list-style:none}
 .gx-tech li{padding:5px 9px; border-radius:999px; font:500 12px/1 'Red Hat Mono', ui-monospace, monospace; color:rgb(var(--holo)); box-shadow:inset 0 0 0 1px rgba(var(--holo),.3)}
 
-/* ships: an X-wing with a TIE on its tail, crossing every so often */
-.gx-ships{position:absolute; z-index:1; left:0; top:0; width:clamp(90px,9vw,140px); pointer-events:none; opacity:0; animation:gx-dogfight 22s 3s linear infinite}
-.gx.visiting .gx-ships{display:none}
-@keyframes gx-dogfight{0%{opacity:0; transform:translate(-15vw,78vh) rotate(-18deg)} 2%{opacity:1} 22%{opacity:1; transform:translate(110vw,18vh) rotate(-18deg)} 23%,100%{opacity:0; transform:translate(110vw,18vh) rotate(-18deg)}}
-.gx-ships .hull{fill:#d9dde4} .gx-ships .wing{fill:#c3c8d0; stroke:#8a909a; stroke-width:.4}
-.gx-ships .burn{fill:#ff8a5c; filter:drop-shadow(0 0 2px #ff6a3a)}
-.gx-ships .panel{fill:#2f343c; stroke:#9aa1ab; stroke-width:.4} .gx-ships .strut{stroke:#9aa1ab; stroke-width:1.2} .gx-ships .pod{fill:#59606b; stroke:#c9ced6; stroke-width:.5}
-.gx-ships .laser{stroke:#6dff7a; stroke-width:.8; stroke-linecap:round; filter:drop-shadow(0 0 2px #6dff7a); stroke-dasharray:8 30; animation:gx-pew .5s linear infinite}
-@keyframes gx-pew{to{stroke-dashoffset:-38}}
-@media (prefers-reduced-motion: reduce){ .gx-world,.gx-card::before,.gx-card::after,.gx-card > *{animation:none} .gx-ships{display:none} }
+@media (prefers-reduced-motion: reduce){ .gx-world,.gx-card::before,.gx-card::after,.gx-card > *{animation:none} }
+
+/* 3D dogfight layer and the model credits */
+.gx-ships3d{position:absolute; inset:0; z-index:1; pointer-events:none; transition:opacity .4s}
+.gx-ships3d canvas{display:block; width:100%; height:100%}
+.gx.visiting .gx-ships3d,.gx.warping .gx-ships3d{opacity:0}
+.gx-credit{position:absolute; z-index:3; left:clamp(16px,4vw,48px); bottom:clamp(10px,2vh,18px); max-width:min(300px,26vw); margin:0; text-align:left; font:400 11px/1.5 'Red Hat Mono', ui-monospace, monospace; color:rgba(232,242,255,.42)}
+.gx-credit a{color:rgba(232,242,255,.62); text-decoration:underline; text-underline-offset:2px}
+.gx-credit a:hover,.gx-credit a:focus-visible{color:#fff; outline:none}
+@media (max-width:820px){ .gx-credit{left:16px; right:16px; max-width:none; text-align:left; bottom:70px} }
