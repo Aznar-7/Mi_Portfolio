@@ -42,29 +42,34 @@ function Flow({ project, lang, label }) {
 
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-    let xs = [], seen = false, t = 0, raf = 0
+    let xs = [], raf = 0, from = 0, step = -1, t0 = 0
     const layout = () => {
       const b = path.current.ownerSVGElement.getBoundingClientRect()
       xs = [...board.current.querySelectorAll('.node')].map((n) => { const r = n.getBoundingClientRect(); return r.left - b.left + r.width / 2 })
       path.current.setAttribute('d', xs.map((x) => `M${x} 0 V16`).join(' ') + ` M${xs[0]} 16 H${xs.at(-1)}`)
     }
-    const tick = () => {
-      if (seen && !pinned.current) {
-        t = (t + 0.004) % 1.25
-        const k = Math.min(1, t), x = xs[0] + (xs.at(-1) - xs[0]) * (1 - (1 - k) ** 2)
-        dot.current.setAttribute('cx', x); dot.current.setAttribute('cy', 16)
-        dot.current.style.opacity = t > 1 ? Math.max(0, 1 - (t - 1) * 4) : 1
-        setActive(Math.max(0, xs.findLastIndex((v) => v <= x + 2)))
-      }
+    // the request stops at each hop long enough to read it: 0.6 s gliding, then 2.4 s parked.
+    // Time-based, so it runs at the same pace on a 60 Hz or a 144 Hz screen.
+    const HOP = 3000, GLIDE = 600
+    const tick = (now) => {
       raf = requestAnimationFrame(tick)
+      // only while on screen (a rect read per frame is cheaper and steadier than an observer here)
+      const r = board.current?.getBoundingClientRect()
+      const seen = r && r.bottom > 0 && r.top < innerHeight
+      if (!seen || pinned.current || !xs.length) { t0 = 0; return }
+      if (!t0) t0 = now
+      const e = now - t0, i = Math.floor(e / HOP) % xs.length, k = Math.min(1, (e % HOP) / GLIDE)
+      if (i !== step) { from = step < 0 ? xs[0] : xs[step]; step = i; setActive(i) }
+      const ease = 1 - (1 - k) ** 3, x = i === 0 && from === xs.at(-1) ? xs[0] : from + (xs[i] - from) * ease
+      dot.current.setAttribute('cx', x); dot.current.setAttribute('cy', 16)
+      dot.current.style.opacity = i === 0 && k < 1 && from !== xs[0] ? k : 1 // back to the start: fade in, no backwards slide
     }
     layout()
-    const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting })
-    io.observe(board.current)
     // the board changes width with the inspector, not only the window
     const ro = new ResizeObserver(layout); ro.observe(board.current)
     if (!reduced) raf = requestAnimationFrame(tick)
-    return () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect() }
+    else if (dot.current) dot.current.style.opacity = 0
+    return () => { cancelAnimationFrame(raf); ro.disconnect() }
   }, [])
 
   // pinning parks the signal on that node, so the dot and the highlighted node always agree

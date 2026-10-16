@@ -19,10 +19,13 @@ import { Intro } from '@/components/board/Intro'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
 // full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
+const loadMiddle = () => import('@/components/retro/MiddleEarth'), loadGalaxy = () => import('@/components/retro/Galaxy')
 const OVERLAYS = {
-  middle: lazy(() => import('@/components/retro/MiddleEarth').then((m) => ({ default: m.MiddleEarth }))),
-  galaxy: lazy(() => import('@/components/retro/Galaxy').then((m) => ({ default: m.Galaxy }))),
+  middle: lazy(() => loadMiddle().then((m) => ({ default: m.MiddleEarth }))),
+  galaxy: lazy(() => loadGalaxy().then((m) => ({ default: m.Galaxy }))),
 }
+// the egg's own intro plays for a few seconds first: fetch the overlay meanwhile, so it opens on time
+const PREFETCH = { mellon: loadMiddle, hyperspace: loadGalaxy }
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
 function Board() {
@@ -105,6 +108,8 @@ export default function App() {
     document.addEventListener('open-ubuntu', open)
     document.addEventListener('open-retro', toRetro)
     document.addEventListener('keydown', onKey)
+    const prefetch = (e) => PREFETCH[e.detail.id]?.()
+    document.addEventListener('secret', prefetch)
     const uninstall = installEggs()
     return () => {
       document.removeEventListener('open-ubuntu', open)
@@ -112,6 +117,7 @@ export default function App() {
       document.removeEventListener('open-middle-earth', toMap)
       document.removeEventListener('open-galaxy', toGalaxy)
       document.removeEventListener('keydown', onKey)
+      document.removeEventListener('secret', prefetch)
       uninstall()
     }
   }, [])
