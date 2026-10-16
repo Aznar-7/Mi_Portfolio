@@ -250,7 +250,7 @@ function Inspector({ project, lang, T, refDes }) {
             </div>
             {shots.length > 1 && (
               <div className="ins-thumbs" role="group" aria-label={T.screens}>
-                {shots.slice(0, 6).map((src, i) => (
+                {shots.slice(0, 8).map((src, i) => (
                   <button key={src} type="button" aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}><img src={src} alt="" loading="lazy" /></button>
                 ))}
               </div>
