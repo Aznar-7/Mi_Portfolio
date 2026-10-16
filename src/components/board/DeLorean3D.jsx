@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
 // the model's nose is +Z (front wheels and the DMC badge sit there), so driving toward the camera
 // needs no turn
@@ -8,7 +9,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 // The 88 mph run, at road level: the DeLorean comes head-on out of the fog, headlights on, the lane
 // marks rushing faster as it accelerates. Past ~50 mph blue arcs crawl over the body; at 88 it is
 // gone and two fire trails burn on the asphalt. Lazy-loaded with the scene, on the speedo's clock.
-// Model: "DeLorean DMC-12" by David Sirera, CC BY 3.0 via Poly Pizza (credited by the scene).
+// Model: "DeLorean DMC-12" by David Sirera, CC BY 3.0 via Poly Pizza (credited by the scene), re-shaded
+// in Blender with the time-machine kit (design-src/delorean): Wheel_* spin, the 'flux' coils charge up.
 
 const JUMP = 2.7 // seconds, when the speedo hits 88
 const FAR = -70, NEAR = -9 // where the car starts and where it vanishes, along the road
@@ -46,6 +48,9 @@ export default function DeLorean3D({ start }) {
     renderer.outputColorSpace = THREE.SRGBColorSpace
     el.append(renderer.domElement)
     const scene = new THREE.Scene()
+    // something for the stainless steel to reflect, on the car only so the night road stays dark
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
     scene.fog = new THREE.Fog(0x07080b, 18, 70)
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200)
     camera.position.set(0, 1.35, 4)
@@ -72,12 +77,10 @@ export default function DeLorean3D({ start }) {
     })
 
     // the car, its headlights and the light they throw on the road
-    let car = null, disposed = false
+    let car = null, flux = null, disposed = false
+    const wheels = []
     const beam = new THREE.SpotLight(0xfff2d0, 0, 40, 0.5, 0.6, 1.2)
     scene.add(beam); scene.add(beam.target)
-    const lamps = new THREE.Group()
-    const lampMat = new THREE.MeshBasicMaterial({ color: 0xfff6dc })
-    for (const x of [-0.62, 0.62]) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), lampMat); l.position.set(x, 0.55, 2.05); lamps.add(l) }
     new GLTFLoader().load('/models/delorean.glb', (g) => {
       if (disposed) return
       const model = g.scene
@@ -85,7 +88,12 @@ export default function DeLorean3D({ start }) {
       model.scale.setScalar(4.2 / Math.max(s.x, s.y, s.z))
       const box = new THREE.Box3().setFromObject(model)
       model.position.sub(box.getCenter(new THREE.Vector3())); model.position.y += (box.max.y - box.min.y) / 2 // wheels on the road
-      car = new THREE.Group(); car.add(model); car.add(lamps); car.position.z = FAR; scene.add(car)
+      model.traverse((o) => {
+        if (o.name.startsWith('Wheel_')) wheels.push(o)
+        if (o.material) { o.material.envMap = env; o.material.envMapIntensity = 0.6 }
+        if (o.material?.name === 'flux') flux = o.material
+      })
+      car = new THREE.Group(); car.add(model); car.position.z = FAR; scene.add(car)
     })
 
     // electricity over the body
@@ -114,6 +122,8 @@ export default function DeLorean3D({ start }) {
         car.visible = !gone
         car.position.z = FAR + (NEAR - FAR) * Math.pow(k, 2.2)
         car.position.y = Math.sin(t * 38) * 0.012 * speed // a little road shake at speed
+        for (const w of wheels) w.rotation.x += dt * (4 + speed * 60)
+        if (flux) flux.emissiveIntensity = 0.3 + speed * 9 + (speed > 0.32 ? Math.random() * 4 : 0)
         beam.intensity = gone ? 0 : 60
         beam.position.set(0, 0.8, car.position.z + 2.2); beam.target.position.set(0, 0, car.position.z + 14)
         // arcs past ~50 mph, re-drawn a few times a second
@@ -149,6 +159,7 @@ export default function DeLorean3D({ start }) {
       disposed = true
       cancelAnimationFrame(raf); removeEventListener('resize', size)
       scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose() }) })
+      env.dispose(); pmrem.dispose()
       renderer.dispose(); renderer.domElement.remove()
     }
   }, [start])
