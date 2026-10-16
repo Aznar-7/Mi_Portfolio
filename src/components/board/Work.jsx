@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { flushSync } from 'react-dom'
+import { ArrowUpRight, ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -206,12 +207,47 @@ export function Work() {
   )
 }
 
+// opening and closing the big view morphs the image when the browser can (View Transitions)
+const morph = (fn) => {
+  if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return fn()
+  // a skipped transition (hidden tab, another one running) still applies the update; only the morph is lost
+  document.startViewTransition(() => flushSync(fn)).ready.catch(() => {})
+}
+
+// a mostly horizontal drag of 40px+ turns the page; `swiped` tells the click that follows to stand down
+function useSwipe(onSwipe) {
+  const start = useRef(null), swiped = useRef(false)
+  return {
+    swiped,
+    handlers: {
+      onPointerDown: (e) => { start.current = [e.clientX, e.clientY]; swiped.current = false },
+      onPointerUp: (e) => {
+        if (!start.current) return
+        const dx = e.clientX - start.current[0], dy = e.clientY - start.current[1]
+        start.current = null
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { swiped.current = true; onSwipe(dx < 0 ? 1 : -1) }
+      },
+      onPointerCancel: () => { start.current = null },
+    },
+  }
+}
+
 function Inspector({ project, lang, T, refDes }) {
   const { playSelect } = useSoundEffects()
   const shots = [...new Set([project.image, ...(project.gallery ?? [])].filter(Boolean))]
   const [shot, setShot] = useState(0)
+  const [dir, setDir] = useState(0) // the side the next image slides in from
+  const [big, setBig] = useState(false)
   const st = statusOf(project), links = linksOf(project, T)
-  const show = (i) => { playSelect(); setShot((i + shots.length) % shots.length) }
+  const show = (i, d = i > shot ? 1 : -1) => { playSelect(); setDir(d); setShot((i + shots.length) % shots.length) }
+  const step = (d) => show(shot + d, d)
+  const swipe = useSwipe(step)
+  const alt = `${project.title}: ${l(project.tagline, lang)}`
+
+  // the neighbours load ahead, so stepping through never shows an empty frame
+  useEffect(() => {
+    for (const d of [1, -1]) { const src = shots[(shot + d + shots.length) % shots.length]; if (src) new Image().src = src }
+  }, [shot]) // eslint-disable-line react-hooks/exhaustive-deps -- shots derive from the project, which keys this component
   // a datasheet: name, state and links on top; what it is and its stack beside a moderate image
   return (
     <article className={`inspector ${layerOf(project)}`} id="inspector">
@@ -237,19 +273,22 @@ function Inspector({ project, lang, T, refDes }) {
           )}
         </div>
         {shots.length > 0 && (
-          <figure className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') show(shot + 1); if (e.key === 'ArrowLeft') show(shot - 1) }}>
-            <div className="ins-shot">
-              <img key={shots[shot]} src={shots[shot]} alt={`${project.title}: ${l(project.tagline, lang)}`} />
+          <figure className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1) }}>
+            <div className="ins-shot" {...(shots.length > 1 ? swipe.handlers : {})}>
+              <button type="button" className="shot-open" aria-label={T.enlarge} onClick={() => { if (!swipe.swiped.current) morph(() => setBig(true)) }}>
+                <img key={shots[shot]} src={shots[shot]} alt={alt} draggable="false" style={{ '--dir': dir, viewTransitionName: big ? 'none' : 'shot' }} />
+                <span className="shot-zoom" aria-hidden="true"><Maximize2 size={14} /></span>
+              </button>
               {shots.length > 1 && (
                 <div className="shot-ctrl">
-                  <button type="button" onClick={() => show(shot - 1)} aria-label={T.prevShot}><ChevronLeft size={16} aria-hidden="true" /></button>
+                  <button type="button" onClick={() => step(-1)} aria-label={T.prevShot}><ChevronLeft size={16} aria-hidden="true" /></button>
                   <span>{shot + 1} / {shots.length}</span>
-                  <button type="button" onClick={() => show(shot + 1)} aria-label={T.nextShot}><ChevronRight size={16} aria-hidden="true" /></button>
+                  <button type="button" onClick={() => step(1)} aria-label={T.nextShot}><ChevronRight size={16} aria-hidden="true" /></button>
                 </div>
               )}
             </div>
             {shots.length > 1 && (
-              <div className="ins-thumbs" role="group" aria-label={T.screens}>
+              <div className="ins-thumbs" role="group" aria-label={T.screens(project.title)}>
                 {shots.slice(0, 8).map((src, i) => (
                   <button key={src} type="button" aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}><img src={src} alt="" loading="lazy" /></button>
                 ))}
@@ -259,6 +298,32 @@ function Inspector({ project, lang, T, refDes }) {
         )}
       </div>
       {project.flow && <div className="ins-flow"><Flow project={project} lang={lang} label={T.flow} /></div>}
+      {big && <Lightbox src={shots[shot]} alt={alt} n={shot + 1} total={shots.length} dir={dir} T={T} step={shots.length > 1 ? step : null} onClose={() => morph(() => setBig(false))} />}
     </article>
+  )
+}
+
+// The big view: a native modal dialog (focus trap, Esc, top layer) with the same controls and swipe
+function Lightbox({ src, alt, n, total, dir, T, step, onClose }) {
+  const ref = useRef(null)
+  const swipe = useSwipe((d) => step?.(d))
+  useLayoutEffect(() => {
+    const d = ref.current
+    d.showModal()
+    return () => d.close()
+  }, [])
+  return (
+    <dialog ref={ref} className="lightbox" aria-label={alt} {...swipe.handlers}
+      onCancel={(e) => { e.preventDefault(); onClose() }}
+      onClick={(e) => { if (e.target === ref.current && !swipe.swiped.current) onClose() }}
+      onKeyDown={(e) => { if (step && e.key === 'ArrowRight') step(1); if (step && e.key === 'ArrowLeft') step(-1) }}>
+      <img key={src} src={src} alt={alt} draggable="false" style={{ '--dir': dir, viewTransitionName: 'shot' }} />
+      <div className="lb-bar">
+        {step && <button type="button" onClick={() => step(-1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>}
+        {total > 1 && <span>{n} / {total}</span>}
+        {step && <button type="button" onClick={() => step(1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>}
+        <button type="button" onClick={onClose} aria-label={T.closeShot} autoFocus><X size={18} aria-hidden="true" /></button>
+      </div>
+    </dialog>
   )
 }
