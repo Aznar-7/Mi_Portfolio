@@ -14,7 +14,7 @@ import { installEggs } from '@/lib/eggs'
 import { initMotion } from '@/lib/motion'
 import { EggStage } from '@/components/board/EggStage'
 import { Mascot } from '@/components/board/Mascot'
-import TargetCursor from '@/components/common/TargetCursor'
+import { Probe } from '@/components/board/Probe'
 import { Intro } from '@/components/board/Intro'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
@@ -124,8 +124,6 @@ export default function App() {
 
   // the page powered down to open the OS (lib/power); bring it back when the OS closes
   useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
-  // the eggs bring their own cursors; the board's TargetCursor steps aside
-  useEffect(() => { document.body.classList.toggle('native-cursor', retro || !!overlay) }, [retro, overlay])
 
   return (
     <SoundProvider>
@@ -142,7 +140,7 @@ export default function App() {
         {retro && !ubuntuOpen && <Retro onExit={closeRetro} leaving={leaving} />}
         {!ubuntuOpen && !retro && (
           <>
-            {!overlay && <TargetCursor spinDuration={2} hideDefaultCursor={false} parallaxOn hoverDuration={0.2} targetSelector="a, button, summary, .cursor-target, [role='button']" />}
+            {!overlay && <Probe />}
             <Board />
             <Intro />
             {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
