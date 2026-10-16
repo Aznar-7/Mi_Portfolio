@@ -39,7 +39,8 @@ function Flow({ project, lang, label }) {
   const { playHover } = useSoundEffects()
   const nodes = project.flow
   const [active, setActive] = useState(0)
-  const pinned = useRef(false), board = useRef(null), path = useRef(null), dot = useRef(null)
+  // pinned: a click or focus parks the signal; held: the pointer rests on a node and lets go on leave
+  const pinned = useRef(false), held = useRef(false), resume = useRef(-1), board = useRef(null), path = useRef(null), dot = useRef(null)
 
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -57,8 +58,9 @@ function Flow({ project, lang, label }) {
       // only while on screen (a rect read per frame is cheaper and steadier than an observer here)
       const r = board.current?.getBoundingClientRect()
       const seen = r && r.bottom > 0 && r.top < innerHeight
-      if (!seen || pinned.current || !xs.length) { t0 = 0; return }
-      if (!t0) t0 = now
+      if (!seen || pinned.current || held.current || !xs.length) { t0 = 0; return }
+      // after a hover the signal carries on from the node it was parked on
+      if (!t0) { t0 = now - Math.max(0, resume.current) * HOP - GLIDE; if (resume.current >= 0) { step = resume.current; from = xs[step] } resume.current = -1 }
       const e = now - t0, i = Math.floor(e / HOP) % xs.length, k = Math.min(1, (e % HOP) / GLIDE)
       if (i !== step) { from = step < 0 ? xs[0] : xs[step]; step = i; setActive(i) }
       const ease = 1 - (1 - k) ** 3, x = i === 0 && from === xs.at(-1) ? xs[0] : from + (xs[i] - from) * ease
@@ -74,8 +76,9 @@ function Flow({ project, lang, label }) {
   }, [])
 
   // pinning parks the signal on that node, so the dot and the highlighted node always agree
-  const pick = (i) => {
-    pinned.current = true; setActive(i)
+  const pick = (i, hover = false) => {
+    if (hover) held.current = true; else pinned.current = true
+    resume.current = i; setActive(i)
     const n = board.current?.querySelectorAll('.node')[i], b = path.current?.ownerSVGElement.getBoundingClientRect()
     if (n && b && dot.current) { const r = n.getBoundingClientRect(); dot.current.setAttribute('cx', r.left - b.left + r.width / 2); dot.current.style.opacity = 1 }
   }
@@ -83,11 +86,11 @@ function Flow({ project, lang, label }) {
   return (
     <div className="flow">
       <p className="flow-label">{label}</p>
-      <div className="flow-board" ref={board}>
+      <div className="flow-board" ref={board} onPointerLeave={() => { held.current = false }}>
         {shared && <span className="host">{shared}</span>}
         {nodes.map((n, i) => (
           <button key={n.id} className={`node${n.host === shared ? ' hosted' : ''}`} aria-pressed={active === i}
-            onClick={() => pick(i)} onFocus={() => pick(i)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i) }}>
+            onClick={() => pick(i)} onFocus={() => pick(i)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i, true) }}>
             <b>{l(n.name, lang)}</b><small>{n.host === shared ? n.tech : `${n.tech.split(',')[0]} · ${n.host}`}</small>
           </button>
         ))}
@@ -220,9 +223,10 @@ function useSwipe(onSwipe) {
   return {
     swiped,
     handlers: {
-      onPointerDown: (e) => { start.current = [e.clientX, e.clientY]; swiped.current = false },
+      // a second finger means pinch-zoom, never a page turn
+      onPointerDown: (e) => { if (!e.isPrimary) { start.current = null; return } start.current = [e.clientX, e.clientY]; swiped.current = false },
       onPointerUp: (e) => {
-        if (!start.current) return
+        if (!start.current || !e.isPrimary) return
         const dx = e.clientX - start.current[0], dy = e.clientY - start.current[1]
         start.current = null
         if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { swiped.current = true; onSwipe(dx < 0 ? 1 : -1) }
@@ -281,7 +285,7 @@ function Inspector({ project, lang, T }) {
               {shots.length > 1 && (
                 <div className="shot-ctrl">
                   <button type="button" onClick={() => step(-1)} aria-label={T.prevShot}><ChevronLeft size={16} aria-hidden="true" /></button>
-                  <span>{shot + 1} / {shots.length}</span>
+                  <span aria-live="polite">{shot + 1} / {shots.length}</span>
                   <button type="button" onClick={() => step(1)} aria-label={T.nextShot}><ChevronRight size={16} aria-hidden="true" /></button>
                 </div>
               )}
@@ -297,13 +301,13 @@ function Inspector({ project, lang, T }) {
         )}
       </div>
       {project.flow && <div className="ins-flow"><Flow project={project} lang={lang} label={T.flow} /></div>}
-      {big && <Lightbox src={shots[shot]} alt={alt} n={shot + 1} total={shots.length} dir={dir} T={T} step={shots.length > 1 ? step : null} onClose={() => morph(() => setBig(false))} />}
+      {big && <Lightbox label={T.screens(project.title)} src={shots[shot]} alt={alt} n={shot + 1} total={shots.length} dir={dir} T={T} step={shots.length > 1 ? step : null} onClose={() => morph(() => setBig(false))} />}
     </article>
   )
 }
 
 // The big view: a native modal dialog (focus trap, Esc, top layer) with the same controls and swipe
-function Lightbox({ src, alt, n, total, dir, T, step, onClose }) {
+function Lightbox({ label, src, alt, n, total, dir, T, step, onClose }) {
   const ref = useRef(null)
   const swipe = useSwipe((d) => step?.(d))
   useLayoutEffect(() => {
@@ -312,14 +316,14 @@ function Lightbox({ src, alt, n, total, dir, T, step, onClose }) {
     return () => d.close()
   }, [])
   return (
-    <dialog ref={ref} className="lightbox" aria-label={alt} {...swipe.handlers}
+    <dialog ref={ref} className="lightbox" aria-label={label} {...swipe.handlers}
       onCancel={(e) => { e.preventDefault(); onClose() }}
       onClick={(e) => { if (e.target === ref.current && !swipe.swiped.current) onClose() }}
       onKeyDown={(e) => { if (step && e.key === 'ArrowRight') step(1); if (step && e.key === 'ArrowLeft') step(-1) }}>
       <img key={src} src={src} alt={alt} draggable="false" style={{ '--dir': dir, viewTransitionName: 'shot' }} />
       <div className="lb-bar">
         {step && <button type="button" onClick={() => step(-1)} aria-label={T.prevShot}><ChevronLeft size={18} aria-hidden="true" /></button>}
-        {total > 1 && <span>{n} / {total}</span>}
+        {total > 1 && <span aria-live="polite">{n} / {total}</span>}
         {step && <button type="button" onClick={() => step(1)} aria-label={T.nextShot}><ChevronRight size={18} aria-hidden="true" /></button>}
         <button type="button" onClick={onClose} aria-label={T.closeShot} autoFocus><X size={18} aria-hidden="true" /></button>
       </div>

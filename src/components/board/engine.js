@@ -296,7 +296,8 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       if (!reduced && prog >= 1 && Math.random() < (t.part ? .004 : .0005) + t.heat * .03) pulses.push({ t, d: 0, v: rnd(0.55, 1.1) }) // slow, so the signals read as current, not sparks
     }
     if (!booted) {
-      statusEl.textContent = text.routing(done, traces.length)
+      const line = text.routing(done, traces.length)
+      if (statusEl.textContent !== line) statusEl.textContent = line // a DOM write only when the count moves
       if (done === traces.length) { booted = true; later(() => chipN < 7 && setHint(), 700) }
     }
 
@@ -386,7 +387,9 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
 
   // ── input ──
   const onMove = (e) => {
-    const b = hero.getBoundingClientRect(); mouse = { x: e.clientX - b.left, y: e.clientY - b.top }
+    const b = hero.getBoundingClientRect()
+    // the solder ring shows only over free board, where a click would place a chip
+    mouse = e.target.closest('a, button, .hero-copy, .hero-photo, .site-header') ? { x: -1e4, y: -1e4 } : { x: e.clientX - b.left, y: e.clientY - b.top }
     letters.forEach((l, i) => {
       const d = Math.hypot(letterBoxes[i].x - e.clientX, letterBoxes[i].y - (e.clientY + scrollY))
       l.style.setProperty('--g', Math.max(0, 1 - d / 160).toFixed(2))

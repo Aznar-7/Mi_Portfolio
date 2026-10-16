@@ -75,7 +75,6 @@ export function Mascot() {
   const { playSelect, playClick, isMuted, toggleMute } = useSoundEffects()
   const found = useSecretsFound()
   const ref = useRef(null)
-  const [blink, setBlink] = useState(false)
   const [say, setSay] = useState(null)
   const [state, setState] = useState('idle') // idle | typing | happy | confused
   const [menu, setMenu] = useState(false)
@@ -126,13 +125,13 @@ export function Mascot() {
     return () => { removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
   }, [])
 
-  // blink every few seconds
+  // Esc closes the menu or the tour and hands focus back to Chip
   useEffect(() => {
-    let tm
-    const loop = () => { tm = setTimeout(() => { setBlink(true); setTimeout(() => setBlink(false), 140); loop() }, 2600 + Math.random() * 3200) }
-    loop()
-    return () => clearTimeout(tm)
-  }, [])
+    if (!menu && tour < 0) return
+    const onKey = (e) => { if (e.key === 'Escape') { setTour(-1); setMenu(false); setSay(null); setState('idle'); ref.current?.querySelector('.chip-body')?.focus() } }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [menu, tour])
 
   // show up after the hero; one short tip the first time each section comes into view
   useEffect(() => {
@@ -189,8 +188,9 @@ export function Mascot() {
   return (
     <div className={`chip-pet ${state}${shown || menu || tour >= 0 ? ' shown' : ''}${tucked && !say && !menu && tour < 0 ? ' tucked' : ''}`} ref={ref}>
       {(say || menu || tour >= 0) && (
-        <div className="chip-say" role="status">
-          {say && <p>{say}</p>}
+        <div className="chip-say">
+          {/* only the speech is announced; the menu is a plain group of buttons */}
+          <p role="status" className={say ? '' : 'sr-only'}>{say}</p>
           {tour >= 0 && (
             <div className="chip-menu">
               <span className="chip-step">{tour + 1} / {t.tourSteps.length}</span>
@@ -230,7 +230,7 @@ export function Mascot() {
           <g className="eyes">
             {state === 'happy'
               ? <><path d="M42 58 q6 -7 12 0" className="eye-arc" /><path d="M66 58 q6 -7 12 0" className="eye-arc" /></>
-              : <><rect x="43" y={blink ? 56 : 50} width="10" height={blink ? 2 : 13} rx="5" className="eye" /><rect x="67" y={blink ? 56 : 50} width="10" height={blink ? 2 : 13} rx="5" className="eye" /></>}
+              : <><rect x="43" y="50" width="10" height="13" rx="5" className="eye" /><rect x="67" y="50" width="10" height="13" rx="5" className="eye" /></>}
           </g>
           {state === 'confused' ? <path d="M50 80 q5 -4 10 0 q5 4 10 0" className="mouth" />
             : state === 'happy' ? <path d="M50 76 q10 10 20 0" className="mouth" />
