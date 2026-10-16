@@ -29,8 +29,8 @@
 .lede{margin:26px 0 0; font-size:clamp(17px,1.4vw,21px); line-height:1.5; color:var(--ink-2); max-width:34ch}
 .lede strong{color:var(--ink); font-weight:500}
 .cta{display:flex; gap:12px; margin-top:34px; flex-wrap:wrap}
-.btn{display:inline-flex; align-items:center; gap:8px; cursor:pointer; font:500 15px/1 var(--text); padding:15px 20px; border-radius:999px; text-decoration:none; color:#0e1014; background:var(--ink); transition:transform .25s var(--ease), box-shadow .2s}
-.btn:hover{background:#fff} .btn:active{transform:scale(.98)}
+.btn{display:inline-flex; align-items:center; gap:8px; cursor:pointer; font:500 15px/1 var(--text); padding:15px 20px; border-radius:5px; text-decoration:none; color:#0e1014; background:var(--ink); transition:transform .25s var(--ease), box-shadow .2s}
+.btn:hover{background:#fff}
 .btn.ghost{background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1px rgba(236,238,242,.22)}
 .btn.ghost:hover{background:rgba(236,238,242,.06); box-shadow:inset 0 0 0 1px rgba(236,238,242,.5)}
 /* parts on the board are real links to the hardware and server projects */
@@ -55,8 +55,8 @@
 /* ── Trabajo ─────────────────────────────────────────────── */
 .work-intro{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:20px 40px; margin:22px 0 64px}
 .work-intro p{margin:0; color:var(--ink-2); max-width:52ch; font-size:18px; line-height:1.55}
-.layers{display:flex; gap:6px; padding:4px; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(236,238,242,.12)}
-.layers button{font:500 14px/1 var(--text); color:var(--ink-2); background:none; border:0; padding:10px 14px; border-radius:999px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .2s, color .2s}
+.layers{display:flex; gap:6px; padding:4px; border-radius:8px; box-shadow:inset 0 0 0 1px rgba(236,238,242,.12)}
+.layers button{font:500 14px/1 var(--text); color:var(--ink-2); background:none; border:0; padding:10px 14px; border-radius:5px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .2s, color .2s}
 .layers button:hover{color:var(--ink)}
 .layers button[aria-pressed="true"]{background:rgba(236,238,242,.1); color:var(--ink)}
 .sw{width:10px; height:10px; border-radius:2px} .sw.f{background:rgb(var(--fcu))} .sw.b{background:rgb(var(--bcu))}
@@ -132,7 +132,7 @@
 .contact .sec-intro{margin-bottom:64px}
 
 
-.copy-btn{display:inline-flex; align-items:center; gap:6px; align-self:flex-start; margin-top:4px; font:500 13px/1 var(--text); color:#0e1014; background:var(--ink); border:0; border-radius:999px; padding:10px 14px; cursor:pointer; transition:transform .2s var(--ease)}
+.copy-btn{display:inline-flex; align-items:center; gap:6px; align-self:flex-start; margin-top:4px; font:500 13px/1 var(--text); color:#0e1014; background:var(--ink); border:0; border-radius:5px; padding:10px 14px; cursor:pointer; transition:transform .2s var(--ease)}
 .copy-btn:hover{background:#fff}
 /* the bridge */
 .power{padding:clamp(80px,12vh,140px) clamp(20px,4vw,56px); border-top:1px solid rgba(236,238,242,.08); background:radial-gradient(ellipse 60% 80% at 50% 120%, rgba(var(--bcu),.14), transparent 70%)}
@@ -184,14 +184,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .icon-btn:hover{color:var(--ink); background:rgba(236,238,242,.06)}
 .icon-btn.on{color:rgb(var(--silk))}
 .icon-btn.lang{font:500 12px/1 var(--mono); letter-spacing:.06em}
-.hero-meta{display:flex; align-items:center; gap:14px; margin-bottom:26px}
-.hero-meta img{width:44px; height:44px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px #0e1014, 0 0 0 3px rgba(var(--silk),.45)}
-.hero-meta p{margin:0; display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--ink-2)}
-.hero-meta .avail{color:var(--ink)}
 
-.push{margin:22px 0 0; min-height:20px; font:500 13px/1.5 var(--mono)}
-.push a{display:inline-flex; align-items:center; gap:8px; color:var(--ink-3); text-decoration:none; transition:color .2s}
-.push a:hover{color:var(--ink)}
 .ti{flex:none; transition:color .2s}
 .tool:hover .ti,.tool[aria-pressed="true"] .ti,.chips li:hover .ti{color:var(--brand, currentColor)}
 
@@ -231,14 +224,10 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
    
    
 }
-@media (max-width:760px){ .tools-bar{margin-left:auto} .hero-meta{margin-bottom:18px} }
+@media (max-width:760px){ .tools-bar{margin-left:auto} }
 .cal-wait{height:150px}
 
 /* ── Hero portrait as board part U0, key facts ── */
-.hero-facts{display:flex; flex-wrap:wrap; gap:14px 36px; margin:30px 0 0; padding-top:20px; border-top:1px solid rgba(236,238,242,.1)}
-.hero-facts dt{font:500 12px/1 var(--mono); color:var(--ink-3)}
-.hero-facts dd{margin:7px 0 0; font-size:15px; color:var(--ink)}
-@media (min-width:1024px){ .hero-meta img{display:none} }
 @media (max-width:1023px){ .hero-photo{display:none} }
 
 /* ── Process: five stages on one trace, powered by the scroll ── */
@@ -466,13 +455,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .granted b{opacity:0; animation:popin .3s var(--d) forwards; margin-top:6px}
 
 /* experience: real figures and the stack of each role */
-.tl-stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:22px 0 4px; max-width:64ch}
-.tl-stats div{padding:16px; border-radius:12px; background:#121419; box-shadow:inset 0 0 0 1px rgba(236,238,242,.08)}
-.tl-stats dt{font:700 clamp(30px,3vw,44px)/1 var(--display); letter-spacing:-.03em; color:var(--ink)}
-.tl-stats dd{margin:8px 0 0; font-size:14px; line-height:1.4; color:var(--ink-2)}
-.tl-item.on .tl-stats dt{color:rgb(var(--silk)); transition:color .5s}
 .tl-chips{margin-top:20px}
-@media (max-width:640px){ .tl-stats{grid-template-columns:1fr} }
 .tl-item ul.tl-chips{display:flex; flex-wrap:wrap; gap:6px}
 .tl-item ul.tl-chips li{padding:7px 10px; font-size:13px; line-height:1; color:var(--ink-2)}
 .tl-item ul.tl-chips li::before{display:none}
@@ -494,9 +477,6 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .hero-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(160deg, rgba(232,226,176,.55), rgba(176,140,70,.55)); mix-blend-mode:color; transition:opacity .7s var(--ease); pointer-events:none}
 .hero-photo:hover img{filter:none; transform:scale(1.02)}
 .hero-photo:hover::after{opacity:0}
-.cta-sub{display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin:18px 0 0}
-.cta-sub a,.cta-sub button{display:inline-flex; align-items:center; gap:7px; padding:6px 0; border:0; background:none; font:500 14px/1 var(--text); color:var(--ink-2); text-decoration:none; cursor:pointer; transition:color .2s}
-.cta-sub a:hover,.cta-sub button:hover{color:var(--ink)}
 @media (max-width:1023px){ .hero-photo{display:none} }
 
 /* ── Contact v3: email first, channels as a list, the form in its own panel ── */
@@ -544,10 +524,10 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .eggs-pop li b{font:500 13px/1.3 var(--mono); color:var(--ink-2)}
 .eggs-pop li.got b{color:var(--ink)}
 /* press feedback: everything clickable gives a little under the finger */
-.site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button,.channels a,.netlist button){transition-property:transform,background,color,box-shadow,border-color; transition-duration:.15s}
-.site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button):active{transform:translateY(1px) scale(.97)}
+.site :is(.btn,.copy-btn,.power-btn,.channels a,.netlist button){transition-property:transform,background,color,box-shadow,border-color; transition-duration:.15s}
+.site :is(.btn,.copy-btn,.power-btn):active{transform:translateY(1px) scale(.97)}
 .site :is(.channels a,.netlist button):active{transform:scale(.995)}
-@media (prefers-reduced-motion: reduce){ .site :is(.btn,.copy-btn,.power-btn,.cta-sub a,.cta-sub button,.channels a,.netlist button):active{transform:none} }
+@media (prefers-reduced-motion: reduce){ .site :is(.btn,.copy-btn,.power-btn,.channels a,.netlist button):active{transform:none} }
 
 /* overlays lock scroll with overflow:hidden; keep the gutter so the width never changes and
    ScrollTrigger never refreshes (a refresh restores the old scroll and kills any travel) */
@@ -573,7 +553,6 @@ html{scrollbar-gutter:stable}
 /* ── Hero warmth: ambient light, a warm surname, a portrait that leans toward the pointer ── */
 .hero::before{content:""; position:absolute; inset:0; pointer-events:none;
   background:radial-gradient(42vw 36vw at 80% 50%, rgba(214,168,92,.11), transparent 70%), radial-gradient(36vw 30vw at 6% 96%, rgba(120,150,255,.06), transparent 70%)}
-.hero h1 .l.last{--name:#f0dfb4}
 .hero-photo{transform:perspective(900px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg)); transition:transform .5s var(--ease), box-shadow .5s var(--ease)}
 .hero-photo:hover{box-shadow:0 0 0 1px rgba(var(--silk),.45), 0 30px 60px -24px #000}
 @media (prefers-reduced-motion: reduce){ .hero-photo{transform:none} }
@@ -657,15 +636,15 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (prefers-reduced-motion: reduce){ .mate .termo,.mate .water,.mate .steam{animation:none} }
 @keyframes rise{from{opacity:0; transform:translateY(24px)}}
 
-.shot-ctrl{position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:rgba(14,16,20,.78); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(236,238,242,.12); opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s var(--ease)}
-.shot-ctrl button{display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%; background:none; color:var(--ink); cursor:pointer; transition:background .2s}
+.shot-ctrl{position:absolute; right:12px; bottom:12px; display:flex; align-items:center; gap:6px; padding:4px; border-radius:8px; background:rgba(14,16,20,.78); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(236,238,242,.12); opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s var(--ease)}
+.shot-ctrl button{display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:5px; background:none; color:var(--ink); cursor:pointer; transition:background .2s}
 .shot-ctrl button:hover,.shot-ctrl button:focus-visible{background:rgba(236,238,242,.14)}
 .shot-ctrl span{min-width:44px; text-align:center; font:500 12px/1 var(--mono); color:var(--ink-2)}
-.layers .n{min-width:20px; padding:3px 6px; border-radius:999px; background:rgba(236,238,242,.08); font:500 11px/1 var(--mono); color:var(--ink-2); text-align:center}
+.layers .n{min-width:20px; padding:3px 6px; border-radius:4px; background:rgba(236,238,242,.08); font:500 11px/1 var(--mono); color:var(--ink-2); text-align:center}
 
 /* ── Contact v4: availability, topics, a live count and a real "sent" moment ── */
 .avail-list{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px; padding:0; list-style:none}
-.avail-list li{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#14161b; box-shadow:inset 0 0 0 1px rgba(236,238,242,.1); font:500 14px/1 var(--text); color:var(--ink-2)}
+.avail-list li{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:5px; background:#14161b; box-shadow:inset 0 0 0 1px rgba(236,238,242,.1); font:500 14px/1 var(--text); color:var(--ink-2)}
 .avail-list li:first-child{color:var(--ink)}
 .avail-list time{font:500 14px/1 var(--mono); color:rgb(var(--silk))}
 
@@ -813,14 +792,9 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .tl-item:first-child .tl-pad{top:14px}
 .tl-item > .tl-when{grid-column:1; grid-row:1; margin:6px 0 0; font:500 13px/1.4 var(--mono); color:var(--ink-2)}
 .tl-item > .tl-head{grid-column:2; grid-row:1}
-.tl-item > .tl-stats{grid-column:2; grid-row:2}
 .tl-item > ul:not(.tl-chips){grid-column:3; grid-row:1 / span 2; margin:4px 0 0; max-width:none}
 .tl-item > .tl-chips{grid-column:3; grid-row:3; margin-top:16px}
 .tl-head h3{font-size:clamp(26px,2.4vw,34px)}
-.tl-item .tl-stats{display:grid; grid-template-columns:1fr; gap:6px; margin:18px 0 0; max-width:340px}
-.tl-item .tl-stats div{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; padding:10px 14px}
-.tl-item .tl-stats dt{font-size:clamp(22px,2vw,28px); white-space:nowrap}
-.tl-item .tl-stats dd{margin:0; flex:1 1 15ch}
 /* a long value ("Web + Mobile") pushes its label to the next line instead of crushing it */
 .tl-item ul li{font-size:16px}
 @media (max-width:1100px){
@@ -965,8 +939,7 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .hero-copy{position:relative; left:auto; bottom:auto; margin-left:var(--gut)}
 .hero h1{font-size:clamp(48px,min(8.6vw,14.5svh),132px)}
 @media (min-width:1024px) and (max-height:860px){
-  .hero-meta{margin-bottom:16px} .lede{margin-top:18px} .cta{margin-top:24px}
-  .cta-sub{margin-top:12px} .hero-facts{margin-top:20px; padding-top:14px} .push{margin-top:12px}
+  .lede{margin-top:18px} .cta{margin-top:24px}
 }
 /* below 1000px the seven sections do not fit beside the tools: the nav takes its own scrollable row */
 .site-header nav a{white-space:nowrap}
@@ -986,8 +959,8 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 /* fingers get 40px rows; the text stays where it was */
 @media (pointer:coarse){
   .site-header nav a{padding:10px 0}
-  .cta-sub{gap:0 22px} .cta-sub a,.cta-sub button{padding:12px 0}
-  .push a{padding:10px 0}
+  .hero-mail a,.cv-alt{padding-block:10px}
+  .ins-shot .shot-ctrl button{width:40px; height:40px}
   .tool{min-height:40px}
   .ins-head .links a{padding-block:10px}
   .mail-big{padding-block:8px} .copy-btn{min-height:40px}
@@ -998,8 +971,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (max-width:560px){
   .ins-head{grid-template-columns:minmax(0,1fr); grid-template-areas:"title" "state" "links"}
   .ins-head .inline-state{margin-top:0}
-  .tl-item .tl-stats div{display:block}
-  .tl-item .tl-stats dd{margin-top:4px}
 }
 /* Chip: eyes from CSS vars, tucked while reading down on phones */
 .chip-pet .eyes{transform:translate(var(--lx,0px),var(--ly,0px))}
@@ -1010,7 +981,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .probe::before,.probe::after{content:""; position:absolute; top:50%; width:5px; height:12px; max-height:60%; translate:0 -50%; border-radius:1.5px; background:#c4a354}
 .probe::before{left:-3px} .probe::after{right:-3px}
 .probe.on{opacity:1}
-.probe.press{scale:.97}
 @media (prefers-reduced-motion:reduce){ .probe{transition:opacity .18s} }
 /* ── Project screens: slide from the side you went, open big, swipe on phones ── */
 @keyframes shot-in{from{opacity:0; translate:calc(var(--dir,0) * 28px) 0}}
@@ -1026,9 +996,37 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .lightbox::backdrop{background:rgba(8,9,12,.9); backdrop-filter:blur(8px); animation:lb-fade .3s ease}
 @keyframes lb-fade{from{opacity:0}}
 .lightbox img{max-width:min(94vw,1680px); max-height:calc(100dvh - 128px); object-fit:contain; border-radius:10px; box-shadow:0 0 0 1px rgba(236,238,242,.1), 0 40px 80px -30px #000; user-select:none; animation:shot-in .4s cubic-bezier(.2,.8,.2,1)}
-.lb-bar{position:fixed; left:50%; bottom:max(20px,env(safe-area-inset-bottom)); translate:-50% 0; display:flex; align-items:center; gap:6px; padding:5px; border-radius:999px; background:rgba(20,22,27,.9); box-shadow:inset 0 0 0 1px rgba(236,238,242,.14)}
-.lb-bar button{display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:none; color:#eceef2; cursor:pointer; transition:background .2s}
+.lb-bar{position:fixed; left:50%; bottom:max(20px,env(safe-area-inset-bottom)); translate:-50% 0; display:flex; align-items:center; gap:6px; padding:5px; border-radius:8px; background:rgba(20,22,27,.9); box-shadow:inset 0 0 0 1px rgba(236,238,242,.14)}
+.lb-bar button{display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:5px; background:none; color:#eceef2; cursor:pointer; transition:background .2s}
 .lb-bar button:hover,.lb-bar button:focus-visible{background:rgba(236,238,242,.14)}
 .lb-bar span{min-width:52px; text-align:center; font:500 13px/1 'Red Hat Mono', ui-monospace, monospace; color:#a9aeb9}
 ::view-transition-group(shot){animation-duration:.42s; animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){ .ins-shot img,.lightbox img,.lightbox::backdrop{animation:none} .shot-open:hover img{scale:none} }
+
+/* ── Hero v4: name, role, one line of proof, two pads and the address; the facts ride the board edge ── */
+.hero-frame{justify-content:center; padding-bottom:clamp(72px,12vh,120px)}
+.hero-role{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin:24px 0 0; font:500 clamp(19px,1.6vw,24px)/1.25 var(--text); color:var(--ink)}
+.hero-role img{display:none; width:40px; height:40px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px #0e1014, 0 0 0 3px rgba(var(--silk),.45)}
+.hero-role .avail{display:inline-flex; align-items:center; gap:8px; font:500 13px/1 var(--mono); color:#9fe0ac}
+.lede{margin-top:14px; max-width:44ch; font-size:clamp(16px,1.25vw,19px)}
+.cta{align-items:center; margin-top:30px}
+.cv-alt{font:500 13px/1 var(--mono); color:var(--ink-2); text-decoration:none; padding:8px 4px; border-bottom:1px solid rgba(236,238,242,.25); transition:color .2s, border-color .2s}
+.cv-alt:hover{color:var(--ink); border-color:var(--ink)}
+.hero-mail{margin:20px 0 0; font-size:15px; color:var(--ink-2)}
+.hero-mail a{color:var(--ink); text-decoration:underline; text-decoration-color:rgba(var(--silk),.45); text-underline-offset:4px; transition:text-decoration-color .2s}
+.hero-mail a:hover{text-decoration-color:rgb(var(--silk))}
+/* the board's edge silkscreen: where, how and what is left to finish, as real boards print theirs */
+.hero-edge{position:absolute; left:var(--gut); right:calc(var(--gut) + 34ch); bottom:24px; margin:0; font:500 12px/1.6 var(--mono); color:var(--ink-2)}
+@media (min-width:1024px){ .status{bottom:24px} }
+@media (max-width:1023px){
+  .hero-frame{justify-content:flex-end}
+  .hero-role img{display:block}
+  .hero-edge{position:static; margin:22px var(--gut) 0}
+}
+/* Chip blinks in CSS (no re-render) and answers a hover itself: it stops floating and leans in */
+.chip-pet .eye{transform-box:fill-box; transform-origin:center; animation:chip-blink 5.2s infinite}
+@keyframes chip-blink{0%,95%,100%{transform:none} 97%{transform:scaleY(.12)}}
+.chip-body svg{transition:scale .25s var(--ease)}
+.chip-body:hover{animation-play-state:paused}
+.chip-body:hover svg{scale:1.06}
+@media (prefers-reduced-motion: reduce){ .chip-pet .eye{animation:none} .chip-body:hover svg{scale:none} }

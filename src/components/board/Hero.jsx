@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { Download, History, TerminalSquare, Volume2, VolumeX } from 'lucide-react'
+import { Download, Volume2, VolumeX } from 'lucide-react'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
 import { site } from '@/data/site'
 import { findSecret } from '@/lib/secrets'
-import { useLatestPush, timeAgo } from '@/hooks/useLatestPush'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
-import { powerOn } from '@/lib/power'
 import { createBoard } from './engine'
 
-const SECTIONS = ['trabajo', 'proceso', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
-const githubUser = site.github.split('github.com/')[1]
+const SECTIONS = ['trabajo', 'trayectoria', 'proceso', 'sobre', 'taller', 'contacto', 'consola']
 
 function Mark() {
   return (
@@ -82,13 +79,15 @@ export function Hero() {
   const { lang } = useLang()
   const { playClick, playHover, playSuccess } = useSoundEffects()
   const T = copy[lang].hero
-  const push = useLatestPush(githubUser)
-  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null), frameRef = useRef(null)
+  const heroRef = useRef(null), canvasRef = useRef(null), partsRef = useRef(null), statusRef = useRef(null), copyRef = useRef(null), frameRef = useRef(null), edgeRef = useRef(null)
   // the engine lives outside React; it reads the latest sound callbacks through a ref
   const sounds = useRef({})
   useEffect(() => { sounds.current = { playClick, playHover, playSuccess } })
 
-  // the board is rebuilt per language so its labels follow it
+  // the board is built once; a language change only swaps its labels, so the routing and any
+  // soldered chips stay where they are
+  const boardRef = useRef(null), textRef = useRef(T)
+  useEffect(() => { textRef.current = T; boardRef.current?.setText(T) }, [T])
   useEffect(() => {
     let board, cancelled = false
     document.fonts.ready.then(() => {
@@ -100,65 +99,51 @@ export function Hero() {
         canvas: canvasRef.current,
         partsLayer: partsRef.current,
         statusEl: statusRef.current,
-        keepOut: [copyRef.current, statusRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
+        keepOut: [copyRef.current, statusRef.current, edgeRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
         photo: frameRef.current.querySelector('.hero-photo'),
         frame: frameRef.current,
         letters: [...hero.querySelectorAll('h1 .l')],
-        text: T,
+        text: textRef.current,
         onComplete: () => { sounds.current.playSuccess?.(); findSecret('placa') },
         onSolder: () => sounds.current.playClick?.(),
         onPartHover: () => sounds.current.playHover?.(),
       })
+      boardRef.current = board
     })
-    return () => { cancelled = true; board?.destroy() }
-  }, [T])
+    return () => { cancelled = true; board?.destroy(); boardRef.current = null }
+  }, [])
 
+  const cv = site.resumes[lang === 'en' ? 'en' : 'es'], cvAlt = site.resumes[lang === 'en' ? 'es' : 'en']
   const letters = (word, offset, cls = 'l') => [...word].map((ch, i) => <span key={offset + i} className={cls} aria-hidden="true">{ch}</span>)
 
   return (
     <section className="hero" id="top" ref={heroRef}>
       <canvas ref={canvasRef} aria-hidden="true" />
       <Header copyRef={copyRef} />
-      <div ref={partsRef} />
       <div className="hero-frame" ref={frameRef}>
       <Portrait alt={T.portrait} />
       <div className="hero-copy" ref={copyRef}>
-        <div className="hero-meta">
-          <img src="/port.jpg" alt={T.portrait} width="44" height="44" />
-          <p>
-            <span className="avail"><i className="led live" />{T.available}</span>
-            <span>{T.place}</span>
-          </p>
-        </div>
         <h1 aria-label={`${T.first} ${T.last}`}>
           {letters(T.first, 0)}<br />{letters(T.last, 100, 'l last')}
         </h1>
-        <p className="lede"><strong>{T.ledeStrong}</strong> {T.lede}</p>
+        <p className="hero-role">
+          <img src="/port.jpg" alt="" width="40" height="40" />
+          <span>{T.role}</span>
+          <span className="avail"><i className="led live" />{T.avail}</span>
+        </p>
+        <p className="lede">{T.lede}</p>
         <div className="cta">
           <a className="btn" href="#trabajo" onClick={playClick}>{T.ctaWork}</a>
-          <a className="btn ghost" href={`mailto:${site.email}`} onClick={playClick}>{T.ctaMail}</a>
+          <a className="btn ghost" href={cv.url} download={cv.filename} onClick={playClick}><Download size={15} aria-hidden="true" />{T.cvMain}</a>
+          <a className="cv-alt" href={cvAlt.url} download={cvAlt.filename} aria-label={T.cvAltLabel}>{T.cvAlt}</a>
         </div>
-        <p className="cta-sub">
-          <a href={site.resumes.es.url} download={site.resumes.es.filename}><Download size={14} aria-hidden="true" />{T.cvEs}</a>
-          <a href={site.resumes.en.url} download={site.resumes.en.filename}><Download size={14} aria-hidden="true" />{T.cvEn}</a>
-          <button type="button" onClick={() => { playClick(); powerOn() }}><TerminalSquare size={14} aria-hidden="true" />{T.os}</button>
-          <button type="button" className="past" onClick={() => { playClick(); findSecret('mph') }}><History size={14} aria-hidden="true" />{T.past}</button>
-        </p>
-        <dl className="hero-facts">
-          {T.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-        </dl>
-        {/* the row keeps its height while GitHub answers, so the board routes around it from the start */}
-        <p className="push">
-          {push && (
-            <a href={`${site.github}/${push.repo}`} target="_blank" rel="noopener noreferrer">
-              <GitHubIcon size={13} />{T.lastPush(timeAgo(push.at, lang), push.repo)}
-            </a>
-          )}
-        </p>
+        <p className="hero-mail">{T.mail} <a href={`mailto:${site.email}`} onClick={playClick}>{site.email}</a></p>
       </div>
+      <p className="hero-edge" ref={edgeRef}>{T.edge.join(' · ')}</p>
       {/* visual hint only: the parts are reachable as links and the counter would spam screen readers */}
       <p className="status" ref={statusRef} aria-hidden="true" />
       </div>
+      <div ref={partsRef} />
     </section>
   )
 }

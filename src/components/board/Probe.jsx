@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'react'
 
 // The board's pointer: the system arrow stays (no lag, text cursor in fields), and anything you can
 // press gets a footprint drawn around it, an outline with two solder pads, so it reads as a part
-// you are about to place. It glides between neighbours and only animates while it moves.
+// you are about to place. It glides between neighbours and only animates while it moves. The board's
+// own parts and Chip draw their own hover, so they are left out.
 const SEL = "a, button, summary, select, [role='button'], .cursor-target"
+const SKIP = '.part, .chip-pet'
 const PAD = 5
 
 export function Probe() {
@@ -35,7 +37,8 @@ export function Probe() {
     const kick = () => { if (aim() && !raf) raf = requestAnimationFrame(tick) }
 
     const over = (e) => {
-      const t = e.target.closest?.(SEL)
+      const hit = e.target.closest?.(SEL)
+      const t = hit && !hit.closest(SKIP) ? hit : null
       if (t === target) return
       const fresh = !target // coming from empty space: appear on the part, no glide from the last one
       target = t
@@ -49,11 +52,13 @@ export function Probe() {
     const press = (on) => () => el.classList.toggle('press', on)
     const down = press(true), up = press(false)
     const out = () => { target = null; el.classList.remove('on') }
+    // a click that scrolls the page (or any scroll) drops the footprint instead of chasing the part
+    const scrolled = () => { if (target) out() }
     document.addEventListener('pointerover', over, { passive: true })
     document.addEventListener('pointerdown', down, { passive: true })
     document.addEventListener('pointerup', up, { passive: true })
     document.documentElement.addEventListener('pointerleave', out)
-    addEventListener('scroll', kick, { passive: true, capture: true })
+    addEventListener('scroll', scrolled, { passive: true, capture: true })
     addEventListener('resize', kick)
     return () => {
       cancelAnimationFrame(raf)
@@ -61,7 +66,7 @@ export function Probe() {
       document.removeEventListener('pointerdown', down)
       document.removeEventListener('pointerup', up)
       document.documentElement.removeEventListener('pointerleave', out)
-      removeEventListener('scroll', kick, { capture: true })
+      removeEventListener('scroll', scrolled, { capture: true })
       removeEventListener('resize', kick)
     }
   }, [])
