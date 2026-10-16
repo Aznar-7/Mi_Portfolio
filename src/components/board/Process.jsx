@@ -158,7 +158,6 @@ export function Process() {
             return (
               <li key={s.id} className={`panel${flat || i === active ? ' on' : ''}${i < active ? ' past' : ''}`}>
                 <div className="panel-text">
-                  <span className="panel-n">{String(i + 1).padStart(2, '0')}</span>
                   <h3>{l(s.title, lang)}</h3>
                   <p>{l(s.detail, lang)}</p>
                   <p className="panel-case">

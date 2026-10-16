@@ -14,7 +14,7 @@ export const about = {
   quickFacts: [
     {
       label: { es: 'Formación', en: 'Education' },
-      value: { es: 'Sistemas de Información — UTN', en: 'Information Systems — UTN' },
+      value: { es: 'Sistemas de Información, UTN', en: 'Information Systems, UTN' },
     },
     {
       label: { es: 'Ubicación', en: 'Location' },

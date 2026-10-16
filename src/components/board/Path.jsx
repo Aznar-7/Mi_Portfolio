@@ -17,7 +17,7 @@ export function Path() {
   const T = copy[lang].path
   const root = useRef(null)
   const items = [
-    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), tech: e.tech, stats: e.stats?.map((st) => ({ value: st.value, label: l(st.label, lang) })) })),
+    ...experience.map((e) => ({ kind: 'job', name: e.company, role: l(e.role, lang), span: e.span, bullets: l(e.impact, lang), tech: e.tech })),
   ]
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -54,11 +54,6 @@ export function Path() {
                   <p className="tl-role">{it.role}</p>
                 </div>
               </div>
-              {it.stats && (
-                <dl className="tl-stats">
-                  {it.stats.map((st) => <div key={st.label}><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
-                </dl>
-              )}
               <ul>{it.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
               {it.tech && <ul className="chips tl-chips">{it.tech.map((t) => <li key={t}><ToolIcon name={t} />{t}</li>)}</ul>}
             </li>
@@ -74,7 +69,7 @@ export function Path() {
               <p className="edu-when">{a.span[1] == null ? T.ongoing(a.span[0]) : a.span.join(' – ')}</p>
               <div className="edu-what">
                 <h4>{l(a.degree, lang)}</h4>
-                <p className="edu-where">{a.institution.replace(' — ', ' · ')}</p>
+                <p className="edu-where">{a.institution}</p>
               </div>
               <p className="edu-note">{l(a.highlights, lang).join(' ')}</p>
             </li>

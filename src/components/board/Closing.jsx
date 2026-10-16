@@ -118,7 +118,6 @@ export function Console() {
   return (
     <section className="power" id="consola">
       <div className="power-in">
-        <span className="conn-silk" aria-hidden="true">{T.silk}</span>
         <PowerTitle text={T.title} />
         <p className="sec-intro">{T.intro}</p>
         <div className="power-row">
