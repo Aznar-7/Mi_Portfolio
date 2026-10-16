@@ -27,8 +27,8 @@ export const copy = {
       intro: 'Seis proyectos: lo que corre en la web y lo que corre en un circuito. Filtrá por capa.',
       layers: 'Filtrar por capa', all: 'Todo', web: 'Web', hw: 'Hardware', details: 'Ver detalle',
       status: { prod: 'En producción', live: 'En línea', done: 'Terminado', dev: 'En desarrollo' },
-      flow: 'Recorrido de un request', screens: 'Pantallas de UTN Hub', screen: (i, n) => `Pantalla ${i} de ${n}`,
-      live: 'Ver en vivo', code: 'Código', prevShot: 'Pantalla anterior', nextShot: 'Pantalla siguiente',
+      flow: 'Recorrido de un request', screens: (t) => `Pantallas de ${t}`, screen: (i, n) => `Pantalla ${i} de ${n}`,
+      live: 'Ver en vivo', code: 'Código', prevShot: 'Pantalla anterior', nextShot: 'Pantalla siguiente', enlarge: 'Ampliar pantalla', closeShot: 'Cerrar',
     },
     shop: {
       title: 'Stack',
@@ -114,8 +114,8 @@ export const copy = {
       intro: 'Six projects: what runs on the web and what runs on a circuit. Filter by layer.',
       layers: 'Filter by layer', all: 'All', web: 'Web', hw: 'Hardware', details: 'Show details',
       status: { prod: 'In production', live: 'Live', done: 'Done', dev: 'In development' },
-      flow: 'Path of a request', screens: 'UTN Hub screens', screen: (i, n) => `Screen ${i} of ${n}`,
-      live: 'Visit', code: 'Code', prevShot: 'Previous screen', nextShot: 'Next screen',
+      flow: 'Path of a request', screens: (t) => `${t} screens`, screen: (i, n) => `Screen ${i} of ${n}`,
+      live: 'Visit', code: 'Code', prevShot: 'Previous screen', nextShot: 'Next screen', enlarge: 'Enlarge screen', closeShot: 'Close',
     },
     shop: {
       title: 'Stack',

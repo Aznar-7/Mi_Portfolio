@@ -75,13 +75,13 @@ export function Mascot() {
   const { playSelect, playClick, isMuted, toggleMute } = useSoundEffects()
   const found = useSecretsFound()
   const ref = useRef(null)
-  const [look, setLook] = useState([0, 0])
   const [blink, setBlink] = useState(false)
   const [say, setSay] = useState(null)
   const [state, setState] = useState('idle') // idle | typing | happy | confused
   const [menu, setMenu] = useState(false)
   const [tour, setTour] = useState(-1)
   const [shown, setShown] = useState(false) // floats in once the hero is behind
+  const [tucked, setTucked] = useState(false) // on phones it ducks out of the way while you read down
   const [quiet, setQuiet] = useState(() => { try { return localStorage.getItem(QUIET_KEY) === '1' } catch { return false } })
   const timer = useRef(0), hintN = useRef(0), seen = useRef(new Set()), busy = useRef(false)
   useEffect(() => { busy.current = menu || tour >= 0 }, [menu, tour])
@@ -92,20 +92,38 @@ export function Mascot() {
     timer.current = setTimeout(() => { if (!busy.current) setSay(null); setState('idle') }, ms)
   }
 
-  // eyes follow the pointer, a few pixels at most
+  // eyes follow the pointer, a few pixels at most; written to CSS so React does not re-render per move
   useEffect(() => {
     let raf = 0
     const move = (e) => {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
-        const r = ref.current?.getBoundingClientRect(); if (!r) return
+        const el = ref.current, r = el?.getBoundingClientRect(); if (!r?.width) return
         const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * 0.42), d = Math.hypot(dx, dy) || 1
         const k = Math.min(1, d / 260)
-        setLook([(dx / d) * 3.2 * k, (dy / d) * 2.6 * k])
+        el.style.setProperty('--lx', `${((dx / d) * 3.2 * k).toFixed(2)}px`)
+        el.style.setProperty('--ly', `${((dy / d) * 2.6 * k).toFixed(2)}px`)
       })
     }
     addEventListener('pointermove', move, { passive: true })
     return () => { removeEventListener('pointermove', move); cancelAnimationFrame(raf) }
+  }, [])
+
+  // phones: scrolling down tucks it away, any scroll up brings it back
+  useEffect(() => {
+    let last = scrollY, raf = 0
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        const y = scrollY, d = y - last
+        if (Math.abs(d) < 12) return
+        setTucked(innerWidth <= 700 && d > 0)
+        last = y
+      })
+    }
+    addEventListener('scroll', onScroll, { passive: true })
+    return () => { removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
   }, [])
 
   // blink every few seconds
@@ -168,9 +186,8 @@ export function Mascot() {
   }
   const cv = site.resumes[lang === 'en' ? 'en' : 'es']
 
-  const [lx, ly] = state === 'typing' ? [-2.6, 2.2] : look
   return (
-    <div className={`chip-pet ${state}${shown || menu || tour >= 0 ? ' shown' : ''}`} ref={ref}>
+    <div className={`chip-pet ${state}${shown || menu || tour >= 0 ? ' shown' : ''}${tucked && !say && !menu && tour < 0 ? ' tucked' : ''}`} ref={ref}>
       {(say || menu || tour >= 0) && (
         <div className="chip-say" role="status">
           {say && <p>{say}</p>}
@@ -210,7 +227,7 @@ export function Mascot() {
           {[38, 52, 66, 80].map((y) => <g key={y}><rect x="14" y={y} width="12" height="6" rx="1.5" className="leg" /><rect x="94" y={y} width="12" height="6" rx="1.5" className="leg" /></g>)}
           <rect x="24" y="22" width="72" height="76" rx="12" className="pkg" />
           <circle cx="34" cy="32" r="2.2" className="dot" />
-          <g className="eyes" transform={`translate(${lx.toFixed(2)} ${ly.toFixed(2)})`}>
+          <g className="eyes">
             {state === 'happy'
               ? <><path d="M42 58 q6 -7 12 0" className="eye-arc" /><path d="M66 58 q6 -7 12 0" className="eye-arc" /></>
               : <><rect x="43" y={blink ? 56 : 50} width="10" height={blink ? 2 : 13} rx="5" className="eye" /><rect x="67" y={blink ? 56 : 50} width="10" height={blink ? 2 : 13} rx="5" className="eye" /></>}

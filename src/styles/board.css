@@ -845,7 +845,7 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .inspector .desc{margin:0 0 18px; font-size:16.5px}
 .ins-media{margin:0}
 .ins-shot{position:relative; aspect-ratio:16/10; border-radius:12px; overflow:hidden; background:#0e1014; box-shadow:0 0 0 1px rgba(236,238,242,.08)}
-.ins-shot img{display:block; width:100%; height:100%; object-fit:contain; animation:fadein .3s ease}
+.ins-shot img{display:block; width:100%; height:100%; object-fit:contain; animation:shot-in .4s var(--ease); transition:scale .5s var(--ease)}
 .ins-shot .shot-ctrl{opacity:1; transform:none; right:8px; bottom:8px}
 .ins-shot .shot-ctrl button{width:28px; height:28px}
 .ins-thumbs{display:flex; gap:6px; margin-top:8px}
@@ -961,3 +961,79 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (max-width:900px){ .bench{grid-template-columns:1fr; gap:20px} }
 
 .site .term input:focus-visible,.site .letter :is(input,select,textarea):focus-visible{outline:none}
+
+/* ── Responsive pass (Oct 2026) ───────────────────────────────── */
+/* the hero copy flows inside the frame instead of hanging from the bottom, so short laptop screens
+   and phones grow the hero instead of pushing the name into the header */
+.hero{height:auto; min-height:max(100svh,600px)}
+.hero-frame{position:relative; inset:auto; min-height:inherit; display:flex; flex-direction:column; justify-content:flex-end; box-sizing:border-box; padding:clamp(96px,14vh,140px) 0 clamp(32px,9vh,112px)}
+.hero-copy{position:relative; left:auto; bottom:auto; margin-left:var(--gut)}
+.hero h1{font-size:clamp(48px,min(8.6vw,14.5svh),132px)}
+@media (min-width:1024px) and (max-height:860px){
+  .hero-meta{margin-bottom:16px} .lede{margin-top:18px} .cta{margin-top:24px}
+  .cta-sub{margin-top:12px} .hero-facts{margin-top:20px; padding-top:14px} .push{margin-top:12px}
+}
+/* below 1000px the seven sections do not fit beside the tools: the nav takes its own scrollable row */
+.site-header nav a{white-space:nowrap}
+@media (max-width:1000px){
+  .site-header{flex-wrap:wrap; row-gap:8px}
+  .site-header nav{order:3; flex-basis:100%; margin-left:0; gap:18px; overflow-x:auto; scrollbar-width:none}
+  .site-header nav::-webkit-scrollbar{display:none}
+  .tools-bar{margin-left:auto}
+  .hero-frame{padding-top:150px}
+  .site section[id]{scroll-margin-top:118px}
+}
+/* without the portrait the routing counter joins the copy instead of floating over the facts */
+@media (max-width:1023px){
+  .status{position:static; width:auto; min-height:0; margin:18px var(--gut) 0; text-align:left}
+}
+@media (max-width:760px){ .hero-frame{padding-bottom:40px} }
+/* fingers get 40px rows; the text stays where it was */
+@media (pointer:coarse){
+  .site-header nav a{padding:10px 0}
+  .cta-sub{gap:0 22px} .cta-sub a,.cta-sub button{padding:12px 0}
+  .push a{padding:10px 0}
+  .tool{min-height:40px}
+  .ins-head .links a{padding-block:10px}
+  .mail-big{padding-block:8px} .copy-btn{min-height:40px}
+  .power-links button{padding:12px 0} .term-help button{min-height:40px}
+  .silk-foot .eggs{padding-block:12px}
+}
+/* the project head stacks on phones so the tagline keeps a readable measure */
+@media (max-width:560px){
+  .ins-head{grid-template-columns:minmax(0,1fr); grid-template-areas:"title" "state" "links"}
+  .ins-head .inline-state{margin-top:0}
+  .tl-item .tl-stats div{display:block}
+  .tl-item .tl-stats dd{margin-top:4px}
+}
+/* Chip: eyes from CSS vars, tucked while reading down on phones */
+.chip-pet .eyes{transform:translate(var(--lx,0px),var(--ly,0px))}
+.chip-pet.typing .eyes{transform:translate(-2.6px,2.2px)}
+.chip-pet.shown.tucked{transform:translateY(calc(100% + 32px)); pointer-events:none}
+/* the probe: a footprint around whatever you can press */
+.probe{position:fixed; left:0; top:0; z-index:9999; width:0; height:0; box-sizing:border-box; pointer-events:none; border:1px solid rgba(232,226,176,.6); opacity:0; transition:opacity .18s, scale .15s cubic-bezier(.2,.8,.2,1)}
+.probe::before,.probe::after{content:""; position:absolute; top:50%; width:5px; height:12px; max-height:60%; translate:0 -50%; border-radius:1.5px; background:#c4a354; box-shadow:0 0 10px rgba(196,163,84,.5)}
+.probe::before{left:-3px} .probe::after{right:-3px}
+.probe.on{opacity:1}
+.probe.press{scale:.97}
+@media (prefers-reduced-motion:reduce){ .probe{transition:opacity .18s} }
+/* ── Project screens: slide from the side you went, open big, swipe on phones ── */
+@keyframes shot-in{from{opacity:0; translate:calc(var(--dir,0) * 28px) 0}}
+.ins-shot{touch-action:pan-y; user-select:none}
+.shot-open{all:unset; display:block; width:100%; height:100%; cursor:zoom-in}
+.shot-open:focus-visible{outline:2px solid rgb(var(--silk)); outline-offset:-4px; border-radius:12px}
+.shot-open:hover img{scale:1.015}
+.shot-zoom{position:absolute; top:10px; right:10px; display:grid; place-items:center; width:30px; height:30px; border-radius:8px; color:var(--ink); background:rgba(14,16,20,.72); backdrop-filter:blur(6px); box-shadow:inset 0 0 0 1px rgba(236,238,242,.14); opacity:0; translate:0 -4px; transition:opacity .2s, translate .25s var(--ease)}
+.shot-open:hover .shot-zoom,.shot-open:focus-visible .shot-zoom{opacity:1; translate:0 0}
+@media (pointer:coarse){ .shot-zoom{opacity:1; translate:0 0} }
+.lightbox{width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:0; border:0; background:none; color:#eceef2; overscroll-behavior:contain; touch-action:pan-y pinch-zoom}
+.lightbox[open]{display:grid; place-items:center}
+.lightbox::backdrop{background:rgba(8,9,12,.9); backdrop-filter:blur(8px); animation:lb-fade .3s ease}
+@keyframes lb-fade{from{opacity:0}}
+.lightbox img{max-width:min(94vw,1680px); max-height:calc(100dvh - 128px); object-fit:contain; border-radius:10px; box-shadow:0 0 0 1px rgba(236,238,242,.1), 0 40px 80px -30px #000; user-select:none; animation:shot-in .4s cubic-bezier(.2,.8,.2,1)}
+.lb-bar{position:fixed; left:50%; bottom:max(20px,env(safe-area-inset-bottom)); translate:-50% 0; display:flex; align-items:center; gap:6px; padding:5px; border-radius:999px; background:rgba(20,22,27,.9); box-shadow:inset 0 0 0 1px rgba(236,238,242,.14)}
+.lb-bar button{display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:none; color:#eceef2; cursor:pointer; transition:background .2s}
+.lb-bar button:hover,.lb-bar button:focus-visible{background:rgba(236,238,242,.14)}
+.lb-bar span{min-width:52px; text-align:center; font:500 13px/1 'Red Hat Mono', ui-monospace, monospace; color:#a9aeb9}
+::view-transition-group(shot){animation-duration:.42s; animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){ .ins-shot img,.lightbox img,.lightbox::backdrop{animation:none} .shot-open:hover img{scale:none} }
