@@ -28,8 +28,8 @@ export const processSteps = [
     id: 'build',
     title: { es: 'Construir', en: 'Build' },
     detail: {
-      es: 'Frontend, backend y, cuando el problema lo pide, hardware. Código legible y fácil de mantener.',
-      en: 'Frontend, backend and, when the problem calls for it, hardware. Readable, maintainable code.',
+      es: 'Frontend, backend y, cuando el problema lo pide, hardware.',
+      en: 'Frontend, backend and, when the problem calls for it, hardware.',
     },
     example: {
       es: 'Eco Records: carcasa impresa en 3D, Raspberry Pi con NFC y una app web propia.',
@@ -40,8 +40,8 @@ export const processSteps = [
     id: 'ship',
     title: { es: 'Desplegar', en: 'Ship' },
     detail: {
-      es: 'Servidores Linux, reverse proxy, certificados y dominio. Lo dejo andando en producción, no en mi máquina.',
-      en: 'Linux servers, reverse proxy, certificates and domain. It runs in production, not on my machine.',
+      es: 'Servidores Linux, reverse proxy, certificados y dominio. Lo dejo andando en producción.',
+      en: 'Linux servers, reverse proxy, certificates and domain. I leave it running in production.',
     },
     example: {
       es: 'UTN Hub: VM en Oracle Cloud con Nginx y SSL, configurada desde cero.',
@@ -52,8 +52,8 @@ export const processSteps = [
     id: 'iterate',
     title: { es: 'Iterar', en: 'Iterate' },
     detail: {
-      es: 'Escucho a quien lo usa y mejoro lo que ya está en producción, sin romper lo que funciona.',
-      en: 'I listen to the people using it and improve what is already live, without breaking what works.',
+      es: 'Escucho a quien lo usa y mejoro lo que ya está en producción.',
+      en: 'I listen to the people using it and improve what is already live.',
     },
     example: {
       es: 'Porta Hnos: herramientas legacy migradas a un stack moderno en ciclos de entrega quincenales.',

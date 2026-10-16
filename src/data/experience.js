@@ -3,7 +3,7 @@ export const experience = [
     type: 'work',
     role: { es: 'Cofundador', en: 'Co-founder' },
     company: 'Gavia',
-    period: { es: '2026 — hoy', en: '2026 — now' },
+    period: { es: '2026 – hoy', en: '2026 – now' },
     span: [2026, null], // [from, to]; null means ongoing
     tech: ['Astro', 'TypeScript', 'MapLibre GL', 'Vercel'],
     impact: {
@@ -27,8 +27,8 @@ export const experience = [
     },
     company: 'Porta Hnos',
     period: {
-      es: '2025 — actualidad',
-      en: '2025 — Present'
+      es: '2025 – hoy',
+      en: '2025 – now'
     },
     span: [2025, null],
     tech: [
@@ -43,43 +43,20 @@ export const experience = [
       'Jira',
       'Industrial IoT'
     ],
-    stats: [
-      {
-        value: '10+',
-        label: {
-          es: 'sistemas empresariales desarrollados',
-          en: 'business systems developed'
-        }
-      },
-      {
-        value: 'E2E',
-        label: {
-          es: 'integración de IA e infraestructura cloud',
-          en: 'AI and cloud infrastructure integration'
-        }
-      },
-      {
-        value: 'Web + Mobile',
-        label: {
-          es: 'software conectado con operaciones industriales',
-          en: 'software connected to industrial operations'
-        }
-      }
-    ],
     impact: {
       es: [
-        'Diseñé y desarrollé más de diez sistemas internos para distintas áreas de la empresa, incluyendo Capital Humano, Higiene y Seguridad, gestión de pañol, pallets e inventario, y herramientas de gestión operativa para stock, lotes y sorteos.',
-        'Desarrollé aplicaciones móviles integradas con equipos industriales, incluyendo PLCs y dispositivos basados en Raspberry Pi, conectando el software con procesos y operaciones físicas.',
-        'Implementé una solución de búsqueda y consulta inteligente basada en RAG para información de proyectos en Jira. Desarrollé el pipeline en Python para extraer datos, transformarlos en Markdown y publicarlos en Azure Blob Storage, además de configurar la indexación y el agente para consultas en lenguaje natural.',
-        'Construí una librería compartida de componentes React para estandarizar interfaces y facilitar el desarrollo y mantenimiento de aplicaciones internas.',
-        'Integré APIs y modernicé herramientas existentes, trabajando de extremo a extremo en el desarrollo de soluciones full stack y en su integración con servicios e infraestructura.'
+        'Diseñé y desarrollé más de diez sistemas internos: Capital Humano, Higiene y Seguridad, pañol, pallets e inventario, y herramientas operativas para stock, lotes y sorteos.',
+        'Desarrollé apps móviles que se conectan con equipos industriales: PLCs y dispositivos con Raspberry Pi.',
+        'Armé un buscador con RAG sobre los proyectos de Jira. Un pipeline en Python extrae las tarjetas, las pasa a Markdown y las sube a Azure Blob Storage; después configuré la indexación y el agente que responde preguntas en lenguaje natural.',
+        'Construí una librería de componentes React que comparten todas las aplicaciones internas.',
+        'Integré APIs externas y modernicé herramientas heredadas.',
       ],
       en: [
-        'Designed and developed 10+ internal business systems across multiple departments, including Human Resources, Health and Safety, storeroom operations, pallet and inventory management, and operational tools for stock, batch tracking and prize draws.',
-        'Developed mobile applications integrated with industrial equipment, including PLCs and Raspberry Pi-based devices, connecting software with physical processes and industrial operations.',
-        'Implemented a RAG-based intelligent search and query solution for Jira project data. Built the Python pipeline to extract data, transform it into Markdown and publish it to Azure Blob Storage, while configuring indexing and the agent for natural-language queries.',
-        'Built a shared React component library to standardize interfaces and streamline the development and maintenance of internal applications.',
-        'Integrated external APIs and modernized legacy tools, contributing end to end to full-stack solutions and their integration with services and infrastructure.'
+        'Designed and built 10+ internal systems: Human Resources, Health and Safety, storeroom, pallets and inventory, plus operational tools for stock, batches and prize draws.',
+        'Built mobile apps that talk to industrial equipment: PLCs and Raspberry Pi devices.',
+        'Built a RAG search over the Jira projects. A Python pipeline pulls the cards, turns them into Markdown and uploads them to Azure Blob Storage; then I set up the indexing and the agent that answers questions in plain language.',
+        'Built a React component library shared by every internal app.',
+        'Integrated external APIs and modernized legacy tools.',
       ]
     }
   },
@@ -108,8 +85,8 @@ export const academic = [
       es: 'Ingeniería en Sistemas de Información',
       en: 'Information Systems Engineering',
     },
-    institution: 'UTN — Universidad Tecnológica Nacional',
-    period: { es: '2024 — hoy', en: '2024 — now' },
+    institution: 'Universidad Tecnológica Nacional (UTN)',
+    period: { es: '2024 – hoy', en: '2024 – now' },
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
@@ -129,8 +106,8 @@ export const academic = [
       es: 'Licenciatura en Inteligencia Artificial',
       en: 'Bachelor of Science in Artificial Intelligence',
     },
-    institution: 'UTN — Universidad Tecnológica Nacional',
-    period: { es: '2024 — hoy', en: '2024 — now' },
+    institution: 'Universidad Tecnológica Nacional (UTN)',
+    period: { es: '2024 – hoy', en: '2024 – now' },
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [

@@ -201,7 +201,7 @@ export function Work() {
             )
           })}
         </svg>
-        <div className="ins-slot" ref={inspRef}><Inspector key={sel.id} project={sel} lang={lang} T={T} refDes={`U${projects.indexOf(sel) + 1}`} /></div>
+        <div className="ins-slot" ref={inspRef}><Inspector key={sel.id} project={sel} lang={lang} T={T} /></div>
       </div>
     </section>
   )
@@ -232,7 +232,7 @@ function useSwipe(onSwipe) {
   }
 }
 
-function Inspector({ project, lang, T, refDes }) {
+function Inspector({ project, lang, T }) {
   const { playSelect } = useSoundEffects()
   const shots = [...new Set([project.image, ...(project.gallery ?? [])].filter(Boolean))]
   const [shot, setShot] = useState(0)
@@ -255,7 +255,6 @@ function Inspector({ project, lang, T, refDes }) {
       <span className="ins-corner bl" aria-hidden="true" /><span className="ins-corner br" aria-hidden="true" />
       <header className="ins-head">
         <div>
-          <p className="ins-ref" aria-hidden="true">{refDes}</p>
           <h3>{project.title}</h3>
           <p className="ins-tag">{l(project.tagline, lang)}</p>
         </div>

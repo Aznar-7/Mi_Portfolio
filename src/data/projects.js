@@ -120,8 +120,8 @@ export const projects = [
       en: 'Miniature record player with its own hardware, enclosure and app.',
     },
     description: {
-      es: 'Un tocadiscos a escala diseñado de punta a punta. La carcasa está modelada en 3D e impresa; adentro, una Raspberry Pi Zero 2W controla el motor del plato, lee tags NFC para reconocer cada disco y reproduce el álbum por el parlante integrado. Se maneja desde una webapp móvil hecha con Flask y JavaScript sin frameworks: reproductor, biblioteca de discos, importación de álbumes desde YouTube y un historial de escucha.',
-      en: 'A scale record player designed end to end. The enclosure is 3D modeled and printed; inside, a Raspberry Pi Zero 2W drives the platter motor, reads NFC tags to recognize each record and plays the album through a built-in speaker. It is controlled from a mobile web app built with Flask and framework-free JavaScript: player, record library, album import from YouTube and listening history.',
+      es: 'Un tocadiscos a escala que diseñé completo, de la carcasa al software. La carcasa está modelada en 3D e impresa; adentro, una Raspberry Pi Zero 2W controla el motor del plato, lee tags NFC para reconocer cada disco y reproduce el álbum por el parlante integrado. Se maneja desde una webapp móvil hecha con Flask y JavaScript sin frameworks: reproductor, biblioteca de discos, importación de álbumes desde YouTube y un historial de escucha.',
+      en: 'A scale record player I designed whole, from the enclosure to the software. The enclosure is 3D modeled and printed; inside, a Raspberry Pi Zero 2W drives the platter motor, reads NFC tags to recognize each record and plays the album through a built-in speaker. It is controlled from a mobile web app built with Flask and framework-free JavaScript: player, record library, album import from YouTube and listening history.',
     },
     category: 'iot',
     highlight: true,
@@ -203,8 +203,8 @@ export const projects = [
       en: 'Meal order management with daily quotas.',
     },
     description: {
-      es: 'Sistema de pedidos con control de cupos diarios: autenticación JWT, roles de usuario y administrador, estados de pedido, validación de stock en el backend, historial de cambios, filtros y panel de administración. Foco en reglas de negocio reales, seguridad y una arquitectura modular.',
-      en: 'Ordering system with daily quota control: JWT authentication, user and admin roles, order states, backend stock validation, change history, filters and an admin panel. Focused on real business rules, security and a modular architecture.',
+      es: 'Sistema de pedidos con control de cupos diarios: autenticación JWT, roles de usuario y administrador, estados de pedido, validación de stock en el backend, historial de cambios, filtros y panel de administración.',
+      en: 'Ordering system with daily quota control: JWT authentication, user and admin roles, order states, backend stock validation, change history, filters and an admin panel.',
     },
     category: 'full-stack',
     status: 'completed',
@@ -233,8 +233,8 @@ export const projects = [
       en: 'Mobile-first football jersey e-commerce.',
     },
     description: {
-      es: 'Demo de frontend para una tienda de camisetas: catálogo con filtros, carrito persistente en el navegador, simulación de checkout y manejo de talles y stock. Foco en performance y en la experiencia mobile.',
-      en: 'Frontend demo for a jersey store: filterable catalog, cart persisted in the browser, checkout simulation and size and stock handling. Focused on performance and the mobile experience.',
+      es: 'Demo de frontend para una tienda de camisetas: catálogo con filtros, carrito persistente en el navegador, simulación de checkout y manejo de talles y stock.',
+      en: 'Frontend demo for a jersey store: filterable catalog, cart persisted in the browser, checkout simulation and size and stock handling.',
     },
     category: 'frontend',
     status: 'completed',

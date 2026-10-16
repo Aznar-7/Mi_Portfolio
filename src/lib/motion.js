@@ -3,8 +3,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Lists that arrive as lists: one batch per scroll position, capped stagger
-const CASCADE = ['.bin', '.facts > div', '.ev-list li']
 // Media that is uncovered rather than faded
 const UNCOVER = ['.feature-media .shot', '.portrait', '.activity']
 
@@ -31,34 +29,24 @@ export function goTo(target) {
   else travel(document.querySelector(target))
 }
 
-// The page powers on as the signal reaches it: titles light up letter by letter, lists cascade,
-// photos are uncovered. Content is visible by default; this only runs with motion allowed.
+// The page powers on as the signal reaches it: each section title lights up letter by letter, like
+// the hero name, and photos are uncovered. Nothing slides or blurs in; the text is there from the
+// start and only its brightness moves. Runs only with motion allowed.
 export function initMotion(root) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {}
   const ctx = gsap.context(() => {
     for (const title of gsap.utils.toArray('.pt', root)) {
       gsap.from(title.querySelectorAll('.pl'), {
-        yPercent: 70, opacity: 0, filter: 'blur(8px)', duration: 0.8, ease: 'power3.out', stagger: 0.022,
-        scrollTrigger: { trigger: title, start: 'top 86%', once: true, onEnter: () => title.classList.add('on') },
+        color: 'rgba(236,238,242,.16)', duration: 0.35, ease: 'none', stagger: 0.035, clearProps: 'color',
+        scrollTrigger: { trigger: title, start: 'top 86%', once: true },
       })
     }
-
-    const cascade = gsap.utils.toArray(CASCADE.join(','), root).filter((el) => el.getBoundingClientRect().top > innerHeight)
-    gsap.set(cascade, { opacity: 0, y: 26 })
-    ScrollTrigger.batch(cascade, {
-      start: 'top 90%', once: true, interval: 0.08, batchMax: 8,
-      onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.06, overwrite: true, clearProps: 'transform' }),
-    })
 
     for (const el of gsap.utils.toArray(UNCOVER.join(','), root)) {
       gsap.from(el, {
         clipPath: 'inset(0 0 100% 0 round 12px)', duration: 1.1, ease: 'power4.out',
         scrollTrigger: { trigger: el, start: 'top 88%', once: true },
       })
-    }
-
-    for (const p of gsap.utils.toArray('.sec-intro, .big, .about-lead', root)) {
-      gsap.from(p, { opacity: 0, y: 18, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: p, start: 'top 90%', once: true } })
     }
   }, root)
 
