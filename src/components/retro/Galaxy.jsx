@@ -4,7 +4,6 @@ import { projects } from '@/data/projects'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { l } from '@/lib/utils'
 import { goTo } from '@/lib/motion'
-import { jump, preloadJump } from '@/lib/hyperspace'
 import { Planet } from './Planet'
 
 // three.js and the ship models load only when someone actually reaches the galaxy
@@ -106,7 +105,7 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
   const [sel, setSel] = useState(null) // the system we are visiting
   const [warp, setWarp] = useState(null) // { x, y } while jumping toward a system
   const [music, setMusic] = useState(!isMuted)
-  const audioRef = useRef(null), travelRef = useRef(null), jumped = useRef(false)
+  const audioRef = useRef(null), travelRef = useRef(null)
   const rootRef = useRef(null), canvasRef = useRef(null), backRef = useRef(null), marks = useRef({})
   const sys = SYSTEMS.find((p) => p.id === sel)
   const proj = sys?.project && P[sys.project]
@@ -167,12 +166,11 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
     return () => removeEventListener('keydown', onKey)
   }, [sel, onExit])
 
-  // travel: the galaxy rushes toward the system, the hyperspace jump plays, and we come out at the planet
+  // travel: the galaxy rushes toward the system and we come out at the planet
   const travelTo = (id) => {
     const b = marks.current[id]?.getBoundingClientRect()
     setWarp(b && !sel ? { x: b.left + 8, y: b.top + 8 } : { x: innerWidth / 2, y: innerHeight / 2 })
-    // the full jump plays once; after that a short streak is enough and does not get in the way
-    if (!jumped.current) { jumped.current = true; jump({ from: 4.25, to: 5.9, onPeak: () => { setSel(id); setWarp(null) } }); return }
+    // the hyperspace video belongs to arriving in the galaxy; between planets a short streak is enough
     playEgg('warp')
     setTimeout(() => { setSel(id); setWarp(null) }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 420)
   }
@@ -184,7 +182,6 @@ export function Galaxy({ lang = 'es', onExit, leaving }) {
   }
 
   // the Force theme plays while we are out here, fading in and out
-  useEffect(() => { preloadJump() }, [])
   useEffect(() => {
     const a = audioRef.current
     if (!a) return

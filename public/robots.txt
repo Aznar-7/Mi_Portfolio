@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+# heavy media for the easter eggs: nothing to index there
+Disallow: /models/
+Disallow: /video/
+Disallow: /audio/
 
 Sitemap: https://www.vicenteaznar.dev/sitemap.xml
