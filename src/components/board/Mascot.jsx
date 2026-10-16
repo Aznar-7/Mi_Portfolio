@@ -31,10 +31,10 @@ const C = {
     },
     tourSteps: [
       ['trabajo', 'Acá están los proyectos. Elegí uno de la lista y mirá el detalle.'],
+      ['trayectoria', 'Dónde trabajó y qué estudia.'],
       ['proceso', 'Así trabaja: del problema a producción, con un caso real por etapa.'],
       ['sobre', 'Quién es, qué está construyendo ahora y su actividad en GitHub.'],
       ['taller', 'Su stack, conectado a los proyectos donde lo usó.'],
-      ['trayectoria', 'Dónde trabajó y qué estudia.'],
       ['contacto', 'Y si te gustó, escribile.'],
     ],
     hints: ['Dicen que una palabra élfica abre una puerta en la consola…', 'Si tocás los seis chips de arriba, pasa algo.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'Hay un botón que vuelve al pasado.', 'Probá orden 66 en la consola.'],
@@ -57,10 +57,10 @@ const C = {
     },
     tourSteps: [
       ['trabajo', 'Here are the projects. Pick one from the list and see the detail.'],
+      ['trayectoria', 'Where he has worked and what he studies.'],
       ['proceso', 'How he works: problem to production, a real case per stage.'],
       ['sobre', 'Who he is, what he is building now and his GitHub activity.'],
       ['taller', 'His stack, wired to the projects where he used it.'],
-      ['trayectoria', 'Where he has worked and what he studies.'],
       ['contacto', 'And if you liked it, write to him.'],
     ],
     hints: ['They say an Elvish word opens a door in the console…', 'Click the six chips up top and something happens.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'There is a button that goes back in time.', 'Try order 66 in the console.'],
@@ -202,7 +202,7 @@ export function Mascot() {
             <>
               <p className="chip-label">{t.go}</p>
               <div className="chip-menu">
-                {['trabajo', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola'].map((id) => <button key={id} type="button" onClick={() => goTo(id)}>{nav[id]}</button>)}
+                {['trabajo', 'trayectoria', 'sobre', 'taller', 'contacto', 'consola'].map((id) => <button key={id} type="button" onClick={() => goTo(id)}>{nav[id]}</button>)}
               </div>
               <div className="chip-menu">
                 <button type="button" className="strong" onClick={() => step(0)}>{t.tour}</button>

@@ -1,7 +1,7 @@
 // Copy for the board site. translations.js stays for the Ubuntu simulator.
 export const copy = {
   es: {
-    nav: { label: 'Secciones', trabajo: 'Trabajo', proceso: 'Proceso', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Trayectoria', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
+    nav: { label: 'Secciones', trabajo: 'Trabajo', proceso: 'Proceso', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Experiencia', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
     hero: {
       first: 'Vicente', last: 'Aznar',
       role: 'Desarrollador full stack e IoT', avail: 'Disponible',
@@ -36,7 +36,7 @@ export const copy = {
       kind: { web: 'web', hw: 'hardware', job: 'trabajo' },
     },
     path: {
-      title: 'Trayectoria',
+      title: 'Experiencia',
       intro: 'Dónde trabajé y qué estudio.',
       now: 'hoy', ongoing: (from) => `${from} – hoy`, work: 'Trabajo', study: 'Formación',
     },

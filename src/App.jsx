@@ -43,10 +43,10 @@ function Board() {
       <Hero />
       <main>
         <Work />
+        <Path />
         <Process />
         <About />
         <Shop />
-        <Path />
         <Contact />
         <Console />
       </main>

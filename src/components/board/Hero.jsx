@@ -8,7 +8,7 @@ import { findSecret } from '@/lib/secrets'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { createBoard } from './engine'
 
-const SECTIONS = ['trabajo', 'proceso', 'sobre', 'taller', 'trayectoria', 'contacto', 'consola']
+const SECTIONS = ['trabajo', 'trayectoria', 'proceso', 'sobre', 'taller', 'contacto', 'consola']
 
 function Mark() {
   return (
@@ -84,7 +84,10 @@ export function Hero() {
   const sounds = useRef({})
   useEffect(() => { sounds.current = { playClick, playHover, playSuccess } })
 
-  // the board is rebuilt per language so its labels follow it
+  // the board is built once; a language change only swaps its labels, so the routing and any
+  // soldered chips stay where they are
+  const boardRef = useRef(null), textRef = useRef(T)
+  useEffect(() => { textRef.current = T; boardRef.current?.setText(T) }, [T])
   useEffect(() => {
     let board, cancelled = false
     document.fonts.ready.then(() => {
@@ -100,14 +103,15 @@ export function Hero() {
         photo: frameRef.current.querySelector('.hero-photo'),
         frame: frameRef.current,
         letters: [...hero.querySelectorAll('h1 .l')],
-        text: T,
+        text: textRef.current,
         onComplete: () => { sounds.current.playSuccess?.(); findSecret('placa') },
         onSolder: () => sounds.current.playClick?.(),
         onPartHover: () => sounds.current.playHover?.(),
       })
+      boardRef.current = board
     })
-    return () => { cancelled = true; board?.destroy() }
-  }, [T])
+    return () => { cancelled = true; board?.destroy(); boardRef.current = null }
+  }, [])
 
   const cv = site.resumes[lang === 'en' ? 'en' : 'es'], cvAlt = site.resumes[lang === 'en' ? 'es' : 'en']
   const letters = (word, offset, cls = 'l') => [...word].map((ch, i) => <span key={offset + i} className={cls} aria-hidden="true">{ch}</span>)

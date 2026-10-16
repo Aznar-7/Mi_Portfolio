@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { File } from 'lucide-react';
 
@@ -20,6 +20,9 @@ const SYSTEMD_LINES = [
 export function BootScreen({ onDone }) {
   const [lines, setLines]   = useState([]);
   const [fading, setFading] = useState(false);
+  // the button that opened the OS is gone: focus lands here until the login takes it
+  const root = useRef(null);
+  useEffect(() => { root.current?.focus(); }, []);
 
   useEffect(() => {
     let i = 0;
@@ -42,10 +45,14 @@ export function BootScreen({ onDone }) {
 
   return (
     <motion.div
+      ref={root}
+      tabIndex={-1}
+      role="status"
+      aria-label="Iniciando Ubuntu"
       initial={{ opacity: 1 }}
       animate={{ opacity: fading ? 0 : 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[10000] bg-black flex flex-col justify-end p-6 pb-12 gap-0.5 font-mono text-[12px]"
+      className="fixed inset-0 z-[10000] bg-black outline-none flex flex-col justify-end p-6 pb-12 gap-0.5 font-mono text-[12px]"
     >
       {/* Ubuntu logo centered top */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-5 pointer-events-none">

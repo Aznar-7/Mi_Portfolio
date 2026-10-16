@@ -28,7 +28,8 @@ const rnd = (a, b) => a + Math.random() * (b - a)
  * @param {() => void} [o.onSolder]   a chip lands (sound hook)
  * @param {() => void} [o.onPartHover] a part is hovered (sound hook)
  */
-export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, photo, frame, letters, text, onComplete, onSolder, onPartHover }) {
+export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut, photo, frame, letters, text: firstText, onComplete, onSolder, onPartHover }) {
+  let text = firstText // swapped in place on a language change, so the routed board and its chips survive
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const touch = matchMedia('(pointer: coarse)').matches
   const ctx = canvas.getContext('2d')
@@ -157,6 +158,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       parts.push(p)
       const [tip, sub] = text.parts[def.id]
       const a = Object.assign(document.createElement('a'), { className: 'part', href: def.href })
+      a.dataset.part = def.id
       a.setAttribute('aria-label', `${tip}: ${sub}`)
       a.style.cssText = `left:${c * P}px; top:${r * P}px; width:${def.w * P}px; height:${def.h * P}px`
       const label = document.createElement('span')
@@ -386,7 +388,12 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   const kick = () => { if (!raf && visible && !dead) raf = requestAnimationFrame(draw) }
 
   // ── input ──
+  let moveRaf = 0, lastMove = null
   const onMove = (e) => {
+    lastMove = e
+    if (!moveRaf) moveRaf = requestAnimationFrame(() => { moveRaf = 0; applyMove(lastMove) })
+  }
+  const applyMove = (e) => {
     const b = hero.getBoundingClientRect()
     // the solder ring shows only over free board, where a click would place a chip
     mouse = e.target.closest('a, button, .hero-copy, .hero-photo, .site-header') ? { x: -1e4, y: -1e4 } : { x: e.clientX - b.left, y: e.clientY - b.top }
@@ -421,9 +428,19 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   build(); kick()
 
   return {
+    setText(next) {
+      text = next
+      for (const a of partsLayer.querySelectorAll('.part[data-part]')) {
+        const [tip, sub] = text.parts[a.dataset.part]
+        a.setAttribute('aria-label', `${tip}: ${sub}`)
+        a.firstChild.replaceChildren(tip, Object.assign(document.createElement('small'), { textContent: sub }))
+      }
+      if (chipN === 7) statusEl.replaceChildren(Object.assign(document.createElement('b'), { textContent: text.complete }))
+      else if (booted) setHint()
+    },
     destroy() {
       dead = true
-      cancelAnimationFrame(raf); clearTimeout(rt); timers.forEach(clearTimeout)
+      cancelAnimationFrame(raf); cancelAnimationFrame(moveRaf); clearTimeout(rt); timers.forEach(clearTimeout)
       hero.removeEventListener('pointermove', onMove)
       hero.removeEventListener('pointerleave', onLeave)
       hero.removeEventListener('click', onClick)
