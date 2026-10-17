@@ -34,10 +34,16 @@ import {
   SiAstro, SiAstroHex,
   SiTypescript, SiTypescriptHex,
   SiMaplibre, SiMaplibreHex,
+  SiThreedotjs, SiThreedotjsHex,
+  SiGsap, SiGsapHex,
+  SiBlender, SiBlenderHex,
 } from '@icons-pack/react-simple-icons'
 
 const ICONS = {
   'React': [SiReact, SiReactHex],
+  'three.js': [SiThreedotjs, SiThreedotjsHex],
+  'GSAP': [SiGsap, SiGsapHex],
+  'Blender': [SiBlender, SiBlenderHex],
   'React Native': [SiReact, SiReactHex],
   Kotlin: [SiKotlin, SiKotlinHex],
   NFC: [SiNfc, SiNfcHex],

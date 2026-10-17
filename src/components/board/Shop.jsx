@@ -22,6 +22,13 @@ export function Shop() {
   const [pick, setPick] = useState(null) // { tool, used }
   const [wires, setWires] = useState([])
   const section = useRef(null), places = useRef({})
+  // hover previews a tool's wiring; a click pins it, a second click lets it go
+  const pinned = useRef(null) // { tool, used, btn }
+  const release = () => {
+    const p = pinned.current
+    if (p) choose(p.tool, p.used, p.btn)
+    else { setPick(null); setWires([]) }
+  }
 
   const choose = (tool, used, btn) => {
     if (pick?.tool !== tool) playHover()
@@ -43,7 +50,7 @@ export function Shop() {
       <PowerTitle text={T.title} />
       <p className="sec-intro">{T.intro}</p>
       <div className="shop-grid">
-        <div>
+        <div onPointerLeave={release} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) release() }}>
           {skillGroups.filter((g) => g.id !== 'other').map((g) => (
             <div key={g.id} className="bin">
               <h3>{l(g.label, lang)}<small>{g.sub}</small></h3>
@@ -51,9 +58,10 @@ export function Shop() {
                 {g.items.map((tool) => {
                   const used = g.usedIn[tool] ?? []
                   const go = (e) => choose(tool, used, e.currentTarget)
+                  const pin = (e) => { pinned.current = pinned.current?.tool === tool ? null : { tool, used, btn: e.currentTarget }; go(e) }
                   return (
                     <button key={tool} className={`tool${used.length ? '' : ' idle'}`} aria-pressed={pick?.tool === tool}
-                      onPointerEnter={go} onFocus={go} onClick={go}>
+                      onPointerEnter={go} onFocus={go} onClick={pin}>
                       <ToolIcon name={tool} />{tool === '3D Modeling' && lang === 'es' ? 'Modelado 3D' : tool}
                     </button>
                   )

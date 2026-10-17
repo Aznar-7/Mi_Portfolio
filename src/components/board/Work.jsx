@@ -14,7 +14,7 @@ import { travel } from '@/lib/motion'
 const layerOf = (p) => (p.category === 'iot' ? 'b' : 'f')
 const statusOf = (p) => (p.liveUrl ? (p.featured ? 'prod' : 'live') : p.status === 'completed' ? 'done' : 'dev')
 const linksOf = (p, T) => [
-  p.liveUrl && { label: T.live, url: p.liveUrl, live: true },
+  p.liveUrl && { label: p.self ? T.here : T.live, url: p.liveUrl, live: true },
   ...(Array.isArray(p.githubUrl) ? p.githubUrl : p.githubUrl ? [{ label: T.code, url: p.githubUrl }] : []),
 ].filter(Boolean)
 
@@ -22,7 +22,7 @@ function Links({ links }) {
   return (
     <p className="links">
       {links.map((k) => (
-        <a key={k.url} href={k.url} target="_blank" rel="noopener noreferrer">
+        <a key={k.url} href={k.url} {...(k.url.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
           {k.live ? <ArrowUpRight size={15} aria-hidden="true" /> : <GitHubIcon size={14} />}{k.label}
         </a>
       ))}
@@ -35,11 +35,13 @@ function Stack({ tech }) {
 }
 
 // UTN Hub: a request walks Browser → Nginx → API → PostgreSQL; hovering a node takes over from it
-function Flow({ project, lang, label }) {
+function Flow({ project, live, lang, label }) {
   const { playHover } = useSoundEffects()
   const nodes = project.flow
   const [active, setActive] = useState(0)
   // pinned: a click or focus parks the signal; held: the pointer rests on a node and lets go on leave
+  const on = useRef(live)
+  useEffect(() => { on.current = live }, [live])
   const pinned = useRef(false), held = useRef(false), resume = useRef(-1), board = useRef(null), path = useRef(null), dot = useRef(null)
 
   useEffect(() => {
@@ -58,7 +60,7 @@ function Flow({ project, lang, label }) {
       // only while on screen (a rect read per frame is cheaper and steadier than an observer here)
       const r = board.current?.getBoundingClientRect()
       const seen = r && r.bottom > 0 && r.top < innerHeight
-      if (!seen || pinned.current || held.current || !xs.length) { t0 = 0; return }
+      if (!seen || !on.current || pinned.current || held.current || !xs.length) { t0 = 0; return }
       // after a hover the signal carries on from the node it was parked on
       if (!t0) { t0 = now - Math.max(0, resume.current) * HOP - GLIDE; if (resume.current >= 0) { step = resume.current; from = xs[step] } resume.current = -1 }
       const e = now - t0, i = Math.floor(e / HOP) % xs.length, k = Math.min(1, (e % HOP) / GLIDE)
@@ -204,7 +206,11 @@ export function Work() {
             )
           })}
         </svg>
-        <div className="ins-slot" ref={inspRef}><Inspector key={sel.id} project={sel} lang={lang} T={T} /></div>
+        {/* every datasheet sits in the same cell and only the selected one shows, so the slot is always
+            as tall as the tallest and switching never moves what is below */}
+        <div className="ins-slot" ref={inspRef}>
+          {projects.map((p) => <Inspector key={p.id} project={p} active={p.id === sel.id} lang={lang} T={T} />)}
+        </div>
       </div>
     </section>
   )
@@ -236,12 +242,15 @@ function useSwipe(onSwipe) {
   }
 }
 
-function Inspector({ project, lang, T }) {
+function Inspector({ project, active, lang, T }) {
   const { playSelect } = useSoundEffects()
   const shots = [...new Set([project.image, ...(project.gallery ?? [])].filter(Boolean))]
   const [shot, setShot] = useState(0)
   const [dir, setDir] = useState(0) // the side the next image slides in from
   const [big, setBig] = useState(false)
+  // images load the first time the sheet is shown, not with the page
+  const [seen, setSeen] = useState(active)
+  if (active && !seen) setSeen(true)
   const st = statusOf(project), links = linksOf(project, T)
   const show = (i, d = i > shot ? 1 : -1) => { playSelect(); setDir(d); setShot((i + shots.length) % shots.length) }
   const step = (d) => show(shot + d, d)
@@ -250,11 +259,12 @@ function Inspector({ project, lang, T }) {
 
   // the neighbours load ahead, so stepping through never shows an empty frame
   useEffect(() => {
+    if (!active) return
     for (const d of [1, -1]) { const src = shots[(shot + d + shots.length) % shots.length]; if (src) new Image().src = src }
-  }, [shot]) // eslint-disable-line react-hooks/exhaustive-deps -- shots derive from the project, which keys this component
+  }, [shot, active]) // eslint-disable-line react-hooks/exhaustive-deps -- shots derive from the project, which keys this component
   // a datasheet: name, state and links on top; what it is and its stack beside a moderate image
   return (
-    <article className={`inspector ${layerOf(project)}`} id="inspector">
+    <article className={`inspector ${layerOf(project)}${active ? ' on' : ''}`} id={active ? 'inspector' : undefined} inert={!active} aria-hidden={!active}>
       <span className="ins-corner tl" aria-hidden="true" /><span className="ins-corner tr" aria-hidden="true" />
       <span className="ins-corner bl" aria-hidden="true" /><span className="ins-corner br" aria-hidden="true" />
       <header className="ins-head">
@@ -279,7 +289,7 @@ function Inspector({ project, lang, T }) {
           <figure className="ins-media" onKeyDown={(e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1) }}>
             <div className="ins-shot" {...(shots.length > 1 ? swipe.handlers : {})}>
               <button type="button" className="shot-open" aria-label={T.enlarge} onClick={() => { if (!swipe.swiped.current) morph(() => setBig(true)) }}>
-                <img key={shots[shot]} src={shots[shot]} alt={alt} draggable="false" style={{ '--dir': dir, viewTransitionName: big ? 'none' : 'shot' }} />
+                <img key={shots[shot]} src={seen ? shots[shot] : undefined} alt={alt} draggable="false" style={{ '--dir': dir, viewTransitionName: big ? 'none' : 'shot' }} />
                 <span className="shot-zoom" aria-hidden="true"><Maximize2 size={14} /></span>
               </button>
               {shots.length > 1 && (
@@ -293,14 +303,14 @@ function Inspector({ project, lang, T }) {
             {shots.length > 1 && (
               <div className="ins-thumbs" role="group" aria-label={T.screens(project.title)}>
                 {shots.slice(0, 8).map((src, i) => (
-                  <button key={src} type="button" aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}><img src={src} alt="" loading="lazy" /></button>
+                  <button key={src} type="button" aria-pressed={shot === i} aria-label={T.screen(i + 1, shots.length)} onClick={() => show(i)}>{seen && <img src={src} alt="" loading="lazy" />}</button>
                 ))}
               </div>
             )}
           </figure>
         )}
       </div>
-      {project.flow && <div className="ins-flow"><Flow project={project} lang={lang} label={T.flow} /></div>}
+      {project.flow && <div className="ins-flow"><Flow project={project} live={active} lang={lang} label={T.flow} /></div>}
       {big && <Lightbox label={T.screens(project.title)} src={shots[shot]} alt={alt} n={shot + 1} total={shots.length} dir={dir} T={T} step={shots.length > 1 ? step : null} onClose={() => morph(() => setBig(false))} />}
     </article>
   )

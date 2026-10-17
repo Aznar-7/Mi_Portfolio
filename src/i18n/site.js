@@ -1,12 +1,12 @@
 // Copy for the board site. translations.js stays for the Ubuntu simulator.
 export const copy = {
   es: {
-    nav: { label: 'Secciones', trabajo: 'Trabajo', proceso: 'Proceso', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Experiencia', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
+    nav: { label: 'Secciones', trabajo: 'Proyectos', proceso: 'Proceso', sobre: 'Sobre mí', taller: 'Stack', trayectoria: 'Experiencia', contacto: 'Contacto', consola: 'Consola', lang: 'Ver en inglés', langShort: 'EN', soundOn: 'Desactivar sonido', soundOff: 'Activar sonido' },
     hero: {
       first: 'Vicente', last: 'Aznar',
       role: 'Desarrollador full stack e IoT', avail: 'Disponible',
       lede: 'Full stack en Porta Hnos: más de diez sistemas internos con React y Django, apps móviles conectadas a PLCs y un buscador con RAG sobre Jira. Cofundador de Gavia.',
-      ctaWork: 'Ver trabajo', cvMain: 'Descargar CV', cvAlt: 'EN', cvAltLabel: 'CV en inglés', mail: 'Escribirme a',
+      ctaWork: 'Ver proyectos', ctaMail: 'Escribime', cv: 'CV', cvEs: 'CV en español', cvEn: 'CV en inglés', lastPush: (ago, repo) => `Último push ${ago} en ${repo}`,
       portrait: 'Vicente Aznar',
       edge: ['Córdoba, AR · GMT-3', 'remoto o híbrido', 'Sistemas e IA en la UTN, en curso', 'inglés C1'],
       routing: (done, total) => `ruteando la placa · ${done}/${total}`,
@@ -20,12 +20,12 @@ export const copy = {
       },
     },
     work: {
-      title: 'Trabajo',
-      intro: 'Seis proyectos: lo que corre en la web y lo que corre en un circuito. Filtrá por capa.',
+      title: 'Proyectos',
+      intro: 'Siete proyectos, este sitio incluido: lo que corre en la web y lo que corre en un circuito. Filtrá por capa.',
       layers: 'Filtrar por capa', all: 'Todo', web: 'Web', hw: 'Hardware', details: 'Ver detalle',
       status: { prod: 'En producción', live: 'En línea', done: 'Terminado', dev: 'En desarrollo' },
       flow: 'Recorrido de un request', screens: (t) => `Pantallas de ${t}`, screen: (i, n) => `Pantalla ${i} de ${n}`,
-      live: 'Ver en vivo', code: 'Código', prevShot: 'Pantalla anterior', nextShot: 'Pantalla siguiente', enlarge: 'Ampliar pantalla', closeShot: 'Cerrar',
+      live: 'Ver en vivo', here: 'Estás acá', code: 'Código', prevShot: 'Pantalla anterior', nextShot: 'Pantalla siguiente', enlarge: 'Ampliar pantalla', closeShot: 'Cerrar',
     },
     shop: {
       title: 'Stack',
@@ -84,12 +84,12 @@ export const copy = {
     },
   },
   en: {
-    nav: { label: 'Sections', trabajo: 'Work', proceso: 'Process', sobre: 'About', taller: 'Stack', trayectoria: 'Experience', contacto: 'Contact', consola: 'Console', lang: 'Ver en español', langShort: 'ES', soundOn: 'Turn sound off', soundOff: 'Turn sound on' },
+    nav: { label: 'Sections', trabajo: 'Projects', proceso: 'Process', sobre: 'About', taller: 'Stack', trayectoria: 'Experience', contacto: 'Contact', consola: 'Console', lang: 'Ver en español', langShort: 'ES', soundOn: 'Turn sound off', soundOff: 'Turn sound on' },
     hero: {
       first: 'Vicente', last: 'Aznar',
       role: 'Full stack and IoT developer', avail: 'Available',
       lede: 'Full stack at Porta Hnos: 10+ internal systems in React and Django, mobile apps wired to PLCs and a RAG search over Jira. Co-founder of Gavia.',
-      ctaWork: 'See the work', cvMain: 'Download CV', cvAlt: 'ES', cvAltLabel: 'CV in Spanish', mail: 'Email',
+      ctaWork: 'See the projects', ctaMail: 'Write to me', cv: 'CV', cvEs: 'CV in Spanish', cvEn: 'CV in English', lastPush: (ago, repo) => `Last push ${ago} to ${repo}`,
       portrait: 'Vicente Aznar',
       edge: ['Córdoba, AR · GMT-3', 'remote or hybrid', 'Systems and AI at UTN, in progress', 'English C1'],
       routing: (done, total) => `routing the board · ${done}/${total}`,
@@ -103,12 +103,12 @@ export const copy = {
       },
     },
     work: {
-      title: 'Work',
-      intro: 'Six projects: what runs on the web and what runs on a circuit. Filter by layer.',
+      title: 'Projects',
+      intro: 'Seven projects, this site included: what runs on the web and what runs on a circuit. Filter by layer.',
       layers: 'Filter by layer', all: 'All', web: 'Web', hw: 'Hardware', details: 'Show details',
       status: { prod: 'In production', live: 'Live', done: 'Done', dev: 'In development' },
       flow: 'Path of a request', screens: (t) => `${t} screens`, screen: (i, n) => `Screen ${i} of ${n}`,
-      live: 'Visit', code: 'Code', prevShot: 'Previous screen', nextShot: 'Next screen', enlarge: 'Enlarge screen', closeShot: 'Close',
+      live: 'Visit', here: 'You are here', code: 'Code', prevShot: 'Previous screen', nextShot: 'Next screen', enlarge: 'Enlarge screen', closeShot: 'Close',
     },
     shop: {
       title: 'Stack',

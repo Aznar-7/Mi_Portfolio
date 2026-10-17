@@ -56,7 +56,8 @@ export function ContactForm() {
   if (state === 'sent') {
     return (
       <div className="letter-sent" role="status">
-        <span className="sent-plane" aria-hidden="true"><Send size={26} /></span>
+        {/* a pad that solders itself: the ring closes, then the check is drawn */}
+        <svg className="sent-pad" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M18 29 L25 36 L39 21" pathLength="1" /></svg>
         <p className="sent-title">{T.sentTitle(who)}</p>
         <p>{T.okLine}</p>
         <button type="button" className="btn ghost" onClick={() => setState('idle')}><RotateCcw size={15} aria-hidden="true" />{T.another}</button>
