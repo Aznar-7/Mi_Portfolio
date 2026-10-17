@@ -16,6 +16,7 @@ import { EggStage } from '@/components/board/EggStage'
 import { Mascot } from '@/components/board/Mascot'
 import { Probe } from '@/components/board/Probe'
 import { Intro } from '@/components/board/Intro'
+import { isSith, setSith } from '@/lib/sith'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
 // full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
@@ -31,6 +32,13 @@ const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => (
 function Board() {
   const { lang } = useLang()
   const root = useRef(null)
+  // red after Order 66, until the visitor asks for the copper back
+  const [sith, setSithState] = useState(isSith)
+  useEffect(() => {
+    const on = (e) => setSithState(e.detail)
+    document.addEventListener('board:sith', on)
+    return () => document.removeEventListener('board:sith', on)
+  }, [])
   // re-run per language: the titles are re-split into new letters
   useEffect(() => {
     let undo = () => {}, cancelled = false
@@ -38,7 +46,7 @@ function Board() {
     return () => { cancelled = true; undo() }
   }, [lang])
   return (
-    <div className="site" ref={root}>
+    <div className={`site${sith ? ' sith' : ''}`} ref={root}>
       <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
       <Hero />
       <main>
@@ -54,6 +62,11 @@ function Board() {
       <SecretToast />
       <EggStage />
       <Mascot />
+      {sith && (
+        <button type="button" className="sith-off" onClick={() => setSith(false)}>
+          <i aria-hidden="true" />{lang === 'es' ? 'Volver al cobre' : 'Back to copper'}
+        </button>
+      )}
     </div>
   )
 }

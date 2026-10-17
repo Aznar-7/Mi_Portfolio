@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Segments } from './Segments'
 
 // three.js and the car only load when someone actually hits 88 mph
+import { setSith } from '@/lib/sith'
 const DeLorean3D = lazy(() => import('./DeLorean3D'))
 const Order66_3D = lazy(() => import('./Order66_3D'))
 import { useLang } from '@/contexts/LanguageContext'
@@ -228,8 +229,7 @@ export function EggStage() {
       if (reduced) return go(id)
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
-      const site = document.querySelector('.site')
-      if (id === 'order66') { site?.classList.add('sith'); setTimeout(() => site?.classList.remove('sith'), HOLD.order66 + 4000) }
+      if (id === 'order66') setSith(true)
       if (MUSIC[id] && !muted.current) {
         const m = MUSIC[id], a = new Audio(m.src); a.volume = m.vol; if (m.from) a.currentTime = m.from; a.play().catch(() => {})
         // fade out over the last second of the scene
