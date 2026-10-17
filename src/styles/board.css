@@ -1051,3 +1051,12 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 @media (pointer:coarse){ .sith-off{padding:12px 14px} }
 @media (prefers-reduced-motion: reduce){ .sith-off{animation:none} }
 @media (max-width:1000px){ .sith-off{top:auto; right:auto; left:16px; bottom:16px} }
+/* the board's own cursor: the classic arrow drawn as a part (silk outline, via at the tip, a trace
+   inside); over anything you can press it is soldered copper. Native cursors: no lag, no script. */
+.site,.site *{cursor:url(/cursors/arrow.svg) 4 3, default}
+.site :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target),.site :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target) *{cursor:url(/cursors/pointer.svg) 4 3, pointer}
+.site :is(input:not([type="checkbox"]),textarea,[contenteditable="true"]){cursor:text}
+.site.sith,.site.sith *{cursor:url(/cursors/arrow-sith.svg) 4 3, default}
+.site.sith :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target),.site.sith :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target) *{cursor:url(/cursors/pointer-sith.svg) 4 3, pointer}
+.site.sith :is(input:not([type="checkbox"]),textarea,[contenteditable="true"]){cursor:text}
+.site :is(button,select):disabled{cursor:url(/cursors/arrow.svg) 4 3, not-allowed}
