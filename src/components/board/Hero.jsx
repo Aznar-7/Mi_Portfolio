@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Download, Volume2, VolumeX } from 'lucide-react'
+import { useLatestPush, timeAgo } from '@/hooks/useLatestPush'
 import { useLang } from '@/contexts/LanguageContext'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { copy } from '@/i18n/site'
@@ -8,6 +9,7 @@ import { findSecret } from '@/lib/secrets'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { createBoard } from './engine'
 
+const githubUser = site.github.split('github.com/')[1]
 const SECTIONS = ['trabajo', 'trayectoria', 'proceso', 'sobre', 'taller', 'contacto', 'consola']
 
 function Mark() {
@@ -86,6 +88,7 @@ export function Hero() {
 
   // the board is built once; a language change only swaps its labels, so the routing and any
   // soldered chips stay where they are
+  const push = useLatestPush(githubUser)
   const boardRef = useRef(null), textRef = useRef(T)
   useEffect(() => { textRef.current = T; boardRef.current?.setText(T) }, [T])
   useEffect(() => {
@@ -99,7 +102,7 @@ export function Hero() {
         canvas: canvasRef.current,
         partsLayer: partsRef.current,
         statusEl: statusRef.current,
-        keepOut: [copyRef.current, statusRef.current, edgeRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
+        keepOut: [...copyRef.current.children, statusRef.current, edgeRef.current, ...hero.querySelectorAll('.site-header nav, .site-header .mark, .site-header .tools-bar')],
         photo: frameRef.current.querySelector('.hero-photo'),
         frame: frameRef.current,
         letters: [...hero.querySelectorAll('h1 .l')],
@@ -113,7 +116,8 @@ export function Hero() {
     return () => { cancelled = true; board?.destroy(); boardRef.current = null }
   }, [])
 
-  const cv = site.resumes[lang === 'en' ? 'en' : 'es'], cvAlt = site.resumes[lang === 'en' ? 'es' : 'en']
+  // the letter is the way to write: scroll there and put the cursor in the first blank
+  const toForm = () => { playClick(); setTimeout(() => document.getElementById('f-name')?.focus({ preventScroll: true }), 900) }
   const letters = (word, offset, cls = 'l') => [...word].map((ch, i) => <span key={offset + i} className={cls} aria-hidden="true">{ch}</span>)
 
   return (
@@ -134,10 +138,18 @@ export function Hero() {
         <p className="lede">{T.lede}</p>
         <div className="cta">
           <a className="btn" href="#trabajo" onClick={playClick}>{T.ctaWork}</a>
-          <a className="btn ghost" href={cv.url} download={cv.filename} onClick={playClick}><Download size={15} aria-hidden="true" />{T.cvMain}</a>
-          <a className="cv-alt" href={cvAlt.url} download={cvAlt.filename} aria-label={T.cvAltLabel}>{T.cvAlt}</a>
+          <a className="btn ghost" href="#contacto" onClick={toForm}>{T.ctaMail}</a>
         </div>
-        <p className="hero-mail">{T.mail} <a href={`mailto:${site.email}`} onClick={playClick}>{site.email}</a></p>
+        <p className="hero-sub">
+          <span className="cv-pick"><Download size={14} aria-hidden="true" />{T.cv}
+            <a href={site.resumes.es.url} download={site.resumes.es.filename} aria-label={T.cvEs}>ES</a>
+            <a href={site.resumes.en.url} download={site.resumes.en.filename} aria-label={T.cvEn}>EN</a>
+          </span>
+          {/* the row keeps its height while GitHub answers, so the board routes around it from the start */}
+          <span className="push">{push && (
+            <a href={`${site.github}/${push.repo}`} target="_blank" rel="noopener noreferrer"><GitHubIcon size={13} />{T.lastPush(timeAgo(push.at, lang), push.repo)}</a>
+          )}</span>
+        </p>
       </div>
       <p className="hero-edge" ref={edgeRef}>{T.edge.join(' · ')}</p>
       {/* visual hint only: the parts are reachable as links and the counter would spam screen readers */}

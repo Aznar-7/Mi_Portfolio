@@ -124,9 +124,15 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     // keep the header band clean
     const head = hero.querySelector('.site-header')?.getBoundingClientRect()
     if (head) blockRect(0, 0, cols, Math.ceil((head.bottom - rect.top) / P) + 1)
+    const range = document.createRange()
     for (const el of keepOut) {
-      const b = el.getBoundingClientRect()
-      blockRect(Math.floor((b.left - rect.left) / P), Math.floor((b.top - rect.top) / P), Math.ceil(b.width / P) + 1, Math.ceil(b.height / P) + 1)
+      // the line boxes of what is actually drawn, so traces hug the ragged edge of the copy
+      range.selectNodeContents(el)
+      const boxes = [...range.getClientRects()]
+      for (const b of boxes.length ? boxes : [el.getBoundingClientRect()]) {
+        if (!b.width) continue
+        blockRect(Math.floor((b.left - rect.left) / P), Math.floor((b.top - rect.top) / P), Math.ceil(b.width / P) + 1, Math.ceil(b.height / P) + 1)
+      }
     }
 
     // the portrait sits on the board as U0: its footprint is blocked and a bus leaves its left edge

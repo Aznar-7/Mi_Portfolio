@@ -648,9 +648,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .avail-list li:first-child{color:var(--ink)}
 .avail-list time{font:500 14px/1 var(--mono); color:rgb(var(--silk))}
 
-.sent-plane{display:grid; place-items:center; width:56px; height:56px; border-radius:50%; background:rgba(120,220,140,.12); color:#78dc8c; animation:plane .9s cubic-bezier(.2,.8,.2,1) both}
-@keyframes plane{0%{transform:translate(-30px,30px) rotate(-20deg) scale(.6); opacity:0} 60%{transform:translate(6px,-6px) rotate(6deg); opacity:1} 100%{transform:none}}
-@media (prefers-reduced-motion: reduce){ .sent-plane{animation:none} }
 
 /* ── First-load power on: traces meet at the mark, its pad lights, the screen opens from the line ── */
 .intro{position:fixed; inset:0; z-index:9800; pointer-events:none}
@@ -769,18 +766,27 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .egg-credit{position:absolute; z-index:2; left:clamp(16px,3vw,40px); bottom:12px; margin:0; font:400 11px/1.5 var(--mono); color:rgba(236,238,242,.45); pointer-events:auto}
 .egg-credit a{color:rgba(236,238,242,.65)}
 
-/* sending: the letter folds in half, becomes an envelope and flies off to the inbox */
-.letter{transform-origin:50% 0}
-.letter.folding{pointer-events:none; animation:letter-fold .9s cubic-bezier(.6,0,.3,1) forwards}
-.letter.folding > *{animation:fadeout-to .25s ease forwards}
-@keyframes letter-fold{
-  0%{transform:none; border-radius:0; background:transparent}
-  30%{transform:scaleY(.08); background:#f0dfb4; border-radius:6px}
-  55%{transform:scale(.35,.18); background:#f0dfb4; border-radius:6px; opacity:1}
-  100%{transform:translate(55vw,-60vh) scale(.12,.07) rotate(-18deg); background:#f0dfb4; opacity:0}
+/* sending: the letter dims and a copper trace runs its bottom edge while the request is out;
+   sent: a pad solders itself and the confirmation rises under it */
+.letter{position:relative}
+.letter > *{transition:opacity .3s var(--ease)}
+.letter.folding{pointer-events:none}
+.letter.folding > *{opacity:.45}
+.letter::after{content:""; position:absolute; left:0; right:0; bottom:-10px; height:2px; border-radius:2px; background:linear-gradient(90deg, rgb(var(--pad)), rgb(var(--silk))); transform:scaleX(0); transform-origin:left; opacity:0}
+.letter.folding::after{opacity:1; transform:scaleX(1); transition:transform .9s cubic-bezier(.65,0,.35,1), opacity .2s}
+.sent-pad{width:56px; height:56px; overflow:visible}
+.sent-pad circle,.sent-pad path{fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1}
+.sent-pad circle{stroke:rgb(var(--pad)); stroke-width:3; transform:rotate(-90deg); transform-origin:center; animation:pad-draw .55s cubic-bezier(.65,0,.35,1) forwards}
+.sent-pad path{stroke:#78dc8c; stroke-width:3.5; animation:pad-draw .35s .45s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes pad-draw{to{stroke-dashoffset:0}}
+.letter-sent > :not(.sent-pad){animation:sent-rise .5s cubic-bezier(.16,1,.3,1) both}
+.letter-sent > :nth-child(2){animation-delay:.5s} .letter-sent > :nth-child(3){animation-delay:.58s} .letter-sent > :nth-child(4){animation-delay:.66s}
+@keyframes sent-rise{from{opacity:0; translate:0 8px}}
+@media (prefers-reduced-motion: reduce){
+  .letter::after{display:none}
+  .sent-pad circle,.sent-pad path{animation:none; stroke-dashoffset:0}
+  .letter-sent > :not(.sent-pad){animation:none}
 }
-.letter-sent{animation:fadeup .5s ease both}
-@media (prefers-reduced-motion: reduce){ .letter.folding,.letter.folding > *{animation:none} }
 
 /* ── Path v5: one rail, each role in three columns (when · who · what) ── */
 .tl{display:block}
@@ -844,18 +850,9 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .o66-order span{opacity:0; animation:o66-type .01s calc(.8s + var(--i) * .045s) forwards}
 @keyframes o66-type{to{opacity:1}}
 .o66-reply{margin:18px 0 0; font:500 clamp(16px,1.6vw,20px)/1.3 var(--display); color:#ffb3b3; text-shadow:0 0 14px rgba(255,80,80,.55); opacity:0; animation:o66-show .4s 2.15s ease forwards}
-/* blaster fire: short glowing bolts cross the screen, each strike flashes where it lands */
-.o66-fire{position:absolute; inset:0; overflow:hidden; animation:o66-shake .12s 3.3s steps(2) 22}
-@keyframes o66-shake{50%{transform:translate(2px,-1px)}}
-.bolt{position:absolute; left:0; top:var(--y1); width:120px; height:3px; border-radius:3px; background:linear-gradient(90deg, transparent, #ff3b2f 30%, #fff1ee 70%, #ff3b2f); box-shadow:0 0 10px #ff2a1a, 0 0 22px rgba(255,42,26,.6); opacity:0; animation:bolt .42s var(--d) linear forwards}
-.bolt.rev{animation-name:bolt-rev}
-@keyframes bolt{0%{opacity:1; transform:translate(-12vw,0) rotate(0)} 100%{opacity:1; transform:translate(110vw, calc(var(--y2) - var(--y1)))}}
-@keyframes bolt-rev{0%{opacity:1; transform:translate(110vw,0) scaleX(-1)} 100%{opacity:1; transform:translate(-12vw, calc(var(--y2) - var(--y1))) scaleX(-1)}}
-.o66-hit{position:absolute; width:90px; height:90px; translate:-50% -50%; border-radius:50%; background:radial-gradient(circle, #fff 0 8%, #ff6a4a 22%, rgba(255,40,20,.35) 45%, transparent 70%); opacity:0; animation:o66-hit .45s var(--d) ease-out forwards}
-@keyframes o66-hit{0%{opacity:1; transform:scale(.3)} 100%{opacity:0; transform:scale(1.6)}}
 .o66-end{opacity:0; animation:o66-show .6s 6.6s ease forwards}
 @keyframes o66-show{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
-@media (prefers-reduced-motion: reduce){ .o66-tx,.o66-order span,.o66-reply,.o66-fire,.bolt,.o66-hit,.o66-end{animation:none; opacity:1} .bolt,.o66-hit{display:none} }
+@media (prefers-reduced-motion: reduce){ .o66-tx,.o66-order span,.o66-reply,.o66-end{animation:none; opacity:1} }
 
 /* 88 mph v4: the road scene owns the centre; flux and speedo sit on top as a HUD */
 .egg-mph{place-items:start center}
@@ -959,7 +956,7 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 /* fingers get 40px rows; the text stays where it was */
 @media (pointer:coarse){
   .site-header nav a{padding:10px 0}
-  .hero-mail a,.cv-alt{padding-block:10px}
+  .cv-pick a,.push a{padding-block:10px}
   .ins-shot .shot-ctrl button{width:40px; height:40px}
   .tool{min-height:40px}
   .ins-head .links a{padding-block:10px}
@@ -1010,11 +1007,6 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .hero-role .avail{display:inline-flex; align-items:center; gap:8px; font:500 13px/1 var(--mono); color:#9fe0ac}
 .lede{margin-top:14px; max-width:44ch; font-size:clamp(16px,1.25vw,19px)}
 .cta{align-items:center; margin-top:30px}
-.cv-alt{font:500 13px/1 var(--mono); color:var(--ink-2); text-decoration:none; padding:8px 4px; border-bottom:1px solid rgba(236,238,242,.25); transition:color .2s, border-color .2s}
-.cv-alt:hover{color:var(--ink); border-color:var(--ink)}
-.hero-mail{margin:20px 0 0; font-size:15px; color:var(--ink-2)}
-.hero-mail a{color:var(--ink); text-decoration:underline; text-decoration-color:rgba(var(--silk),.45); text-underline-offset:4px; transition:text-decoration-color .2s}
-.hero-mail a:hover{text-decoration-color:rgb(var(--silk))}
 /* the board's edge silkscreen: where, how and what is left to finish, as real boards print theirs */
 .hero-edge{position:absolute; left:var(--gut); right:calc(var(--gut) + 34ch); bottom:24px; margin:0; font:500 12px/1.6 var(--mono); color:var(--ink-2)}
 @media (min-width:1024px){ .status{bottom:24px} }
@@ -1030,3 +1022,24 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .chip-body:hover{animation-play-state:paused}
 .chip-body:hover svg{scale:1.06}
 @media (prefers-reduced-motion: reduce){ .chip-pet .eye{animation:none} .chip-body:hover svg{scale:none} }
+/* CV in either language as one pad group, and the live push beside it */
+.hero-sub{display:flex; flex-wrap:wrap; align-items:center; gap:10px 24px; margin:22px 0 0}
+.cv-pick{display:inline-flex; align-items:center; gap:2px; font:500 14px/1 var(--text); color:var(--ink-2)}
+.cv-pick svg{margin-right:6px}
+.cv-pick a{margin-left:6px; padding:6px 8px; border-radius:4px; font:500 12px/1 var(--mono); color:var(--ink); text-decoration:none; box-shadow:inset 0 0 0 1px rgba(236,238,242,.2); transition:background .2s, box-shadow .2s}
+.cv-pick a:hover{background:rgba(236,238,242,.08); box-shadow:inset 0 0 0 1px rgba(236,238,242,.5)}
+.push{min-height:20px; font:500 13px/1.5 var(--mono)}
+.push a{display:inline-flex; align-items:center; gap:8px; color:var(--ink-3); text-decoration:none; transition:color .2s}
+.push a:hover{color:var(--ink)}
+/* the stuck header paints over the hero's own layers */
+.site-header.stuck{z-index:20}
+/* all datasheets share one cell; the slot keeps the tallest height */
+.ins-slot{display:grid}
+.ins-slot > .inspector{grid-area:1 / 1; animation:none}
+.ins-slot > .inspector:not(.on){visibility:hidden}
+.ins-slot > .inspector.on{animation:ins-in .35s var(--ease)}
+@media (prefers-reduced-motion: reduce){ .ins-slot > .inspector.on{animation:none} }
+/* Order 66 v2: the 3D transmission fills the stage; the order reads as its subtitle */
+.o66-3d{position:absolute; inset:0; pointer-events:none}
+.o66-3d canvas{display:block; width:100%; height:100%}
+.egg-order66 .o66-tx{top:auto; bottom:13vh; translate:-50% 0; z-index:1; padding:0; background:none; box-shadow:none; border:0}

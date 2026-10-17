@@ -3,6 +3,7 @@ import { Segments } from './Segments'
 
 // three.js and the car only load when someone actually hits 88 mph
 const DeLorean3D = lazy(() => import('./DeLorean3D'))
+const Order66_3D = lazy(() => import('./Order66_3D'))
 import { useLang } from '@/contexts/LanguageContext'
 import { copy } from '@/i18n/site'
 import { useSoundEffects } from '@/contexts/SoundContext'
@@ -150,14 +151,9 @@ function MphScene({ T, now, dest }) {
   )
 }
 
-// Order 66, staged like the film: an encrypted holo transmission gives the order, it cuts out, and
-// blaster fire crosses the screen while the board turns red. No drawn characters: light and type.
+// Order 66, staged like the film: a holo transmission gives the order over the board (three.js), it
+// cuts out, and blaster fire tears through while the board turns red.
 function Order66({ T }) {
-  const [bolts] = useState(() => Array.from({ length: 16 }, (_, i) => {
-    const fromLeft = i % 2 === 0
-    const y1 = 10 + Math.random() * 80, y2 = Math.max(4, Math.min(96, y1 + (Math.random() - 0.5) * 50))
-    return { fromLeft, y1, y2, d: 3.3 + i * 0.17 + Math.random() * 0.12, hit: [18 + Math.random() * 64, 15 + Math.random() * 70] }
-  }))
   const order = [...T.order66b]
   return (
     <>
@@ -168,14 +164,8 @@ function Order66({ T }) {
         </p>
         <p className="o66-reply">{T.o66reply}</p>
       </div>
-      <div className="o66-fire" aria-hidden="true">
-        {bolts.map((b, i) => (
-          <span key={i} className={`bolt${b.fromLeft ? '' : ' rev'}`} style={{ '--y1': `${b.y1}vh`, '--y2': `${b.y2}vh`, '--d': `${b.d}s` }} />
-        ))}
-        {bolts.filter((_, i) => i % 2).map((b, i) => (
-          <span key={'h' + i} className="o66-hit" style={{ left: `${b.hit[0]}vw`, top: `${b.hit[1]}vh`, '--d': `${b.d + 0.22}s` }} />
-        ))}
-      </div>
+      <Suspense fallback={null}><Order66_3D /></Suspense>
+      <p className="egg-credit">Holograma: <a href="https://poly.pizza/m/97m_4VkXpmo" target="_blank" rel="noopener noreferrer">Tie Fighter 1 V1</a> · Joe Scalise, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a> via Poly Pizza</p>
       <p className="egg-caption sith o66-end">{T.o66end}</p>
     </>
   )
