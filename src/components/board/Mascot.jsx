@@ -37,7 +37,7 @@ const C = {
       ['taller', 'Su stack, conectado a los proyectos donde lo usó.'],
       ['contacto', 'Y si te gustó, escribile.'],
     ],
-    hints: ['Dicen que una palabra élfica abre una puerta en la consola…', 'Si tocás los seis chips de arriba, pasa algo.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'Hay un botón que vuelve al pasado.', 'Probá orden 66 en la consola.'],
+    hints: ['Dicen que si en la consola queres abrir puertas, habla amigo y entra. ', 'Si tocás los seis chips de arriba, pasa algo.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'Hay un botón que vuelve al pasado.', 'Probá orden 66 en la consola.'],
   },
   en: {
     hello: 'Hi! I am Chip. Tap me if you need anything.',
@@ -63,7 +63,7 @@ const C = {
       ['taller', 'His stack, wired to the projects where he used it.'],
       ['contacto', 'And if you liked it, write to him.'],
     ],
-    hints: ['They say an Elvish word opens a door in the console…', 'Click the six chips up top and something happens.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'There is a button that goes back in time.', 'Try order 66 in the console.'],
+    hints: ['They say that if you want to open a door in the console then speak friend, and enter.', 'Click the six chips up top and something happens.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'There is a button that goes back in time.', 'Try order 66 in the console.'],
   },
 }
 const QUIET_KEY = 'chip-quiet'
