@@ -1043,3 +1043,20 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
 .o66-3d{position:absolute; inset:0; pointer-events:none}
 .o66-3d canvas{display:block; width:100%; height:100%}
 .egg-order66 .o66-tx{top:auto; bottom:13vh; translate:-50% 0; z-index:1; padding:0; background:none; box-shadow:none; border:0}
+/* after Order 66 the board stays red; this small pad brings the copper back */
+.sith-off{position:fixed; right:var(--gut); top:84px; z-index:40; display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:0; border-radius:5px; background:rgba(22,8,8,.82); box-shadow:inset 0 0 0 1px rgba(255,90,90,.3); backdrop-filter:blur(6px); color:#ffb3b3; font:500 12px/1 var(--mono); cursor:pointer; opacity:.7; animation:sith-off-in .5s var(--ease) both; transition:opacity .2s, box-shadow .2s}
+.sith-off:hover,.sith-off:focus-visible{opacity:1; box-shadow:inset 0 0 0 1px rgba(255,140,120,.7)}
+.sith-off i{width:8px; height:8px; border-radius:50%; background:linear-gradient(135deg, rgb(212,87,78), rgb(196,163,84))}
+@keyframes sith-off-in{from{opacity:0; translate:0 -6px}}
+@media (pointer:coarse){ .sith-off{padding:12px 14px} }
+@media (prefers-reduced-motion: reduce){ .sith-off{animation:none} }
+@media (max-width:1000px){ .sith-off{top:auto; right:auto; left:16px; bottom:16px} }
+/* the board's own cursor: the classic arrow drawn as a part (silk outline, via at the tip, a trace
+   inside); over anything you can press it is soldered copper. Native cursors: no lag, no script. */
+.site,.site *{cursor:url(/cursors/arrow.svg) 4 3, default}
+.site :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target),.site :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target) *{cursor:url(/cursors/pointer.svg) 4 3, pointer}
+.site :is(input:not([type="checkbox"]),textarea,[contenteditable="true"]){cursor:text}
+.site.sith,.site.sith *{cursor:url(/cursors/arrow-sith.svg) 4 3, default}
+.site.sith :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target),.site.sith :is(a,button,summary,select,label[for],[role="button"],.part,.cursor-target) *{cursor:url(/cursors/pointer-sith.svg) 4 3, pointer}
+.site.sith :is(input:not([type="checkbox"]),textarea,[contenteditable="true"]){cursor:text}
+.site :is(button,select):disabled{cursor:url(/cursors/arrow.svg) 4 3, not-allowed}

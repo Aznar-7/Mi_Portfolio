@@ -325,7 +325,6 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     sparks = sparks.filter(s => s.life > 0)
 
     for (const p of parts) drawPart(p, now)
-    if (mouse.x > 0) { ctx.strokeStyle = `rgba(${C.silk},.35)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 16, 0, 7); ctx.stroke() }
     // the board only animates while the hero is on screen
     // when it stops, clear the handle so kick() can start it again
     raf = visible && !dead ? requestAnimationFrame(draw) : 0
@@ -415,14 +414,18 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   }
   let rt, lastW = innerWidth
   const onResize = () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(build, 200) }
-  // Order 66: the copper turns sith for a few seconds
-  const onOrder66 = () => {
-    const keep = { f: C.f, b: C.b }
-    Object.assign(C, { f: '235,38,38', b: '150,24,36' })
-    root.style.setProperty('--fcu', C.f); root.style.setProperty('--bcu', C.b)
-    traces.forEach(t => { t.hot = 1 })
-    later(() => { Object.assign(C, keep); root.style.removeProperty('--fcu'); root.style.removeProperty('--bcu') }, 7000)
+  // Order 66 turns the copper sith (lib/sith) and it stays that way until the visitor resets it
+  const COPPER = { f: '212,87,78', b: '74,120,194', silk: '232,226,176', pad: '196,163,84' }
+  const SITH = { f: '235,38,38', b: '150,24,36', silk: '255,120,120', pad: '220,70,70' }
+  const paint = (on) => {
+    Object.assign(C, on ? SITH : COPPER)
+    if (on) { root.style.setProperty('--fcu', C.f); root.style.setProperty('--bcu', C.b) }
+    else { root.style.removeProperty('--fcu'); root.style.removeProperty('--bcu') }
+    traces?.forEach(t => { t.hot = 1 })
+    kick()
   }
+  const onSith = (e) => paint(e.detail)
+  const onOrder66 = () => traces.forEach(t => { t.hot = 1 })
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick() })
 
   hero.addEventListener('pointermove', onMove)
@@ -430,7 +433,9 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   hero.addEventListener('click', onClick)
   addEventListener('resize', onResize)
   document.addEventListener('board:order66', onOrder66)
+  document.addEventListener('board:sith', onSith)
   io.observe(hero)
+  if (root.classList.contains('sith')) paint(true)
   build(); kick()
 
   return {
@@ -452,6 +457,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       hero.removeEventListener('click', onClick)
       removeEventListener('resize', onResize)
       document.removeEventListener('board:order66', onOrder66)
+      document.removeEventListener('board:sith', onSith)
       io.disconnect()
       partsLayer.replaceChildren()
       root.style.removeProperty('--fcu'); root.style.removeProperty('--bcu')
