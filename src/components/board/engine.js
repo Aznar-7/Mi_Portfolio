@@ -4,7 +4,7 @@
 
 const P = 22 // grid pitch: the board's 0.1" raster
 const PARTS = [
-  { id: 'esp', w: 8, h: 11, at: [.635, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
+  { id: 'esp', w: 8, h: 11, gut: 4, at: [.635, .20], atM: [.3, .34], hM: 9, ref: 'U1 · ESP32-WROOM', side: 'left', href: '#trabajo' },
   { id: 'nfc', w: 9, h: 7, at: [.615, .66], atM: [.74, .36], ref: 'ANT1 · NFC 13.56 MHz', side: 'left', href: '#trabajo' },
   { id: 'eth', w: 6, h: 5, at: [.495, .08], atM: null, ref: 'J1 · RJ45', side: 'down', href: '#trabajo' },
 ]
@@ -23,7 +23,7 @@ const rnd = (a, b) => a + Math.random() * (b - a)
  * @param {HTMLElement} [o.photo]     the portrait: placed on the board as part U0, with its own bus
  * @param {HTMLElement} [o.frame]     the centered content box: parts sit inside it, copper fades outside it
  * @param {HTMLElement[]} o.letters   name letters that catch the signal
- * @param {object} o.text           { routing(done,total), hint(touch), hint2, complete, parts: {id: [tip, sub]} }
+ * @param {object} o.text           { routing(done,total), hint(touch), complete, parts: {id: [tip, sub]} }
  * @param {() => void} o.onComplete fired once six chips are soldered
  * @param {() => void} [o.onSolder]   a chip lands (sound hook)
  * @param {() => void} [o.onPartHover] a part is hovered (sound hook)
@@ -110,8 +110,6 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
 
   function setHint() {
     statusEl.replaceChildren(text.hint(touch), Object.assign(document.createElement('b'), { textContent: 'U' + chipN }))
-    // only point at the parts when at least one fit on this screen
-    if (parts.some(p => !p.chip)) statusEl.append(document.createElement('br'), text.hint2)
   }
 
   function build() {
@@ -147,6 +145,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     // place parts where they fit; on narrow screens some simply stay off the board
     partsLayer.replaceChildren()
     const narrow = W < 760
+    const silk = []
     for (const base of PARTS) {
       const at = narrow ? base.atM : base.at; if (!at) continue
       const def = narrow && base.hM ? { ...base, h: base.hM } : base
@@ -155,11 +154,14 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       const fitsAt = (r) => {
         if (c <= 1 || r <= 2 || c + def.w >= cols - 1 || r + def.h >= rows - 1) return false
         for (let i = 0; i < def.w; i++) for (let j = 0; j < def.h; j++) if (blocked.has(key(c + i, r + j))) return false
+        // silkscreen gutters (the ESP32 pin names) keep other parts off without blocking that part's own traces
+        if (silk.some(g => c < g.c + g.w && c + def.w > g.c && r < g.r + g.h && r + def.h > g.r)) return false
         return true
       }
       const r = [0, 1, 2, 3, 4].map((d) => r0 + d).find(fitsAt)
       if (r === undefined) continue
       blockRect(c, r, def.w, def.h)
+      if (def.gut) silk.push({ c: c - def.gut, r, w: def.gut, h: def.h })
       const p = { ...def, c, r, born: t0 + (reduced ? -1e5 : 120 * parts.length), hover: 0, over: false }
       parts.push(p)
       const [tip, sub] = text.parts[def.id]

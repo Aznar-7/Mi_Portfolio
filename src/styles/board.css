@@ -358,7 +358,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .cal-scroll{overflow-x:auto}
 
 /* ── Process v2: pinned horizontal run of five panels, one authored diagram each ── */
-.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:clamp(18px,3vh,32px); padding-top:72px; box-sizing:border-box}
+.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:clamp(18px,3vh,32px); padding:72px 0 24px; box-sizing:border-box}
 .ps-head{display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:8px 48px}
 .ps-head .sec-intro{margin:0; max-width:46ch}
 .ps-bus{position:relative; height:52px; margin:0 6px}

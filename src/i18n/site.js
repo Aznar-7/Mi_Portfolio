@@ -11,7 +11,6 @@ export const copy = {
       edge: ['Córdoba, AR · GMT-3', 'remoto o híbrido', 'Sistemas e IA en la UTN, en curso', 'inglés C1'],
       routing: (done, total) => `ruteando la placa · ${done}/${total}`,
       hint: (touch) => `${touch ? 'Tocá' : 'Hacé clic en'} la placa para soldar un chip · `,
-      hint2: 'Cada componente es un proyecto',
       complete: 'Placa completa.',
       parts: {
         esp: ['AutoFull', 'auto autónomo, ESP32 + FreeRTOS'],
@@ -94,7 +93,6 @@ export const copy = {
       edge: ['Córdoba, AR · GMT-3', 'remote or hybrid', 'Systems and AI at UTN, in progress', 'English C1'],
       routing: (done, total) => `routing the board · ${done}/${total}`,
       hint: (touch) => `${touch ? 'Tap' : 'Click'} the board to solder a chip · `,
-      hint2: 'Every part is a project',
       complete: 'Board complete.',
       parts: {
         esp: ['AutoFull', 'autonomous car, ESP32 + FreeRTOS'],

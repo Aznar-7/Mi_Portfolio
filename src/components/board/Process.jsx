@@ -128,7 +128,8 @@ export function Process() {
         onUpdate() { setActive(Math.round(this.progress() * (n - 1))) },
         scrollTrigger: {
           // no snap: it fought the reader's own scroll and yanked the page back to the start
-          trigger: '.ps-pin', start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.4, invalidateOnRefresh: true,
+          // the track runs faster than the wheel: 1:1 pinned the page for seven screens on a notebook
+          trigger: '.ps-pin', start: 'top top', end: () => `+=${distance() * 0.6}`, pin: true, scrub: 0.4, invalidateOnRefresh: true,
         },
       })
     }, root)
