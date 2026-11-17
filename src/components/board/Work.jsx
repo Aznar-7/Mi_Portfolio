@@ -57,10 +57,7 @@ function Flow({ project, live, lang, label }) {
     const HOP = 3000, GLIDE = 600
     const tick = (now) => {
       raf = requestAnimationFrame(tick)
-      // only while on screen (a rect read per frame is cheaper and steadier than an observer here)
-      const r = board.current?.getBoundingClientRect()
-      const seen = r && r.bottom > 0 && r.top < innerHeight
-      if (!seen || !on.current || pinned.current || held.current || !xs.length) { t0 = 0; return }
+      if (!on.current || pinned.current || held.current || !xs.length) { t0 = 0; return }
       // after a hover the signal carries on from the node it was parked on
       if (!t0) { t0 = now - Math.max(0, resume.current) * HOP - GLIDE; if (resume.current >= 0) { step = resume.current; from = xs[step] } resume.current = -1 }
       const e = now - t0, i = Math.floor(e / HOP) % xs.length, k = Math.min(1, (e % HOP) / GLIDE)
@@ -72,9 +69,14 @@ function Flow({ project, live, lang, label }) {
     layout()
     // the board changes width with the inspector, not only the window
     const ro = new ResizeObserver(layout); ro.observe(board.current)
-    if (!reduced) raf = requestAnimationFrame(tick)
+    // the loop exists only while the diagram is on screen; off screen nothing runs at all
+    const io = new IntersectionObserver(([e]) => {
+      cancelAnimationFrame(raf); raf = 0; t0 = 0
+      if (e.isIntersecting) raf = requestAnimationFrame(tick)
+    })
+    if (!reduced) io.observe(board.current)
     else if (dot.current) dot.current.style.opacity = 0
-    return () => { cancelAnimationFrame(raf); ro.disconnect() }
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect() }
   }, [])
 
   // pinning parks the signal on that node, so the dot and the highlighted node always agree
