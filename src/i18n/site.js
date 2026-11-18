@@ -20,7 +20,7 @@ export const copy = {
     },
     work: {
       title: 'Proyectos',
-      intro: 'Siete proyectos, este sitio incluido: lo que corre en la web y lo que corre en un circuito. Filtrá por capa.',
+      intro: 'Diez proyectos, este sitio incluido: lo que corre en la web y lo que corre en un circuito. Filtrá por capa.',
       layers: 'Filtrar por capa', all: 'Todo', web: 'Web', hw: 'Hardware', details: 'Ver detalle',
       status: { prod: 'En producción', live: 'En línea', done: 'Terminado', dev: 'En desarrollo' },
       flow: 'Recorrido de un request', screens: (t) => `Pantallas de ${t}`, screen: (i, n) => `Pantalla ${i} de ${n}`,
@@ -104,7 +104,7 @@ export const copy = {
     },
     work: {
       title: 'Projects',
-      intro: 'Seven projects, this site included: what runs on the web and what runs on a circuit. Filter by layer.',
+      intro: 'Ten projects, this site included: what runs on the web and what runs on a circuit. Filter by layer.',
       layers: 'Filter by layer', all: 'All', web: 'Web', hw: 'Hardware', details: 'Show details',
       status: { prod: 'In production', live: 'Live', done: 'Done', dev: 'In development' },
       flow: 'Path of a request', screens: (t) => `${t} screens`, screen: (i, n) => `Screen ${i} of ${n}`,
