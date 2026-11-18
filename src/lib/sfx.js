@@ -15,8 +15,8 @@ function out(ctx) {
   return input
 }
 
-// one shaped voice: osc (or noise) → filter → envelope → bus
-function voice(ctx, o) {
+// one shaped voice: osc (or noise) → filter → envelope → bus (the ocarina plays through it too)
+export function voice(ctx, o) {
   const t = ctx.currentTime + (o.at ?? 0)
   const { a = 0.01, d = 0.3, s = 0, hold = 0, r = 0.2, gain = 0.1 } = o
   let src

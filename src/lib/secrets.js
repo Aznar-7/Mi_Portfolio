@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
-// Eight secrets, remembered in this browser. Finding one fires a 'secret' event the toast listens to.
-export const SECRETS = ['placa', 'mellon', 'hire', 'order66', 'hyperspace', 'mph', 'devtools', 'mate']
+// Ten secrets, remembered in this browser. Finding one fires a 'secret' event the toast listens to.
+export const SECRETS = ['placa', 'mellon', 'hire', 'order66', 'hyperspace', 'mph', 'devtools', 'mate', 'ocarina', 'hyrule']
 const KEY = 'va-secretos'
 
 let found = new Set()

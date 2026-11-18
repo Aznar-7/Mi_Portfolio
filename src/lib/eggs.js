@@ -14,6 +14,7 @@ export function installEggs() {
   let k = 0
   on(window, 'keydown', (e) => {
     if (e.target instanceof Element && e.target.matches('input, textarea')) return
+    if (document.body.dataset.ocarina) return // the arrows are ocarina holes while it is out
     const key = e.key.toLowerCase()
     k = key === KONAMI[k] ? k + 1 : key === KONAMI[0] ? 1 : 0
     if (k === KONAMI.length) { k = 0; hyperspace() }

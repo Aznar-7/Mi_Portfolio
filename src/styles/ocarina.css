@@ -1,0 +1,205 @@
+/* The Ocarina of Time quest: Navi, the ocarina among the tools, the staff and what the songs do.
+   The board's own surfaces and type; the game shows only in the A (blue) and C (yellow) buttons. */
+.site{--oc-a:#3d7be0; --oc-c:#f1c31d; --navi:150,205,255}
+#taller{position:relative}
+
+/* Navi: a light with four wings */
+.oc-navi{position:relative; display:block; width:20px; height:20px; border-radius:50%; background:radial-gradient(circle, #fff 0 22%, rgb(var(--navi)) 46%, rgba(var(--navi),0) 72%); box-shadow:0 0 18px 6px rgba(var(--navi),.55); animation:navi-bob 2.4s ease-in-out infinite}
+.oc-navi::before,.oc-navi::after{content:""; position:absolute; top:-6px; width:16px; height:12px; border-radius:50%; background:rgba(220,240,255,.45); box-shadow:inset 0 0 0 1px rgba(255,255,255,.5); animation:navi-wing .16s ease-in-out infinite alternate}
+.oc-navi::before{right:12px; transform-origin:right bottom; rotate:-18deg}
+.oc-navi::after{left:12px; transform-origin:left bottom; rotate:18deg}
+.oc-navi.small{width:14px; height:14px}
+@keyframes navi-bob{0%,100%{translate:0 0} 50%{translate:0 -8px}}
+@keyframes navi-wing{to{scale:.35 1}}
+
+.oc-navi-call{position:fixed; z-index:60; left:24px; bottom:24px; display:flex; align-items:flex-end; gap:14px; animation:oc-in .5s var(--ease) both}
+.oc-navi-call .oc-navi{margin-bottom:46px}
+.oc-bubble{display:grid; gap:4px; max-width:250px; padding:14px 16px; border-radius:14px 14px 14px 4px; background:#121822; box-shadow:inset 0 0 0 1px rgba(var(--navi),.35), 0 18px 40px -12px #000; color:var(--ink-2); font:400 14px/1.45 var(--text)}
+.oc-bubble b{color:#eaf5ff; font:600 18px/1.2 var(--display)}
+.oc-bubble button{justify-self:start; margin-top:8px; min-height:40px; padding:0 14px; border:0; border-radius:8px; background:rgb(var(--navi)); color:#0b1420; font:600 14px/1 var(--text); cursor:pointer}
+@keyframes oc-in{from{opacity:0; translate:0 12px}}
+
+/* the ocarina waiting among the tools */
+.oc-hide{position:absolute; z-index:4; top:clamp(24px,4vw,48px); right:var(--gut,24px); display:grid; justify-items:center; gap:6px}
+.oc-here{color:#eaf5ff; font:500 13px/1 var(--text)}
+.oc-glint{position:relative; display:grid; place-items:center; width:72px; height:56px; border:0; border-radius:12px; background:#121822; box-shadow:inset 0 0 0 1px rgba(var(--navi),.4); cursor:pointer}
+.oc-glint svg{width:48px}
+.oc-glint::after{content:""; position:absolute; inset:-6px; border-radius:16px; box-shadow:0 0 0 1px rgba(var(--navi),.5); animation:glint 1.6s ease-out infinite}
+@keyframes glint{from{opacity:1; scale:.92} to{opacity:0; scale:1.18}}
+.oc-body{fill:#3667c9; stroke:#9cc4ff; stroke-width:1.2}
+.oc-mouth{stroke:#9cc4ff; stroke-width:3; stroke-linecap:round}
+.oc-hole{fill:#0b1530}
+
+/* you got it */
+.oc-get{position:fixed; inset:0; z-index:9500; display:grid; place-content:center; justify-items:center; gap:10px; padding:24px; text-align:center; background:rgba(5,7,11,.9); animation:oc-fade .4s both}
+.oc-get h2{margin:0; color:#fff; font:600 clamp(28px,4vw,44px)/1.05 var(--display); letter-spacing:-.02em}
+.oc-get p{max-width:46ch; margin:0 0 10px; color:var(--ink-2); font-size:16px; line-height:1.55}
+.oc-model{width:min(320px,70vw); aspect-ratio:1}
+.oc-model canvas{display:block; width:100%; height:100%}
+.oc-rays{position:absolute; left:50%; top:calc(50% - 90px); width:620px; height:620px; translate:-50% -50%; border-radius:50%; background:repeating-conic-gradient(rgba(255,240,200,.09) 0 6deg, transparent 6deg 18deg); mask:radial-gradient(circle, #000 20%, transparent 68%); animation:rays 18s linear infinite; pointer-events:none}
+@keyframes rays{to{rotate:360deg}}
+@keyframes oc-fade{from{opacity:0}}
+
+/* in hand */
+.oc-toggle{position:fixed; z-index:60; left:20px; bottom:20px; display:grid; place-items:center; width:52px; height:52px; border:0; border-radius:50%; background:#121822; box-shadow:inset 0 0 0 1px rgba(var(--navi),.35), 0 10px 26px -10px #000; cursor:pointer; transition:box-shadow .2s, scale .2s var(--ease)}
+.oc-toggle:hover{box-shadow:inset 0 0 0 1px rgba(var(--navi),.8), 0 0 18px rgba(var(--navi),.35); scale:1.06}
+.oc-toggle svg{width:32px}
+
+/* the remake's look: a parchment card with gilt corners, a clef, dark round notes, the song's name in red */
+.oc-panel{--parch:#efe3c4; --ink-p:#3b2a17; --rule:rgba(59,42,23,.38); position:fixed; z-index:61; left:50%; bottom:18px; translate:-50% 0; width:min(560px, calc(100vw - 24px)); display:grid; gap:10px; justify-items:center; animation:oc-unfold .45s var(--ease) both}
+@keyframes oc-unfold{from{opacity:0; translate:-50% 24px; scale:.96}}
+.oc-held{position:relative; width:220px; height:150px; margin-bottom:-26px; pointer-events:none}
+.oc-held .oc-model{width:100%; height:100%; aspect-ratio:auto}
+.oc-float{position:absolute; left:calc(50% + var(--dx)); top:46%; width:16px; fill:#fff7d6; filter:drop-shadow(0 0 6px rgba(255,236,170,.8)); animation:oc-rise 1.4s ease-out forwards}
+@keyframes oc-rise{from{opacity:0; translate:0 0 ; scale:.6} 20%{opacity:1} to{opacity:0; translate:calc(var(--dx) * .6) -90px; scale:1.1}}
+
+.oc-sheet{position:relative; width:100%; padding:14px 22px 16px; border-radius:6px; background:radial-gradient(120% 140% at 50% 0%, #f6edd6, var(--parch) 55%, #e2d1a8); box-shadow:inset 0 0 0 2px #7a5a2e, inset 0 0 0 5px var(--parch), inset 0 0 0 6px rgba(122,90,46,.6), 0 22px 50px -18px #000}
+.oc-corner{position:absolute; width:16px; height:16px; border:2px solid #b8893f; pointer-events:none}
+.oc-corner.tl{left:7px; top:7px; border-right:0; border-bottom:0; border-top-left-radius:8px}
+.oc-corner.tr{right:7px; top:7px; border-left:0; border-bottom:0; border-top-right-radius:8px}
+.oc-corner.bl{left:7px; bottom:7px; border-right:0; border-top:0; border-bottom-left-radius:8px}
+.oc-corner.br{right:7px; bottom:7px; border-left:0; border-top:0; border-bottom-right-radius:8px}
+.oc-head{margin:0 0 6px; text-align:center; color:var(--ink-p); font:600 17px/1.3 var(--display)}
+.oc-head em{font-style:normal; color:#c0261b}
+.oc-panel.sung .oc-head{animation:oc-pop .5s var(--ease)}
+@keyframes oc-pop{from{opacity:0; translate:0 6px}}
+.oc-staff{position:relative; height:92px}
+.oc-clef{position:absolute; left:0; top:4px; height:84px; fill:var(--ink-p); opacity:.85}
+.oc-line{position:absolute; left:34px; right:4px; top:calc(14px + var(--r) * 16px); height:1.5px; background:var(--rule)}
+.oc-slot{position:absolute; left:calc(52px + var(--x) * (100% - 80px) / 8); top:calc(14px + var(--r) * 16px); translate:0 -50%; animation:note-in .22s var(--ease) both}
+@keyframes note-in{from{opacity:0; scale:.4}}
+.oc-panel.sung .oc-slot .oc-note{opacity:.45; transition:opacity .2s, scale .2s, box-shadow .2s}
+.oc-panel.sung .oc-slot.lit .oc-note{opacity:1; scale:1.12; box-shadow:0 0 0 3px rgba(255,214,120,.55), 0 0 14px rgba(255,200,90,.7)}
+
+.oc-note{display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:#1b1d26; color:#fff; font:700 12px/1 var(--text); box-shadow:inset 0 -2px 0 rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3)}
+.oc-c svg{width:11px; height:11px; fill:#fff}
+
+.oc-keys{display:flex; align-items:center; gap:8px; padding:8px; border-radius:14px; background:rgba(14,16,20,.92); box-shadow:inset 0 0 0 1px rgba(236,238,242,.1), 0 14px 30px -14px #000}
+.oc-key{display:grid; place-items:center; width:46px; height:46px; padding:0; border:0; border-radius:12px; background:#181b22; cursor:pointer; touch-action:manipulation; transition:background .15s}
+.oc-key:hover{background:#232733}
+.oc-key:active .oc-note{scale:.88}
+.oc-key .oc-note{width:30px; height:30px; font-size:14px}
+.oc-key .oc-c svg{width:13px; height:13px}
+.oc-tab{min-height:44px; padding:0 12px; border:0; border-radius:10px; background:transparent; color:var(--ink-2); font:500 14px/1 var(--text); cursor:pointer}
+.oc-tab:hover,.oc-tab.on{color:var(--ink); background:#181b22}
+
+/* while a song plays: the remake's pastel haze over the page */
+.oc-haze{position:fixed; inset:0; z-index:59; pointer-events:none; opacity:0; background:radial-gradient(60% 50% at 30% 30%, rgba(255,170,215,.35), transparent 70%), radial-gradient(50% 45% at 75% 60%, rgba(190,170,255,.3), transparent 70%), radial-gradient(70% 60% at 50% 100%, rgba(255,230,200,.25), transparent 70%); transition:opacity .8s ease}
+.oc-haze.on{opacity:1; animation:haze 6s ease-in-out infinite alternate}
+@keyframes haze{to{filter:hue-rotate(25deg); scale:1.06}}
+
+.oc-book{width:100%; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:6px; max-height:min(40vh,360px); overflow:auto; margin:0; padding:8px; list-style:none; border-radius:12px; background:rgba(14,16,20,.94)}
+.oc-book li{display:grid; gap:6px; padding:10px 12px; border-radius:10px; background:#161920}
+.oc-book b{color:var(--ink); font:600 14px/1.2 var(--text)}
+.oc-book small{color:var(--ink-3); font-size:12.5px; line-height:1.4}
+.oc-book li.done b{color:#fff}
+.oc-book li.done small{color:var(--ink-2)}
+.oc-row{display:flex; gap:4px}
+.oc-row .oc-note{width:20px; height:20px; font-size:10px}
+.oc-row .oc-c svg{width:9px; height:9px}
+
+/* the secrets toast sits above the panel while the ocarina is out */
+body[data-ocarina] .egg-toast{bottom:300px}
+
+/* what the songs do */
+.oc-warp{position:fixed; inset:0; z-index:58; pointer-events:none; background:radial-gradient(ellipse 18% 80% at 50% 50%, rgba(var(--rgb),.75), rgba(var(--rgb),.18) 45%, transparent 70%); animation:warp 2s ease-in-out both}
+@keyframes warp{0%{opacity:0; scale:.2 1} 30%{opacity:1; scale:1 1} 60%{opacity:1} 100%{opacity:0; scale:3 1}}
+.oc-time{position:fixed; inset:0; z-index:9400; pointer-events:none; background:radial-gradient(circle at 50% 55%, #fff 0, #cfe6ff 30%, rgba(120,170,255,.6) 55%, rgba(120,170,255,0) 75%); animation:time 1.5s ease-in both}
+@keyframes time{from{opacity:0; scale:.1} to{opacity:1; scale:3}}
+.oc-storm{position:fixed; inset:0; z-index:57; pointer-events:none; background:rgba(8,12,20,.38); animation:oc-fade 1s both, storm 7s 1.2s infinite}
+@keyframes storm{0%,90%,94%,100%{background-color:rgba(8,12,20,.38)} 91%,95%{background-color:rgba(210,225,255,.22)}}
+.oc-rain{position:absolute; inset:0; width:100%; height:100%}
+
+/* the Sun's Song: dawn over the board, until it is played again */
+html.dawn .site{--ground:#17140f}
+html.dawn .site::after{content:""; position:fixed; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg, rgba(255,196,120,.12), rgba(255,150,90,.05) 45%, transparent 80%); mix-blend-mode:screen}
+
+@media (max-width:700px){
+  .oc-panel{bottom:8px}
+  .oc-held{width:160px; height:110px}
+  .oc-sheet{padding:12px 14px}
+  .oc-key{width:44px; height:44px}
+  .oc-tab{padding:0 10px}
+  .oc-navi-call{left:12px; right:12px; bottom:12px}
+}
+@media (prefers-reduced-motion: reduce){
+  .oc-navi,.oc-navi::before,.oc-navi::after,.oc-glint::after,.oc-rays,.oc-storm,.oc-haze.on,.oc-float{animation:none}
+  .oc-warp,.oc-time{animation-duration:.01s}
+}
+
+/* Hyrule: the Temple of Time, the sword, seven years later */
+.hy{position:fixed; inset:0; z-index:9000; background:#000; color:#fff; overflow:hidden; animation:oc-fade .6s both}
+.hy.leaving{animation:oc-fade .6s reverse both}
+.hy-gl,.hy-gl canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+.hy-white{position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity 1.6s ease-in}
+.hy[data-phase="pulled"] .hy-white{opacity:1; transition-delay:.9s}
+.hy[data-phase="later"] .hy-white{opacity:0; background:#000; transition:none}
+.hy[data-phase="later"]{background:#000}
+.hy[data-phase="later"] .hy-gl{opacity:0}
+.hy[data-phase="field"] .hy-gl{animation:oc-fade 2.4s both}
+.hy-load,.hy-later{position:absolute; inset:0; display:grid; place-items:center; margin:0; font:500 clamp(18px,2.4vw,30px)/1 var(--display); letter-spacing:.04em; color:#f3ead2}
+.hy-later{animation:later 2.8s ease-in-out both}
+@keyframes later{0%{opacity:0} 25%,75%{opacity:1} 100%{opacity:0}}
+.hy-title{position:absolute; left:50%; top:12vh; translate:-50% 0; margin:0; font:600 clamp(30px,4.4vw,60px)/1 var(--display); letter-spacing:.02em; color:#f6efd9; text-shadow:0 2px 30px rgba(0,0,0,.6); animation:hy-title 5s ease-out both; pointer-events:none}
+.hy-title.field{animation-delay:1.4s}
+@keyframes hy-title{0%{opacity:0; letter-spacing:.2em} 20%,70%{opacity:1; letter-spacing:.02em} 100%{opacity:0}}
+.hy-hold{position:absolute; left:50%; bottom:13vh; translate:-50% 0; display:flex; align-items:center; gap:12px; padding:10px 16px 10px 10px; border-radius:999px; background:rgba(10,8,6,.55); backdrop-filter:blur(6px); font:500 15px/1.2 var(--text); animation:oc-in .6s 6s both; user-select:none}
+.hy-hold svg{width:40px; height:40px; rotate:-90deg}
+.hy-hold circle{fill:none; stroke-width:3}
+.hy-hold .track{stroke:rgba(255,255,255,.2)}
+.hy-hold .fill{stroke:#f6d98a; stroke-dasharray:107; stroke-linecap:round}
+.hy-back{position:absolute; right:20px; top:20px; min-height:44px; padding:0 16px; border:0; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:500 14px/1 var(--text); backdrop-filter:blur(6px); cursor:pointer}
+.hy-back:hover{background:rgba(10,8,6,.8)}
+.hy-credit{position:absolute; left:16px; right:16px; bottom:10px; margin:0; text-align:center; color:rgba(255,255,255,.5); font:400 11px/1.4 var(--text); pointer-events:none}
+@media (prefers-reduced-motion: reduce){ .hy-title,.hy-later{animation-duration:.01s} .hy-hold{animation-delay:0s} }
+.hy-place{position:absolute; left:0; top:0; display:grid; gap:2px; padding:8px 12px; border:0; border-radius:10px; background:rgba(10,8,6,.5); color:#f6efd9; text-align:left; backdrop-filter:blur(6px); cursor:pointer; transition:opacity .4s, background .2s; will-change:transform; opacity:0}
+.hy-place::after{content:""; position:absolute; left:50%; bottom:-7px; width:2px; height:7px; background:rgba(246,239,217,.6)}
+.hy-place b{font:600 14px/1.1 var(--display)}
+.hy-place span{font:400 12px/1.2 var(--text); color:rgba(246,239,217,.7)}
+.hy-place:hover{background:rgba(10,8,6,.8)}
+.hy-ride,.hy-music{position:absolute; min-height:44px; padding:0 16px; border:0; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:500 14px/1 var(--text); backdrop-filter:blur(6px); cursor:pointer}
+.hy-ride{left:50%; bottom:40px; translate:-50% 0; padding:0 22px; background:rgba(120,70,30,.75); animation:oc-in .6s 3s both}
+.hy-ride:disabled{opacity:.7; cursor:default}
+.hy-music{right:190px; top:20px}
+.hy-music.off{opacity:.55; text-decoration:line-through}
+.hy-ride:hover:not(:disabled),.hy-music:hover{background:rgba(10,8,6,.8)}
+
+/* the field as a small game: area names, a hint, remake-style dialogs */
+.hy-area{position:absolute; left:50%; top:11vh; translate:-50% 0; display:flex; align-items:center; gap:18px; margin:0; color:#f8f0da; font:600 clamp(26px,3.6vw,46px)/1 var(--display); letter-spacing:.03em; text-shadow:0 2px 24px rgba(0,0,0,.55); white-space:nowrap; pointer-events:none; animation:hy-title 4.2s ease-out 1.2s both}
+.hy-area i{width:clamp(40px,8vw,120px); height:1px; background:linear-gradient(90deg, transparent, rgba(248,240,218,.9), transparent)}
+.hy-hint{position:absolute; left:50%; top:calc(11vh + 64px); translate:-50% 0; max-width:min(560px, calc(100vw - 32px)); margin:0; padding:10px 16px; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:400 15px/1.45 var(--text); text-align:center; backdrop-filter:blur(6px); animation:oc-in .6s .6s both}
+.hy-dialog{position:absolute; left:50%; bottom:28px; translate:-50% 0; width:min(680px, calc(100vw - 24px)); max-height:min(62vh,560px); overflow:auto; padding:22px 26px 20px; border-radius:10px; color:#f4ecd8; background:linear-gradient(180deg, rgba(18,22,40,.93), rgba(10,12,24,.95)); box-shadow:inset 0 0 0 1px rgba(212,169,76,.65), inset 0 0 0 4px rgba(10,12,24,.9), inset 0 0 0 5px rgba(212,169,76,.35), 0 24px 60px -20px #000; animation:hy-pop .35s var(--ease) both}
+@keyframes hy-pop{from{opacity:0; translate:-50% 14px; scale:.97}}
+.hy-dialog .oc-corner{border-color:#d4a94c}
+.hy-dialog h3{margin:0 0 6px; color:#ffe2a3; font:600 24px/1.15 var(--display)}
+.hy-dialog p{margin:0 0 10px; font:400 15.5px/1.6 var(--text); color:rgba(244,236,216,.88)}
+.hy-dialog .lead{color:#fff; font-weight:500}
+.hy-chips{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 14px; padding:0; list-style:none}
+.hy-chips li{padding:4px 10px; border-radius:999px; background:rgba(212,169,76,.14); box-shadow:inset 0 0 0 1px rgba(212,169,76,.4); font:500 12.5px/1.3 var(--text)}
+.hy-links{display:flex; flex-wrap:wrap; gap:10px}
+.hy-links a{display:inline-flex; align-items:center; min-height:40px; padding:0 14px; border-radius:8px; background:#d4a94c; color:#1a1408; font:600 14px/1 var(--text); text-decoration:none}
+.hy-links a:hover{background:#e7c26b}
+.hy-tools{display:grid; gap:8px; margin:8px 0 0; padding:0; list-style:none}
+.hy-tools li{display:grid; gap:2px; padding:8px 10px; border-radius:8px; background:rgba(255,140,60,.07)}
+.hy-tools b{color:#ffcf9a; font:600 15px/1.2 var(--text)}
+.hy-tools span{color:rgba(244,236,216,.75); font:400 13.5px/1.4 var(--text)}
+.hy-typed{animation:hy-type 1.2s steps(40) both; clip-path:inset(0 0 0 0)}
+@keyframes hy-type{from{clip-path:inset(0 100% 0 0)}}
+.hy-next{display:inline-flex; align-items:center; gap:8px; margin-top:4px; min-height:40px; padding:0 14px 0 6px; border:0; border-radius:999px; background:rgba(255,255,255,.08); color:#f4ecd8; font:500 14px/1 var(--text); cursor:pointer; animation:hy-blink 1.4s ease-in-out infinite}
+.hy-next span{display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:#3d7be0; color:#fff; font:700 13px/1 var(--text)}
+@keyframes hy-blink{50%{opacity:.7}}
+.hy-close{position:absolute; right:10px; top:8px; width:36px; height:36px; border:0; border-radius:50%; background:transparent; color:#f4ecd8; font:400 22px/1 var(--text); cursor:pointer}
+.hy-close:hover{background:rgba(255,255,255,.1)}
+@media (prefers-reduced-motion: reduce){ .hy-area,.hy-typed,.hy-next{animation:none} }
+.hy-curtain{position:absolute; inset:0; z-index:5; background:#000; opacity:0; pointer-events:none; transition:opacity .5s ease}
+.hy-curtain.on{opacity:1}
+/* quick travel, like the game's map */
+.hy-map-btn{position:absolute; left:20px; top:20px; min-height:44px; padding:0 16px; border:0; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:600 14px/1 var(--text); backdrop-filter:blur(6px); cursor:pointer}
+.hy-map-btn:hover,.hy-map-btn[aria-expanded="true"]{background:rgba(10,8,6,.85)}
+.hy-map{position:absolute; left:20px; top:72px; z-index:4; display:grid; gap:4px; width:min(300px, calc(100vw - 40px)); padding:12px; border-radius:10px; background:linear-gradient(180deg, rgba(18,22,40,.95), rgba(10,12,24,.96)); box-shadow:inset 0 0 0 1px rgba(212,169,76,.6), 0 20px 50px -20px #000; animation:hy-pop .25s var(--ease) both}
+.hy-map p{margin:0 0 6px; color:#ffe2a3; font:600 15px/1.2 var(--display)}
+.hy-map button{display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px; padding:0 12px; border:0; border-radius:8px; background:transparent; color:#f4ecd8; text-align:left; cursor:pointer}
+.hy-map button:hover{background:rgba(212,169,76,.14)}
+.hy-map button.here{background:rgba(212,169,76,.22)}
+.hy-map b{font:600 14px/1.2 var(--text)}
+.hy-map span{color:rgba(244,236,216,.6); font:400 12.5px/1.2 var(--text)}

@@ -419,14 +419,18 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   // Order 66 turns the copper sith (lib/sith) and it stays that way until the visitor resets it
   const COPPER = { f: '212,87,78', b: '74,120,194', silk: '232,226,176', pad: '196,163,84' }
   const SITH = { f: '235,38,38', b: '150,24,36', silk: '255,120,120', pad: '220,70,70' }
+  // the ocarina repaints the copper for a while: Saria's forest, the Sun's dawn (null puts it back)
+  const SONG = { forest: { f: '86,170,92', b: '46,110,70', silk: '196,232,160', pad: '150,200,90' }, dawn: { f: '240,170,90', b: '120,160,220', silk: '255,236,190', pad: '240,200,110' } }
+  let song = null
   const paint = (on) => {
-    Object.assign(C, on ? SITH : COPPER)
-    if (on) { root.style.setProperty('--fcu', C.f); root.style.setProperty('--bcu', C.b) }
+    Object.assign(C, song ? SONG[song] : on ? SITH : COPPER)
+    if (on || song) { root.style.setProperty('--fcu', C.f); root.style.setProperty('--bcu', C.b) }
     else { root.style.removeProperty('--fcu'); root.style.removeProperty('--bcu') }
     traces?.forEach(t => { t.hot = 1 })
     kick()
   }
   const onSith = (e) => paint(e.detail)
+  const onPalette = (e) => { song = e.detail; paint(root.classList.contains('sith')) }
   const onOrder66 = () => traces.forEach(t => { t.hot = 1 })
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick() })
 
@@ -436,6 +440,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   addEventListener('resize', onResize)
   document.addEventListener('board:order66', onOrder66)
   document.addEventListener('board:sith', onSith)
+  document.addEventListener('board:palette', onPalette)
   io.observe(hero)
   if (root.classList.contains('sith')) paint(true)
   build(); kick()
@@ -460,6 +465,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       removeEventListener('resize', onResize)
       document.removeEventListener('board:order66', onOrder66)
       document.removeEventListener('board:sith', onSith)
+      document.removeEventListener('board:palette', onPalette)
       io.disconnect()
       partsLayer.replaceChildren()
       root.style.removeProperty('--fcu'); root.style.removeProperty('--bcu')

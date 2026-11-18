@@ -308,12 +308,12 @@ export const projects = [
     title: 'vicenteaznar.dev',
     self: true,
     summary: {
-      es: 'El sitio que estás mirando. El inicio es un motor propio en canvas que rutea pistas de cobre alrededor del texto. Adentro hay un Ubuntu simulado con terminal, archivos y juegos, y ocho secretos: un mapa de la Tierra Media, una galaxia y un DeLorean en three.js con el modelo re-sombreado en Blender, entre otros.',
-      en: 'The site you are looking at. The top is a canvas engine of my own that routes copper traces around the text. Inside there is a simulated Ubuntu with a terminal, files and games, and eight secrets: a Middle-earth map, a galaxy and a three.js DeLorean whose model I re-shaded in Blender, among others.',
+      es: 'El sitio que estás mirando. El inicio es un motor propio en canvas que rutea pistas de cobre alrededor del texto. Adentro hay un Ubuntu simulado con terminal, archivos y juegos, y diez secretos: un mapa de la Tierra Media, una galaxia y un DeLorean en three.js con el modelo re-sombreado en Blender, entre otros.',
+      en: 'The site you are looking at. The top is a canvas engine of my own that routes copper traces around the text. Inside there is a simulated Ubuntu with a terminal, files and games, and ten secrets: a Middle-earth map, a galaxy and a three.js DeLorean whose model I re-shaded in Blender, among others.',
     },
     tagline: {
-      es: 'Este mismo portfolio: una placa que se rutea sola, un Ubuntu adentro y ocho secretos.',
-      en: 'This very portfolio: a self-routing board, an Ubuntu inside and eight secrets.',
+      es: 'Este mismo portfolio: una placa que se rutea sola, un Ubuntu adentro y diez secretos.',
+      en: 'This very portfolio: a self-routing board, an Ubuntu inside and ten secrets.',
     },
     category: 'frontend',
     status: 'completed',
