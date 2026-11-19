@@ -157,12 +157,10 @@ html.dawn .site::after{content:""; position:fixed; inset:0; z-index:1; pointer-e
 .hy-place b{font:600 14px/1.1 var(--display)}
 .hy-place span{font:400 12px/1.2 var(--text); color:rgba(246,239,217,.7)}
 .hy-place:hover{background:rgba(10,8,6,.8)}
-.hy-ride,.hy-music{position:absolute; min-height:44px; padding:0 16px; border:0; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:500 14px/1 var(--text); backdrop-filter:blur(6px); cursor:pointer}
-.hy-ride{left:50%; bottom:40px; translate:-50% 0; padding:0 22px; background:rgba(120,70,30,.75); animation:oc-in .6s 3s both}
-.hy-ride:disabled{opacity:.7; cursor:default}
+.hy-music{position:absolute; min-height:44px; padding:0 16px; border:0; border-radius:10px; background:rgba(10,8,6,.55); color:#f3ead2; font:500 14px/1 var(--text); backdrop-filter:blur(6px); cursor:pointer}
 .hy-music{right:190px; top:20px}
 .hy-music.off{opacity:.55; text-decoration:line-through}
-.hy-ride:hover:not(:disabled),.hy-music:hover{background:rgba(10,8,6,.8)}
+.hy-music:hover{background:rgba(10,8,6,.8)}
 
 /* the field as a small game: area names, a hint, remake-style dialogs */
 .hy-area{position:absolute; left:50%; top:11vh; translate:-50% 0; display:flex; align-items:center; gap:18px; margin:0; color:#f8f0da; font:600 clamp(26px,3.6vw,46px)/1 var(--display); letter-spacing:.03em; text-shadow:0 2px 24px rgba(0,0,0,.55); white-space:nowrap; pointer-events:none; animation:hy-title 4.2s ease-out 1.2s both}
@@ -203,3 +201,19 @@ html.dawn .site::after{content:""; position:fixed; inset:0; z-index:1; pointer-e
 .hy-map button.here{background:rgba(212,169,76,.22)}
 .hy-map b{font:600 14px/1.2 var(--text)}
 .hy-map span{color:rgba(244,236,216,.6); font:400 12.5px/1.2 var(--text)}
+
+/* free roam: what E does here, the controls, the touch stick, the project's screen in its dialog */
+.hy-prompt{position:absolute; left:50%; bottom:max(44px, 7vh); translate:-50% 0; display:flex; align-items:center; gap:12px; min-height:48px; padding:6px 20px 6px 8px; border:0; border-radius:999px; color:#fbf2dc; font:500 15px/1.2 var(--text); background:linear-gradient(180deg, rgba(18,22,40,.9), rgba(10,12,24,.92)); box-shadow:inset 0 0 0 1px rgba(212,169,76,.6), 0 14px 40px -16px #000; cursor:pointer; animation:hy-pop .25s var(--ease) both}
+.hy-prompt kbd{display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7fd17a, #2f8a3a); color:#fff; font:700 15px/1 var(--display); box-shadow:inset 0 -2px 0 rgba(0,0,0,.25), 0 0 0 2px rgba(255,255,255,.15)}
+.hy-prompt:hover{box-shadow:inset 0 0 0 1px rgba(255,226,163,.95), 0 14px 40px -16px #000}
+.hy-help{position:absolute; left:20px; bottom:36px; display:grid; gap:6px; margin:0; padding:12px 14px; list-style:none; border-radius:10px; background:rgba(10,8,6,.5); color:rgba(243,234,210,.85); font:400 13px/1.2 var(--text); backdrop-filter:blur(6px); pointer-events:none; animation:hy-fade 1s 14s forwards}
+.hy-help li{display:flex; align-items:center; gap:8px}
+.hy-help kbd{min-width:22px; padding:3px 7px; border-radius:6px; background:rgba(255,255,255,.1); box-shadow:inset 0 -1px 0 rgba(255,255,255,.12); color:#fff; font:600 11.5px/1 var(--text); text-align:center}
+.hy-help.touch{left:50%; right:auto; top:calc(11vh + 64px); bottom:auto; translate:-50% 0; max-width:min(420px, calc(100vw - 32px)); text-align:center; display:block}
+@keyframes hy-fade{to{opacity:0}}
+.hy-stick{position:absolute; left:28px; bottom:44px; width:128px; height:128px; border-radius:50%; background:rgba(10,8,6,.35); box-shadow:inset 0 0 0 2px rgba(243,234,210,.35); backdrop-filter:blur(4px); touch-action:none}
+.hy-stick i{position:absolute; left:50%; top:50%; width:56px; height:56px; margin:-28px 0 0 -28px; border-radius:50%; background:rgba(243,234,210,.75); box-shadow:0 6px 18px -6px #000}
+.hy-shot{display:block; width:100%; aspect-ratio:16/9; object-fit:cover; margin:0 0 14px; border-radius:6px; box-shadow:0 0 0 1px rgba(212,169,76,.5)}
+@media (prefers-reduced-motion: reduce){ .hy-prompt{animation:none} }
+.hy{-webkit-user-select:none; user-select:none}
+.hy-dialog{-webkit-user-select:text; user-select:text}

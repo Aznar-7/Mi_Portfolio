@@ -8,7 +8,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { projects } from '@/data/projects'
 import { about } from '@/data/about'
 import { l } from '@/lib/utils'
-import { GradeShader, bannerTexture, signTexture, loadImage } from './hyruleField'
+import { GradeShader, bannerTexture, signTexture } from './hyruleField'
 
 // The places you can walk into, each with its own music: Kakariko Village (the projects hang as banners
 // around the well) and Kokiri Forest (who I am, by the path). The models are OoT 3D rips with 64-256 px
@@ -89,16 +89,32 @@ function addDetail(material) {
   material.needsUpdate = true
 }
 
-// a royal banner on a post, one per project
-function makeBanner(pj, lang, rod) {
+// a royal standard, one per project: a pole with a crossbar and gold finials, the cloth hanging from it and
+// moving in the wind (a vertex wave that grows toward the free end, so the top stays pinned to the bar)
+const wind = { value: 0 }
+function makeBanner(pj, lang, rod, gold) {
   const holder = new THREE.Group()
-  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 3.2), new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.9, transparent: true, alphaTest: 0.5, emissive: 0xffffff, emissiveIntensity: 0.18 }))
-  cloth.geometry.translate(0, -1.6, 0); cloth.position.y = 3.3
+  const W = 1.45, H = 2.9, TOP = 4.05
+  const geo = new THREE.PlaneGeometry(W, H, 12, 24); geo.translate(0, -H / 2, 0)
+  const mat = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.85, alphaTest: 0.5, map: bannerTexture(pj, lang), emissive: 0xffffff, emissiveIntensity: 0.12 })
+  mat.emissiveMap = mat.map
+  const seed = Math.random() * 10
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uWind = wind
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform float uWind;')
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        float hang = clamp(-position.y / ${H.toFixed(2)}, 0., 1.);
+        float t = uWind + ${seed.toFixed(2)};
+        transformed.z += (sin(position.x * 2.6 + t * 2.1 - position.y * 1.7) * .09 + sin(t * 1.2 - position.y * 2.4) * .06) * hang;
+        transformed.x += sin(t * .9 - position.y * 1.3) * .04 * hang;`)
+  }
+  mat.customProgramCacheKey = () => `hy-banner-${seed.toFixed(2)}`
+  const cloth = new THREE.Mesh(geo, mat); cloth.position.y = TOP; cloth.castShadow = true
   cloth.userData.pick = { kind: 'project', data: pj }
-  loadImage(pj.image).then((img) => { cloth.material.map = cloth.material.emissiveMap = bannerTexture(pj, lang, img); cloth.material.needsUpdate = true })
-  const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.4, 8), rod); bar.rotation.z = Math.PI / 2; bar.position.y = 3.35
-  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.065, 3.6, 8), rod); pole.position.set(1.2, 1.8, -0.02)
-  holder.add(cloth, bar, pole)
+  const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, W + 0.35, 10), rod); bar.rotation.z = Math.PI / 2; bar.position.set(0, TOP + 0.03, -0.1)
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, TOP + 0.5, 10), rod); pole.position.set(0, (TOP + 0.5) / 2, -0.22); pole.castShadow = true
+  const knob = (x, y, z, r) => { const k = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), gold); k.position.set(x, y, z); return k }
+  holder.add(cloth, bar, pole, knob(-(W + 0.35) / 2, TOP + 0.03, -0.1, 0.06), knob((W + 0.35) / 2, TOP + 0.03, -0.1, 0.06), knob(0, TOP + 0.55, -0.22, 0.09))
   return { holder, cloth }
 }
 
@@ -116,31 +132,37 @@ export function buildArea(id, { renderer, camera, gltf, glow, lang, reduced }) {
   scene.environment = pmrem.fromScene(skyOnly).texture; pmrem.dispose()
   scene.environmentIntensity = 0.5
   scene.fog = new THREE.FogExp2(A.fog[0], A.fog[1])
-  const sunLight = new THREE.DirectionalLight(id === 'kokiri' ? 0xffe2a0 : 0xffd2a0, 2.6); sunLight.position.copy(sun).multiplyScalar(60); scene.add(sunLight)
+  const sunLight = new THREE.DirectionalLight(id === 'kokiri' ? 0xffe2a0 : 0xffd2a0, 2.6); sunLight.position.copy(sun).multiplyScalar(60); scene.add(sunLight, sunLight.target)
+  sunLight.castShadow = true; sunLight.shadow.mapSize.set(2048, 2048); sunLight.shadow.bias = -0.0004; sunLight.shadow.normalBias = 0.04
+  Object.assign(sunLight.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 200 })
+  const followSun = (p) => { sunLight.target.position.copy(p); sunLight.position.copy(p).addScaledVector(sun, 90) }
   scene.add(new THREE.HemisphereLight(...A.hemi))
 
   const land = gltf.scene; land.scale.setScalar(S); scene.add(land)
+  land.traverse((o) => { if (o.isMesh) { o.receiveShadow = true; o.castShadow = !o.material?.alphaTest } })
   land.traverse((o) => { [].concat(o.material ?? []).forEach(addDetail) })
   land.updateMatrixWorld(true)
   const ray = new THREE.Raycaster(), down = new THREE.Vector3(0, -1, 0)
   const groundAt = (x, z) => { ray.set(new THREE.Vector3(x, 80, z), down); const h = ray.intersectObject(land, true).find((i) => !i.object.material.alphaTest); return h ? h.point.y : null }
 
   const root = new THREE.Group(); scene.add(root)
-  const picks = [], sway = []
+  const picks = []
   const eye = A.eye.clone(), look = A.look.clone()
   if (A.banners) {
-    const rod = new THREE.MeshStandardMaterial({ color: 0x6b4a22, metalness: 0.3, roughness: 0.6 })
+    const rod = new THREE.MeshStandardMaterial({ color: 0x4a2f18, roughness: 0.7 })
+    const gold = new THREE.MeshStandardMaterial({ color: 0xd9a944, metalness: 0.9, roughness: 0.3 })
     A.banners.forEach(([x, z], i) => {
       const pj = projects[i]; if (!pj) return
-      const { holder, cloth } = makeBanner(pj, lang, rod)
+      const { holder, cloth } = makeBanner(pj, lang, rod, gold)
+      holder.scale.setScalar(0.62) // to Link's size
       holder.position.set(x * S, groundAt(x * S, z * S) ?? 0, z * S)
       holder.lookAt(eye.x, holder.position.y, eye.z)
-      root.add(holder); picks.push(cloth); sway.push(cloth)
+      root.add(holder); picks.push(cloth)
     })
   }
   if (A.sign) {
     const [x, z] = A.sign, p = new THREE.Vector3(x * S, 0, z * S); p.y = groundAt(p.x, p.z) ?? 0
-    const sign = new THREE.Group(); sign.position.copy(p); sign.lookAt(eye.x, p.y, eye.z)
+    const sign = new THREE.Group(); sign.position.copy(p); sign.lookAt(eye.x, p.y, eye.z); sign.scale.setScalar(0.6) // to Link's size
     const wood = new THREE.MeshStandardMaterial({ color: 0x6e4823, roughness: 1 })
     const facts = about.quickFacts.map((f) => `${l(f.label, lang)}: ${l(f.value, lang)}`)
     const board = new THREE.Mesh(new THREE.BoxGeometry(3.3, 2.2, 0.12), [wood, wood, wood, wood, new THREE.MeshStandardMaterial({ map: signTexture('Vicente Aznar', facts), roughness: 1 }), wood])
@@ -167,7 +189,7 @@ export function buildArea(id, { renderer, camera, gltf, glow, lang, reduced }) {
   composer.addPass(new OutputPass())
 
   const animate = (s) => {
-    sway.forEach((c, i) => { c.rotation.x = Math.sin(s * 1.3 + i) * 0.05 })
+    wind.value = s
     if (flies) {
       const a = flies.geometry.attributes.position, b = flies.userData.base, sd = flies.userData.seed
       for (let i = 0; i < a.count; i++) { const k = sd[i]; a.setXYZ(i, b[i * 3] + Math.sin(s * 0.4 + k) * 0.6, b[i * 3 + 1] + Math.sin(s * 0.7 + k * 2) * 0.35, b[i * 3 + 2] + Math.cos(s * 0.3 + k) * 0.6) }
@@ -176,5 +198,7 @@ export function buildArea(id, { renderer, camera, gltf, glow, lang, reduced }) {
     }
   }
 
-  return { scene, composer, eye, look, root, picks, animate, music: A.music, exposure: A.exposure }
+  // where you appear: a few steps in from the old viewpoint, out in the open
+  const spawn = eye.clone().addScaledVector(new THREE.Vector3(look.x - eye.x, 0, look.z - eye.z).normalize(), 5)
+  return { scene, composer, eye, look, spawn, root, picks, animate, land, followSun, music: A.music, exposure: A.exposure }
 }
