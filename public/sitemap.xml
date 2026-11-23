@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- one page; the CV PDFs stay out (the site is the current version of them) -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<!-- the page in Spanish and English; the CV PDFs stay out (the site is the current version of them) -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.vicenteaznar.dev/</loc>
     <lastmod>2026-11-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vicenteaznar.dev/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vicenteaznar.dev/en/" />
     <image:image><image:loc>https://www.vicenteaznar.dev/port.jpg</image:loc></image:image>
     <image:image><image:loc>https://www.vicenteaznar.dev/og-image.jpg</image:loc></image:image>
     <image:image><image:loc>https://www.vicenteaznar.dev/images/projects/utnhub/00-portada-linkedin-app.webp</image:loc></image:image>
@@ -15,5 +17,13 @@
     <image:image><image:loc>https://www.vicenteaznar.dev/images/projects/orden66/cover.webp</image:loc></image:image>
     <image:image><image:loc>https://www.vicenteaznar.dev/images/projects/camisetas-agv/Camisetas2.webp</image:loc></image:image>
     <image:image><image:loc>https://www.vicenteaznar.dev/images/projects/bolsines/inicio-oscuro.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.vicenteaznar.dev/en/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.vicenteaznar.dev/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.vicenteaznar.dev/en/" />
   </url>
 </urlset>
