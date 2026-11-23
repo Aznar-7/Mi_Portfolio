@@ -17,9 +17,5 @@ export const site = {
       filename: 'Vicente_Aznar_CV_EN.pdf',
     },
   },
-  resumesBundle: {
-    url: '/Vicente_Aznar_CVs_ES_EN.zip',
-    filename: 'Vicente_Aznar_CVs_ES_EN.zip',
-  },
   resumeUrl: '/ResumeVicenteAznar.pdf',
 }

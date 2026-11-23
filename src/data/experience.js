@@ -87,6 +87,7 @@ export const academic = [
     },
     institution: 'Universidad Tecnológica Nacional (UTN)',
     period: { es: '2024 – hoy', en: '2024 – now' },
+    expected: { es: 'nov 2028', en: 'Nov 2028' }, // expected graduation, for the CV
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [
@@ -108,6 +109,7 @@ export const academic = [
     },
     institution: 'Universidad Tecnológica Nacional (UTN)',
     period: { es: '2024 – hoy', en: '2024 – now' },
+    expected: { es: 'nov 2027', en: 'Nov 2027' },
     span: [2024, null], // [from, to]; null means ongoing
     highlights: {
       es: [

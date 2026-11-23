@@ -100,6 +100,7 @@ npm run dev        # http://localhost:5173
 npm run build      # dist/, plus dist/en/
 npm run preview
 npm run lint
+npm run cv         # rebuilds both CV PDFs from src/data (uses the installed Edge or Chrome)
 ```
 
 The contact form sends through [Web3Forms](https://web3forms.com). Copy `.env.example` to `.env` and set `VITE_WEB3FORMS_KEY`. In production, set the same variable in Vercel.
