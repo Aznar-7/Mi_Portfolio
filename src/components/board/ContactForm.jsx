@@ -88,7 +88,7 @@ export function ContactForm() {
         <button type="submit" className="btn" disabled={state === 'sending'}>
           <Send size={16} aria-hidden="true" />{state === 'sending' ? T.sending : T.send}
         </button>
-        <p className={`form-msg ${state}`} role="status" aria-live="polite">{state === 'error' ? T.errLine(site.email) : T.note}</p>
+        <p className={`form-msg ${state}`} role="status" aria-live="polite">{state === 'error' ? <>{T.errLine} <a href={`mailto:${site.email}?subject=Portfolio`}>{site.email}</a>.</> : T.note}</p>
       </div>
     </form>
   )

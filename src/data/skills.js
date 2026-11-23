@@ -7,12 +7,12 @@ export const skillGroups = [
     sub: 'web',
     items: ['React', 'TypeScript', 'JavaScript', 'Astro', 'Vite', 'Tailwind CSS', 'HTML', 'CSS'],
     usedIn: {
-      React: ['utn-hub', 'orden66-viandas', 'camisetas-agv', 'porta'],
-      TypeScript: ['gavia'],
+      React: ['utn-hub', 'orden66-viandas', 'camisetas-agv', 'bolsines', 'portfolio', 'porta'],
+      TypeScript: ['gavia', 'propier', 'bolsines'],
       JavaScript: ['eco-records'],
-      Astro: ['gavia'],
-      Vite: ['utn-hub', 'camisetas-agv'],
-      'Tailwind CSS': ['utn-hub', 'orden66-viandas'],
+      Astro: ['gavia', 'propier'],
+      Vite: ['utn-hub', 'camisetas-agv', 'bolsines', 'portfolio'],
+      'Tailwind CSS': ['utn-hub', 'orden66-viandas', 'bolsines'],
       HTML: ['utn-hub', 'gavia', 'orden66-viandas', 'camisetas-agv'],
       CSS: ['utn-hub', 'gavia', 'orden66-viandas', 'camisetas-agv'],
     },
@@ -35,6 +35,8 @@ export const skillGroups = [
       Flask: ['eco-records'],
       'Node.js': ['orden66-viandas'],
       Express: ['orden66-viandas'],
+      Java: ['transportes-java', 'bolsines'],
+      Spring: ['transportes-java', 'bolsines'],
     },
   },
   {
@@ -42,7 +44,7 @@ export const skillGroups = [
     label: { es: 'Bases de datos', en: 'Databases' },
     sub: 'sql',
     items: ['PostgreSQL', 'MySQL', 'SQL Server', 'SQLite'],
-    usedIn: { PostgreSQL: ['utn-hub', 'porta'], SQLite: ['orden66-viandas'] },
+    usedIn: { PostgreSQL: ['utn-hub', 'propier', 'transportes-java', 'porta'], SQLite: ['orden66-viandas'] },
   },
   {
     id: 'infra',
@@ -52,6 +54,7 @@ export const skillGroups = [
     usedIn: {
       Linux: ['utn-hub', 'eco-records'],
       Nginx: ['utn-hub'],
+      Docker: ['transportes-java'],
       'Oracle Cloud': ['utn-hub'],
       Vercel: ['utn-hub', 'gavia', 'orden66-viandas'],
       Git: ['utn-hub', 'eco-records', 'gavia', 'orden66-viandas', 'camisetas-agv', 'autofull', 'porta'],

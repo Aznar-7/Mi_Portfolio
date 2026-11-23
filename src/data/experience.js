@@ -7,8 +7,8 @@ export const experience = [
     },
     company: 'Porta Hnos',
     period: {
-      es: '2025 – hoy',
-      en: '2025 – now'
+      es: 'ene 2025 – hoy',
+      en: 'Jan 2025 – now'
     },
     span: [2025, null],
     tech: [
@@ -64,7 +64,7 @@ export const experience = [
     type: 'work',
     role: { es: 'Pasante en software y desarrollo de productos', en: 'Software and product development intern' },
     company: 'Globant',
-    period: { es: '2023', en: '2023' },
+    period: { es: 'jun – jul 2023', en: 'Jun – Jul 2023' },
     span: [2023, 2023], // [from, to]; null means ongoing
     impact: {
       es: [

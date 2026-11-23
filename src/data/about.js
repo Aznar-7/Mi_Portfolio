@@ -14,7 +14,7 @@ export const about = {
   quickFacts: [
     {
       label: { es: 'Formación', en: 'Education' },
-      value: { es: 'Sistemas de Información, UTN', en: 'Information Systems, UTN' },
+      value: { es: 'Ing. en Sistemas de Información y Lic. en IA, UTN (en curso)', en: 'Information Systems Eng. and BSc in AI, UTN (in progress)' },
     },
     {
       label: { es: 'Ubicación', en: 'Location' },

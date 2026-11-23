@@ -171,7 +171,8 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 @media (prefers-reduced-motion:reduce){ .site-header.stuck{animation:none} }
 @media (max-width:760px){
   .site-header{flex-wrap:wrap; row-gap:8px} .site-header nav{order:3; flex-basis:100%; margin-left:0; gap:18px; overflow-x:auto; scrollbar-width:none}
-  .site-header nav::-webkit-scrollbar{display:none} .site-header nav a{white-space:nowrap; font-size:14px}
+  .site-header nav::-webkit-scrollbar{display:none}
+  .site-header nav a{white-space:nowrap; font-size:14px}
   .site section[id]{scroll-margin-top:104px}
   .status{top:112px; bottom:auto; width:26ch; font-size:11px}
 }
@@ -944,6 +945,8 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
   .site-header{flex-wrap:wrap; row-gap:8px}
   .site-header nav{order:3; flex-basis:100%; margin-left:0; gap:18px; overflow-x:auto; scrollbar-width:none}
   .site-header nav::-webkit-scrollbar{display:none}
+  /* the row fades at the right edge so the sections past it read as more, and leaves room for the current-section dot */
+  .site-header nav{padding-bottom:12px; mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
   .tools-bar{margin-left:auto}
   .hero-frame{padding-top:150px}
   .site section[id]{scroll-margin-top:118px}
