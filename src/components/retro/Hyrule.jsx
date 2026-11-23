@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
@@ -18,8 +19,9 @@ import { site } from '@/data/site'
 
 // The Song of Time opens the Temple of Time. Hold to draw the Master Sword, the world goes white, and
 // seven years later Hyrule Field lies at dusk. From there it is a small game: ride Epona, or travel to
-// the castle (the projects hang as banners), Death Mountain (the stack, carved in stone) or Lon Lon Ranch
-// (who I am), each with its own look; the portfolio is told by the places, and Esc brings you back.
+// Kakariko (the projects hang as banners), Kokiri Forest (who I am), Death Mountain (the stack, carved in
+// stone), Lon Lon Ranch (the jobs) and the castle (contact). The map keeps track of what you have seen;
+// once it is all five, Navi hands you the letter. Esc brings you back.
 // Models (CC BY via Sketchfab): Temple of Time (Twilight Princess) by Bornstellar Makes Eternallasting,
 // Master Sword by arnaud.sgz, Hyrule Field (OoT 3D) by Dola, Epona by The WarVet, Link by totidoki. Music and sounds: the game's.
 
@@ -32,7 +34,8 @@ const T = {
     intro: { kakariko: 'Cada estandarte es un proyecto. Tocá uno para ver qué es y cómo está hecho.', mountain: 'Los gorons tallan en piedra lo que dominan. Tocá una tabla para ver dónde usé cada herramienta.', kokiri: 'Tocá el cartel para volver a leer quién soy.', ranch: 'Cada cartel del corral es un trabajo. Tocá uno para ver qué hice ahí.', castle: '' },
     map: 'Mapa', mapTitle: '¿A dónde vamos?', contact: 'Escribile al rey', contactText: 'Si tenés algo para construir, la puerta del castillo está abierta. Respondo en menos de 24 horas.', cv: 'CV', linkedin: 'LinkedIn',
     live: 'Ver en vivo', code: 'Código', close: 'Cerrar', controls: 'Controles', fail: 'No se pudo cargar este lugar. Probá de nuevo.', usedIn: 'Lo usé en', noUse: 'Todavía sin un proyecto público que lo muestre.', go: 'Ir a',
-    see: 'Ver', read: 'Leer', enter: 'Entrar', dismount: 'Bajar de Epona',
+    see: 'Ver', read: 'Leer', enter: 'Entrar', dismount: 'Bajar de Epona', prev: 'Anterior', inPortfolio: 'Ver en el portfolio',
+    endTitle: '¡Hey! ¡Recorriste todo Hyrule!', endText: 'Viste los proyectos, quién soy, el stack, la experiencia y el castillo. Si algo de esto te sirve, la carta ya está lista para escribirla.', endWrite: 'Escribirle a Vicente', endStay: 'Seguir explorando',
     help: [['WASD', 'moverte'], ['Shift', 'caminar'], ['Arrastrar', 'mirar'], ['E', 'interactuar']], helpTouch: 'Mové el círculo para caminar, arrastrá para mirar y tocá el botón para interactuar.',
   },
   en: {
@@ -43,7 +46,8 @@ const T = {
     intro: { kakariko: 'Every banner is a project. Pick one to see what it is and how it was built.', mountain: 'Gorons carve what they master into stone. Pick a tablet to see where I used each tool.', kokiri: 'Pick the sign to read who I am again.', ranch: 'Every sign on the fence is a job. Pick one to see what I did there.', castle: '' },
     map: 'Map', mapTitle: 'Where to?', contact: 'Write to the king', contactText: 'If you have something to build, the castle gate is open. I reply within 24 hours.', cv: 'CV', linkedin: 'LinkedIn',
     live: 'See it live', code: 'Code', close: 'Close', controls: 'Controls', fail: 'This place failed to load. Try again.', usedIn: 'Used in', noUse: 'No public project shows it yet.', go: 'Go to',
-    see: 'See', read: 'Read', enter: 'Enter', dismount: 'Get off Epona',
+    see: 'See', read: 'Read', enter: 'Enter', dismount: 'Get off Epona', prev: 'Back', inPortfolio: 'See it in the portfolio',
+    endTitle: 'Hey! You walked all of Hyrule!', endText: 'You saw the projects, who I am, the stack, the jobs and the castle. If any of it is useful to you, the letter is ready to write.', endWrite: 'Write to Vicente', endStay: 'Keep exploring',
     help: [['WASD', 'move'], ['Shift', 'walk'], ['Drag', 'look'], ['E', 'interact']], helpTouch: 'Move the circle to walk, drag to look, tap the button to interact.',
   },
 }
@@ -56,9 +60,12 @@ const AREAS = ['kakariko', 'kokiri'] // places you walk into (their own scene an
 const JOBS = experience.filter((e) => e.type === 'work')
 // what each place says the moment you arrive
 const GREET = { kokiri: 'about', castle: 'contact' }
+// what seeing each place means: the dialog that tells its part of the portfolio
+const KIND = { kakariko: 'project', kokiri: 'about', mountain: 'stack', ranch: 'experience', castle: 'contact' }
 const TITLE = Object.fromEntries(projects.map((p) => [p.id, p.title]).concat([['porta', 'Porta Hnos']]))
 
-const load = (url) => new Promise((ok, fail) => new GLTFLoader().load(url, ok, undefined, fail))
+// the models ship meshopt-compressed with WebP textures (gltf-transform optimize): about a third of their old weight
+const load = (url) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url)
 
 // a soft round glow for Navi, the dust, the embers, drawn once
 function glowTexture() {
@@ -110,7 +117,12 @@ export function Hyrule({ lang, onExit, leaving }) {
   const [curtain, setCurtain] = useState(false)
   const through = (fn) => { setCurtain(true); setTimeout(() => Promise.resolve(fn()).then(() => setTimeout(() => setCurtain(false), 160)), 550) }
   const [map, setMap] = useState(false)
-  const arrive = (id) => { setTitle(t.places[id]?.[0] ?? t.field); setHint(t.intro[id] || null); if (GREET[id]) { setPage(0); setDialog({ kind: GREET[id] }) } }
+  // the quest: every place's dialog seen once ends it with Navi and the letter
+  const [seen, setSeen] = useState(() => new Set()), [ended, setEnded] = useState(false)
+  const show = (d) => { setDialog(d); if (d?.kind) setSeen((prev) => (prev.has(d.kind) ? prev : new Set(prev).add(d.kind))) }
+  // leave Hyrule, then do something on the page once it is back (after App's exit scene)
+  const backTo = (fn) => { onExit(); setTimeout(fn, 900) }
+  const arrive = (id) => { setTitle(t.places[id]?.[0] ?? t.field); setHint(t.intro[id] || null); if (GREET[id]) { setPage(0); show({ kind: GREET[id] }) } }
   const go = (id) => {
     if (curtain) return // one trip at a time
     setMap(false); setDialog(null)
@@ -124,8 +136,9 @@ export function Hyrule({ lang, onExit, leaving }) {
   api.current.goArea = go
   api.current.exitArea = toField
   api.current.setPrompt = setPrompt
-  api.current.openDialog = (p) => { setPage(p.page ?? 0); setDialog(p) }
-  api.current.paused = !!dialog || map || curtain
+  api.current.openDialog = (p) => { setPage(p.page ?? 0); show(p) }
+  const finale = phase === 'field' && seen.size === 5 && !ended && !dialog && !map && !curtain
+  api.current.paused = !!dialog || map || curtain || finale
   // the page underneath must not scroll while Hyrule is up (as in MiddleEarth)
   useEffect(() => {
     const el = root.current, stop = (e) => e.preventDefault()
@@ -155,6 +168,9 @@ export function Hyrule({ lang, onExit, leaving }) {
       o.geometry?.dispose()
       ;[].concat(o.material ?? []).forEach((m) => { Object.values(m).forEach((v) => v?.isTexture && v !== glow && v.dispose()); m.dispose() })
     })
+    // every world built (temple, field, each place) with its composer: all of them are freed on exit, not just the one on screen
+    const worlds = new Map()
+    const dropWorld = (s, c) => { disposeScene(s); s?.environment?.dispose(); c?.dispose(); worlds.delete(s) }
     const fit = () => {
       const w = el.clientWidth, h = el.clientHeight
       renderer.setSize(w, h, false); composer?.setSize(w, h)
@@ -212,6 +228,7 @@ export function Hyrule({ lang, onExit, leaving }) {
       composer.addPass(new RenderPass(scene, camera))
       composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.5, 0.6, 0.82))
       composer.addPass(new OutputPass())
+      worlds.set(scene, composer)
       fit()
 
       // past the Door of Time: a slow approach to the pedestal from the room's edge
@@ -238,10 +255,11 @@ export function Hyrule({ lang, onExit, leaving }) {
     // ── seven years later: Hyrule Field, and you in it ──
     api.current.toField = () => Promise.all([field, epona, link]).then(([fieldGltf, eponaGltf, linkGltf]) => {
       if (dead) return
-      disposeScene(scene)
+      dropWorld(scene, composer) // the temple is never seen again
       renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap
       const F = buildField({ renderer, camera, fieldGltf, eponaGltf, glow, reduced, lang })
       scene = F.scene; composer = F.composer
+      worlds.set(scene, composer)
       renderer.toneMappingExposure = 0.55
       fit()
       const { horse, hb, hs, rig, navi, naviLight, places, picks, animate, gates } = F
@@ -360,7 +378,11 @@ export function Hyrule({ lang, onExit, leaving }) {
       const snapTo = (p, yaw) => { hero.position.copy(p); W.mover.settle(hero.position, 4); hero.rotation.y = yaw; controls.cam.yaw = yaw + Math.PI; W.follow(hero.position, yaw, false, 3.6, 1.05, 0.016, true) }
       const unmount = () => { if (!mounted && !mount) return; mounted = false; mount = null; pose(0); hero.position.copy(hoof).add(flankOf(horseYaw, 0.85)); mover.settle(hero.position) }
       api.current.enterArea = (id, fn) => {
-        built[id] ??= load(`/models/hyrule/${id}.glb`).then((gltf) => buildArea(id, { renderer, camera, gltf, glow, lang, reduced }))
+        built[id] ??= load(`/models/hyrule/${id}.glb`).then((gltf) => {
+          const a = buildArea(id, { renderer, camera, gltf, glow, lang, reduced })
+          if (dead) dropWorld(a.scene, a.composer); else worlds.set(a.scene, a.composer)
+          return a
+        })
         built[id].then((a) => {
           if (dead) return
           unmount()
@@ -491,7 +513,9 @@ export function Hyrule({ lang, onExit, leaving }) {
     const music = api.current
     return () => {
       dead = true; music.gone = true; cancelAnimationFrame(raf); ro.disconnect(); removeEventListener('pointermove', onMove); fadeOut(music.music, 500); cleanups.forEach((f) => f())
-      disposeScene(scene); glow.dispose(); composer?.dispose(); renderer.dispose(); renderer.domElement.remove()
+      if (scene && !worlds.has(scene)) dropWorld(scene, composer) // a temple that failed half way
+      worlds.forEach((c, s) => dropWorld(s, c)); glow.dispose()
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
     }
   }, [onExit, lang, t])
 
@@ -526,6 +550,7 @@ export function Hyrule({ lang, onExit, leaving }) {
     const onKey = (e) => {
       if (e.key !== 'Escape') return
       if (dialog) setDialog(null)
+      else if (finale) setEnded(true)
       else if (map) setMap(false)
       else if (area) toField()
       else onExit()
@@ -564,9 +589,9 @@ export function Hyrule({ lang, onExit, leaving }) {
           <button type="button" className="hy-map-btn" onClick={() => setMap((m) => !m)} aria-expanded={map}>{t.map}</button>
           {map && (
             <div className="hy-map">
-              <p>{t.mapTitle}</p>
+              <p>{t.mapTitle} <small>{seen.size}/5</small></p>
               {Object.keys(t.places).map((id) => (
-                <button key={id} type="button" className={area === id ? 'here' : ''} onClick={() => go(id)}>
+                <button key={id} type="button" className={`${area === id ? 'here' : ''}${seen.has(KIND[id]) ? ' done' : ''}`} onClick={() => go(id)}>
                   <b>{t.places[id][0]}</b><span>{t.places[id][1]}</span>
                 </button>
               ))}
@@ -588,6 +613,18 @@ export function Hyrule({ lang, onExit, leaving }) {
           )}
           {touch && !hint && <p className="hy-help touch">{t.helpTouch}</p>}
 
+          {finale && (
+            <div className="hy-dialog hy-end" role="dialog" aria-labelledby="hy-end-t">
+              <i className="oc-corner tl" /><i className="oc-corner tr" /><i className="oc-corner bl" /><i className="oc-corner br" />
+              <span className="oc-navi" aria-hidden="true" />
+              <h3 id="hy-end-t">{t.endTitle}</h3>
+              <p>{t.endText}</p>
+              <div className="hy-links">
+                <button type="button" onClick={() => { setEnded(true); backTo(() => { document.getElementById('contacto')?.scrollIntoView(); document.getElementById('f-name')?.focus({ preventScroll: true }) }) }} autoFocus>{t.endWrite}</button>
+                <button type="button" className="ghost" onClick={() => setEnded(true)}>{t.endStay}</button>
+              </div>
+            </div>
+          )}
           {dialog && (
             <div className="hy-dialog" role="dialog" aria-labelledby="hy-dialog-t" onClick={(e) => e.stopPropagation()}>
               <i className="oc-corner tl" /><i className="oc-corner tr" /><i className="oc-corner bl" /><i className="oc-corner br" />
@@ -602,6 +639,8 @@ export function Hyrule({ lang, onExit, leaving }) {
                     {dialog.data.liveUrl && !dialog.data.liveUrl.startsWith('#') && <a href={dialog.data.liveUrl} target="_blank" rel="noopener noreferrer">{t.live}</a>}
                     {links(dialog.data).map((g) => <a key={g.url} href={g.url} target="_blank" rel="noopener noreferrer">{t.code}{g.label ? ` · ${g.label}` : ''}</a>)}
                   </div>
+                  {dialog.data.note && <p className="lead">{l(dialog.data.note, lang)}</p>}
+                  <button type="button" className="hy-next" onClick={() => backTo(() => document.dispatchEvent(new CustomEvent('board:open-project', { detail: dialog.data.id })))}><span>A</span>{t.inPortfolio}</button>
                 </>
               )}
               {dialog.kind === 'stack' && (
@@ -628,6 +667,7 @@ export function Hyrule({ lang, onExit, leaving }) {
                   <h3 id="hy-dialog-t">{l(JOBS[page].role, lang)}</h3>
                   <p className="lead">{JOBS[page].company} · {l(JOBS[page].period, lang)}</p>
                   <ul className="hy-tools">{(l(JOBS[page].impact, lang) ?? []).slice(0, 3).map((x) => <li key={x}><span>{x}</span></li>)}</ul>
+                  {page > 0 && <button type="button" className="hy-next prev" onClick={() => setPage((n) => n - 1)}><span>B</span>{t.prev}</button>}
                   {page < JOBS.length - 1
                     ? <button type="button" className="hy-next" onClick={() => setPage((n) => Math.min(n + 1, JOBS.length - 1))}><span>A</span>{t.next}</button>
                     : <button type="button" className="hy-next" onClick={() => setDialog(null)}><span>A</span>OK</button>}

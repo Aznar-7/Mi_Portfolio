@@ -100,15 +100,15 @@ function makeBanner(pj, lang, rod, gold) {
   mat.emissiveMap = mat.map
   const seed = Math.random() * 10
   mat.onBeforeCompile = (sh) => {
-    sh.uniforms.uWind = wind
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform float uWind;')
+    sh.uniforms.uWind = wind; sh.uniforms.uSeed = { value: seed }
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform float uWind; uniform float uSeed;')
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         float hang = clamp(-position.y / ${H.toFixed(2)}, 0., 1.);
-        float t = uWind + ${seed.toFixed(2)};
+        float t = uWind + uSeed;
         transformed.z += (sin(position.x * 2.6 + t * 2.1 - position.y * 1.7) * .09 + sin(t * 1.2 - position.y * 2.4) * .06) * hang;
         transformed.x += sin(t * .9 - position.y * 1.3) * .04 * hang;`)
   }
-  mat.customProgramCacheKey = () => `hy-banner-${seed.toFixed(2)}`
+  mat.customProgramCacheKey = () => 'hy-banner' // the seed is a uniform: ten banners, one program
   const cloth = new THREE.Mesh(geo, mat); cloth.position.y = TOP; cloth.castShadow = true
   cloth.userData.pick = { kind: 'project', data: pj }
   const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, W + 0.35, 10), rod); bar.rotation.z = Math.PI / 2; bar.position.set(0, TOP + 0.03, -0.1)

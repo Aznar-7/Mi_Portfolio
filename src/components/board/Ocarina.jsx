@@ -146,14 +146,14 @@ export function Ocarina() {
   // Navi shows up once the visitor has proved curious: three secrets
   useEffect(() => {
     if (has || stage || snoozed || found.size < 3) return
-    preload()
     const id = setTimeout(() => { setStage('call'); playHey() }, 1200)
     return () => clearTimeout(id)
   }, [has, stage, snoozed, found.size])
 
   const dismiss = () => { try { sessionStorage.setItem('navi-later', '1') } catch { /* private mode: quiet for this visit */ } setSnoozed(true); setStage(null) }
   const follow = () => { playHey(); setStage('lead'); travel(document.getElementById('taller'), 70) }
-  const take = () => { setStage('get'); playMusic('getocarina') }
+  // the notes (about 2 MB) load once the visitor actually takes the ocarina, on that click
+  const take = () => { preload(); setStage('get'); playMusic('getocarina') }
   const start = () => { takeOcarina(); setHas(true); setStage(null); findSecret('ocarina'); setOpen(true) }
 
   // the staff lives in a ref so a note is handled exactly once; state only draws it

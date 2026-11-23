@@ -82,7 +82,7 @@ export default function Ships3D({ active = true }) {
       disposed = true
       cancelAnimationFrame(raf); removeEventListener('resize', size)
       scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose() }) })
-      renderer.dispose(); renderer.domElement.remove()
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
     }
   }, [])
 

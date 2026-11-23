@@ -86,6 +86,7 @@
  
 
 .links{display:flex; flex-wrap:wrap; gap:10px 22px} .links a{display:inline-flex; align-items:center; gap:6px; color:var(--ink); text-underline-offset:4px; text-decoration-color:rgba(var(--silk),.6)}
+.links-note{margin:6px 0 0; color:var(--ink-2); font:400 13px/1.5 var(--text)}
 .stack{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:0 0 28px}
 .stack dt{font:500 11px/1 var(--mono); color:#8fb0e8} .stack dd{margin:8px 0 0; color:var(--ink-2); line-height:1.5}
 /* photo that follows the hovered row */

@@ -107,6 +107,8 @@ export const projects = [
     ],
     liveUrl: 'https://utnhub.com.ar',
     githubUrl: null,
+    // why there is no Code link, said instead of left silent
+    note: { es: 'Repo privado por seguridad: el código lo muestro en una entrevista.', en: 'Private repo for security reasons: happy to walk through the code in an interview.' },
   },
   {
     id: 'eco-records',
@@ -223,6 +225,7 @@ export const projects = [
     ],
     liveUrl: null,
     githubUrl: null,
+    note: { es: 'Proyecto de cliente: el sitio sale pronto y el código es de la inmobiliaria.', en: 'Client project: the site goes live soon, and the code belongs to the agency.' },
   },
   {
     id: 'orden66-viandas',

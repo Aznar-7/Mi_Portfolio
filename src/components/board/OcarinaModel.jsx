@@ -1,12 +1,17 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
 // The Ocarina of Time turning slowly in the light, for the moment you get it.
 // Model: "Zelda Ocarina of Time - Ocarina of Time" by marvelmaster, CC BY via Sketchfab
 // (textures cut to 1024 px for the web; credited in the Hyrule scene).
 // mode 'get': it rises into the light and turns. mode 'play': held at an angle, a pulse on every note
+// parsed once per visit: taking the ocarina out again reuses it instead of fetching and parsing 4.6 MB anew
+let model
+const loadModel = () => (model ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('/models/hyrule/ocarina.glb').catch((e) => { model = null; throw e }))
+
 export default function OcarinaModel({ mode = 'get' }) {
   const host = useRef(null)
   useEffect(() => {
@@ -27,9 +32,9 @@ export default function OcarinaModel({ mode = 'get' }) {
     const pivot = new THREE.Group(); scene.add(pivot)
 
     let raf = 0, dead = false, base = 1
-    new GLTFLoader().load('/models/hyrule/ocarina.glb', (gltf) => {
+    loadModel().then((gltf) => {
       if (dead) return
-      const m = gltf.scene
+      const m = gltf.scene.clone()
       // centre it and fit it to about two units, whatever the author's scale was
       const box = new THREE.Box3().setFromObject(m), size = box.getSize(new THREE.Vector3())
       m.position.sub(box.getCenter(new THREE.Vector3()))
@@ -37,7 +42,7 @@ export default function OcarinaModel({ mode = 'get' }) {
       pivot.scale.setScalar(base)
       pivot.rotation.x = 0.35
       pivot.add(m)
-    })
+    }).catch(() => {}) // no model: the ocarina still plays, just without the 3D piece
     const fit = () => {
       const w = el.clientWidth, h = el.clientHeight
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix()
@@ -65,8 +70,8 @@ export default function OcarinaModel({ mode = 'get' }) {
     raf = requestAnimationFrame(frame)
     return () => {
       dead = true; cancelAnimationFrame(raf); ro.disconnect(); document.removeEventListener('ocarina:note', onNote)
-      scene.traverse((o) => { o.geometry?.dispose(); [].concat(o.material ?? []).forEach((mat) => { Object.values(mat).forEach((v) => v?.isTexture && v.dispose()); mat.dispose() }) })
-      scene.environment?.dispose(); pmrem.dispose(); renderer.dispose(); renderer.domElement.remove()
+      // the model stays cached for the next time; dropping the context frees its GPU copy
+      scene.environment?.dispose(); pmrem.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
     }
   }, [mode])
   return <div className="oc-model" ref={host} aria-hidden="true" />

@@ -277,6 +277,7 @@ function Inspector({ project, active, lang, T }) {
         </div>
         <span className="inline-state"><i className={`led ${st === 'done' || st === 'dev' ? 'done' : 'live'}`} />{T.status[st]}</span>
         {links.length > 0 && <Links links={links} />}
+        {project.note && <p className="links-note">{l(project.note, lang)}</p>}
       </header>
       <div className="ins-grid">
         <div className="ins-text">
