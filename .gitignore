@@ -33,3 +33,7 @@ CLAUDE.MD
 .env
 .env.*
 !.env.example
+
+# local tool output: design detector state and the code graph
+.impeccable/
+graphify-out/
