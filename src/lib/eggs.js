@@ -14,6 +14,7 @@ export function installEggs() {
   let k = 0
   on(window, 'keydown', (e) => {
     if (e.target instanceof Element && e.target.matches('input, textarea')) return
+    if (document.body.dataset.ocarina || document.body.dataset.overlay) return // the arrows belong to the ocarina, or to the egg on screen
     const key = e.key.toLowerCase()
     k = key === KONAMI[k] ? k + 1 : key === KONAMI[0] ? 1 : 0
     if (k === KONAMI.length) { k = 0; hyperspace() }
@@ -33,9 +34,11 @@ export function installEggs() {
   window.hire = () => { findSecret('devtools'); return site.email }
   offs.push(() => { delete window.hire })
 
-  // Mate: a quiet minute
+  // Mate: a quiet minute. Not for someone reading: a hidden tab, an egg on screen, selected text or an open
+  // dialog (the project inspector, the lightbox) start the minute again
   let idle
-  const reset = () => { clearTimeout(idle); idle = setTimeout(() => findSecret('mate'), 60000) }
+  const busy = () => document.hidden || document.body.dataset.overlay || String(getSelection()) || document.querySelector('dialog[open]')
+  const reset = () => { clearTimeout(idle); idle = setTimeout(() => (busy() ? reset() : findSecret('mate')), 60000) }
   for (const ev of ['pointermove', 'keydown', 'scroll', 'touchstart']) on(window, ev, reset, { passive: true })
   reset()
   offs.push(() => clearTimeout(idle))

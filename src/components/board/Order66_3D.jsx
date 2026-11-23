@@ -160,7 +160,7 @@ export default function Order66_3D() {
       disposed = true
       cancelAnimationFrame(raf); removeEventListener('resize', size)
       scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose() }) })
-      renderer.dispose(); renderer.domElement.remove()
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
     }
   }, [])
   return <div className="o66-3d" ref={host} aria-hidden="true" />

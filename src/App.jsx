@@ -16,20 +16,22 @@ import { EggStage } from '@/components/board/EggStage'
 import { Mascot } from '@/components/board/Mascot'
 import { Probe } from '@/components/board/Probe'
 import { Intro } from '@/components/board/Intro'
+import { Ocarina } from '@/components/board/Ocarina'
 import { isSith, setSith } from '@/lib/sith'
 
 const Win95 = lazy(() => import('@/components/retro/Win95').then((m) => ({ default: m.Win95 })))
 // full-screen eggs drawn over the board, which stays mounted so their "go there" can scroll the page
-const loadMiddle = () => import('@/components/retro/MiddleEarth'), loadGalaxy = () => import('@/components/retro/Galaxy')
+const loadMiddle = () => import('@/components/retro/MiddleEarth'), loadGalaxy = () => import('@/components/retro/Galaxy'), loadHyrule = () => import('@/components/retro/Hyrule')
 const OVERLAYS = {
   middle: lazy(() => loadMiddle().then((m) => ({ default: m.MiddleEarth }))),
   galaxy: lazy(() => loadGalaxy().then((m) => ({ default: m.Galaxy }))),
+  hyrule: lazy(() => loadHyrule().then((m) => ({ default: m.Hyrule }))),
 }
 // the egg's own intro plays for a few seconds first: fetch the overlay meanwhile, so it opens on time
-const PREFETCH = { mellon: loadMiddle, hyperspace: loadGalaxy }
+const PREFETCH = { mellon: loadMiddle, hyperspace: loadGalaxy, ocarina: loadHyrule }
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
-function Board() {
+function Board({ covered }) {
   const { lang } = useLang()
   const root = useRef(null)
   // red after Order 66, until the visitor asks for the copper back
@@ -46,7 +48,7 @@ function Board() {
     return () => { cancelled = true; undo() }
   }, [lang])
   return (
-    <div className={`site${sith ? ' sith' : ''}`} ref={root}>
+    <div className={`site${sith ? ' sith' : ''}`} ref={root} inert={covered}>
       <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
       <Hero />
       <main>
@@ -62,6 +64,7 @@ function Board() {
       <SecretToast />
       <EggStage />
       <Mascot />
+      <Ocarina />
       {sith && (
         <button type="button" className="sith-off" onClick={() => setSith(false)}>
           <i aria-hidden="true" />{lang === 'es' ? 'Volver al cobre' : 'Back to copper'}
@@ -89,7 +92,7 @@ function Overlay({ id, onExit, leaving }) {
 export default function App() {
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
   const [retro, setRetro] = useState(false)
-  const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy'
+  const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy' | 'hyrule'
   // leaving an egg is a scene too: it plays its exit, then the board powers back on
   const [leaving, setLeaving] = useState(false)
   const leave = useCallback((after) => {
@@ -115,7 +118,8 @@ export default function App() {
       }
     }
     const toRetro = () => { setRetro(true); scrollTo({ top: 0, behavior: 'instant' }) }
-    const toMap = () => setOverlay('middle'), toGalaxy = () => setOverlay('galaxy')
+    const toMap = () => setOverlay('middle'), toGalaxy = () => setOverlay('galaxy'), toHyrule = () => setOverlay('hyrule')
+    document.addEventListener('open-hyrule', toHyrule)
     document.addEventListener('open-middle-earth', toMap)
     document.addEventListener('open-galaxy', toGalaxy)
     document.addEventListener('open-ubuntu', open)
@@ -129,11 +133,18 @@ export default function App() {
       document.removeEventListener('open-retro', toRetro)
       document.removeEventListener('open-middle-earth', toMap)
       document.removeEventListener('open-galaxy', toGalaxy)
+      document.removeEventListener('open-hyrule', toHyrule)
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('secret', prefetch)
       uninstall()
     }
   }, [])
+
+  // an egg covers the page: global key handlers check this flag and step aside
+  useEffect(() => {
+    if (overlay) document.body.dataset.overlay = overlay
+    else delete document.body.dataset.overlay
+  }, [overlay])
 
   // the page powered down to open the OS (lib/power); bring it back when the OS closes
   useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
@@ -141,7 +152,7 @@ export default function App() {
   return (
     <SoundProvider>
       <LanguageProvider>
-        <ErrorBoundary fallback={<div className="flex h-screen items-center justify-center text-[var(--text-secondary)]">No se pudo cargar el simulador. Recargá la página.</div>}>
+        <ErrorBoundary fallback={<div className="flex h-screen items-center justify-center text-[var(--text-secondary)]">{document.documentElement.lang === 'en' ? 'The simulator failed to load. Reload the page.' : 'No se pudo cargar el simulador. Recargá la página.'}</div>}>
           <AnimatePresence>
             {ubuntuOpen && (
               <Suspense fallback={<div className="fixed inset-0 z-[9999] bg-black" />}>
@@ -154,9 +165,10 @@ export default function App() {
         {!ubuntuOpen && !retro && (
           <>
             {!overlay && <Probe />}
-            <Board />
+            <Board covered={!!overlay} />
             <Intro />
-            {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
+            {/* no WebGL, or a model that throws: the egg closes instead of blanking the page */}
+            {overlay && <ErrorBoundary fallback={null} onError={() => setOverlay(null)}><Overlay id={overlay} onExit={closeOverlay} leaving={leaving} /></ErrorBoundary>}
           </>
         )}
       </LanguageProvider>

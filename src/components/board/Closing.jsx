@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowUpRight, Check, Copy, FileDown, History, Mail, Power, TerminalSquare } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Building2, Check, Copy, FileDown, History, Mail, Power, TerminalSquare } from 'lucide-react'
 import { useSoundEffects } from '@/contexts/SoundContext'
 import { GitHubIcon, LinkedInIcon } from '@/components/common/SocialIcons'
 import { useLang } from '@/contexts/LanguageContext'
@@ -37,6 +37,7 @@ export function Contact() {
   const channels = [
     { href: site.linkedin, Icon: LinkedInIcon, label: 'LinkedIn', value: site.linkedin.split('/in/')[1], ext: true },
     { href: site.github, Icon: GitHubIcon, label: 'GitHub', value: site.github.split('github.com/')[1], ext: true },
+    { href: 'https://www.gaviasoftware.com', Icon: Building2, label: 'Gavia', value: 'gaviasoftware.com', ext: true },
     { href: site.resumes.es.url, Icon: FileDown, label: `${T.cv} · ${T.es}`, value: 'PDF', download: site.resumes.es.filename },
     { href: site.resumes.en.url, Icon: FileDown, label: `${T.cv} · ${T.en}`, value: 'PDF', download: site.resumes.en.filename },
   ]

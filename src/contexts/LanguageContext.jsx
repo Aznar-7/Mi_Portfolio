@@ -6,8 +6,14 @@ const LanguageContext = createContext({ lang: 'es', setLang: () => {}, toggle: (
 function getInitialLanguage() {
   if (typeof window === 'undefined') return 'es'
 
-  const saved = window.localStorage.getItem(STORAGE_KEY)
+  // a shared link can ask for a language (?lang=en); then the visitor's own choice; crawlers get the
+  // Spanish page the meta tags describe; everyone else, their browser's language
+  const asked = new URLSearchParams(location.search).get('lang')
+  if (asked === 'es' || asked === 'en') return asked
+  let saved = null
+  try { saved = localStorage.getItem(STORAGE_KEY) } catch { /* storage blocked: fall through */ }
   if (saved === 'es' || saved === 'en') return saved
+  if (/bot|crawl|spider|slurp|facebookexternalhit|linkedin/i.test(navigator.userAgent)) return 'es'
 
   const preferredLanguages = navigator.languages?.length ? navigator.languages : [navigator.language]
   return preferredLanguages
@@ -20,7 +26,7 @@ export function LanguageProvider({ children }) {
 
   const setLang = (nextLang) => {
     if (nextLang !== 'es' && nextLang !== 'en') return
-    window.localStorage.setItem(STORAGE_KEY, nextLang)
+    try { localStorage.setItem(STORAGE_KEY, nextLang) } catch { /* storage blocked: this visit only */ }
     setLangState(nextLang)
   }
 

@@ -57,10 +57,7 @@ function Flow({ project, live, lang, label }) {
     const HOP = 3000, GLIDE = 600
     const tick = (now) => {
       raf = requestAnimationFrame(tick)
-      // only while on screen (a rect read per frame is cheaper and steadier than an observer here)
-      const r = board.current?.getBoundingClientRect()
-      const seen = r && r.bottom > 0 && r.top < innerHeight
-      if (!seen || !on.current || pinned.current || held.current || !xs.length) { t0 = 0; return }
+      if (!on.current || pinned.current || held.current || !xs.length) { t0 = 0; return }
       // after a hover the signal carries on from the node it was parked on
       if (!t0) { t0 = now - Math.max(0, resume.current) * HOP - GLIDE; if (resume.current >= 0) { step = resume.current; from = xs[step] } resume.current = -1 }
       const e = now - t0, i = Math.floor(e / HOP) % xs.length, k = Math.min(1, (e % HOP) / GLIDE)
@@ -72,9 +69,14 @@ function Flow({ project, live, lang, label }) {
     layout()
     // the board changes width with the inspector, not only the window
     const ro = new ResizeObserver(layout); ro.observe(board.current)
-    if (!reduced) raf = requestAnimationFrame(tick)
+    // the loop exists only while the diagram is on screen; off screen nothing runs at all
+    const io = new IntersectionObserver(([e]) => {
+      cancelAnimationFrame(raf); raf = 0; t0 = 0
+      if (e.isIntersecting) raf = requestAnimationFrame(tick)
+    })
+    if (!reduced) io.observe(board.current)
     else if (dot.current) dot.current.style.opacity = 0
-    return () => { cancelAnimationFrame(raf); ro.disconnect() }
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect() }
   }, [])
 
   // pinning parks the signal on that node, so the dot and the highlighted node always agree
@@ -88,11 +90,12 @@ function Flow({ project, live, lang, label }) {
   return (
     <div className="flow">
       <p className="flow-label">{label}</p>
-      <div className="flow-board" ref={board} onPointerLeave={() => { held.current = false }}>
+      {/* hover and focus only hold the signal; a click pins it, a second click on the same node lets it go */}
+      <div className="flow-board" ref={board} onPointerLeave={() => { held.current = false }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) held.current = false }}>
         {shared && <span className="host">{shared}</span>}
         {nodes.map((n, i) => (
           <button key={n.id} className={`node${n.host === shared ? ' hosted' : ''}`} aria-pressed={active === i}
-            onClick={() => pick(i)} onFocus={() => pick(i)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i, true) }}>
+            onClick={() => (pinned.current && active === i ? (pinned.current = false) : pick(i))} onFocus={() => pick(i, true)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i, true) }}>
             <b>{l(n.name, lang)}</b><small>{n.host === shared ? n.tech : `${n.tech.split(',')[0]} · ${n.host}`}</small>
           </button>
         ))}
@@ -274,6 +277,7 @@ function Inspector({ project, active, lang, T }) {
         </div>
         <span className="inline-state"><i className={`led ${st === 'done' || st === 'dev' ? 'done' : 'live'}`} />{T.status[st]}</span>
         {links.length > 0 && <Links links={links} />}
+        {project.note && <p className="links-note">{l(project.note, lang)}</p>}
       </header>
       <div className="ins-grid">
         <div className="ins-text">

@@ -160,7 +160,7 @@ export default function DeLorean3D({ start }) {
       cancelAnimationFrame(raf); removeEventListener('resize', size)
       scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose() }) })
       env.dispose(); pmrem.dispose()
-      renderer.dispose(); renderer.domElement.remove()
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
     }
   }, [start])
   return <div className="delorean3d" ref={host} aria-hidden="true" />

@@ -107,6 +107,8 @@ export const projects = [
     ],
     liveUrl: 'https://utnhub.com.ar',
     githubUrl: null,
+    // why there is no Code link, said instead of left silent
+    note: { es: 'Repo privado por seguridad: el código lo muestro en una entrevista.', en: 'Private repo for security reasons: happy to walk through the code in an interview.' },
   },
   {
     id: 'eco-records',
@@ -192,6 +194,40 @@ export const projects = [
     githubUrl: 'https://github.com/Aznar-7/GAVIA',
   },
   {
+    id: 'propier',
+    title: 'Propier',
+    summary: {
+      es: 'Sitio y panel para Propier Inmuebles, una inmobiliaria de Córdoba, hecho con Gavia. Las dueñas cargan propiedades y fotos en el panel; al publicar, el sitio se vuelve a generar como HTML estático y se sirve desde la red de Cloudflare sin tocar la base.',
+      en: 'Website and admin panel for Propier Inmuebles, a real-estate agency in Córdoba, built with Gavia. The owners load listings and photos in the panel; when they publish, the site is rebuilt as static HTML and served from Cloudflare without touching the database.',
+    },
+    tagline: {
+      es: 'Inmobiliaria de Córdoba: sitio público y panel de carga.',
+      en: 'Córdoba real-estate agency: public site and admin panel.',
+    },
+    description: {
+      es: 'Proyecto de cliente de Gavia. Sitio público con propiedades en venta y alquiler, barrios, tasaciones y contacto por WhatsApp, y un panel donde las dueñas cargan propiedades, fotos y características y atienden consultas. Astro genera las páginas públicas en el build y renderiza el panel en el servidor; corre en Cloudflare Workers, con Neon Postgres y Drizzle para los datos, R2 para las fotos, Access para entrar al panel y Turnstile para los formularios. Todo en planes gratuitos, con CI, backup diario y escaneo de seguridad en GitHub Actions.',
+      en: 'A Gavia client project. Public site with listings for sale and rent, neighbourhoods, appraisals and WhatsApp contact, and a panel where the owners load listings, photos and features and answer enquiries. Astro builds the public pages at build time and renders the panel on the server; it runs on Cloudflare Workers, with Neon Postgres and Drizzle for data, R2 for photos, Access to get into the panel and Turnstile on the forms. All on free plans, with CI, a daily backup and security scanning on GitHub Actions.',
+    },
+    category: 'full-stack',
+    status: 'in-development',
+    tech: ['Astro', 'TypeScript', 'Cloudflare Workers', 'PostgreSQL', 'Drizzle', 'MapLibre GL'],
+    architecture: [
+      { layer: { es: 'Sitio', en: 'Site' }, detail: { es: 'Astro genera el catálogo como HTML estático en cada publicación.', en: 'Astro builds the catalogue as static HTML on every publish.' } },
+      { layer: { es: 'Panel', en: 'Panel' }, detail: { es: 'Renderizado en el servidor, detrás de Cloudflare Access con código por email.', en: 'Server-rendered, behind Cloudflare Access with an email code.' } },
+      { layer: { es: 'Datos', en: 'Data' }, detail: { es: 'Neon Postgres con Drizzle y roles de permisos mínimos; fotos en R2.', en: 'Neon Postgres with Drizzle and least-privilege roles; photos on R2.' } },
+      { layer: 'CI', detail: { es: 'GitHub Actions: tests, backup diario, mantenimiento y escaneo de seguridad.', en: 'GitHub Actions: tests, daily backup, maintenance and security scanning.' } },
+    ],
+    image: '/images/projects/propier/inicio.webp',
+    gallery: [
+      '/images/projects/propier/inicio.webp',
+      '/images/projects/propier/venta.webp',
+      '/images/projects/propier/ficha.webp',
+    ],
+    liveUrl: null,
+    githubUrl: null,
+    note: { es: 'Proyecto de cliente: el sitio sale pronto y el código es de la inmobiliaria.', en: 'Client project: the site goes live soon, and the code belongs to the agency.' },
+  },
+  {
     id: 'orden66-viandas',
     title: 'Orden 66 Viandas',
     summary: {
@@ -248,6 +284,70 @@ export const projects = [
     ],
     liveUrl: 'https://camisetas-app.vercel.app/',
     githubUrl: 'https://github.com/Aznar-7/Camisetas-app',
+  },
+  {
+    id: 'transportes-java',
+    title: 'Transportes Java',
+    summary: {
+      es: 'Backend en microservicios para un mercado de cargas de retorno: conecta camiones que vuelven vacíos con cargas que les quedan de paso. Gateway con JWT, Keycloak, dos servicios con su propia base y todo levantado con Docker Compose.',
+      en: 'A microservice backend for a return-load marketplace: it matches trucks driving back empty with cargo along their way. A JWT gateway, Keycloak, two services with their own database each, all brought up with Docker Compose.',
+    },
+    tagline: {
+      es: 'Microservicios en Spring para cargas de retorno.',
+      en: 'Spring microservices for return loads.',
+    },
+    description: {
+      es: 'Trabajo práctico de Backend de Aplicaciones (UTN). Un API Gateway reactivo valida el token y los permisos por ruta; transporte-service maneja transportistas, camiones, documentación con vigencia y retornos; cargas-service maneja dadores, cargas, la búsqueda de cargas de paso con desvío geográfico, propuestas, adjudicación transaccional y el ciclo de vida del viaje con el patrón State. Keycloak como servidor de identidad, una base por servicio en PostgreSQL y una librería común para errores, seguridad y clientes de APIs externas.',
+      en: 'Coursework for Backend Applications (UTN). A reactive API Gateway checks the token and per-route permissions; transporte-service handles carriers, trucks, documents with expiry dates and return trips; cargas-service handles shippers, loads, the search for loads along the way with geographic detour, proposals, transactional awarding and the trip lifecycle with the State pattern. Keycloak as the identity server, one PostgreSQL database per service and a shared library for errors, security and external API clients.',
+    },
+    category: 'full-stack',
+    status: 'in-development',
+    tech: ['Java', 'Spring', 'PostgreSQL', 'Keycloak', 'Docker'],
+    architecture: [
+      { layer: 'Gateway', detail: { es: 'Spring Cloud Gateway: valida el JWT y los roles por ruta, cierra /internal.', en: 'Spring Cloud Gateway: checks the JWT and roles per route, closes /internal.' } },
+      { layer: { es: 'Servicios', en: 'Services' }, detail: { es: 'Transporte y cargas, cada uno con su base (database per service).', en: 'Transport and loads, each with its own database (database per service).' } },
+      { layer: { es: 'Identidad', en: 'Identity' }, detail: { es: 'Keycloak con OAuth2 / OpenID Connect y validación en dos capas.', en: 'Keycloak with OAuth2 / OpenID Connect and two-layer validation.' } },
+      { layer: 'Infra', detail: { es: 'Docker Compose con red interna, perfiles y variables en .env.', en: 'Docker Compose with an internal network, profiles and .env variables.' } },
+    ],
+    image: null,
+    gallery: [],
+    liveUrl: null,
+    githubUrl: 'https://github.com/Aznar-7/Transportes-java',
+  },
+  {
+    id: 'bolsines',
+    title: 'Bolsines',
+    summary: {
+      es: 'Registro de la recepción de bolsines entre Comisiones Médicas: se elige el bolsín por su precinto, se controla documento por documento y, al confirmar, cada documentación cambia de estado con el patrón State y se avisa a la comisión de origen.',
+      en: 'Logging the arrival of document bags between Medical Commissions: pick the bag by its seal number, check it document by document and, on confirming, each document changes state with the State pattern and the sending commission is notified.',
+    },
+    tagline: {
+      es: 'Recepción de bolsines con el patrón State.',
+      en: 'Document bag intake with the State pattern.',
+    },
+    description: {
+      es: 'Proyecto de Diseño de Sistemas de Información (UTN), en grupo; hice la mayor parte. Implementa el caso de uso Registrar recepción de bolsín: elegir el bolsín por el número de precinto, marcar cada documento como llegó, falta, no corresponde o redirigir, y confirmar viendo antes cómo va a quedar todo. Backend en Spring Boot con H2 y el patrón State sobre la documentación; frontend en React con TypeScript y Tailwind, con tema claro y oscuro, servido por el mismo jar.',
+      en: 'Coursework for Information Systems Design (UTN), in a group; I did most of it. It implements the Register bag intake use case: pick the bag by its seal number, mark each document as arrived, missing, not ours or redirect, and confirm after seeing how everything will end up. Spring Boot backend with H2 and the State pattern on the documents; React frontend with TypeScript and Tailwind, light and dark themes, served from the same jar.',
+    },
+    category: 'full-stack',
+    status: 'completed',
+    tech: ['Java', 'Spring', 'React', 'TypeScript', 'Tailwind CSS', 'Vite'],
+    architecture: [
+      { layer: 'Backend', detail: { es: 'Spring Boot 3.5 con H2 en archivo; la documentación cambia de estado con el patrón State.', en: 'Spring Boot 3.5 with file-backed H2; documents change state with the State pattern.' } },
+      { layer: 'Frontend', detail: { es: 'React 19, TypeScript y Tailwind 4; Maven compila el front y lo sirve el mismo jar.', en: 'React 19, TypeScript and Tailwind 4; Maven builds the front and the same jar serves it.' } },
+      { layer: 'Tests', detail: { es: 'JUnit para el dominio y Vitest para el front, con mvn test.', en: 'JUnit for the domain and Vitest for the front, with mvn test.' } },
+    ],
+    image: '/images/projects/bolsines/inicio-oscuro.webp',
+    gallery: [
+      '/images/projects/bolsines/inicio-oscuro.webp',
+      '/images/projects/bolsines/bandeja.webp',
+      '/images/projects/bolsines/control.webp',
+      '/images/projects/bolsines/confirmar.webp',
+      '/images/projects/bolsines/registrada.webp',
+      '/images/projects/bolsines/inicio-claro.webp',
+    ],
+    liveUrl: null,
+    githubUrl: 'https://github.com/Aznar-7/PPAI-Bolsines',
   },
   {
     id: 'autofull',
@@ -308,12 +408,12 @@ export const projects = [
     title: 'vicenteaznar.dev',
     self: true,
     summary: {
-      es: 'El sitio que estás mirando. El inicio es un motor propio en canvas que rutea pistas de cobre alrededor del texto. Adentro hay un Ubuntu simulado con terminal, archivos y juegos, y ocho secretos: un mapa de la Tierra Media, una galaxia y un DeLorean en three.js con el modelo re-sombreado en Blender, entre otros.',
-      en: 'The site you are looking at. The top is a canvas engine of my own that routes copper traces around the text. Inside there is a simulated Ubuntu with a terminal, files and games, and eight secrets: a Middle-earth map, a galaxy and a three.js DeLorean whose model I re-shaded in Blender, among others.',
+      es: 'El sitio que estás mirando. El inicio es un motor propio en canvas que rutea pistas de cobre alrededor del texto. Adentro hay un Ubuntu simulado con terminal, archivos y juegos, y diez secretos: un mapa de la Tierra Media, una galaxia y un DeLorean en three.js con el modelo re-sombreado en Blender, entre otros.',
+      en: 'The site you are looking at. The top is a canvas engine of my own that routes copper traces around the text. Inside there is a simulated Ubuntu with a terminal, files and games, and ten secrets: a Middle-earth map, a galaxy and a three.js DeLorean whose model I re-shaded in Blender, among others.',
     },
     tagline: {
-      es: 'Este mismo portfolio: una placa que se rutea sola, un Ubuntu adentro y ocho secretos.',
-      en: 'This very portfolio: a self-routing board, an Ubuntu inside and eight secrets.',
+      es: 'Este mismo portfolio: una placa que se rutea sola, un Ubuntu adentro y diez secretos.',
+      en: 'This very portfolio: a self-routing board, an Ubuntu inside and ten secrets.',
     },
     category: 'frontend',
     status: 'completed',

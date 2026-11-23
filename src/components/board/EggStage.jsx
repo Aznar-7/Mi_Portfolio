@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { Segments } from './Segments'
 
 // three.js and the car only load when someone actually hits 88 mph
@@ -136,7 +137,7 @@ function MphScene({ T, now, dest }) {
           <path d="M2 30 L8 34 L5 40 L11 46 L7 52" /><path d="M98 62 L92 66 L95 72 L89 77 L93 84" /><path d="M30 98 L34 92 L40 95 L45 89 L52 93" />
         </svg>
       )}
-      <Suspense fallback={null}><DeLorean3D start={start} /></Suspense>
+      <ErrorBoundary fallback={null}><Suspense fallback={null}><DeLorean3D start={start} /></Suspense></ErrorBoundary>
       <p className="egg-credit">DeLorean 3D: <a href="https://poly.pizza/m/1uZKezeldGG" target="_blank" rel="noopener noreferrer">DeLorean DMC-12</a> · David Sirera, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>, vía Poly Pizza</p>
       <div className={`speedo${jumped ? ' gone' : ''}`}>
         <Segments text={String(mph).padStart(2, '0')} />
@@ -165,7 +166,7 @@ function Order66({ T }) {
         </p>
         <p className="o66-reply">{T.o66reply}</p>
       </div>
-      <Suspense fallback={null}><Order66_3D /></Suspense>
+      <ErrorBoundary fallback={null}><Suspense fallback={null}><Order66_3D /></Suspense></ErrorBoundary>
       <p className="egg-credit">Holograma: <a href="https://poly.pizza/m/97m_4VkXpmo" target="_blank" rel="noopener noreferrer">Tie Fighter 1 V1</a> · Joe Scalise, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a> via Poly Pizza</p>
       <p className="egg-caption sith o66-end">{T.o66end}</p>
     </>
@@ -221,24 +222,27 @@ export function EggStage() {
 
   useEffect(() => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-    let t
+    let t, track, fade
+    const hush = () => { clearTimeout(fade); track?.pause(); track = null }
     const go = (id) => NEXT[id] && document.dispatchEvent(new CustomEvent(NEXT[id]))
     const on = (e) => {
       const id = e.detail.id
       if (!MUSIC[id]?.from) sound.current(id) // a recorded effect replaces the synth cue
-      if (reduced) return go(id)
+      if (id === 'order66') setSith(true) // the red board is the state, not the motion
+      // reduced motion skips the animated scenes; the mate is a still dialog, so it stays
+      if (reduced && id !== 'mate') return go(id)
       if (!HOLD[id]) return
       setScene({ id, key: Date.now(), now: new Date() })
-      if (id === 'order66') setSith(true)
+      hush()
       if (MUSIC[id] && !muted.current) {
-        const m = MUSIC[id], a = new Audio(m.src); a.volume = m.vol; if (m.from) a.currentTime = m.from; a.play().catch(() => {})
+        const m = MUSIC[id], a = track = new Audio(m.src); a.volume = m.vol; if (m.from) a.currentTime = m.from; a.play().catch(() => {})
         // fade out over the last second of the scene
-        setTimeout(() => { const f = setInterval(() => { a.volume = Math.max(0, a.volume - 0.05); if (a.volume === 0) { clearInterval(f); a.pause() } }, 80) }, HOLD[id] - 900)
+        fade = setTimeout(() => { const f = setInterval(() => { a.volume = Math.max(0, a.volume - 0.05); if (a.volume === 0 || a.paused) { clearInterval(f); a.pause() } }, 80) }, HOLD[id] - 900)
       }
       clearTimeout(t); t = setTimeout(() => { setScene(null); go(id) }, HOLD[id])
     }
     document.addEventListener('secret', on)
-    return () => { document.removeEventListener('secret', on); clearTimeout(t) }
+    return () => { document.removeEventListener('secret', on); clearTimeout(t); hush() }
   }, [])
 
   if (!scene) return null

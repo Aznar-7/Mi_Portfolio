@@ -17,18 +17,9 @@ const C = {
     hello: '¡Hola! Soy Chip. Tocame si necesitás algo.',
     go: 'Llevame a…', tour: 'Recorrido guiado', next: 'Siguiente', stop: 'Terminar',
     mail: 'Copiar mail', copied: '¡Copiado! Te espera.', cv: 'Bajar CV', sound: (m) => (m ? 'Activar sonido' : 'Silenciar sonido'),
-    lang: 'English', hint: 'Una pista', os: 'Abrir el OS', quiet: 'Chip, callate un rato', talk: 'Chip, podés hablar',
+    lang: 'English', hint: 'Una pista', os: 'Abrir el OS',
     secrets: (n, t) => `Secretos: ${n} de ${t}`, close: 'Cerrar',
-    happy: '¡Eso!', confused: '¿Eh? Probá help.', secret: '¡Encontraste un secreto!',
-    tips: {
-      trabajo: 'Usá ↑ ↓ en la lista para recorrer los proyectos.',
-      proceso: 'Seguí bajando: los paneles avanzan solos.',
-      sobre: 'Ese calendario sale de GitHub, en vivo.',
-      taller: 'Pasá por una herramienta y se iluminan los proyectos.',
-      trayectoria: 'A la izquierda el año, a la derecha qué hizo.',
-      contacto: 'Completá la carta: le llega al instante.',
-      consola: 'Probá escribir help acá abajo.',
-    },
+    happy: '¡Eso!', confused: '¿Eh? Probá help.',
     tourSteps: [
       ['trabajo', 'Acá están los proyectos. Elegí uno de la lista y mirá el detalle.'],
       ['trayectoria', 'Dónde trabajó y qué estudia.'],
@@ -43,18 +34,9 @@ const C = {
     hello: 'Hi! I am Chip. Tap me if you need anything.',
     go: 'Take me to…', tour: 'Guided tour', next: 'Next', stop: 'End tour',
     mail: 'Copy email', copied: 'Copied! He is waiting.', cv: 'Get CV', sound: (m) => (m ? 'Sound on' : 'Mute sound'),
-    lang: 'Español', hint: 'A hint', os: 'Open the OS', quiet: 'Chip, quiet for now', talk: 'Chip, you can talk',
+    lang: 'Español', hint: 'A hint', os: 'Open the OS',
     secrets: (n, t) => `Secrets: ${n} of ${t}`, close: 'Close',
-    happy: 'Nice!', confused: 'Huh? Try help.', secret: 'You found a secret!',
-    tips: {
-      trabajo: 'Use ↑ ↓ in the list to walk the projects.',
-      proceso: 'Keep scrolling: the panels move on their own.',
-      sobre: 'That calendar comes from GitHub, live.',
-      taller: 'Hover a tool and its projects light up.',
-      trayectoria: 'The year on the left, what he did on the right.',
-      contacto: 'Fill in the letter: it reaches him instantly.',
-      consola: 'Try typing help down here.',
-    },
+    happy: 'Nice!', confused: 'Huh? Try help.',
     tourSteps: [
       ['trabajo', 'Here are the projects. Pick one from the list and see the detail.'],
       ['trayectoria', 'Where he has worked and what he studies.'],
@@ -66,7 +48,6 @@ const C = {
     hints: ['They say that if you want to open a door in the console then speak friend, and enter.', 'Click the six chips up top and something happens.', 'Psst: ↑ ↑ ↓ ↓ ← → ← → B A', 'There is a button that goes back in time.', 'Try order 66 in the console.'],
   },
 }
-const QUIET_KEY = 'chip-quiet'
 
 export function Mascot() {
   const { lang, toggle } = useLang()
@@ -81,8 +62,7 @@ export function Mascot() {
   const [tour, setTour] = useState(-1)
   const [shown, setShown] = useState(false) // floats in once the hero is behind
   const [tucked, setTucked] = useState(false) // on phones it ducks out of the way while you read down
-  const [quiet, setQuiet] = useState(() => { try { return localStorage.getItem(QUIET_KEY) === '1' } catch { return false } })
-  const timer = useRef(0), hintN = useRef(0), seen = useRef(new Set()), busy = useRef(false)
+  const timer = useRef(0), hintN = useRef(0), busy = useRef(false)
   useEffect(() => { busy.current = menu || tour >= 0 }, [menu, tour])
 
   const speak = (text, st = 'idle', ms = 3600) => {
@@ -133,35 +113,23 @@ export function Mascot() {
     return () => removeEventListener('keydown', onKey)
   }, [menu, tour])
 
-  // show up after the hero; one short tip the first time each section comes into view
+  // show up after the hero. It never speaks unprompted: the page already says everything it would
   useEffect(() => {
     const hero = document.getElementById('top')
     const ioHero = new IntersectionObserver(([e]) => setShown(!e.isIntersecting), { threshold: 0.15 })
     if (hero) ioHero.observe(hero)
-    const ioSec = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        const id = e.target.id
-        if (!e.isIntersecting || seen.current.has(id)) continue
-        seen.current.add(id)
-        // on phones a tip would sit on top of what you are reading; the menu still has everything
-        if (!quiet && !busy.current && innerWidth > 700 && t.tips[id]) speak(t.tips[id], 'idle', 4200)
-      }
-    }, { threshold: 0.35 })
-    for (const id of Object.keys(C.es.tips)) { const el = document.getElementById(id); if (el) ioSec.observe(el) }
-    return () => { ioHero.disconnect(); ioSec.disconnect() }
-  }, [quiet, lang]) // eslint-disable-line react-hooks/exhaustive-deps -- speak only sets state
+    return () => ioHero.disconnect()
+  }, [])
 
-  // react to the console ('chip' events) and to secrets found anywhere
+  // react to the console ('chip' events); secrets have their own toast
   useEffect(() => {
     const onChip = (e) => {
       const kind = e.detail
       if (kind === 'typing') { setState('typing'); clearTimeout(timer.current); timer.current = setTimeout(() => setState('idle'), 900); return }
       speak(t[kind] ?? null, kind, 2600)
     }
-    const onSecret = (e) => { if (e.detail.fresh) speak(t.secret, 'happy', 3000) }
     document.addEventListener('chip', onChip)
-    document.addEventListener('secret', onSecret)
-    return () => { document.removeEventListener('chip', onChip); document.removeEventListener('secret', onSecret) }
+    return () => document.removeEventListener('chip', onChip)
   }, [lang]) // eslint-disable-line react-hooks/exhaustive-deps -- speak only sets state
   useEffect(() => () => clearTimeout(timer.current), [])
 
@@ -179,10 +147,6 @@ export function Mascot() {
     try { await navigator.clipboard.writeText(site.email); setSay(t.copied); setState('happy') } catch { setSay(site.email) }
   }
   const hint = () => { playClick(); setSay(t.hints[hintN.current++ % t.hints.length]); setState('happy') }
-  const toggleQuiet = () => {
-    const q = !quiet; setQuiet(q)
-    try { localStorage.setItem(QUIET_KEY, q ? '1' : '0') } catch { /* fine, it resets */ }
-  }
   const cv = site.resumes[lang === 'en' ? 'en' : 'es']
 
   return (
@@ -214,7 +178,6 @@ export function Mascot() {
                 <button type="button" onClick={() => { close(); powerOn() }}>{t.os}</button>
                 <button type="button" onClick={toggleMute}>{t.sound(isMuted)}</button>
                 <button type="button" onClick={toggle}>{t.lang}</button>
-                <button type="button" onClick={toggleQuiet}>{quiet ? t.talk : t.quiet}</button>
               </div>
               <p className="chip-foot">{t.secrets(found.size, SECRETS.length)}<button type="button" className="x" onClick={close} aria-label={t.close}>×</button></p>
             </>

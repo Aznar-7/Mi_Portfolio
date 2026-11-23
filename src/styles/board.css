@@ -86,6 +86,7 @@
  
 
 .links{display:flex; flex-wrap:wrap; gap:10px 22px} .links a{display:inline-flex; align-items:center; gap:6px; color:var(--ink); text-underline-offset:4px; text-decoration-color:rgba(var(--silk),.6)}
+.links-note{margin:6px 0 0; color:var(--ink-2); font:400 13px/1.5 var(--text)}
 .stack{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:0 0 28px}
 .stack dt{font:500 11px/1 var(--mono); color:#8fb0e8} .stack dd{margin:8px 0 0; color:var(--ink-2); line-height:1.5}
 /* photo that follows the hovered row */
@@ -171,7 +172,8 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 @media (prefers-reduced-motion:reduce){ .site-header.stuck{animation:none} }
 @media (max-width:760px){
   .site-header{flex-wrap:wrap; row-gap:8px} .site-header nav{order:3; flex-basis:100%; margin-left:0; gap:18px; overflow-x:auto; scrollbar-width:none}
-  .site-header nav::-webkit-scrollbar{display:none} .site-header nav a{white-space:nowrap; font-size:14px}
+  .site-header nav::-webkit-scrollbar{display:none}
+  .site-header nav a{white-space:nowrap; font-size:14px}
   .site section[id]{scroll-margin-top:104px}
   .status{top:112px; bottom:auto; width:26ch; font-size:11px}
 }
@@ -358,7 +360,7 @@ body.off .site{animation:crt .55s cubic-bezier(.7,0,.84,0) forwards}
 .cal-scroll{overflow-x:auto}
 
 /* ── Process v2: pinned horizontal run of five panels, one authored diagram each ── */
-.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:clamp(18px,3vh,32px); padding-top:72px; box-sizing:border-box}
+.ps-pin{position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; gap:clamp(18px,3vh,32px); padding:72px 0 24px; box-sizing:border-box}
 .ps-head{display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:8px 48px}
 .ps-head .sec-intro{margin:0; max-width:46ch}
 .ps-bus{position:relative; height:52px; margin:0 6px}
@@ -944,6 +946,8 @@ body.returning .site{animation:site-return .9s cubic-bezier(.2,.8,.2,1) both}
   .site-header{flex-wrap:wrap; row-gap:8px}
   .site-header nav{order:3; flex-basis:100%; margin-left:0; gap:18px; overflow-x:auto; scrollbar-width:none}
   .site-header nav::-webkit-scrollbar{display:none}
+  /* the row fades at the right edge so the sections past it read as more, and leaves room for the current-section dot */
+  .site-header nav{padding-bottom:12px; mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
   .tools-bar{margin-left:auto}
   .hero-frame{padding-top:150px}
   .site section[id]{scroll-margin-top:118px}
