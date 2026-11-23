@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { ErrorBoundary } from 'react-error-boundary'
 import { useLang } from '@/contexts/LanguageContext'
 import { findSecret, useSecretsFound } from '@/lib/secrets'
 import { travel } from '@/lib/motion'
@@ -14,7 +15,7 @@ const OcarinaModel = lazy(() => import('./OcarinaModel'))
 
 const T = {
   es: {
-    hey: '¡Hey! ¡Escuchá!', heySub: 'Encontré algo entre las herramientas.', follow: 'Seguir a Navi',
+    hey: '¡Hey! ¡Escuchá!', heySub: 'Encontré algo entre las herramientas.', follow: 'Seguir a Navi', notNow: 'Ahora no',
     here: '¡Acá!', take: 'Tomar la ocarina',
     got: 'Conseguiste la Ocarina del Tiempo', gotSub: 'Tocala con A ↓ → ← ↑ o con los botones. La sacás y la guardás con la tecla O.', play: 'Tocar',
     open: 'Sacar la ocarina', close: 'Guardar la ocarina', book: 'Canciones', played: 'tocada', staff: 'Pentagrama', title: 'Ocarina del Tiempo',
@@ -23,7 +24,7 @@ const T = {
     does: { zelda: 'Muestra las pistas de los secretos', epona: 'Te lleva a galope hasta Contacto', saria: 'El bosque crece sobre el cobre', sun: 'Amanece, o vuelve la noche', time: 'Abre el Templo del Tiempo', storms: 'Se larga a llover', minuet: 'Viaja a Proyectos', bolero: 'Viaja al Stack', serenade: 'Viaja a Experiencia', requiem: 'Viaja a Sobre mí', nocturne: 'Viaja a la Consola', prelude: 'Vuelve al inicio' },
   },
   en: {
-    hey: 'Hey! Listen!', heySub: 'I found something among the tools.', follow: 'Follow Navi',
+    hey: 'Hey! Listen!', heySub: 'I found something among the tools.', follow: 'Follow Navi', notNow: 'Not now',
     here: 'Here!', take: 'Take the ocarina',
     got: 'You got the Ocarina of Time', gotSub: 'Play it with A ↓ → ← ↑ or the buttons. The O key takes it out and puts it away.', play: 'Play',
     open: 'Take out the ocarina', close: 'Put the ocarina away', book: 'Songs', played: 'played', staff: 'Staff', title: 'Ocarina of Time',
@@ -130,6 +131,8 @@ export function Ocarina() {
   const found = useSecretsFound()
   const [has, setHas] = useState(hasOcarina)
   const [stage, setStage] = useState(null) // null | 'call' | 'lead' | 'get'
+  // 'Ahora no' keeps her quiet for this visit; she calls again on the next one
+  const [snoozed, setSnoozed] = useState(() => { try { return !!sessionStorage.getItem('navi-later') } catch { return false } })
   const [open, setOpen] = useState(false)
   const [book, setBook] = useState(false)
   const [staff, setStaff] = useState([])
@@ -142,12 +145,13 @@ export function Ocarina() {
 
   // Navi shows up once the visitor has proved curious: three secrets
   useEffect(() => {
-    if (has || stage || found.size < 3) return
+    if (has || stage || snoozed || found.size < 3) return
     preload()
     const id = setTimeout(() => { setStage('call'); playHey() }, 1200)
     return () => clearTimeout(id)
-  }, [has, stage, found.size])
+  }, [has, stage, snoozed, found.size])
 
+  const dismiss = () => { try { sessionStorage.setItem('navi-later', '1') } catch { /* private mode: quiet for this visit */ } setSnoozed(true); setStage(null) }
   const follow = () => { playHey(); setStage('lead'); travel(document.getElementById('taller'), 70) }
   const take = () => { setStage('get'); playMusic('getocarina') }
   const start = () => { takeOcarina(); setHas(true); setStage(null); findSecret('ocarina'); setOpen(true) }
@@ -180,18 +184,23 @@ export function Ocarina() {
         // the song as the game plays it back: the full phrase with its accompaniment. If the file
         // fails, the ocarina samples replay the notes instead.
         const track = playMusic(m.id)
+        let started = false
         const go = (secs) => {
+          if (started) return
+          started = true
           const total = secs * 1000, span = Math.min(total * 0.6, 4500)
           m.notes.forEach((_, i) => later(() => { setLit(i); rise() }, (i / m.notes.length) * span))
           // warps leave while the song is still sounding, as in the game; the rest wait for its end
           later(() => {
-            if (m.id === 'time') { findSecret('hyrule'); fadeOut(track) }
+            if (m.id === 'time') { findSecret('hyrule'); fadeOut(track); setOpen(false) }
             perform(m.id, setFx)
             busy.current = false; setSong(null); setLit(-1); draw([])
           }, (WARP[m.id] ? Math.min(total, 6500) : total) + 300)
         }
         track.addEventListener('loadedmetadata', () => go(track.duration), { once: true })
         track.addEventListener('error', () => go(playSong(m).dur), { once: true })
+        // a blocked play() fires neither event (autoplay rules): the samples answer instead of locking the ocarina
+        later(() => go(playSong(m).dur), 4000)
       }, 1300)
     } else if (next.length === 8) later(() => { if (notes.current === next) { playError(); draw([]) } }, 700)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps -- later/rise/draw only touch refs and setters
@@ -202,6 +211,7 @@ export function Ocarina() {
     const onKey = (e) => {
       if (e.target instanceof Element && e.target.matches('input, textarea, [contenteditable]')) return
       if (e.ctrlKey || e.metaKey || e.altKey) return
+      if (document.body.dataset.overlay) return // Hyrule and the other eggs own the keys while they are up
       const k = e.key.toLowerCase()
       if (k === 'o') { setOpen((o) => !o); return }
       if (!open) return
@@ -229,6 +239,7 @@ export function Ocarina() {
           <div className="oc-bubble">
             <b>{t.hey}</b><span>{t.heySub}</span>
             <button type="button" onClick={follow}>{t.follow}</button>
+            <button type="button" className="oc-later" onClick={dismiss}>{t.notNow}</button>
           </div>
         </div>
       )}
@@ -241,7 +252,7 @@ export function Ocarina() {
       {stage === 'get' && (
         <div className="oc-get" role="dialog" aria-modal="true" aria-labelledby="oc-get-t">
           <div className="oc-rays" aria-hidden="true" />
-          <Suspense fallback={<div className="oc-model" />}><OcarinaModel /></Suspense>
+          <ErrorBoundary fallback={<div className="oc-model" />}><Suspense fallback={<div className="oc-model" />}><OcarinaModel /></Suspense></ErrorBoundary>
           <h2 id="oc-get-t">{t.got}</h2>
           <p>{t.gotSub}</p>
           <button type="button" className="btn" onClick={start} autoFocus>{t.play}</button>
@@ -255,7 +266,7 @@ export function Ocarina() {
       {has && open && (
         <div className={`oc-panel${song ? ' sung' : ''}`} role="group" aria-label="Ocarina">
           <div className="oc-held" aria-hidden="true">
-            <Suspense fallback={null}><OcarinaModel mode="play" /></Suspense>
+            <ErrorBoundary fallback={null}><Suspense fallback={null}><OcarinaModel mode="play" /></Suspense></ErrorBoundary>
             {floats.map((f) => <svg key={f.id} className="oc-float" style={{ '--dx': `${f.x}px` }} viewBox="0 0 16 22"><path d="M6 17.5a3.5 3 0 1 1-1-2.3V2l9 3v4l-7.5-2.4z" /></svg>)}
           </div>
           {book && (
@@ -274,7 +285,7 @@ export function Ocarina() {
             <p className="oc-head" aria-live="polite">
               {song ? <>{t.youPlayed(song)[0]}<em>{t.songs[song]}</em>{t.youPlayed(song)[1]}</> : t.title}
             </p>
-            <div className="oc-staff" aria-label={t.staff}>
+            <div className="oc-staff" role="img" aria-label={t.staff}>
               <svg className="oc-clef" viewBox="0 0 24 64" aria-hidden="true"><path d="M13.5 62c-3 0-5-2-5-4.5s2-3.5 3.5-3.5 2.5 1 2.5 2.3-1 2.2-2 2.2c.6 1 1.6 1.6 2.8 1.6 2.4 0 3.5-2 3.2-5L16 25c4-4 7-9 7-14 0-5-2-9-4.5-9-3.5 0-6 7-6 13 0 2 .3 4 .7 6C7 26 2 31 2 38c0 7 5 12 12 12 1 0 2-.1 3-.4l1 4.5c.6 3.5-.7 7.9-4.5 7.9zM17.2 13.5c.2-4 1.2-7 2-7 1 0 1.5 1.6 1.5 3.6 0 3.7-2 7-4.7 9.8-.2-1.8-.2-3.8.2-6.4zM15 46.6c-.7.2-1.4.3-2 .3-4.6 0-7.8-3.4-7.8-8 0-5 3.5-8.6 8.4-12l1.2 6c-3 .8-5 3-5 5.6 0 2.4 1.6 4.3 3.4 4.8-1-.8-1.6-2-1.6-3.3 0-2 1.4-3.6 3.5-4z" /></svg>
               {[0, 1, 2, 3, 4].map((i) => <i key={i} className="oc-line" style={{ '--r': i }} />)}
               {staff.map((n, i) => <span key={`${song ?? ''}${i}`} className={`oc-slot${song && i <= lit ? ' lit' : ''}`} style={{ '--x': i, '--r': ROW[n] }}><Note n={n} /></span>)}

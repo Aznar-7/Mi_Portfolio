@@ -17,6 +17,7 @@
 .oc-bubble{display:grid; gap:4px; max-width:250px; padding:14px 16px; border-radius:14px 14px 14px 4px; background:#121822; box-shadow:inset 0 0 0 1px rgba(var(--navi),.35), 0 18px 40px -12px #000; color:var(--ink-2); font:400 14px/1.45 var(--text)}
 .oc-bubble b{color:#eaf5ff; font:600 18px/1.2 var(--display)}
 .oc-bubble button{justify-self:start; margin-top:8px; min-height:40px; padding:0 14px; border:0; border-radius:8px; background:rgb(var(--navi)); color:#0b1420; font:600 14px/1 var(--text); cursor:pointer}
+.oc-bubble .oc-later{margin-top:0; background:none; color:var(--ink-2); box-shadow:inset 0 0 0 1px rgba(var(--navi),.35)}
 @keyframes oc-in{from{opacity:0; translate:0 12px}}
 
 /* the ocarina waiting among the tools */
@@ -217,3 +218,18 @@ html.dawn .site::after{content:""; position:fixed; inset:0; z-index:1; pointer-e
 @media (prefers-reduced-motion: reduce){ .hy-prompt{animation:none} }
 .hy{-webkit-user-select:none; user-select:none}
 .hy-dialog{-webkit-user-select:text; user-select:text}
+
+/* the bottom-left corner is shared: the ocarina button, Navi's call, the secret toast and (on phones) "back to copper" stack instead of overlapping */
+body:has(.oc-toggle) .egg-toast{bottom:84px}
+body:has(.oc-navi-call) .egg-toast{bottom:220px}
+@media (max-width:1000px){ .site:has(.oc-toggle) .sith-off{bottom:84px} }
+
+/* Hyrule on a phone: the place name wraps, Music drops under Back, and E's prompt mirrors the stick */
+@media (max-width:600px){
+  .hy-area{width:calc(100vw - 32px); justify-content:center; white-space:normal; text-align:center; font-size:clamp(20px,6.4vw,30px)}
+  .hy-music{right:20px; top:72px}
+}
+@keyframes hy-pop-r{from{opacity:0; translate:0 14px; scale:.97}}
+@media (pointer:coarse){ .hy-prompt{left:auto; right:28px; translate:none; bottom:44px} }
+@media (pointer:coarse) and (prefers-reduced-motion: no-preference){ .hy-prompt{animation-name:hy-pop-r} }
+.hy:focus{outline:none}

@@ -90,11 +90,12 @@ function Flow({ project, live, lang, label }) {
   return (
     <div className="flow">
       <p className="flow-label">{label}</p>
-      <div className="flow-board" ref={board} onPointerLeave={() => { held.current = false }}>
+      {/* hover and focus only hold the signal; a click pins it, a second click on the same node lets it go */}
+      <div className="flow-board" ref={board} onPointerLeave={() => { held.current = false }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) held.current = false }}>
         {shared && <span className="host">{shared}</span>}
         {nodes.map((n, i) => (
           <button key={n.id} className={`node${n.host === shared ? ' hosted' : ''}`} aria-pressed={active === i}
-            onClick={() => pick(i)} onFocus={() => pick(i)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i, true) }}>
+            onClick={() => (pinned.current && active === i ? (pinned.current = false) : pick(i))} onFocus={() => pick(i, true)} aria-describedby="flow-detail" onPointerEnter={() => { playHover(); pick(i, true) }}>
             <b>{l(n.name, lang)}</b><small>{n.host === shared ? n.tech : `${n.tech.split(',')[0]} · ${n.host}`}</small>
           </button>
         ))}

@@ -31,7 +31,7 @@ const OVERLAYS = {
 const PREFETCH = { mellon: loadMiddle, hyperspace: loadGalaxy, ocarina: loadHyrule }
 const UbuntuOS = lazy(() => import('@/components/layout/UbuntuOS').then((m) => ({ default: m.UbuntuOS })))
 
-function Board() {
+function Board({ covered }) {
   const { lang } = useLang()
   const root = useRef(null)
   // red after Order 66, until the visitor asks for the copper back
@@ -48,7 +48,7 @@ function Board() {
     return () => { cancelled = true; undo() }
   }, [lang])
   return (
-    <div className={`site${sith ? ' sith' : ''}`} ref={root}>
+    <div className={`site${sith ? ' sith' : ''}`} ref={root} inert={covered}>
       <a className="skip" href="#trabajo">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
       <Hero />
       <main>
@@ -140,13 +140,19 @@ export default function App() {
     }
   }, [])
 
+  // an egg covers the page: global key handlers check this flag and step aside
+  useEffect(() => {
+    if (overlay) document.body.dataset.overlay = overlay
+    else delete document.body.dataset.overlay
+  }, [overlay])
+
   // the page powered down to open the OS (lib/power); bring it back when the OS closes
   useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
 
   return (
     <SoundProvider>
       <LanguageProvider>
-        <ErrorBoundary fallback={<div className="flex h-screen items-center justify-center text-[var(--text-secondary)]">No se pudo cargar el simulador. Recargá la página.</div>}>
+        <ErrorBoundary fallback={<div className="flex h-screen items-center justify-center text-[var(--text-secondary)]">{document.documentElement.lang === 'en' ? 'The simulator failed to load. Reload the page.' : 'No se pudo cargar el simulador. Recargá la página.'}</div>}>
           <AnimatePresence>
             {ubuntuOpen && (
               <Suspense fallback={<div className="fixed inset-0 z-[9999] bg-black" />}>
@@ -159,9 +165,10 @@ export default function App() {
         {!ubuntuOpen && !retro && (
           <>
             {!overlay && <Probe />}
-            <Board />
+            <Board covered={!!overlay} />
             <Intro />
-            {overlay && <Overlay id={overlay} onExit={closeOverlay} leaving={leaving} />}
+            {/* no WebGL, or a model that throws: the egg closes instead of blanking the page */}
+            {overlay && <ErrorBoundary fallback={null} onError={() => setOverlay(null)}><Overlay id={overlay} onExit={closeOverlay} leaving={leaving} /></ErrorBoundary>}
           </>
         )}
       </LanguageProvider>

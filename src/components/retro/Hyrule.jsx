@@ -31,7 +31,7 @@ const T = {
     places: { kakariko: ['Aldea Kakariko', 'Proyectos'], kokiri: ['Bosque Kokiri', 'Sobre mí'], mountain: ['Montaña de la Muerte', 'Stack'], ranch: ['Rancho Lon Lon', 'Experiencia'], castle: ['Castillo de Hyrule', 'Contacto'] },
     intro: { kakariko: 'Cada estandarte es un proyecto. Tocá uno para ver qué es y cómo está hecho.', mountain: 'Los gorons tallan en piedra lo que dominan. Tocá una tabla para ver dónde usé cada herramienta.', kokiri: 'Tocá el cartel para volver a leer quién soy.', ranch: 'Cada cartel del corral es un trabajo. Tocá uno para ver qué hice ahí.', castle: '' },
     map: 'Mapa', mapTitle: '¿A dónde vamos?', contact: 'Escribile al rey', contactText: 'Si tenés algo para construir, la puerta del castillo está abierta. Respondo en menos de 24 horas.', cv: 'CV', linkedin: 'LinkedIn',
-    live: 'Ver en vivo', code: 'Código', usedIn: 'Lo usé en', noUse: 'Todavía sin un proyecto público que lo muestre.', go: 'Ir a',
+    live: 'Ver en vivo', code: 'Código', close: 'Cerrar', controls: 'Controles', fail: 'No se pudo cargar este lugar. Probá de nuevo.', usedIn: 'Lo usé en', noUse: 'Todavía sin un proyecto público que lo muestre.', go: 'Ir a',
     see: 'Ver', read: 'Leer', enter: 'Entrar', dismount: 'Bajar de Epona',
     help: [['WASD', 'moverte'], ['Shift', 'caminar'], ['Arrastrar', 'mirar'], ['E', 'interactuar']], helpTouch: 'Mové el círculo para caminar, arrastrá para mirar y tocá el botón para interactuar.',
   },
@@ -42,7 +42,7 @@ const T = {
     places: { kakariko: ['Kakariko Village', 'Projects'], kokiri: ['Kokiri Forest', 'About me'], mountain: ['Death Mountain', 'Stack'], ranch: ['Lon Lon Ranch', 'Experience'], castle: ['Hyrule Castle', 'Contact'] },
     intro: { kakariko: 'Every banner is a project. Pick one to see what it is and how it was built.', mountain: 'Gorons carve what they master into stone. Pick a tablet to see where I used each tool.', kokiri: 'Pick the sign to read who I am again.', ranch: 'Every sign on the fence is a job. Pick one to see what I did there.', castle: '' },
     map: 'Map', mapTitle: 'Where to?', contact: 'Write to the king', contactText: 'If you have something to build, the castle gate is open. I reply within 24 hours.', cv: 'CV', linkedin: 'LinkedIn',
-    live: 'See it live', code: 'Code', usedIn: 'Used in', noUse: 'No public project shows it yet.', go: 'Go to',
+    live: 'See it live', code: 'Code', close: 'Close', controls: 'Controls', fail: 'This place failed to load. Try again.', usedIn: 'Used in', noUse: 'No public project shows it yet.', go: 'Go to',
     see: 'See', read: 'Read', enter: 'Enter', dismount: 'Get off Epona',
     help: [['WASD', 'move'], ['Shift', 'walk'], ['Drag', 'look'], ['E', 'interact']], helpTouch: 'Move the circle to walk, drag to look, tap the button to interact.',
   },
@@ -92,7 +92,7 @@ const links = (p) => [].concat(p.githubUrl ?? []).map((g) => (typeof g === 'stri
 
 export function Hyrule({ lang, onExit, leaving }) {
   const t = T[lang] ?? T.es
-  const host = useRef(null)
+  const host = useRef(null), root = useRef(null)
   const [phase, setPhase] = useState('loading') // loading | temple | pulled | later | field
   const [hold, setHold] = useState(0)
   const [area, setArea] = useState(null) // the place you walked into (kakariko | kokiri), or null out in the field
@@ -112,6 +112,7 @@ export function Hyrule({ lang, onExit, leaving }) {
   const [map, setMap] = useState(false)
   const arrive = (id) => { setTitle(t.places[id]?.[0] ?? t.field); setHint(t.intro[id] || null); if (GREET[id]) { setPage(0); setDialog({ kind: GREET[id] }) } }
   const go = (id) => {
+    if (curtain) return // one trip at a time
     setMap(false); setDialog(null)
     const isArea = AREAS.includes(id)
     through(() => new Promise((ok) => api.current.leave?.(() => {
@@ -124,11 +125,22 @@ export function Hyrule({ lang, onExit, leaving }) {
   api.current.exitArea = toField
   api.current.setPrompt = setPrompt
   api.current.openDialog = (p) => { setPage(p.page ?? 0); setDialog(p) }
-  api.current.paused = !!dialog || map
+  api.current.paused = !!dialog || map || curtain
+  // the page underneath must not scroll while Hyrule is up (as in MiddleEarth)
+  useEffect(() => {
+    const el = root.current, stop = (e) => e.preventDefault()
+    el.addEventListener('wheel', stop, { passive: false })
+    // focus the scene itself, not Back: Space draws the sword and must not press a button
+    el.focus({ preventScroll: true })
+    return () => el.removeEventListener('wheel', stop)
+  }, [])
+  // a dialog takes focus when it opens, so E, Enter or Space answer it
+  useEffect(() => { if (dialog) root.current?.querySelector('.hy-dialog :is(button, a)')?.focus({ preventScroll: true }) }, [dialog])
   useEffect(() => { if (!hint) return; const id = setTimeout(() => setHint(null), 7000); return () => clearTimeout(id) }, [hint])
 
   useEffect(() => {
     const el = host.current
+    api.current.gone = false
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5))
@@ -359,7 +371,7 @@ export function Hyrule({ lang, onExit, leaving }) {
           snapTo(W.spawn, Math.atan2(a.look.x - a.eye.x, a.look.z - a.eye.z))
           api.current.music = playMusic(a.music, { loop: true, volume: muted.current ? 0 : 0.7, fadeIn: 1200 })
           fn?.()
-        })
+        }).catch(() => { delete built[id]; if (dead) return; setArea(null); setTitle(t.field); setHint(t.fail); setCurtain(false) })
       }
       // out of a place: back at its gate in the field, facing away from it
       api.current.leave = (fn) => {
@@ -478,7 +490,7 @@ export function Hyrule({ lang, onExit, leaving }) {
     raf = requestAnimationFrame(frame)
     const music = api.current
     return () => {
-      dead = true; cancelAnimationFrame(raf); ro.disconnect(); removeEventListener('pointermove', onMove); fadeOut(music.music, 500); cleanups.forEach((f) => f())
+      dead = true; music.gone = true; cancelAnimationFrame(raf); ro.disconnect(); removeEventListener('pointermove', onMove); fadeOut(music.music, 500); cleanups.forEach((f) => f())
       disposeScene(scene); glow.dispose(); composer?.dispose(); renderer.dispose(); renderer.domElement.remove()
     }
   }, [onExit, lang, t])
@@ -496,18 +508,18 @@ export function Hyrule({ lang, onExit, leaving }) {
         // one thing at a time: the sword's own fanfare, then the warp alone, then the field fades in
         api.current.music = playMusic('mastersword', { volume: muted.current ? 0 : 0.9 })
         setPhase('pulled')
-        setTimeout(() => { fadeOut(api.current.music, 900); playWarp(); setPhase('later') }, 2600)
-        setTimeout(() => api.current.toField?.().then(() => { api.current.music = playMusic('field', { loop: true, volume: muted.current ? 0 : 0.7, fadeIn: 2500 }) }), 6200)
+        setTimeout(() => { if (api.current.gone) return; fadeOut(api.current.music, 900); playWarp(); setPhase('later') }, 2600)
+        setTimeout(() => api.current.gone || api.current.toField?.().then(() => { if (!api.current.gone) api.current.music = playMusic('field', { loop: true, volume: muted.current ? 0 : 0.7, fadeIn: 2500 }) }).catch(() => !api.current.gone && onExit()), 6200)
         return
       }
       raf = requestAnimationFrame(step)
     }
-    const on = (e) => { if (e.type === 'keydown' && e.code !== 'Space') return; e.preventDefault?.(); held = true }
+    const on = (e) => { if (e.type === 'keydown' && e.code !== 'Space') return; if (e.target instanceof Element && e.target.closest('button, a')) return; e.preventDefault?.(); held = true }
     const off = (e) => { if (e.type === 'keyup' && e.code !== 'Space') return; held = false }
     addEventListener('pointerdown', on); addEventListener('pointerup', off); addEventListener('keydown', on); addEventListener('keyup', off)
     raf = requestAnimationFrame(step)
     return () => { cancelAnimationFrame(raf); removeEventListener('pointerdown', on); removeEventListener('pointerup', off); removeEventListener('keydown', on); removeEventListener('keyup', off) }
-  }, [phase])
+  }, [phase, onExit])
 
   // Esc: closes the dialog or the map, then leaves the place, then leaves Hyrule
   useEffect(() => {
@@ -531,7 +543,7 @@ export function Hyrule({ lang, onExit, leaving }) {
   const bio = l(about.bio, lang)
 
   return (
-    <div className={`hy${leaving ? ' leaving' : ''}`} data-phase={phase}>
+    <div className={`hy${leaving ? ' leaving' : ''}`} data-phase={phase} role="dialog" aria-modal="true" aria-label={t.temple} ref={root} tabIndex={-1}>
       <div className="hy-gl" ref={host} onClick={onCanvas} onPointerMove={onHover} />
       <div className="hy-white" aria-hidden="true" />
       <div className={`hy-curtain${curtain ? ' on' : ''}`} aria-hidden="true" />
@@ -551,14 +563,14 @@ export function Hyrule({ lang, onExit, leaving }) {
           <h2 key={title ?? 'field'} className="hy-area"><i /><span>{title ?? t.field}</span><i /></h2>
           <button type="button" className="hy-map-btn" onClick={() => setMap((m) => !m)} aria-expanded={map}>{t.map}</button>
           {map && (
-            <div className="hy-map" role="menu">
+            <div className="hy-map">
               <p>{t.mapTitle}</p>
               {Object.keys(t.places).map((id) => (
-                <button key={id} type="button" role="menuitem" className={area === id ? 'here' : ''} onClick={() => go(id)}>
+                <button key={id} type="button" className={area === id ? 'here' : ''} onClick={() => go(id)}>
                   <b>{t.places[id][0]}</b><span>{t.places[id][1]}</span>
                 </button>
               ))}
-              {area && <button type="button" role="menuitem" onClick={toField}><b>{t.field}</b><span>Hyrule</span></button>}
+              {area && <button type="button" onClick={toField}><b>{t.field}</b><span>Hyrule</span></button>}
             </div>
           )}
           {/* the landmarks' labels, out in the field and far from them: a click takes you there */}
@@ -572,17 +584,17 @@ export function Hyrule({ lang, onExit, leaving }) {
             <button type="button" className="hy-prompt" onClick={() => api.current.interact?.()}><kbd>{touch ? 'A' : 'E'}</kbd><span>{prompt.label}</span></button>
           )}
           {touch ? <Stick api={api} /> : (
-            <ul className="hy-help" aria-label="Controles">{t.help.map(([k, v]) => <li key={k}><kbd>{k}</kbd>{v}</li>)}</ul>
+            <ul className="hy-help" aria-label={t.controls}>{t.help.map(([k, v]) => <li key={k}><kbd>{k}</kbd>{v}</li>)}</ul>
           )}
-          {touch && <p className="hy-help touch">{t.helpTouch}</p>}
+          {touch && !hint && <p className="hy-help touch">{t.helpTouch}</p>}
 
           {dialog && (
-            <div className="hy-dialog" role="dialog" aria-modal="false" onClick={(e) => e.stopPropagation()}>
+            <div className="hy-dialog" role="dialog" aria-labelledby="hy-dialog-t" onClick={(e) => e.stopPropagation()}>
               <i className="oc-corner tl" /><i className="oc-corner tr" /><i className="oc-corner bl" /><i className="oc-corner br" />
               {dialog.kind === 'project' && (
                 <>
                   {dialog.data.image && <img className="hy-shot" src={dialog.data.image} alt="" loading="lazy" />}
-                  <h3>{dialog.data.title}</h3>
+                  <h3 id="hy-dialog-t">{dialog.data.title}</h3>
                   <p className="lead">{l(dialog.data.tagline, lang)}</p>
                   <p>{l(dialog.data.summary ?? dialog.data.description, lang)}</p>
                   <ul className="hy-chips">{dialog.data.tech.map((x) => <li key={x}>{x}</li>)}</ul>
@@ -594,7 +606,7 @@ export function Hyrule({ lang, onExit, leaving }) {
               )}
               {dialog.kind === 'stack' && (
                 <>
-                  <h3>{l(dialog.data.label, lang)}</h3>
+                  <h3 id="hy-dialog-t">{l(dialog.data.label, lang)}</h3>
                   <ul className="hy-tools">
                     {dialog.data.items.map((x) => (
                       <li key={x}><b>{x}</b><span>{dialog.data.usedIn?.[x] ? `${t.usedIn} ${dialog.data.usedIn[x].map((id) => TITLE[id] ?? id).join(', ')}` : t.noUse}</span></li>
@@ -604,7 +616,7 @@ export function Hyrule({ lang, onExit, leaving }) {
               )}
               {dialog.kind === 'about' && (
                 <>
-                  <h3>Vicente</h3>
+                  <h3 id="hy-dialog-t">Vicente</h3>
                   <p key={page} className="hy-typed">{bio[page]}</p>
                   {page < bio.length - 1
                     ? <button type="button" className="hy-next" onClick={() => setPage((n) => n + 1)} aria-label={t.next}><span>A</span>{t.next}</button>
@@ -613,7 +625,7 @@ export function Hyrule({ lang, onExit, leaving }) {
               )}
               {dialog.kind === 'experience' && JOBS[page] && (
                 <>
-                  <h3>{l(JOBS[page].role, lang)}</h3>
+                  <h3 id="hy-dialog-t">{l(JOBS[page].role, lang)}</h3>
                   <p className="lead">{JOBS[page].company} · {l(JOBS[page].period, lang)}</p>
                   <ul className="hy-tools">{(l(JOBS[page].impact, lang) ?? []).slice(0, 3).map((x) => <li key={x}><span>{x}</span></li>)}</ul>
                   {page < JOBS.length - 1
@@ -623,7 +635,7 @@ export function Hyrule({ lang, onExit, leaving }) {
               )}
               {dialog.kind === 'contact' && (
                 <>
-                  <h3>{t.contact}</h3>
+                  <h3 id="hy-dialog-t">{t.contact}</h3>
                   <p>{t.contactText}</p>
                   <p className="lead">{site.email}</p>
                   <div className="hy-links">
@@ -633,7 +645,7 @@ export function Hyrule({ lang, onExit, leaving }) {
                   </div>
                 </>
               )}
-              {dialog.kind !== 'about' && dialog.kind !== 'experience' && <button type="button" className="hy-close" onClick={() => setDialog(null)} aria-label="Cerrar">×</button>}
+              {dialog.kind !== 'about' && dialog.kind !== 'experience' && <button type="button" className="hy-close" onClick={() => setDialog(null)} aria-label={t.close}>×</button>}
             </div>
           )}
         </>
