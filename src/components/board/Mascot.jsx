@@ -59,6 +59,8 @@ export function Mascot() {
   const [say, setSay] = useState(null)
   const [state, setState] = useState('idle') // idle | typing | happy | confused
   const [menu, setMenu] = useState(false)
+  // the menu opens with focus on its first section, so a keyboard visitor is already in it
+  useEffect(() => { if (menu) ref.current?.querySelector('.chip-menu button')?.focus({ preventScroll: true }) }, [menu])
   const [tour, setTour] = useState(-1)
   const [shown, setShown] = useState(false) // floats in once the hero is behind
   const [tucked, setTucked] = useState(false) // on phones it ducks out of the way while you read down
@@ -151,39 +153,6 @@ export function Mascot() {
 
   return (
     <div className={`chip-pet ${state}${shown || menu || tour >= 0 ? ' shown' : ''}${tucked && !say && !menu && tour < 0 ? ' tucked' : ''}`} ref={ref}>
-      {(say || menu || tour >= 0) && (
-        <div className="chip-say">
-          {/* only the speech is announced; the menu is a plain group of buttons */}
-          <p role="status" className={say ? '' : 'sr-only'}>{say}</p>
-          {tour >= 0 && (
-            <div className="chip-menu">
-              <span className="chip-step">{tour + 1} / {t.tourSteps.length}</span>
-              <button type="button" onClick={() => step(tour + 1)}>{tour + 1 < t.tourSteps.length ? t.next : t.stop}</button>
-              {tour + 1 < t.tourSteps.length && <button type="button" onClick={() => step(t.tourSteps.length)}>{t.stop}</button>}
-            </div>
-          )}
-          {menu && (
-            <>
-              <p className="chip-label">{t.go}</p>
-              <div className="chip-menu">
-                {['trabajo', 'trayectoria', 'sobre', 'taller', 'contacto', 'consola'].map((id) => <button key={id} type="button" onClick={() => goTo(id)}>{nav[id]}</button>)}
-              </div>
-              <div className="chip-menu">
-                <button type="button" className="strong" onClick={() => step(0)}>{t.tour}</button>
-                <button type="button" onClick={copyMail}>{t.mail}</button>
-                <a href={cv.url} download={cv.filename} onClick={playClick}>{t.cv}</a>
-              </div>
-              <div className="chip-menu">
-                <button type="button" onClick={hint}>{t.hint}</button>
-                <button type="button" onClick={() => { close(); powerOn() }}>{t.os}</button>
-                <button type="button" onClick={toggleMute}>{t.sound(isMuted)}</button>
-                <button type="button" onClick={toggle}>{t.lang}</button>
-              </div>
-              <p className="chip-foot">{t.secrets(found.size, SECRETS.length)}<button type="button" className="x" onClick={close} aria-label={t.close}>×</button></p>
-            </>
-          )}
-        </div>
-      )}
       <button type="button" className="chip-body" onClick={poke} aria-expanded={menu} aria-label={lang === 'es' ? 'Chip, el asistente del sitio. Abrir su menú.' : 'Chip, the site assistant. Open its menu.'}>
         <svg viewBox="0 0 120 120" aria-hidden="true">
           <path d="M60 22 V10" className="ant" /><circle cx="60" cy="8" r="4" className="led" />
@@ -202,6 +171,40 @@ export function Mascot() {
           <circle cx="40" cy="72" r="4" className="blush" /><circle cx="80" cy="72" r="4" className="blush" />
         </svg>
       </button>
+      {/* after the button in the DOM: Tab from Chip lands in its menu (the bubble is positioned above it) */}
+      {(say || menu || tour >= 0) && (
+        <div className="chip-say">
+          {/* only the speech is announced; the menu is a plain group of buttons */}
+          <p role="status" className={say ? '' : 'sr-only'}>{say}</p>
+          {tour >= 0 && (
+            <div className="chip-menu">
+              <span className="chip-step">{tour + 1} / {t.tourSteps.length}</span>
+              <button type="button" onClick={() => step(tour + 1)}>{tour + 1 < t.tourSteps.length ? t.next : t.stop}</button>
+              {tour + 1 < t.tourSteps.length && <button type="button" onClick={() => step(t.tourSteps.length)}>{t.stop}</button>}
+            </div>
+          )}
+          {menu && (
+            <>
+              <p className="chip-label">{t.go}</p>
+              <div className="chip-menu">
+                {['trabajo', 'trayectoria', 'proceso', 'sobre', 'taller', 'contacto', 'consola'].map((id) => <button key={id} type="button" onClick={() => goTo(id)}>{nav[id]}</button>)}
+              </div>
+              <div className="chip-menu">
+                <button type="button" className="strong" onClick={() => step(0)}>{t.tour}</button>
+                <button type="button" onClick={copyMail}>{t.mail}</button>
+                <a href={cv.url} download={cv.filename} onClick={playClick}>{t.cv}</a>
+              </div>
+              <div className="chip-menu">
+                <button type="button" onClick={hint}>{t.hint}</button>
+                <button type="button" onClick={() => { close(); powerOn() }}>{t.os}</button>
+                <button type="button" onClick={toggleMute}>{t.sound(isMuted)}</button>
+                <button type="button" onClick={toggle}>{t.lang}</button>
+              </div>
+              <p className="chip-foot">{t.secrets(found.size, SECRETS.length)}<button type="button" className="x" onClick={close} aria-label={t.close}>×</button></p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -115,6 +115,17 @@ export function Process() {
     return () => mq.removeEventListener('change', on)
   }, [])
 
+  // the diagrams' packets are SVG animateMotion: they ran forever, off screen too, and kept the browser
+  // repainting every frame on the whole page. They play only while the section is on screen, never with reduced motion
+  useEffect(() => {
+    const el = root.current, still = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const play = (on) => el.querySelectorAll('svg.dia').forEach((s) => (on && !still ? s.unpauseAnimations() : s.pauseAnimations()))
+    play(false)
+    const io = new IntersectionObserver(([e]) => play(e.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [flat])
+
   useEffect(() => {
     if (flat) return
     const ctx = gsap.context(() => {

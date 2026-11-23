@@ -138,7 +138,7 @@ function MphScene({ T, now, dest }) {
         </svg>
       )}
       <ErrorBoundary fallback={null}><Suspense fallback={null}><DeLorean3D start={start} /></Suspense></ErrorBoundary>
-      <p className="egg-credit">DeLorean 3D: <a href="https://poly.pizza/m/1uZKezeldGG" target="_blank" rel="noopener noreferrer">DeLorean DMC-12</a> · David Sirera, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>, vía Poly Pizza</p>
+      <p className="egg-credit">DeLorean 3D: <a href="https://poly.pizza/m/1uZKezeldGG" target="_blank" rel="noopener noreferrer">DeLorean DMC-12</a> · David Sirera, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>, {T.via} Poly Pizza</p>
       <div className={`speedo${jumped ? ' gone' : ''}`}>
         <Segments text={String(mph).padStart(2, '0')} />
         <b>MPH</b>
@@ -167,7 +167,7 @@ function Order66({ T }) {
         <p className="o66-reply">{T.o66reply}</p>
       </div>
       <ErrorBoundary fallback={null}><Suspense fallback={null}><Order66_3D /></Suspense></ErrorBoundary>
-      <p className="egg-credit">Holograma: <a href="https://poly.pizza/m/97m_4VkXpmo" target="_blank" rel="noopener noreferrer">Tie Fighter 1 V1</a> · Joe Scalise, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a> via Poly Pizza</p>
+      <p className="egg-credit">{T.holo}: <a href="https://poly.pizza/m/97m_4VkXpmo" target="_blank" rel="noopener noreferrer">Tie Fighter 1 V1</a> · Joe Scalise, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a> {T.via} Poly Pizza</p>
       <p className="egg-caption sith o66-end">{T.o66end}</p>
     </>
   )

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Pause, Volume2, VolumeX } from 'lucide-react';
 
 const TETROMINOS = {
   I: { m: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#22d3ee' },
@@ -70,7 +70,8 @@ export function TetrisGame() {
   const [lines,  setLines]  = useState(0);
   const [status, setStatus] = useState('idle');
   const [nextP,  setNextP]  = useState(null);
-  const [music,  setMusic]  = useState(true);
+  // starts muted if the site's sound is off (SoundContext's key)
+  const [music,  setMusic]  = useState(() => { try { return localStorage.getItem('site_sound') !== 'off' } catch { return true } });
 
   useEffect(() => {
     // Try to load an iconic sound from local files or an external creative commons source
@@ -277,7 +278,7 @@ export function TetrisGame() {
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-b-lg">
           <div className="text-center">
             {status === 'dead' && <p className="text-red-400 font-mono text-sm mb-2 font-bold">Game Over — Score: {score}</p>}
-            {status === 'paused' && <p className="text-[var(--accent)] font-mono text-base mb-3 font-bold">⏸ Pausado</p>}
+            {status === 'paused' && <p className="text-[var(--accent)] font-mono text-base mb-3 font-bold"><Pause size={15} className="inline -mt-0.5 mr-1" aria-hidden="true" />Pausado</p>}
             <button onClick={status === 'paused'
               ? () => { statusRef.current='running'; setStatus('running'); intervalRef.current=setInterval(()=>stepRef.current?.(),Math.max(80,800-(levelRef.current-1)*70)); containerRef.current?.focus(); }
               : startGame}

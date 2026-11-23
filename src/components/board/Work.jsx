@@ -48,6 +48,7 @@ function Flow({ project, live, lang, label }) {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
     let xs = [], raf = 0, from = 0, step = -1, t0 = 0
     const layout = () => {
+      if (!path.current) return // a resize queued just before unmount (opening the OS) lands after it
       const b = path.current.ownerSVGElement.getBoundingClientRect()
       xs = [...board.current.querySelectorAll('.node')].map((n) => { const r = n.getBoundingClientRect(); return r.left - b.left + r.width / 2 })
       path.current.setAttribute('d', xs.map((x) => `M${x} 0 V16`).join(' ') + ` M${xs[0]} 16 H${xs.at(-1)}`)

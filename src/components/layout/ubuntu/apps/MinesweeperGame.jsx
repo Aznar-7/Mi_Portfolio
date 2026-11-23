@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bomb, Flag } from 'lucide-react';
+import { Bomb, Flag, Timer } from 'lucide-react';
 
 export function MinesweeperGame() {
   const ROWS = 9, COLS = 9, MINES = 10;
@@ -81,7 +81,7 @@ export function MinesweeperGame() {
         <span className="font-mono text-[var(--accent)] font-bold text-sm tracking-widest uppercase">Mines</span>
         <div className="flex gap-4">
           <span className="flex items-center gap-1.5 font-mono text-white/50 text-sm"><Bomb size={13} aria-hidden="true" />{MINES - flags}</span>
-          <span className="font-mono text-white/50 text-sm tabular-nums">⏱ {String(time).padStart(3,'0')}</span>
+          <span className="font-mono text-white/50 text-sm tabular-nums"><Timer size={13} className="inline -mt-0.5 mr-1" aria-hidden="true" />{String(time).padStart(3,'0')}</span>
         </div>
       </div>
 
