@@ -108,9 +108,10 @@ export function Hyrule({ lang, onExit, leaving }) {
   const [dialog, setDialog] = useState(null) // { kind: project | stack | about | experience | contact, data, page }
   const [page, setPage] = useState(0) // the bio or the jobs, one at a time
   const [prompt, setPrompt] = useState(null) // what E does where you stand
-  const [quiet, setQuiet] = useState(false)
+  // the site's sound switch (SoundContext's key) decides how Hyrule starts
+  const [quiet, setQuiet] = useState(() => { try { return localStorage.getItem('site_sound') === 'off' } catch { return false } })
   const [touch] = useState(() => matchMedia('(pointer: coarse)').matches)
-  const api = useRef({}), labels = useRef({}), muted = useRef(false)
+  const api = useRef({}), labels = useRef({}), muted = useRef(quiet)
 
   const toggleMusic = () => { muted.current = !muted.current; setQuiet(muted.current); setMusicVolume(muted.current ? 0 : phase === 'field' ? 0.7 : 0.55) }
   // moving between places works like the game: the screen goes black, you are there, the name shows
@@ -503,7 +504,20 @@ export function Hyrule({ lang, onExit, leaving }) {
       setPhase('field')
     })
 
+    // a GPU that can't keep up (frames averaging over 28 ms for two seconds) gets fewer pixels: 1.5x, then 1x, then 0.75x.
+    // Timed, not counted, so a very slow device steps down just as fast; a tab switch's one long gap is capped
+    let last = 0, avg = 16, slowFor = 0, ratio = renderer.getPixelRatio()
     const frame = (now) => {
+      if (last) {
+        const dt = Math.min(250, now - last)
+        avg += (dt - avg) * 0.1
+        slowFor = avg > 28 ? slowFor + dt : 0
+        if (slowFor > 2000 && ratio > 0.75) {
+          ratio = ratio > 1 ? 1 : 0.75; slowFor = 0; avg = 16
+          renderer.setPixelRatio(ratio); worlds.forEach((c) => c?.setPixelRatio(ratio)); fit()
+        }
+      }
+      last = now
       look.x += (look.tx - look.x) * 0.04; look.y += (look.ty - look.y) * 0.04
       tick(now)
       if (composer) composer.render()

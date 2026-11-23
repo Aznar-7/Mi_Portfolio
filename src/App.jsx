@@ -91,6 +91,7 @@ function Overlay({ id, onExit, leaving }) {
 
 export default function App() {
   const [ubuntuOpen, setUbuntuOpen] = useState(false)
+  const pageY = useRef(0) // where the visitor was when the OS opened: the page unmounts meanwhile
   const [retro, setRetro] = useState(false)
   const [overlay, setOverlay] = useState(null) // 'middle' | 'galaxy' | 'hyrule'
   // leaving an egg is a scene too: it plays its exit, then the board powers back on
@@ -109,12 +110,13 @@ export default function App() {
   const closeRetro = useCallback(() => leave(() => setRetro(false)), [leave])
 
   useEffect(() => {
-    const open = () => setUbuntuOpen(true)
+    const keep = () => { if (document.querySelector('.site')) pageY.current = scrollY } // before the page unmounts
+    const open = () => { keep(); setUbuntuOpen(true) }
     const onKey = (e) => {
       // Ctrl + Alt + T toggles the Ubuntu simulator
       if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 't') {
         e.preventDefault()
-        setUbuntuOpen((o) => !o)
+        keep(); setUbuntuOpen((o) => !o)
       }
     }
     const toRetro = () => { setRetro(true); scrollTo({ top: 0, behavior: 'instant' }) }
@@ -146,8 +148,12 @@ export default function App() {
     else delete document.body.dataset.overlay
   }, [overlay])
 
-  // the page powered down to open the OS (lib/power); bring it back when the OS closes
-  useEffect(() => { if (!ubuntuOpen) document.body.classList.remove('off') }, [ubuntuOpen])
+  // the page powered down to open the OS (lib/power); bring it back, where it was, when the OS closes
+  useEffect(() => {
+    if (ubuntuOpen) return
+    document.body.classList.remove('off')
+    if (pageY.current) requestAnimationFrame(() => scrollTo({ top: pageY.current, behavior: 'instant' }))
+  }, [ubuntuOpen])
 
   return (
     <SoundProvider>

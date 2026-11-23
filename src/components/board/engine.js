@@ -37,6 +37,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   const C = { f: tok('--fcu'), b: tok('--bcu'), silk: tok('--silk'), pad: tok('--pad') }
   let W, H, cols, rows, used, blocked, traces, parts, pulses, sparks, t0, booted, letterBoxes = []
   let mouse = { x: -1e4, y: -1e4 }, chipN = 1, raf = 0, visible = true, dead = false, fl = 0, fw = 0
+  let grid = null, tick = 0, lastPointer = 0 // the dot grid, drawn once per size; frame parity for the calm rate
   const timers = new Set()
   const later = (fn, ms) => { const id = setTimeout(() => { timers.delete(id); fn() }, ms); timers.add(id) }
   const free = (c, r) => c > 0 && r > 0 && c < cols - 1 && r < rows && !used.has(key(c, r)) && !blocked.has(key(c, r))
@@ -117,6 +118,10 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
     letterBoxes = letters.map(l => { const b = l.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 + scrollY } }) // page coords
     W = rect.width; H = rect.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     cols = Math.ceil(W / P); rows = Math.ceil(H / P)
+    // the 0.1" grid never changes: one offscreen canvas per size instead of ~700 fillRects every frame
+    grid = Object.assign(document.createElement('canvas'), { width: canvas.width, height: canvas.height })
+    const g = grid.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.fillStyle = 'rgba(236,238,242,.045)'
+    for (let c = 0; c < cols; c += 2) for (let r = 0; r < rows; r += 2) g.fillRect(c * P + P / 2 - .5, r * P + P / 2 - .5, 1, 1)
     const fr = (frame ?? hero).getBoundingClientRect(); fl = fr.left - rect.left; fw = fr.width
     used = new Set(); blocked = new Set(); traces = []; parts = []; pulses = []; sparks = []; t0 = performance.now(); booted = false
     // keep the header band clean
@@ -272,9 +277,12 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
 
   function draw(now) {
     raf = 0
+    // calm (routed, no pointer for a second, no sparks or chips cooling): the slow pulses read the same at 30 fps,
+    // so every other frame is skipped and the canvas is left untouched
+    const calm = booted && !sparks.length && now - lastPointer > 1000 && !traces.some((t) => t.hot > .02)
+    if (calm && tick++ & 1) { raf = visible && !dead ? requestAnimationFrame(draw) : 0; return }
     ctx.clearRect(0, 0, W, H)
-    ctx.fillStyle = 'rgba(236,238,242,.045)'
-    for (let c = 0; c < cols; c += 2) for (let r = 0; r < rows; r += 2) ctx.fillRect(c * P + P / 2 - .5, r * P + P / 2 - .5, 1, 1)
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(grid, 0, 0); ctx.restore()
 
     let done = 0
     for (const p of parts) p.hover += ((p.over ? 1 : 0) - (p.hover || 0)) * .12
@@ -284,7 +292,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
       const k = Math.min(1, age), prog = 1 - Math.pow(1 - k, 3)
       if (prog >= 1) done++
       // probe: copper near the cursor warms up and eases back
-      let near = 1e9; for (const p of t.pts) near = Math.min(near, Math.hypot(p.x - mouse.x, p.y - mouse.y))
+      let near = 1e9; if (mouse.x > -1e3) for (const p of t.pts) near = Math.min(near, Math.hypot(p.x - mouse.x, p.y - mouse.y))
       const want = (near < 130 ? 1 - near / 130 : 0) + (t.hot || 0) + (t.part ? t.part.hover : 0)
       t.heat += (Math.min(1, want) - t.heat) * .08
       if (t.hot) t.hot *= .985
@@ -397,7 +405,7 @@ export function createBoard({ root, hero, canvas, partsLayer, statusEl, keepOut,
   // ── input ──
   let moveRaf = 0, lastMove = null
   const onMove = (e) => {
-    lastMove = e
+    lastMove = e; lastPointer = performance.now()
     if (!moveRaf) moveRaf = requestAnimationFrame(() => { moveRaf = 0; applyMove(lastMove) })
   }
   const applyMove = (e) => {

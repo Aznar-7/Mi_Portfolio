@@ -198,9 +198,9 @@ export function Ocarina() {
           }, (WARP[m.id] ? Math.min(total, 6500) : total) + 300)
         }
         track.addEventListener('loadedmetadata', () => go(track.duration), { once: true })
-        track.addEventListener('error', () => go(playSong(m).dur), { once: true })
+        track.addEventListener('error', () => { if (!started) go(playSong(m).dur) }, { once: true })
         // a blocked play() fires neither event (autoplay rules): the samples answer instead of locking the ocarina
-        later(() => go(playSong(m).dur), 4000)
+        later(() => { if (!started) { track.pause(); go(playSong(m).dur) } }, 4000) // silence a late track: never both
       }, 1300)
     } else if (next.length === 8) later(() => { if (notes.current === next) { playError(); draw([]) } }, 700)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps -- later/rise/draw only touch refs and setters

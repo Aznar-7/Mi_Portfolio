@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Pause } from 'lucide-react';
 
 export function SnakeGame() {
   const GRID = 18, CELL = 22;
@@ -121,7 +122,7 @@ export function SnakeGame() {
           </button>
         </div>
       )}
-      {status === 'paused' && <p className="text-[var(--accent)]/60 font-mono text-sm animate-pulse">⏸ Paused — Space to resume</p>}
+      {status === 'paused' && <p className="text-[var(--accent)]/60 font-mono text-sm animate-pulse"><Pause size={13} className="inline -mt-0.5 mr-1" aria-hidden="true" />Paused — Space to resume</p>}
       {status === 'running' && <p className="text-white/20 font-mono text-[10px] tracking-widest uppercase">Arrow keys · Space to pause</p>}
     </div>
   );

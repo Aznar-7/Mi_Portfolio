@@ -13,6 +13,7 @@ function getInitialLanguage() {
   let saved = null
   try { saved = localStorage.getItem(STORAGE_KEY) } catch { /* storage blocked: fall through */ }
   if (saved === 'es' || saved === 'en') return saved
+  if (location.pathname.startsWith('/en')) return 'en' // the English page (/en/), for crawlers and shared links
   if (/bot|crawl|spider|slurp|facebookexternalhit|linkedin/i.test(navigator.userAgent)) return 'es'
 
   const preferredLanguages = navigator.languages?.length ? navigator.languages : [navigator.language]
